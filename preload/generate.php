@@ -8,7 +8,7 @@ require(__DIR__ . '/functions.php');
 
 $app = App::get();
 
-$files = $app->dir->getFiles($app->path . '/vendor/webdev1404/mars/classes', true);
+$files = $app->dir->getFiles($app->path . '/vendor/webdev1404/mars/src', true);
 $traits_and_interfaces = get_traits_and_interfaces($files);
 write_file(__DIR__ . '/generated/traits-interfaces.php', $traits_and_interfaces);
 
