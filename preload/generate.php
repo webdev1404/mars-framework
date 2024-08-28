@@ -1,13 +1,14 @@
 <?php
 namespace Mars\Preload;
 
-chdir(dirname(__DIR__, 3));
+use Mars\App;
 
-require('src/mars/preload/functions.php');
-require('src/mars/boot.php');
+require(dirname(__DIR__, 4) . '/vendor/autoload.php');
+require(__DIR__ . '/functions.php');
 
+$app = App::get();
 
-$files = $app->dir->getFiles('src/mars/classes', true);
+$files = $app->dir->getFiles($app->path . '/vendor/webdev1404/mars/classes', true);
 $traits_and_interfaces = get_traits_and_interfaces($files);
 write_file(__DIR__ . '/generated/traits-interfaces.php', $traits_and_interfaces);
 
