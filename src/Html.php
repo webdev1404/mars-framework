@@ -512,7 +512,7 @@ class Html
             $date = time();
         }
 
-        $attributes = ['name' => $name, 'required' => $required, 'value' => $this->app->time->getDatetime($date)] + $attributes;
+        $attributes = ['name' => $name, 'required' => $required, 'value' => $this->app->datetime->get($date)] + $attributes;
 
         return $this->getTag('datetime', '', $attributes);
     }
@@ -531,7 +531,7 @@ class Html
             $date = time();
         }
 
-        $attributes = ['name' => $name, 'required' => $required, 'value' => $this->app->time->getDate($date)] + $attributes;
+        $attributes = ['name' => $name, 'required' => $required, 'value' => $this->app->date->get($date)] + $attributes;
 
         return $this->getTag('date', '', $attributes);
     }
@@ -550,7 +550,7 @@ class Html
             $date = time();
         }
 
-        $attributes = ['name' => $name, 'required' => $required, 'value' => $this->app->time->getTime($date)] +  $attributes;
+        $attributes = ['name' => $name, 'required' => $required, 'value' => $this->app->time->get($date)] +  $attributes;
 
         return $this->getTag('time', '', $attributes);
     }

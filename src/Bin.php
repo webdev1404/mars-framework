@@ -282,6 +282,11 @@ class Bin
      */
     public function print(string $text, string $color = '', bool $newline = true) : static
     {
+        //don't show colors if not in a terminal
+        if (!$this->app->is_bin) {
+            $color = '';
+        }
+
         if ($color) {
             $color = $this->getColor($color);
             echo "\e[{$color}m{$text}\e[0m";

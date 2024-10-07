@@ -6,6 +6,8 @@
 
 namespace Mars;
 
+use DateTime;
+
 /**
  * The Format Class
  * Converts values using a certain format
@@ -144,42 +146,37 @@ class Format
     /**
      * Formats a datetime
      * @param int|string|DateTime $datetime The datetime
-     * @param string $format The format in which the datetime will be formatted
      * @return string The formatted value
      */
-    public function datetime(int|string|DateTime|array $datetime = 0, string $format = '') : string|array
+    public function datetime(int|string|DateTime|array $datetime = 0) : string|array
     {
-        $format = $format ?: $this->datetime_format;
-
-        return $this->formats->map($datetime, function ($datetime) use ($format) {
-            return $this->app->time->get($datetime)->format($format);
+        return $this->formats->map($datetime, function ($datetime) {
+            return $this->app->datetime->get($datetime);
         });
     }
 
     /**
      * Formats a date
-     * @param int|string|DateTime $datetime The datetime
-     * @param string $format The format in which the date will be formatted
+     * @param int|string|DateTime $date The date
      * @return string The formatted value
      */
-    public function date(int|string|DateTime|array $datetime = 0, string $format = '') : string|array
+    public function date(int|string|DateTime|array $date = 0) : string|array
     {
-        $format = $format ?: $this->date_format;
-
-        return $this->datetime($datetime, $format);
+        return $this->formats->map($date, function ($date) {
+            return $this->app->date->get($date);
+        });
     }
 
     /**
      * Formats time
-     * @param int|string|DateTime $datetime The datetime
-     * @param string $format The format in which the time will be formatted
+     * @param int|string|DateTime $time The time
      * @return string The formatted value
      */
-    public function time(int|string|DateTime|array $datetime = 0, string $format = '') : string|array
+    public function time(int|string|DateTime|array $time = 0) : string|array
     {
-        $format = $format ?: $this->time_format;
-
-        return $this->datetime($datetime, $format);
+        return $this->formats->map($time, function ($time) {
+            return $this->app->time->get($time);
+        });
     }
 
     /**
