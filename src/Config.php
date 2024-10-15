@@ -520,6 +520,11 @@ class Config extends Data
     public string $captcha_driver = 'recaptcha2';
 
     /**
+     * @var array $curl_options The curl options to use when making http requests
+     */
+    public array $curl_options = [];
+
+    /**
      * @var string $title_prefix The prefix of the <title> tag
      */
     public string $title_prefix = '';

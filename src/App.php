@@ -165,6 +165,7 @@ class App extends \stdClass
         'file' => File::class,
         'format' => Format::class,
         'html' => Html::class,
+        'http' => Http::class,
         'info' => \Mars\Alerts\Info::class,
         'image' => Image::class,
         'json' => Json::class,
@@ -260,8 +261,7 @@ class App extends \stdClass
      */
     protected static array $container = [
         'mail' => '\Mars\Mail',
-        'minifier' => '\Mars\Helper\Minifier',
-        'http_request' => '\Mars\Http\Request'
+        'minifier' => '\Mars\Helper\Minifier'
     ];
 
     /**

@@ -6,6 +6,14 @@
 
 namespace Mars;
 
+use Mars\Request\Get;
+use Mars\Request\Post;
+use Mars\Request\Request as RequestObj;
+use Mars\Request\Cookie;
+use Mars\Request\Server;
+use Mars\Request\Env;
+use Mars\Request\Files;
+
 /**
  * The Request Class
  * Class handling the $_GET/$_POST/$_COOKIE/$_UPLOAD/$_SERVER interactions
@@ -20,44 +28,44 @@ class Request
     public readonly string $method;
 
     /**
-     * @var object $get Object containing the get data
+     * @var Get $get Object containing the get data
      */
-    public object $get;
+    public Get $get;
 
     /**
-     * @var object $post Object containing the post data
+     * @var Post $post Object containing the post data
      */
-    public object $post;
+    public Post $post;
 
     /**
-     * @var object $request Object containing the request data
+     * @var RequestObj $request Object containing the request data
      */
-    public object $request;
+    public RequestObj $request;
 
     /**
-     * @var object $all Alias for $request
+     * @var RequestObj $request Alias for $request
      */
-    public object $all;
+    public RequestObj $all;    
 
     /**
-     * @var object $cookie Object containing the cookie data
+     * @var Cookie $cookie Object containing the cookie data
      */
-    public object $cookie;
+    public Cookie $cookie;
 
     /**
-     * @var object $server Object containing the server data
+     * @var Server $server Object containing the server data
      */
-    public object $server;
+    public Server $server;
 
     /**
-     * @var object $env Object containing the env data
+     * @var Env $env Object containing the env data
      */
-    public object $env;
+    public Env $env;
 
     /**
-     * @var object $files Object containing the files data
+     * @var Files $files Object containing the files data
      */
-    public object $files;
+    public Files $files;
 
     /**
      * Builds the request object
@@ -74,12 +82,33 @@ class Request
         $this->get = new \Mars\Request\Get($this->app);
         $this->post = new \Mars\Request\Post($this->app);
         $this->request = new \Mars\Request\Request($this->app);
+        $this->all = $this->request;
         $this->cookie = new \Mars\Request\Cookie($this->app);
         $this->server = new \Mars\Request\Server($this->app);
         $this->env = new \Mars\Request\Env($this->app);
         $this->files = new \Mars\Request\Files($this->app);
+    }
 
-        $this->all = $this->request;
+    /**
+     * Returns the value of a variable from $_REQUEST
+     * Shorthand for $this->request->get()
+     * @param string $name The name of the variable
+     * @param string $filter The filter to apply to the value
+     * @return mixed The value
+     */
+    public function get(string $name, string $filter = '')
+    {
+        return $this->request->get($name, $filter);
+    }
+
+    /**
+     * Returns all the request data from $_REQUEST
+     * Shorthand for $this->request->getAll()
+     * @return array
+     */
+    public function getAll() : array
+    {
+        return $this->request->getAll();
     }
 
     /**

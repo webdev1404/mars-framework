@@ -118,6 +118,8 @@ class Log
     {
         $this->handles[$type] = fopen($this->getFilename($type), 'a');
         if (!$this->handles[$type]) {
+            unset($this->handles[$type]);
+            
             throw new \Exception('Error writing the log file. Please make sure the log folder is writeable');
         }
     }
