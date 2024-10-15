@@ -59,6 +59,10 @@ abstract class Image
      */
     public function isValid() : bool
     {
+        if (!is_file($this->filename)) {
+            throw new \Exception("Image does not exist: {$this->filename}");
+        }
+
         $finfo = \finfo_open(FILEINFO_MIME_TYPE);
         $mime_type = \finfo_file($finfo, $this->filename);
         finfo_close($finfo);

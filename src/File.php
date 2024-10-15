@@ -267,9 +267,23 @@ class File
      * @param string $filename The filename
      * @return bool Returns true if $filename is an image, false otherwise
      */
-    public function isImage(string $filename): bool
+    public function isImageExtension(string $filename): bool
     {
         return in_array($this->getExtension($filename), $this->getImageExtensions());
+    }
+
+    /**
+     * Determines if $filename is an image
+     * @param string $filename The filename
+     *
+     */
+    public function isImage(string $filename) : bool
+    {
+        if (!$this->isImageExtension($filename)) {
+            return false;
+        }
+
+        return $this->app->image->isValid($filename);
     }
 
     /**

@@ -447,7 +447,12 @@ class Config extends Data
     /**
      * @var int $image_webp_quality The quality of webp images
      */
-    public int $image_webp_quality = 80;
+    public int $image_webp_quality = -1;
+
+    /**
+     * @var int $image_avif_quality The quality of avif images
+     */
+    public int $image_avif_quality = -1;
 
     /**
      * @var string $image_watermark_background The color of the watermark's background

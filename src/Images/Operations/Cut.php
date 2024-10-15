@@ -19,8 +19,9 @@ class Cut extends Base
      * @param int $cut_y The y point from where the cut should start
      * @param int $width The width of the resulting image. If 0, the image will have the same width as $cut_width
      * @param int $height The height of the resulting image. If 0 the image will have the same height as $cut_height
+     * @param array $options Options, if any
      */
-    public function process(int $cut_width, int $cut_height, int $cut_x, int $cut_y, int $width, int $height)
+    public function process(int $cut_width, int $cut_height, int $cut_x, int $cut_y, int $width, int $height, array $options = [])
     {
         [$source_width, $source_height] = $this->source->getSize();
         $source_ratio = $this->source->getRatio();
@@ -69,6 +70,6 @@ class Cut extends Base
             $destination_y = ($height - $cut_height) / 2;
         }
 
-        return $this->copyResampled((int) $width, (int) $height, (int) $cut_width, (int) $cut_height, $cut_x, $cut_y, (int) $cut_width, (int) $cut_height, (int)$destination_x, (int)$destination_y);
+        $this->copyResampled((int) $width, (int) $height, (int) $cut_width, (int) $cut_height, $cut_x, $cut_y, (int) $cut_width, (int) $cut_height, (int)$destination_x, (int)$destination_y, true, $options);
     }
 }

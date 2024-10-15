@@ -15,8 +15,9 @@ class Crop extends Base
      * Crops the image
      * @param int $width The width of the cropped image
      * @param int $height The height of the cropped image
+     * @param array $options Options, if any
      */
-    public function process(int $width, int $height)
+    public function process(int $width, int $height, array $options = [])
     {
         [$source_width, $source_height] = $this->source->getSize();
         $ratio = $width / $height;
@@ -52,6 +53,6 @@ class Crop extends Base
             }
         }
 
-        return $this->copyResampled((int) $width, (int) $height, (int) $crop_width, (int) $crop_height, (int)$source_x, (int)$source_y, (int) $width, (int) $height, 0, 0, false);
+        $this->copyResampled((int) $width, (int) $height, (int) $crop_width, (int) $crop_height, (int)$source_x, (int)$source_y, (int) $width, (int) $height, 0, 0, false, $options);
     }
 }

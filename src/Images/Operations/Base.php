@@ -8,7 +8,7 @@ namespace Mars\Images\Operations;
 
 use GdImage;
 use Mars\App;
-use Mars\Image;
+use Mars\Images\Image;
 
 /**
  * The Base Image Operations Class
@@ -71,12 +71,12 @@ abstract class Base
      * @param int $destination_x x-coordinate of destination point
      * @param int $destination_y y-coordinate of destination point
      * @param bool $fill If true, will fill the image with background
+     * @param array $options The options for the operation
      */
-    protected function copyResampled(int $width, int $height, int $source_width, int $source_height, int $source_x, int $source_y, int $destination_width, int $destination_height, int $destination_x, int $destination_y, bool $fill = true)
+    protected function copyResampled(int $width, int $height, int $source_width, int $source_height, int $source_x, int $source_y, int $destination_width, int $destination_height, int $destination_x, int $destination_y, bool $fill = true, array $options = [])
     {
         $source = $this->source->open();
         $destination = $this->source->create($width, $height, $source);
-        $options = $this->destination->getOptions();
 
         //fill the image with the chosen background
         if ($fill) {

@@ -143,9 +143,9 @@ final class FileTest extends Base
     {
         $file = $this->app->file;
 
-        $this->assertSame($file->isImage('somefile'), false);
-        $this->assertSame($file->isImage('somefile.jpg'), true);
-        $this->assertSame($file->isImage('/var/www/html/somefile.jpg'), true);
+        $this->assertSame($file->isImageExtension('somefile'), false);
+        $this->assertSame($file->isImageExtension('somefile.jpg'), true);
+        $this->assertSame($file->isImageExtension('/var/www/html/somefile.jpg'), true);
     }
 
     public function testRead()

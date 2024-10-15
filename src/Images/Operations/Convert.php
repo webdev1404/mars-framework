@@ -18,6 +18,6 @@ class Convert extends Base
     {
         [$source_width, $source_height] = $this->source->getSize();
 
-        return $this->copyResampled($source_width, $source_height, $source_width, $source_height, 0, 0, $source_width, $source_height, 0, 0, false);
+        $this->copyResampled($source_width, $source_height, $source_width, $source_height, 0, 0, $source_width, $source_height, 0, 0, false);
     }
 }

@@ -31,7 +31,7 @@ abstract class Base
 
     /**
      * @var string $format
-     * The format string used for time representation.
+     *             The format string used for time representation.
      */
     protected string $format = '';
 
@@ -40,13 +40,13 @@ abstract class Base
      */
     protected string $default_value = '';
 
-     /**
+    /**
      * Builds the time object
      * Sets the default timezone to UTC
      * @param App $app The app object
      */
     public function __construct(App $app)
-    {        
+    {
         $this->app = $app;
 
         if (!static::$timezone) {
@@ -105,7 +105,7 @@ abstract class Base
     }
 
     /**
-     * Returns a formatted datetime 
+     * Returns a formatted datetime
      * @param int|string|\DateTime $datetime The datetime
      * @return string The formatted datetime
      */

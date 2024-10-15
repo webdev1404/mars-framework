@@ -194,11 +194,17 @@ class Bin
     /**
      * Returns the value of a command line option
      * @param string $name The name of the option
+     * @param string $filter The filter to apply to the option, if any. See class Filter for a list of filters
      * @return string The option
      */
-    public function getOption(string $name) : ?string
+    public function getOption(string $name, string $filter = '') : mixed
     {
-        return $this->options[$name] ?? null;
+        $option = $this->options[$name] ?? null;
+        if ($filter) {
+            $option = $this->app->filter->value($option, $filter);
+        }
+
+        return $option;
     }
 
     /**

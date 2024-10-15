@@ -15,8 +15,9 @@ class Resize extends Base
      * Resizes the image
      * @param int $width The width of the resized image
      * @param int $height The height of the resized image
+     * @param array $options Options, if any
      */
-    public function process(int $width, int $height)
+    public function process(int $width, int $height, array $options = [])
     {
         [$source_width, $source_height] = $this->source->getSize();
         $ratio = $this->source->getRatio();
@@ -46,6 +47,6 @@ class Resize extends Base
             $destination_width = $width;
         }
 
-        return $this->copyResampled((int) $width, (int) $height, (int) $source_width, (int) $source_height, 0, 0, (int) $destination_width, (int) $destination_height, (int) $destination_x, (int) $destination_y);
+        $this->copyResampled((int) $width, (int) $height, (int) $source_width, (int) $source_height, 0, 0, (int) $destination_width, (int) $destination_height, (int) $destination_x, (int) $destination_y, true, $options);
     }
 }

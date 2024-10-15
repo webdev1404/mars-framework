@@ -166,6 +166,7 @@ class App extends \stdClass
         'format' => Format::class,
         'html' => Html::class,
         'info' => \Mars\Alerts\Info::class,
+        'image' => Image::class,
         'json' => Json::class,
         'lang' => \Mars\System\Language::class,
         'log' => Log::class,

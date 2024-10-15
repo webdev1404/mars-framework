@@ -27,21 +27,6 @@ class Image
     public readonly Handlers $operations;
 
     /**
-     * @var DriverInterface $driver The driver object
-     */
-    protected DriverInterface $driver;
-
-    /**
-     * @var string $filename The image's filename
-     */
-    protected string $filename = '';
-
-    /**
-     * @var array $options The image's options
-     */
-    protected array $options = [];
-
-    /**
      * @var array $supported_drivers The supported drivers
      */
     protected array $supported_drivers = [
@@ -50,6 +35,7 @@ class Image
         'png' => '\Mars\Images\Png',
         'gif' => '\Mars\Images\Gif',
         'webp' => '\Mars\Images\Webp',
+        'avif' => '\Mars\Images\Avif'
     ];
 
     /**
@@ -65,182 +51,136 @@ class Image
 
     /**
      * Constructs the image object
-     * @param string $filename The image's filename
-     * @param array $options The image's options
      * @param App $app The app object
      */
-    public function __construct(string $filename, array $options = [], App $app = null)
+    public function __construct(App $app = null)
     {
         $this->app = $app ?? $this->getApp();
-        $this->filename = $filename;
-        $this->options = $options;
-        $ext = $this->app->file->getExtension($this->filename);
-
-        $this->app->plugins->run('image_construct', $filename, $this);
-
-        if (!$ext) {
-            throw new \Exception("Invalid image {$filename}");
-        }
-
         $this->drivers = new Drivers($this->supported_drivers, DriverInterface::class, '', $this->app);
-        $this->driver = $this->drivers->get($ext, $this->filename);
         $this->operations = new Handlers($this->supported_operations, $this->app);
         $this->operations->setStore(false);
-    }
-
-    /**
-     * Returns the filename
-     * @return string
-     */
-    public function getFilename() : string
-    {
-        return $this->filename;
     }
 
     /**
      * Returns the options
      * @return array
      */
-    public function getOptions() : array
+    /*public function getOptions() : array
     {
         return $this->options;
+    }*/
+
+    /**
+     * Returns the image
+     * @param string $filename The image's filename
+     */
+    protected function getImage(string $filename) : DriverInterface
+    {
+        $ext = $this->app->file->getExtension($filename);
+        if (!$ext) {
+            throw new \Exception("Invalid image {$filename}");
+        }
+
+        return $this->drivers->get($ext, $filename);
     }
 
     /**
      * Determines if the image is valid
+     * @param string $filename The image's filename
      * @return bool
      */
-    public function isValid() : bool
+    public function isValid(string $filename) : bool
     {
-        return $this->driver->isValid();
+        return $this->getImage($filename)->isValid();
     }
 
     /**
      * Returns the size (width/height) of the image
+     * @param string $filename The image's filename
      * @return array
      */
-    public function getSize() : array
+    public function getSize(string $filename) : array
     {
-        return $this->driver->getSize();
+        return $this->getImage($filename)->getSize();
     }
 
     /**
      * Returns the width of the image
+     * @param string $filename The image's filename
      * @return int
      */
-    public function getWidth(): int
+    public function getWidth(string $filename): int
     {
-        return $this->driver->getWidth();
+        return $this->getImage($filename)->getWidth();
     }
 
     /**
      * Returns the height of the image
+     * @param string $filename The image's filename
      * @return int
      */
-    public function getHeight(): int
+    public function getHeight(string $filename): int
     {
-        return $this->driver->getHeight();
+        return $this->getImage($filename)->getHeight();
     }
 
     /**
      * Returns the radio between width and height
+     * @param string $filename The image's filename
      * @return float
      */
-    public function getRatio() : float
+    public function getRatio(string $filename) : float
     {
-        return $this->driver->getRatio();
-    }
-
-    /**
-     * Opens the file as a GdImage
-     * @return GdImage
-     */
-    public function open() : GdImage
-    {
-        return $this->driver->open();
-    }
-
-    /**
-     * Creates a GdImage object
-     * @param int $width The image's width
-     * @param int $height The image's height
-     * @return GdImage
-     */
-    public function create(int $width, int $height, GdImage $source) : GdImage
-    {
-        return $this->driver->create($width, $height, $source);
-    }
-
-    /**
-     * Saves a GdImage object
-     * @return GdImage
-     */
-    public function save(GdImage $img)
-    {
-        return $this->driver->save($img);
+        return $this->getImage($filename)->getRatio();
     }
 
     /**
      * Optimizes the image
+     * @param string $filename The image's filename
      * @return bool Returns true, if the image was optimized
      */
-    public function optimize() : bool
+    public function optimize(string $filename) : bool
     {
-        return $this->driver->optimize();
-    }
-
-    /**
-     * Copies the current image and returns an Image object from the copied filename
-     * @param string $filename The destination filename
-     * @throws Exception If the copy operation fails
-     */
-    public function copy(string $filename) : Image
-    {
-        $image = new static($filename, $this->app);
-
-        $this->app->file->copy($this->filename, $filename);
-
-        return $image;
+        return $this->getImage($filename)->optimize();
     }
 
     /**
      * Resizes the image
+     * @param string $filename The image's filename
      * @param string $destination The destination's filename
      * @param int $width The width of the resized image. If 0, it will be computed based on the ratio
      * @param int $height The height of the resized image. If 0, it will be computed based on the ratio
-     * @param array $options The destination's options
-     * @return Image The resized image
+     * @param array $options Resize options, if any
+     * @return bool Returns true, if the image was resized
      */
-    public function resize(string $destination, int $width, int $height = 0, array $options = []) : Image
+    public function resize(string $filename, string $destination, int $width, int $height = 0, array $options = []) : bool
     {
-        $destination = new static($destination, $options);
+        $operation = $this->operations->get('resize', $this->getImage($filename), $this->getImage($destination), $this->app);
+        $operation->process($width, $height, $options);
 
-        $operation = $this->operations->get('resize', $this, $destination, $this->app);
-        $operation->process($width, $height);
-
-        return $destination;
+        return is_file($destination);
     }
 
     /**
      * Crops the image
+     * @param string $filename The image's filename
      * @param string $destination The destination's filename
      * @param int $width The width of the cropped image
      * @param int $height The height of the cropped image
-     * @param array $options The crop's options
-     * @return Image The cropped image
+     * @param array $options Crop options, if any
+     * @return bool Returns true, if the image was cropped
      */
-    public function crop(string $destination, int $width, int $height, array $options = []) : Image
+    public function crop(string $filename, string $destination, int $width, int $height, array $options = []) : bool
     {
-        $destination = new static($destination, $options);
+        $operation = $this->operations->get('crop', $this->getImage($filename), $this->getImage($destination), $this->app);
+        $operation->process($width, $height, $options);
 
-        $operation = $this->operations->get('crop', $this, $destination, $this->app);
-        $operation->process($width, $height);
-
-        return $destination;
+        return is_file($destination);
     }
 
     /**
      * Cuts a section of the image and saves it to destination
+     * @param string $filename The image's filename
      * @param string $destination The destination's filename
      * @param int $cut_width The width of the cut section
      * @param int $cut_height The height of the cut section
@@ -248,66 +188,62 @@ class Image
      * @param int $cut_y The y point from where the cut should start
      * @param int $width The width of the resulting image. If 0, the image will have the same width as $cut_width
      * @param int $height The height of the resulting image. If 0 the image will have the same height as $cut_height
-     * @param array $options The destination's options
-     * @return Image The cut image
+     * @param array $options Cut options, if any
+     * @return bool Returns true, if the image was cut
      */
-    public function cut(string $destination, int $cut_width, int $cut_height, int $cut_x = 0, int $cut_y = 0, int $width = 0, int $height = 0, array $options = []) : Image
+    public function cut(string $filename, string $destination, int $cut_width, int $cut_height, int $cut_x = 0, int $cut_y = 0, int $width = 0, int $height = 0, array $options = []) : bool
     {
-        $destination = new static($destination, $options);
+        $operation = $this->operations->get('cut', $this->getImage($filename), $this->getImage($destination), $this->app);
+        $operation->process($cut_width, $cut_height, $cut_x, $cut_y, $width, $height, $options);
 
-        $operation = $this->operations->get('cut', $this, $destination, $this->app);
-        $operation->process($cut_width, $cut_height, $cut_x, $cut_y, $width, $height);
-
-        return $destination;
+        return is_file($destination);
     }
 
     /**
      * Converts an image to another format
+     * @param string $filename The image's filename
      * @param string $destination The destination's filename
-     * @return Image The converted image
+     * @return bool Returns true, if the image was converted
      */
-    public function convert(string $destination) : Image
+    public function convert(string $filename, string $destination) : bool
     {
-        $destination = new static($destination);
-
-        $operation = $this->operations->get('convert', $this, $destination, $this->app);
+        $operation = $this->operations->get('convert', $this->getImage($filename), $this->getImage($destination), $this->app);
         $operation->process();
 
-        return $destination;
+        return is_file($destination);
     }
 
     /**
      * Places a watermark text over an image
+     * @param string $filename The image's filename
      * @param string $destination The destination's filename
      * @param string $text The text to place as watermark
      * @param int $position The position of the watermark text. Matches the 1-9 keys of the numpad. 1:bottom-left; 5:middle center; 9:top-right
-     * @return Image The converted image
+     * @param array $options Watermark options, if any
+     * @return bool Returns true, if the watermarked image was created
      */
-    public function watermarkText(string $destination, string $text, int $position = 3, array $options = []) : Image
+    public function watermarkText(string $filename, string $destination, string $text, int $position = 3, array $options = []) : bool
     {
-        $destination = new static($destination, $options);
+        $operation = $this->operations->get('watermark', $this->getImage($filename), $this->getImage($destination), $this->app);
+        $operation->applyText($text, $position, $options);
 
-        $operation = $this->operations->get('watermark', $this, $destination, $this->app);
-        $operation->applyText($text, $position);
-
-        return $destination;
+        return is_file($destination);
     }
 
     /**
      * Places a watermark text over an image
+     * @param string $filename The image's filename
      * @param string $destination The destination's filename
      * @param string $watermark_image The path of the image which will be used as a watermark
      * @param int $position The position of the watermark text. Matches the 1-9 keys of the numpad. 1:bottom-left; 5:middle center; 9:top-right
-     * @return Image The converted image
+     * @param array $options Watermark options, if any
+     * @return bool Returns true, if the watermarked image was created
      */
-    public function watermarkImage(string $destination, string $watermark_image, int $position = 3, array $options = []) : Image
+    public function watermarkImage(string $filename, string $destination, string $watermark_image, int $position = 3, array $options = []) : bool
     {
-        $destination = new static($destination, $options);
-        $watermark = new static($watermark_image);
+        $operation = $this->operations->get('watermark', $this->getImage($filename), $this->getImage($destination), $this->app);
+        $operation->applyImage($this->getImage($watermark_image), $position, $options);
 
-        $operation = $this->operations->get('watermark', $this, $destination, $this->app);
-        $operation->applyImage($watermark, $position);
-
-        return $destination;
+        return is_file($destination);
     }
 }

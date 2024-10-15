@@ -6,7 +6,7 @@
 
 namespace Mars\Images\Operations;
 
-use Mars\Image;
+use Mars\Images\Image;
 
 /**
  * The Watermark Operation Image Class
@@ -23,14 +23,15 @@ class Watermark extends Base
      * @param int $width The width of the resulting image. If 0, the image will have the same width as $cut_width
      * @param int $height The height of the resulting image. If 0 the image will have the same height as $cut_height
      * @param int $position The position of the watermark text. Matches the 1-9 keys of the numpad. 1:bottom-left; 5:middle center; 9:top-right
+     * @param array $options Options, if any
      */
-    public function applyText(string $text, int $position)
+    public function applyText(string $text, int $position, array $options = [])
     {
         [$source_width, $source_height] = $this->source->getSize();
 
         $source = $this->source->open();
         $destination = $this->destination->create($source_width, $source_height, $source);
-        $options = $this->getOptions($this->destination->getOptions());
+        $options = $this->getOptions($options);
 
         imagecopy($destination, $source, 0, 0, 0, 0, $source_width, $source_height);
 
@@ -71,9 +72,12 @@ class Watermark extends Base
      * Applies a watermark image
      * @param Image $watermark_image The watermark image
      * @param int $position The position of the watermark text. Matches the 1-9 keys of the numpad. 1:bottom-left; 5:middle center; 9:top-right
+     * @param array $options Options, if any
      */
-    public function applyImage(Image $watermark_image, int $position = 3)
+    public function applyImage(Image $watermark_image, int $position = 3, array $options = [])
     {
+        $has_opacity = $options['opacity'] ?? false;
+
         [$source_width, $source_height] = $this->source->getSize();
 
         $size = $this->source->getSize();
@@ -82,12 +86,18 @@ class Watermark extends Base
         $source = $this->source->open();
         $destination = $this->destination->create($source_width, $source_height, $source);
         $watermark = $watermark_image->open();
-        $options = $this->getOptions($this->destination->getOptions());
+        $options = $this->getOptions($options);
 
         $pos = $this->getPosition($watermark_size[0], $watermark_size[1], $size[0], $size[1], $options['margin_left'], $options['margin_top'], $position);
 
         imagecopy($destination, $source, 0, 0, 0, 0, $source_width, $source_height);
-        imagecopymerge($destination, $watermark, $pos[0], $pos[1], 0, 0, $watermark_size[0], $watermark_size[1], $options['opacity']);
+
+        if ($has_opacity) {
+            //todo; figure out how why the transparent areas of the watermark image are rendered as black
+            imagecopymerge($destination, $watermark, $pos[0], $pos[1], 0, 0, $watermark_size[0], $watermark_size[1], $options['opacity']);
+        } else {
+            imagecopy($destination, $watermark, $pos[0], $pos[1], 0, 0, $watermark_size[0], $watermark_size[1]);
+        }
 
         $this->destination->save($destination);
 
@@ -138,25 +148,25 @@ class Watermark extends Base
                 $pos = [$margin_left, $image_height - $margin_top - $watermark_height];
                 break;
             case 2:
-                $pos = [($image_width - 2 * $margin_left - $watermark_height) / 2, $image_height - $margin_top - $watermark_height];
+                $pos = [(int)(($image_width - 2 * $margin_left - $watermark_height) / 2), $image_height - $margin_top - $watermark_height];
                 break;
             case 3:
                 $pos = [$image_width - $margin_left - $watermark_width, $image_height - $margin_top - $watermark_height];
                 break;
             case 4:
-                $pos = [$margin_left, ($image_height - 2 * $margin_top - $watermark_height) / 2];
+                $pos = [$margin_left, (int)(($image_height - 2 * $margin_top - $watermark_height) / 2)];
                 break;
             case 5:
-                $pos = [($image_width - 2 * $margin_left - $watermark_height) / 2, ($image_height - 2 * $margin_top - $watermark_height) / 2];
+                $pos = [(int)(($image_width - 2 * $margin_left - $watermark_height) / 2), (int)(($image_height - 2 * $margin_top - $watermark_height) / 2)];
                 break;
             case 6:
-                $pos = [$image_width - $margin_left - $watermark_width, ($image_height - 2 * $margin_top - $watermark_height) / 2];
+                $pos = [$image_width - $margin_left - $watermark_width, (int)(($image_height - 2 * $margin_top - $watermark_height) / 2)];
                 break;
             case 7:
                 $pos = [$margin_left, $margin_top];
                 break;
             case 8:
-                $pos = [($image_width - 2 * $margin_left - $watermark_height) / 2, $margin_top];
+                $pos = [(int)(($image_width - 2 * $margin_left - $watermark_height) / 2), $margin_top];
                 break;
             case 9:
                 $pos = [$image_width - $margin_left - $watermark_width, $margin_top];

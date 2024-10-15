@@ -70,6 +70,41 @@ class Uri
     }
 
     /**
+     * Retrieves the domain from a given URL
+     * @param string $url The url
+     * @return string The domain
+     */
+    public function getDomain(string $url) : string
+    {
+        $host = $this->getHost($url);
+
+        $parts = explode('.', $host);
+        $count = count($parts);
+
+        if ($count < 2) {
+            return $host;
+        }
+
+        return $parts[$count - 2] . '.' . $parts[$count - 1];
+    }
+
+    /**
+     * Retrieves the subdomain from a given URL
+     * @param string $url The url
+     * @return string The subdomain
+     */
+    public function getSubdomain(string $url) : string
+    {
+        $host = $this->getHost($url);
+
+        $domain = $this->getDomain($url);
+
+        $subdomain = str_replace($domain, '', $host);
+        
+        return trim($subdomain, '.');
+    }
+
+    /**
      * Builds an url appending $params to $url
      * @param string $base_url The url to which params will be appended.
      * @param array $params Array containing the values to be appended. Specified as $name=>$value

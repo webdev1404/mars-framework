@@ -32,7 +32,12 @@ class Response
     public int $code = 0;
 
     /**
-     * @var string $error The generated error if any
+     * @var int $error_no The generated error number, if any
+     */
+    public string $error_no = '';
+
+    /**
+     * @var string $error The generated error, if any
      */
     public string $error = '';
 
@@ -50,13 +55,14 @@ class Response
     public function __construct($ch, string|bool $result, App $app = null)
     {
         if ($result === false) {
+            $this->error_no = curl_errno($ch);
             $this->error = curl_error($ch);
         }
 
         $this->app = $app ?? $this->getApp();
         $this->code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         $this->info = curl_getinfo($ch);
-        $this->headers = $this->getHeaders();
+        $this->headers = $this->buildHeaders();
         $this->body = is_bool($result) ? '' : $result;
     }
 
@@ -86,6 +92,14 @@ class Response
      * Returns the generated response
      * @return string
      */
+    public function get() : string
+    {
+        return $this->body;
+    }
+
+    /**
+     * Alias for get()
+     */
     public function getBody() : string
     {
         return $this->body;
@@ -101,10 +115,37 @@ class Response
     }
 
     /**
+     * Get the HTTP response code.
+     * @return int The HTTP response code.
+     */
+    public function getCode() : int
+    {
+        return $this->code;
+    }
+
+    /**
+     * Retrieves the error message.
+     * @return string The error message.
+     */
+    public function getError() : string
+    {
+        return $this->error;
+    }
+
+    /**
+     * Retrieves the headers from the HTTP response.
+     * @return array An array of headers.
+     */
+    public function getHeaders() : array
+    {
+        return $this->headers;
+    }
+
+    /**
      * Returns the request headers
      * @return array
      */
-    protected function getHeaders() : array
+    protected function buildHeaders() : array
     {
         if (!isset($this->info['request_header'])) {
             return [];

@@ -23,8 +23,10 @@ class Filter
      * @var array $supported_filters The list of supported filters
      */
     protected array $supported_filters = [
+        'str' => ['string'],
         'string' => ['string'],
         'int' => ['int'],
+        'pos' => ['absint'],
         'float' => ['float'],
         'abs' => ['abs'],
         'absint' => ['absint'],
