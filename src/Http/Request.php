@@ -69,8 +69,8 @@ class Request
      * @return resource The curl handle
      */
     protected function init(string $url, array $options = [])
-    {
-        $options = array_merge($this->options + $options);
+    {        
+        $options = $options + $this->options;
 
         $headers = $options['headers'] ?? [];
         $referer = $options['referer'] ?? '';
@@ -80,6 +80,8 @@ class Request
         $useragent = $options['useragent'] ?? $this->useragent;
         $timeout = $options['timeout'] ?? $this->timeout;
         $custom_request = $options['custom_request'] ?? '';
+
+        unset($options['headers'], $options['referer'], $options['cookie_file'], $options['follow_location'], $options['show_headers'], $options['useragent'], $options['timeout'], $options['custom_request']);
 
         $ch = curl_init();
 
@@ -106,6 +108,7 @@ class Request
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLINFO_HEADER_OUT, true);
         curl_setopt($ch, CURLOPT_TIMEOUT, $timeout);
+
         curl_setopt_array($ch, $options);
 
         return $ch;
