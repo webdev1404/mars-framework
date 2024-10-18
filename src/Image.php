@@ -91,6 +91,10 @@ class Image
      */
     public function isValid(string $filename) : bool
     {
+        if (!$this->drivers->exists($this->app->file->getExtension($filename))) {
+            return false;
+        }
+
         return $this->getImage($filename)->isValid();
     }
 

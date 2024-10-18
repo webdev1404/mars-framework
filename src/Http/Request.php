@@ -69,7 +69,7 @@ class Request
      * @return resource The curl handle
      */
     protected function init(string $url, array $options = [])
-    {        
+    {
         $options = $options + $this->options;
 
         $headers = $options['headers'] ?? [];
@@ -163,11 +163,11 @@ class Request
      * Fetches an url with a POST request
      * @param string $url The url to fetch
      * @param array $data Array with the data to post
-     * @param array $files Files to send in the name=>filename format
      * @param array $options Curl options, if any
+     * @param array $files Files to send in the name=>filename format
      * @return Response The response
      */
-    public function post(string $url, array $data, array $files = [], array $options = []) : Response
+    public function post(string $url, array $data, array $options = [], array $files = []) : Response
     {
         if ($files) {
             foreach ($files as $name => $filename) {
@@ -176,10 +176,8 @@ class Request
             }
         }
 
-        $options = [
-            CURLOPT_POST => true,
-            CURLOPT_POSTFIELDS => $data
-        ];
+        $options[CURLOPT_POST] = true;
+        $options[CURLOPT_POSTFIELDS] = $data;
 
         $ch = $this->init($url, $options);
 
@@ -191,7 +189,7 @@ class Request
      * @param string $url The url to fetch
      * @param string $filename The local filename under which the file will be stored
      * @param array $options Curl options, if any
-     * @param bool $download_if_exists If false, the file won't be downloaded, if it already exists     
+     * @param bool $download_if_exists If false, the file won't be downloaded, if it already exists
      * @return Response The response. If the file exists and $download_if_exists = false, it will return true
      * @throws Exception if the file can't be written
      */

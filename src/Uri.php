@@ -66,7 +66,7 @@ class Uri
      */
     public function getHost(string $url) : string
     {
-        return parse_url($url, PHP_URL_HOST);
+        return (string)parse_url($url, PHP_URL_HOST);
     }
 
     /**
@@ -93,7 +93,7 @@ class Uri
      * @param string $url The url
      * @return string The subdomain
      */
-    public function getSubdomain(string $url) : string
+    public function getSubDomain(string $url) : string
     {
         $host = $this->getHost($url);
 

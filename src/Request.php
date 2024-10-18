@@ -45,7 +45,7 @@ class Request
     /**
      * @var RequestObj $request Alias for $request
      */
-    public RequestObj $all;    
+    public RequestObj $all;
 
     /**
      * @var Cookie $cookie Object containing the cookie data

@@ -287,6 +287,21 @@ class File
     }
 
     /**
+     * Returns a temporary filename
+     * @param string $name The name of the file
+     * @param string $dir The dir of the temp. filename
+     * @return string The temporary filename
+     */
+    public function getTmpFilename(string $name = '', string $dir = '') : string
+    {
+        if (!$dir) {
+            $dir = $this->app->tmp_path;
+        }
+
+        return $dir . '/' . $this->app->random->getString() . $name;
+    }
+
+    /**
      * Reads the content of a file
      * @param string $filename
      * @return string Returns the contents of the file

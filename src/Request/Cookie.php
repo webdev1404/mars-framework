@@ -14,15 +14,13 @@ use Mars\App;
  */
 class Cookie extends Base
 {
-    use \Mars\AppTrait;
-
     /**
      * Builds the Cookie Request object
      * @param App $app The app object
      */
     public function __construct(App $app)
     {
-        $this->app = $app;
+        parent::__construct($app);
 
         $this->data = &$_COOKIE;
     }
@@ -35,24 +33,16 @@ class Cookie extends Base
      * @param bool $decode If true, will decode the value
      * @return mixed The value
      */
-    public function get(string $name, string $filter = '', bool $is_array = false, bool $decode = true)
+    public function get(string $name, string $filter = '', mixed $default_value = '', bool $is_array = false, bool $decode = true) : mixed
     {
-        $value = $this->data[$name] ?? '';
+        if ($decode) {
+            $value = $this->data[$name] ?? '';
 
-        if ($value && $decode) {
-            $value = $this->app->json->decode($value);
+            if ($value) {
+                return $this->app->json->decode($value);
+            }
         }
 
-        if ($is_array) {
-            $value = App::array($value);
-        }
-
-        $value = $this->app->filter->trim($value);
-
-        if ($filter) {
-            $value = $this->app->filter->value($value, $filter);
-        }
-
-        return $value;
+        return parent::get($name, $filter, $default_value, $is_array);
     }
 }

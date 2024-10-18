@@ -14,6 +14,7 @@ use Mars\App;
  */
 abstract class Base
 {
+    use \Mars\AppTrait;
 
     /**
      * The data to read from
@@ -35,13 +36,17 @@ abstract class Base
      * Returns the value of a variable
      * @param string $name The name of the variable
      * @param string $filter The filter to apply to the value, if any. See class Filter for a list of filters
-     * @param bool $is_array If true, will force the returned value to an array
+     * @param mixed $default_value The default value to return if the variable is not set
+     * @param bool $is_array Whether the value should be returned as an array
      * @return mixed The value
      */
-    public function get(string $name, string $filter = '', bool $is_array = false)
+    public function get(string $name, string $filter = '', mixed $default_value = '', bool $is_array = false) : mixed
     {
         $value = $this->data[$name] ?? '';
-
+        if (!$value) {
+            return $default_value;
+        }
+        
         if ($is_array) {
             $value = App::array($value);
         }
@@ -53,6 +58,18 @@ abstract class Base
         }
 
         return $value;
+    }
+
+    /**
+     * Returns the value of a variable as an array
+     * @param string $name The name of the variable
+     * @param string $filter The filter to apply to the value, if any. See class Filter for a list of filters
+     * @param mixed $default_value The default value to return if the variable is not set
+     * @return array The value
+     */
+    public function getArray(string $name, string $filter, mixed $default_value) : array
+    {
+        return $this->get($name, $filter, $default_value, true);
     }
 
     /**

@@ -47,12 +47,12 @@ class Debug
     /**
      * Outputs basic debug info
      */
-    protected function outputInfo()
+    public function outputInfo()
     {
         echo '<table class="grid debug-grid">';
         echo '<tr><th colspan="3">Debug Info</th></tr>';
-        echo '<tr><td><strong>Execution Time</strong></td><td>' . $this->info['execution_time'] . 's</td></tr>';
-        echo '<tr><td><strong>Output Size</strong></td><td>' . $this->app->format->filesize($this->info['output_size']) . '</td></tr>';
+        echo '<tr><td><strong>Execution Time</strong></td><td>' . $this->app->timer->getExecutionTime() . 's</td></tr>';
+        echo '<tr><td><strong>Output Size</strong></td><td>' . $this->app->format->filesize($this->info['output_size'] ?? 0) . '</td></tr>';
         echo '<tr><td><strong>Memory Usage</strong></td><td>' . $this->app->format->filesize(memory_get_usage(true)) . '</td></tr>';
         echo '<tr><td><strong>Memory Peak Usage</strong></td><td>' . $this->app->format->filesize(memory_get_peak_usage(true)) . '</td></tr>';
         echo '<tr><td><strong>DB Queries</strong></td><td>' . count($this->app->db->queries) . '</td></tr>';
@@ -64,27 +64,29 @@ class Debug
     /**
      * Outputs execution time info
      */
-    protected function outputExecutionTime()
+    public function outputExecutionTime()
     {
-        $execution_time = $this->info['execution_time'];
+        $execution_time = $this->app->timer->getExecutionTime();
         $db_time = $this->app->db->queries_time;
         $plugins_time = $this->getPluginsExecTime();
+
+        $output_content_time = $this->info['output_content_time'] ?? 0;
 
         echo '<table class="grid debug-grid">';
         echo '<tr><th colspan="3">Execution Time</th></tr>';
         echo '<tr><td><strong>Execution Time</strong></td><td>' . $execution_time . 's</td><td></td></tr>';
         echo "<tr><td><strong>DB Queries</strong></td><td>{$db_time}s</td><td>" . $this->app->format->percentage($db_time, $execution_time) . '%</td></tr>';
         echo "<tr><td><strong>Plugins</strong></td><td>{$plugins_time}s</td><td>" . $this->app->format->percentage($plugins_time, $execution_time) . '%</td></tr>';
-        echo "<tr><td><strong>Generate Output</strong></td><td>{$this->info['output_content_time']}s</td><td>" . $this->app->format->percentage($this->info['output_content_time'], $execution_time) . '%</td></tr>';
+        echo "<tr><td><strong>Generate Output</strong></td><td>{$output_content_time}s</td><td>" . $this->app->format->percentage($output_content_time, $execution_time) . '%</td></tr>';
         echo '</table><br><br>';
     }
 
     /**
      * Outputs mysql info
      */
-    protected function outputDbQueries()
+    public function outputDbQueries()
     {
-        $execution_time = $this->info['execution_time'];
+        $execution_time = $this->app->timer->getExecutionTime();
         $db_time = $this->app->db->queries_time;
 
         echo '<table class="grid debug-grid debug-db-grid">';
@@ -104,7 +106,7 @@ class Debug
      * @param array $params The query params
      * @return string
      */
-    protected function getDbQueryParams(array $params) : string
+    public function getDbQueryParams(array $params) : string
     {
         if (!$params) {
             return '';
@@ -116,9 +118,9 @@ class Debug
     /**
      * Outputs plugins debug info
      */
-    protected function outputPlugins()
+    public function outputPlugins()
     {
-        $execution_time = $this->info['execution_time'];
+        $execution_time = $this->app->timer->getExecutionTime();
         $plugins = $this->app->plugins->getPlugins();
         if (!$plugins) {
             return;
@@ -165,7 +167,7 @@ class Debug
      * Computes the execution time of the plugins
      * @return int
      */
-    protected function getPluginsExecTime() : float
+    public function getPluginsExecTime() : float
     {
         $time = 0;
         if (!$this->app->plugins->exec_time) {
@@ -178,7 +180,7 @@ class Debug
     /**
      * Outputs info about the loaded templates
      */
-    protected function outputLoadedTemplates()
+    public function outputLoadedTemplates()
     {
         echo '<table class="grid debug-grid debug-grid-templates">';
         echo '<tr><th colspan="1">Loaded templates</th></tr>';
@@ -191,7 +193,7 @@ class Debug
     /**
      * Outputs opcache info
      */
-    protected function outputOpcacheInfo()
+    public function outputOpcacheInfo()
     {
         $info = opcache_get_status(true);
 
@@ -238,7 +240,7 @@ class Debug
         }
     }
 
-    protected function outputPreloadInfo()
+    public function outputPreloadInfo()
     {
         $info = opcache_get_status(true);
 

@@ -14,8 +14,6 @@ use Mars\App;
  */
 class Files extends Base
 {
-    use \Mars\AppTrait;
-
     /**
      * @var array $disallowed_extensions The extensions of the files which are disallowed at upload
      */
@@ -27,7 +25,7 @@ class Files extends Base
      */
     public function __construct(App $app)
     {
-        $this->app = $app;
+        parent::__construct($app);
 
         $this->data = &$_FILES;
     }

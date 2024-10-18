@@ -25,7 +25,7 @@ final class RequestTest extends Base
 
         $this->assertSame($request->get->get('myvar'), 'some string 1234');
         $this->assertSame($request->get->get('myvar', 'alpha'), 'somestring');
-        $this->assertSame($request->get->get('myvar', '', true), ['some string 1234']);
+        $this->assertSame($request->get->get('myvar', '', '', true), ['some string 1234']);
     }
 
     public function testRequestGetRaw()

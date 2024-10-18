@@ -57,13 +57,13 @@ final class UriTest extends Base
         $this->assertSame($uri->getDomain('https://www.something.google.com/'), 'google.com');
     }
 
-    public function testgetSubdomain()
+    public function testgetSubDomain()
     {
         $uri = $this->app->uri;
 
-        $this->assertSame($uri->getSubdomain('https://google.com/'), '');
-        $this->assertSame($uri->getSubdomain('https://www.google.com/'), 'www');
-        $this->assertSame($uri->getSubdomain('https://www.something.google.com/'), 'www.something');
+        $this->assertSame($uri->getSubDomain('https://google.com/'), '');
+        $this->assertSame($uri->getSubDomain('https://www.google.com/'), 'www');
+        $this->assertSame($uri->getSubDomain('https://www.something.google.com/'), 'www.something');
     }
 
     public function testBuild()

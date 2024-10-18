@@ -724,7 +724,6 @@ class App extends \stdClass
     {
         $this->debug->info['output_size'] = strlen($output);
         $this->debug->info['output_content_time'] = $this->timer->end('app_output_content');
-        $this->debug->info['execution_time'] = $this->timer->getExecutionTime();
 
         ob_start();
         $this->debug->output();
