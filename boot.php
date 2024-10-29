@@ -4,10 +4,6 @@ namespace Mars;
 define('MARS', true);
 
 try {
-    require(__DIR__ . '/autoload.php');
-    require(__DIR__ . '/autoload-extensions.php');
-    require(__DIR__ . '/autoload-app.php');
-
     $app = App::instantiate();
 
     $app->plugins->run('boot');

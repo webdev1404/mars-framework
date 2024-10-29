@@ -1,5 +1,5 @@
 {
-    "name": "webdev1404/mars",
+    "name": "webdev1404/mars-framework",
     "description": "The Mars Framework",
     "require": {
         "php": ">=8.3",
@@ -21,6 +21,9 @@
         }
     ],
     "autoload": {
+        "psr-4": {
+            "Mars\\": "src/"
+        },
         "files": [
             "boot.php"
         ]
