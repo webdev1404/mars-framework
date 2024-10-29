@@ -522,7 +522,7 @@ trait ThemeTrait
             return;
         }
 
-        $url = $this->app->url_static . '/' . $this->css_file;
+        $url = $this->app->base_url_static . '/' . $this->css_file;
 
         $this->app->css->outputUrl($url);
     }
@@ -536,7 +536,7 @@ trait ThemeTrait
             return;
         }
 
-        $url = $this->app->url_static . '/' . $this->javascript_file;
+        $url = $this->app->base_url_static . '/' . $this->javascript_file;
 
         $this->app->javascript->outputUrl($url);
     }
@@ -564,7 +564,7 @@ trait ThemeTrait
     public function outputFavicon(string $icon_url = '')
     {
         if (!$icon_url) {
-            $icon_url = $this->app->url_static . '/' . 'favicon.png';
+            $icon_url = $this->app->base_url_static . '/' . 'favicon.png';
         }
 
         echo '<link rel="shortcut icon" type="image/png" href="' . $this->app->escape->html($icon_url) . '" />' . "\n";

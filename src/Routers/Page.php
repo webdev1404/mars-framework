@@ -56,7 +56,7 @@ class Page implements HandlerInterface
             }
         }
 
-        $template = $this->app->path . '/app/pages/' . $this->name . '.' . App::FILE_EXTENSIONS['templates'];
+        $template = $this->app->base_path . '/app/pages/' . $this->name . '.' . App::FILE_EXTENSIONS['templates'];
 
         echo $this->app->theme->getTemplateFromFilename($template);
     }

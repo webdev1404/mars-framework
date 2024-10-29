@@ -518,8 +518,16 @@ class Db
      * @param string $col The column to include in the FROM clause. Should be the primary key, for performance purposes, if possible
      * @return bool True if the row exists, false otherwise
      */
-    public function exists(string $table, array $where, string $col = 'id') : bool
+    public function exists(string $table, array $where, string $col = '') : bool
     {
+        if (!$col) {
+            if ($where) {
+                $col = key($where);
+            } else {
+                $col = '*';
+            }
+        }
+
         $sql = $this->getSql()->select([$col])->from($table)->where($where)->limit(1);
 
         return (bool)$this->query($sql)->numRows();

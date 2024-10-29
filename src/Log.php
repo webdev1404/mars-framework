@@ -98,7 +98,7 @@ class Log
             }
 
             if (!$this->app->is_bin) {
-                $text.= "Url: {$this->app->full_url}\n";
+                $text.= "Url: {$this->app->url_full}\n";
             }
             if ($file) {
                 $text.= "Filename: {$file}:{$line}\n";

@@ -33,7 +33,7 @@ class File
         $this->app = $app;
 
         if ($this->app->config->open_basedir === true) {
-            $this->open_basedir = $this->app->path;
+            $this->open_basedir = $this->app->base_path;
         } else {
             $this->open_basedir = $this->app->config->open_basedir;
         }
@@ -87,6 +87,16 @@ class File
         }
 
         return $this;
+    }
+
+    /**
+     * Returns a SplFileInfo object for a file
+     * @param string $filename The filename
+     * @return \SplFileInfo The SplFileInfo object
+     */
+    public function get(string $filename) : \SplFileInfo
+    {
+        return new \SplFileInfo($filename);
     }
 
     /**
@@ -164,13 +174,13 @@ class File
     /**
      * Returns the relative path of a filename. Eg: /var/www/mars/dir/some_file.txt => dir/some_file.txt
      * @param string $filename The filename
-     * @param string $path The path to test against. If empty $this->app->path is used
+     * @param string $path The path to test against. If empty $this->app->base_path is used
      * @return string The relative path
      */
     public function getRel(string $filename, string $path = '') : string
     {
         if (!$path) {
-            $path = $this->app->path;
+            $path = $this->app->base_path;
         }
 
         return str_replace($path . '/', '', $filename);
@@ -263,27 +273,14 @@ class File
     }
 
     /**
-     * Determines if $filename if an image,based on extension
+     * Determines if $filename if an image, based on extension.
+     * It only checks the extension, use $app->image->isValid to check if the file is really an image
      * @param string $filename The filename
      * @return bool Returns true if $filename is an image, false otherwise
      */
-    public function isImageExtension(string $filename): bool
+    public function isImage(string $filename): bool
     {
         return in_array($this->getExtension($filename), $this->getImageExtensions());
-    }
-
-    /**
-     * Determines if $filename is an image
-     * @param string $filename The filename
-     *
-     */
-    public function isImage(string $filename) : bool
-    {
-        if (!$this->isImageExtension($filename)) {
-            return false;
-        }
-
-        return $this->app->image->isValid($filename);
     }
 
     /**
@@ -298,7 +295,12 @@ class File
             $dir = $this->app->tmp_path;
         }
 
-        return $dir . '/' . $this->app->random->getString() . $name;
+        $tmp_filename = $dir . '/' . $this->app->random->getString() . time();
+        if ($name) {
+            $tmp_filename .= '-' . basename($name);
+        }
+
+        return $tmp_filename;
     }
 
     /**

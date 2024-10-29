@@ -41,7 +41,7 @@ final class EscapeTest extends Base
     {
         $escape = $this->app->escape;
 
-        $filename = $this->app->path . 'dir/somefile.txt';
+        $filename = $this->app->base_path . 'dir/somefile.txt';
 
         $this->assertSame($escape->path($filename), 'dir/somefile.txt');
     }

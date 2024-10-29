@@ -92,15 +92,15 @@ class Request
     /**
      * Returns the value of a variable from $_REQUEST
      * Shorthand for $this->request->get()
-     * @param string $name The name of the variable
-     * @param string $filter The filter to apply to the value
+     * @param string $filter The filter to apply to the value, if any. See class Filter for a list of filters
+     * @param mixed $default_value The default value to return if the variable is not set
+     * @param bool $is_array Whether the value should be returned as an array
      * @return mixed The value
      */
-    public function get(string $name, string $filter = '')
+    public function get(string $name, string $filter = '', mixed $default_value = '', bool $is_array = false) : mixed
     {
-        return $this->request->get($name, $filter);
+        return $this->request->get($name, $filter, $default_value, $is_array);
     }
-
     /**
      * Returns all the request data from $_REQUEST
      * Shorthand for $this->request->getAll()

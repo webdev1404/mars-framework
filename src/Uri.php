@@ -31,7 +31,7 @@ class Uri
      */
     public function isLocal(string $url) : bool
     {
-        if (!str_starts_with(App::fixPath(trim($url)) . '/', $this->app->url)) {
+        if (!str_starts_with(App::fixPath(trim($url)) . '/', $this->app->base_url)) {
             return false;
         }
 
@@ -49,14 +49,31 @@ class Uri
             return '';
         }
 
-        $site_url = $this->stripScheme($this->app->url);
-        $url = $this->stripScheme($url);
+        $site_url = $this->removeScheme($this->app->base_url);
+        $url = $this->removeScheme($url);
 
-        $filename = $this->app->path . '/' . str_replace($site_url, '', $url);
+        $filename = $this->app->base_path . '/' . str_replace($site_url, '', $url);
 
         $this->app->file->checkFilename($filename);
 
         return $filename;
+    }
+
+    /**
+     * Returns the root part of a url. It returns the scheme and the host
+     * @param string $url The url
+     * @return string The root
+     */
+    public function getRoot(string $url) : string
+    {
+        $scheme = (string)parse_url($url, PHP_URL_SCHEME);
+        if ($scheme) {
+            $scheme.= '://';
+        }
+
+        $host = (string)parse_url($url, PHP_URL_HOST);
+
+        return $scheme . $host;
     }
 
     /**
@@ -105,6 +122,53 @@ class Uri
     }
 
     /**
+     * Returns the path, without the query, for a given url
+     * @param string $url The url
+     * @return string The path
+     */
+    public function getPath(string $url) : string
+    {
+        $path = (string)parse_url($url, PHP_URL_PATH);
+
+        return rtrim($path, '/');
+    }
+
+    /**
+     * Removes the query string from url, if exists
+     * @param string $url The url
+     * @return string The url with the querey string removed
+     */
+    public function getWithoutQuery(string $url) : string
+    {
+        $pos = strpos($url, '?');
+        if ($pos === false) {
+            return $url;
+        }
+
+        return strstr($url, '?', true);
+    }
+
+    /**
+     * Determines if $param exists as a query param in $url
+     * @param string $url The url to search for param\
+     * @param string $param The param's name
+     * @return bool True if exists, false otherwise
+     */
+    public function isInQuery(string $url, string $param) : bool
+    {
+        $pos = strpos($url, '?');
+        if ($pos === false) {
+            return false;
+        }
+
+        $query_str = substr($url, $pos + 1);
+
+        parse_str($query_str, $params);
+
+        return isset($params[$param]);
+    }
+
+    /**
      * Builds an url appending $params to $url
      * @param string $base_url The url to which params will be appended.
      * @param array $params Array containing the values to be appended. Specified as $name=>$value
@@ -145,26 +209,6 @@ class Uri
         }
 
         return App::fixPath($base_url) . '/' . implode('/', $path_parts);
-    }
-
-    /**
-     * Determines if $param exists as a query param in $url
-     * @param string $url The url to search for param\
-     * @param string $param The param's name
-     * @return bool True if exists, false otherwise
-     */
-    public function inQuery(string $url, string $param) : bool
-    {
-        $pos = strpos($url, '?');
-        if ($pos === false) {
-            return false;
-        }
-
-        $query_str = substr($url, $pos + 1);
-
-        parse_str($query_str, $params);
-
-        return isset($params[$param]);
     }
 
     /**
@@ -227,11 +271,11 @@ class Uri
     }
 
     /**
-     * Strips the scheme [http or https] from an url. https://google.com -> google.com
+     * Remove the scheme [http or https] from an url. https://google.com -> google.com
      * @param string $url The url
      * @return string The url without the scheme
      */
-    public function stripScheme(string $url) : string
+    public function removeScheme(string $url) : string
     {
         if (str_starts_with($url, 'https://')) {
             return substr($url, 8);

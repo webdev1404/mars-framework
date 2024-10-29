@@ -52,24 +52,24 @@ class App extends \stdClass
     public readonly bool $is_http2;
 
     /**
+     * @var string $base_url The url. Eg: http://mydomain.com/mars
+     */
+    public readonly string $base_url;
+
+    /**
+     * @var string $base_url_static The url from where static content is served
+     */
+    public string $base_url_static = '';
+
+    /**
      * @var string $url The url. Eg: http://mydomain.com/mars
      */
     public readonly string $url;
 
     /**
-     * @var string $url_static The url from where static content is served
+     * @var string $full_url The full url. Includes the QUERY_STRING
      */
-    public string $url_static = '';
-
-    /**
-     * @var string $page_url The url of the current page determined from $_SERVER. Doesn't include the QUERY_STRING
-     */
-    public readonly string $page_url;
-
-    /**
-     * @var string $full_url The url of the current page determined from $_SERVER. Includes the QUERY_STRING
-     */
-    public readonly string $full_url;
+    public readonly string $url_full;
 
     /**
      * @var string $ip The ip used to make the request
@@ -87,9 +87,9 @@ class App extends \stdClass
     public bool $development = false;
 
     /**
-     * @var string $path The location on the disk where the site is installed Eg: /var/www/mysite
+     * @var string $base_path The location on the disk where the site is installed Eg: /var/www/mysite
      */
-    public readonly string $path;
+    public readonly string $base_path;
 
     /**
      * @var string $log_path The folder where the log files are stored
@@ -257,35 +257,25 @@ class App extends \stdClass
     ];
 
     /**
-     * @var array The objects container
-     */
-    protected static array $container = [
-        'mail' => '\Mars\Mail',
-        'minifier' => '\Mars\Helper\Minifier'
-    ];
-
-    /**
      * Protected constructor
      */
     protected function __construct()
     {
         $this->version = '1.0';
-        $this->path = $this->getPath();
         $this->is_bin = $this->getIsBin();
+        $this->base_path = $this->getBasePath();
+        $this->base_url = $this->getBaseUrl();
+        $this->development = $this->config->development;
 
         if (!$this->is_bin) {
             $this->is_https = $this->getIsHttps();
             $this->scheme = $this->getScheme();
             $this->method = $this->getRequestMethod();
             $this->protocol = $this->getProtocol();
-            $this->page_url = $this->getPageUrl();
-            $this->full_url = $this->getFullUrl();
             $this->is_http2 = $this->getIsHttp2();
             $this->ip = $this->getIp();
             $this->useragent = $this->getUseragent();
         }
-
-        $this->development = $this->config->development;
 
         $this->setDirs();
         $this->setUrls();
@@ -301,7 +291,12 @@ class App extends \stdClass
      */
     public static function instantiate() : App
     {
+        if (isset(static::$instance)) {
+            return static::$instance;
+        }
+        
         static::$instance = new static;
+        static::$instance->boot();
 
         return static::$instance;
     }
@@ -309,7 +304,7 @@ class App extends \stdClass
     /**
      * Bootstraps the app
      */
-    public function boot()
+    protected function boot()
     {
         //load the plugins
         $this->plugins->load();
@@ -338,70 +333,24 @@ class App extends \stdClass
     }
 
     /**
-     * Adds objects to lazy loading objects map
-     * @param array $objects_map The objects map
+     * Adds an object to lazy loading objects map
+     * @param string $name The name of the object
+     * @param string $class The class of the object
      * @return static
      */
-    public function addObjectsMap(array $objects_map) : static
+    public function addObject(string $name, string $class) : static
     {
-        $this->objects_map = array_merge($this->objects_map, $objects_map);
+        $this->objects_map[$name] = $class;
 
         return $this;
     }
 
     /**
-     * Returns an object
-     * @param string $name The name of the object. If empty, the app object is returned
-     * @return object The object
+     * Returns the App object
+     * @return App The App object
      */
-    public static function get(string $name = '', ...$params)
+    public static function get() : App
     {
-        if (!$name) {
-            return static::$instance;
-        }
-        if (isset(static::$container[$name])) {
-            if (is_string($name)) {
-                $class = static::$container[$name];
-                return new $class(static::$instance);
-            } elseif(is_callable(static::$container[$name])) {
-                $func = static::$container[$name];
-                return $func();
-            } else {
-                return static::$container[$name];
-            }
-        } else {
-            return static::create($name, ...$params);
-        }
-
-        return null;
-    }
-
-    /**
-     * Create a new instance of a class and store it in the App container.
-     * @param string $class The fully qualified class name
-     * @param mixed ...$params The parameters to be passed to the class constructor
-     * @return object The created instance of the class
-     */
-    public static function create(string $class, ...$params) : object
-    {
-        $params = array_merge($params, [static::$instance]);
-        $object = new $class(...$params);
-       
-        static::set($class, $object);
-
-        return $object;
-    }
-
-    /**
-     * Sets a container object
-     * @param string $name The name of the object
-     * @param string|object|callable $object The object
-     * @return static
-     */
-    public static function set(string $name, string|object|callable $object) : static
-    {
-        static::$container[$name] = $object;
-
         return static::$instance;
     }
 
@@ -409,9 +358,18 @@ class App extends \stdClass
      * Returns the location on the disk where the site is installed
      * @return string
      */
-    protected function getPath() : string
+    protected function getBasePath() : string
     {
         return dirname(__DIR__, 4);
+    }
+
+    /**
+     * Returns the base url
+     * @return string
+     */
+    protected function getBaseUrl() : string
+    {
+        return $this->config->url;
     }
 
     /**
@@ -481,45 +439,6 @@ class App extends \stdClass
     }
 
     /**
-     * Returns the page url of the current page
-     * @return string
-     */
-    protected function getPageUrl() : string
-    {
-        $request_uri = explode('?', $_SERVER["REQUEST_URI"], 2);
-
-        $url = $this->scheme . $_SERVER['SERVER_NAME'] . $request_uri[0];
-
-        return filter_var($url, FILTER_SANITIZE_URL);
-    }
-
-    /**
-     * Returns the full url of the current page
-     * @return string
-     */
-    protected function getFullUrl() : string
-    {
-        $url = $this->scheme . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
-
-        return filter_var($url, FILTER_SANITIZE_URL);
-    }
-
-    /**
-     * Returns true if the loaded page is the homepage
-     * @return bool
-     */
-    protected function isHomepage() : bool
-    {
-        if ($this->page_url == $this->url || $this->page_url == $this->url . '/') {
-            return true;
-        } elseif ($this->page_url == $this->url . '/index.php') {
-            return true;
-        }
-        
-        return false;
-    }
-
-    /**
      * Prepares the base dirs
      */
     protected function setDirs()
@@ -532,14 +451,56 @@ class App extends \stdClass
      */
     protected function setUrls()
     {
-        $this->url = $this->config->url;
-        $this->url_static = $this->url;
+        $this->url = $this->getUrl();
+        $this->url_full = $this->getUrlFull();
+        $this->base_url_static = $this->base_url;
 
         if ($this->config->url_static) {
-            $this->url_static = $this->config->url_static;
+            $this->base_url_static = $this->config->url_static;
         }
 
         $this->assignUrls(static::URLS);
+    }
+
+    /**
+     * Returns the page url of the current page
+     * @return string
+     */
+    protected function getUrl() : string
+    {
+        $url = $this->uri->getRoot($this->base_url) . $this->uri->getPath($_SERVER["REQUEST_URI"] ?? '');
+
+        return filter_var($url, FILTER_SANITIZE_URL);
+    }
+
+    /**
+     * Returns the full url of the current page
+     * @return string
+     */
+    protected function getUrlFull() : string
+    {
+        if (empty($_SERVER['QUERY_STRING'])) {
+            return $this->url;
+        }
+
+        $url = $this->url . '?' . ($_SERVER['QUERY_STRING'] ?? '');
+
+        return filter_var($url, FILTER_SANITIZE_URL);
+    }
+
+    /**
+     * Returns true if the loaded page is the homepage
+     * @return bool
+     */
+    protected function isHomepage() : bool
+    {
+        if ($this->url == $this->base_url || $this->url == $this->base_url . '/') {
+            return true;
+        } elseif ($this->url == $this->base_url . '/index.php') {
+            return true;
+        }
+        
+        return false;
     }
 
     /**
@@ -549,7 +510,7 @@ class App extends \stdClass
      */
     public function getStaticUrl(string $url) : string
     {
-        return $this->url_static . '/' . rawurlencode(static::URLS[$url]);
+        return $this->base_url_static . '/' . rawurlencode(static::URLS[$url]);
     }
 
     /**
@@ -602,7 +563,7 @@ class App extends \stdClass
     protected function assignDirs(array $dirs)
     {
         foreach ($dirs as $name => $dir) {
-            $this->$name = $this->path . '/' . $dir;
+            $this->$name = $this->base_path . '/' . $dir;
         }
     }
 
@@ -616,7 +577,7 @@ class App extends \stdClass
     protected function assignUrls(array $urls, string $base_url = '', string $prefix = '', string $suffix = 'url')
     {
         if (!$base_url) {
-            $base_url = $this->url;
+            $base_url = $this->base_url;
         }
         
         if ($prefix) {
@@ -822,7 +783,7 @@ class App extends \stdClass
     public function redirect(string $url = '')
     {
         if (!$url) {
-            $url = $this->url . '/';
+            $url = $this->base_url . '/';
         }
 
         header('Location: ' . $url);

@@ -570,7 +570,7 @@ class Config extends Data
      */
     public function readFile(string $filename) : static
     {
-        $config = require($this->app->path . '/' . $filename);
+        $config = require($this->app->base_path . '/' . $filename);
 
         $this->assign($config);
 

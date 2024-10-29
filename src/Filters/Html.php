@@ -16,17 +16,6 @@ class Html
     use \Mars\AppTrait;
 
     /**
-     * Builds the Html filter object
-     * @param App $app The app object
-     */
-    public function __construct(App $app)
-    {
-        $this->app = $app;
-
-        require_once($this->app->path . '/vendor/ezyang/htmlpurifier/library/HTMLPurifier.includes.php');
-    }
-
-    /**
      * @see \Mars\Filter::html()
      */
     public function filter(string $html, string $allowed_elements = null, string $allowed_attributes = null, string $encoding = 'UTF-8') : string

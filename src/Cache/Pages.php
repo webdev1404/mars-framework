@@ -112,8 +112,6 @@ class Pages extends Cacheable
         $dir = $this->app->cache_path . '/pages';
 
         $this->app->dir->clean($dir);
-
-        $this->app->file->copy($this->app->path . '/src/index.htm', $dir . '/index.htm');
     }
 
     /**

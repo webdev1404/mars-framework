@@ -13,9 +13,9 @@ final class LanguageTest extends Base
     {
         $language = new Language($this->app);
 
-        $this->assertSame($language->path, $this->app->path . '/extensions/languages/' . $this->app->config->language);
-        $this->assertSame($language->url, $this->app->url . '/extensions/languages/' . $this->app->config->language);
-        $this->assertSame($language->url_static, $this->app->url_static . '/extensions/languages/' . $this->app->config->language);
+        $this->assertSame($language->path, $this->app->base_path . '/extensions/languages/' . $this->app->config->language);
+        $this->assertSame($language->url, $this->app->base_url . '/extensions/languages/' . $this->app->config->language);
+        $this->assertSame($language->url_static, $this->app->base_url_static . '/extensions/languages/' . $this->app->config->language);
     }
 
     public function testLoadFilename()

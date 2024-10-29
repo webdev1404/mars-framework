@@ -92,7 +92,5 @@ class Templates
     public function clearAll()
     {
         $this->app->dir->clean($this->path);
-
-        $this->app->file->copy($this->app->path . '/src/index.htm', $this->path . '/index.htm');
     }
 }

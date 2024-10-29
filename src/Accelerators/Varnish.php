@@ -34,7 +34,7 @@ class Varnish implements DriverInterface
      */
     public function deleteByPattern(string $pattern) : bool
     {
-        $req = new Request($this->app->url);
+        $req = new Request($this->app->base_url);
         $req->addHeader('X-Ban-Pattern: ' . $pattern);
         $response = $req->custom('BAN');
 
@@ -47,7 +47,7 @@ class Varnish implements DriverInterface
      */
     public function deleteAll() : bool
     {
-        $req = new Request($this->app->url);
+        $req = new Request($this->app->base_url);
         $response = $req->custom('FULLBAN');
 
         return $response->ok();

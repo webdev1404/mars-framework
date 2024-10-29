@@ -9,7 +9,6 @@ try {
     require(__DIR__ . '/autoload-app.php');
 
     $app = App::instantiate();
-    $app->boot();
 
     $app->plugins->run('boot');
 } catch (\Exception $e) {

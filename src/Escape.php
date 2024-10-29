@@ -68,6 +68,6 @@ class Escape
      */
     public function path(string $path) : string
     {
-        return str_replace($this->app->path, '', $path);
+        return str_replace($this->app->base_path, '', $path);
     }
 }

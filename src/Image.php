@@ -62,15 +62,6 @@ class Image
     }
 
     /**
-     * Returns the options
-     * @return array
-     */
-    /*public function getOptions() : array
-    {
-        return $this->options;
-    }*/
-
-    /**
      * Returns the image
      * @param string $filename The image's filename
      */
