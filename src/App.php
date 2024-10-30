@@ -267,6 +267,11 @@ class App extends \stdClass
         $this->base_url = $this->getBaseUrl();
         $this->development = $this->config->development;
 
+        if ($this->development) {
+            ini_set('display_errors', $this->config->development_display_errors);
+            error_reporting($this->config->development_error_reporting);
+        }
+
         if (!$this->is_bin) {
             $this->is_https = $this->getIsHttps();
             $this->scheme = $this->getScheme();
@@ -661,11 +666,15 @@ class App extends \stdClass
             return $content;
         }
 
-        ob_start();
-        $this->theme->renderHeader();
-        $this->theme->renderContent($content);
-        $this->theme->renderFooter();
-        $output = ob_get_clean();
+        if ($this->config->theme) {
+            ob_start();
+            $this->theme->renderHeader();
+            $this->theme->renderContent($content);
+            $this->theme->renderFooter();
+            $output = ob_get_clean();
+        } else {
+            $output = $content;
+        }
 
         $output = $this->plugins->filter('app_filter_output', $output, $this);
 

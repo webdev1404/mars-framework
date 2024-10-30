@@ -73,6 +73,16 @@ class Config extends Data
     public bool $development = false;
 
     /**
+     * @var int $development_display_errors Controls whether errors should be displayed or not, when development is enabled
+     */
+    public int $development_display_errors = 1;
+
+    /**
+     * @var int $development_error_reporting The error reporting level, when development is enabled
+     */
+    public int $development_error_reporting = E_ALL;
+
+    /**
      * @var string $development_device Will use this value as device, if specified. Valid values: 'desktop', 'tablet', 'smartphone'
      */
     public string $development_device = '';
