@@ -67,12 +67,8 @@ class Router
         if (!$route) {
             $this->notFound();
         }
-
-        $this->app->start();
-
+        
         $this->output($route);
-
-        $this->app->end();
     }
 
     /**
