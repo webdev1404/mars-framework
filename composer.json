@@ -25,7 +25,8 @@
             "Mars\\": "src/"
         },
         "files": [
-            "boot.php"
+            "boot.php",
+            "autoload/extensions.php"
         ]
     }
 }
