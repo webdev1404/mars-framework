@@ -1,29 +1,29 @@
 <?php
 namespace Mars\Autoload;
 
+use Mars\App;
+
 /**
- * Autoloader for the mars files
+ * Autoloader for the extension files
  */
 \spl_autoload_register(function ($name) {
-    if (!str_starts_with($name, 'Mars\\')) {
+    $allowed_extensions = ['Modules' => 'modules', 'Themes' => 'themes', 'Languages' => 'languages'];
+
+    $parts = explode('\\', $name);
+    $root = $parts[0];
+
+    if (!isset($allowed_extensions[$root])) {
         return;
     }
 
-    $parts = explode('\\', $name);
+    $app = App::get();
 
-    $filename = __DIR__ . '/src/' . get_filename($parts);
+    $filename = $app->extensions_path . '/' . App::EXTENSIONS_DIRS[$allowed_extensions[$root]] . '/' . get_filename($parts);
 
     require($filename);
 });
 
-/**
- * Returns the autoload filename from the namespace parts
- * @param array $parts The namespace parts
- * @param int $base_parts The number of base parts in the namespace
- * @param bool $convert_path If true, will convert the path from camelCase to snake-case. Eg: MyNamespace to my-namespace
- * @return string The filename
- */
-function get_filename(array $parts, int $base_parts = 1, bool $convert_path = false) : string
+function get_filename(array $parts, int $base_parts = 1) : string
 {
     $parts_count = count($parts);
 
@@ -34,10 +34,8 @@ function get_filename(array $parts, int $base_parts = 1, bool $convert_path = fa
     if ($parts_count > $base_parts + 1) {
         $path_parts = array_slice($parts, $base_parts, $parts_count - ($base_parts + 1));
 
-        if ($convert_path) {
-            foreach ($path_parts as $i => $part) {
-                $path_parts[$i] = convert_part($part);
-            }
+        foreach ($path_parts as $i => $part) {
+            $path_parts[$i] = convert_part($part);
         }
 
         $path = implode('/', $path_parts) . '/';
