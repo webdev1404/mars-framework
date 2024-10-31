@@ -99,7 +99,7 @@ class Router
                 }
             }
         } elseif ($route instanceof \Closure) {
-            echo call_user_func_array($route, [$this, $this->app]);
+            echo call_user_func_array($route, [$this->app]);
         } elseif (is_object($route)) {
             $route->output();
         }
