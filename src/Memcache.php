@@ -25,7 +25,7 @@ class Memcache
     /**
      * @var DriverInterface $driver The driver object
      */
-    protected DriverInterface $driver;
+    public readonly DriverInterface $driver;
 
     /**
      * @var string $host The host to connect to

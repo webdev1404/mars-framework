@@ -119,12 +119,12 @@ class Db
     /**
      * @var DriverInterface $read_driver The handle for the read queries
      */
-    protected DriverInterface $read_driver;
+    public readonly  DriverInterface $read_driver;
 
     /**
      * @var DriverInterface $write_driver The handle for the write queries
      */
-    protected DriverInterface $write_driver;
+    public readonly DriverInterface $write_driver;
 
     /**
      * @var array $supported_drivers The supported drivers

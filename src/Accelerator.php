@@ -29,7 +29,7 @@ class Accelerator
     /**
      * @var DriverInterface $driver The driver object
      */
-    protected DriverInterface $driver;
+    public readonly DriverInterface $driver;
 
     /**
      * @var array $supported_drivers The supported drivers

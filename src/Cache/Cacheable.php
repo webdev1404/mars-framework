@@ -26,7 +26,7 @@ abstract class Cacheable
     /**
      * @var DriverInterface $driver The driver object
      */
-    protected DriverInterface $driver;
+    public readonly DriverInterface $driver;
 
     /**
      * @var string $path The folder where the content will be cached

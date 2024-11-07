@@ -25,7 +25,7 @@ class Serializer
     /**
      * @var DriverInterface $driver The driver object
      */
-    protected DriverInterface $driver;
+    public readonly DriverInterface $driver;
 
     /**
      * protected DriverInterface $php_driver The php driver

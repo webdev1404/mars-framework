@@ -171,6 +171,7 @@ class App extends \stdClass
         'json' => Json::class,
         'lang' => \Mars\System\Language::class,
         'log' => Log::class,
+        'mail' => Mail::class,
         'memcache' => Memcache::class,
         'messages' => \Mars\Alerts\Messages::class,
         'plugins' => \Mars\System\Plugins::class,
@@ -260,17 +261,14 @@ class App extends \stdClass
      * Protected constructor
      */
     protected function __construct()
-    {
+    {        
         $this->version = '1.0';
         $this->is_bin = $this->getIsBin();
         $this->base_path = $this->getBasePath();
         $this->base_url = $this->getBaseUrl();
-        $this->development = $this->config->development;
+        $this->development = $this->config->development;        
 
-        if ($this->development) {
-            ini_set('display_errors', $this->config->development_display_errors);
-            error_reporting($this->config->development_error_reporting);
-        }
+        $this->setErrors();
 
         if (!$this->is_bin) {
             $this->is_https = $this->getIsHttps();
@@ -288,6 +286,23 @@ class App extends \stdClass
         if (!$this->is_bin) {
             $this->is_homepage = $this->isHomepage();
         }
+    }
+
+    /**
+     * Sets the error reporting
+     */
+    protected function setErrors()
+    {
+        $display_errors = $this->config->display_errors;
+        $error_reporting = $this->config->error_reporting;
+
+        if ($this->config->development) {
+            $display_errors = $this->config->development_display_errors;
+            $error_reporting = $this->config->development_error_reporting;
+        }
+
+        ini_set('display_errors', $display_errors);
+        error_reporting($error_reporting);
     }
 
     /**

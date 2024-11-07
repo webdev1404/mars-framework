@@ -47,7 +47,7 @@ class Response
     /**
      * @var DriverInterface $driver The driver object
      */
-    protected DriverInterface $driver;
+    public readonly DriverInterface $driver;
 
     /**
      * @var array $supported_$responses The supported $responses types

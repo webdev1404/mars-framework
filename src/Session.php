@@ -24,7 +24,7 @@ class Session
     /**
      * @var DriverInterface $driver The driver object
      */
-    protected DriverInterface $driver;
+    public readonly DriverInterface $driver;
 
     /**
      * @var string $prefix Prefix to apply to all session keys

@@ -22,34 +22,9 @@ class Mail
     public readonly Drivers $drivers;
 
     /**
-     * @var string $from The from address
-     */
-    public string $from = '';
-
-    /**
-     * @var string $from_name The from name
-     */
-    public string $from_name = '';
-
-    /**
-     * @var string $reply_to The reply to address
-     */
-    public string $reply_to = '';
-
-    /**
-     * @var string $reply_to_name The reply to name
-     */
-    public string $reply_to_name = '';
-
-    /**
-     * @var bool $is_html If true, will send the email as html
-     */
-    public bool $is_html = true;
-
-    /**
      * @var DriverInterface $driver The driver object
      */
-    protected DriverInterface $driver;
+    public readonly DriverInterface $driver;
 
     /**
      * @var array $supported_drivers The supported drivers
@@ -67,51 +42,71 @@ class Mail
         $this->app = $app ?? $this->getApp();
         $this->drivers = new Drivers($this->supported_drivers, DriverInterface::class, 'mail', $this->app);
         $this->driver = $this->drivers->get($this->app->config->mail_driver);
-
-        $this->from = $this->app->config->mail_from;
-        $this->from_name = $this->app->config->mail_from_name;
     }
 
     /**
-     * Sets the From fields of the email
-     * @param string $from The email adress from which the email will be send
-     * @param string $from_name The from name field of the email
-     * @return static
+     * Sends a mail
+     * @param string|array $to The adress(es) where the mail will be sent
+     * @param string $subject The subject of the mail
+     * @param string $message The body of the mail
+     * @param array $options The options of the mail, if any
+     * @param array $attachments The attachments, if any, to the mail
+     * @param string|array $bcc Bcc recipients, if any
+     * @throws \Exception If the mail couldn't be sent
      */
-    public function setFrom(string $from, string $from_name = '') : static
+    public function send(string|array $to, string $subject, string $message, array $options = [], array $attachments = [], string|array $bcc = [])
     {
-        $this->from = $from;
-        if ($from_name) {
-            $this->from_name = $from_name;
+        $this->app->plugins->run('mail_send', $to, $subject, $message, $options, $attachments, $bcc, $this);
+
+        $is_html = $options['is_html'] ?? true;
+        $from = $options['from'] ?? $this->app->config->mail_from;
+        $from_name = $options['from_name'] ?? $this->app->config->mail_from_name;
+        $reply_to = $options['reply_to'] ?? '';
+        $reply_to_name = $options['reply_to_name'] ?? '';
+
+        try {
+            $this->driver->setRecipient($to);
+            $this->driver->setSubject($subject);
+            $this->driver->setBody($message, $is_html);
+            $this->driver->setFrom($from, $from_name);
+
+            if ($reply_to) {
+                $this->driver->setSender($reply_to, $reply_to_name);
+            }
+
+            if ($attachments) {
+                $this->driver->setAttachments($attachments);
+            }
+            if ($bcc) {
+                $this->driver->setRecipientBcc($bcc);
+            }
+
+            $this->driver->send();
+
+            $this->app->plugins->run('mail_sent', $to, $subject, $message, $options, $attachments, $bcc, $this);
+        } catch (\Exception $e) {
+            $this->app->plugins->run('mail_send_error', $e->getMessage(), $to, $subject, $message, $options, $attachments, $bcc, $this);
+
+            throw new \Exception(App::__('mail_error', ['{ERROR}' => $e->getMessage()]));
         }
-
-        return $this;
     }
 
     /**
-     * Sets the sender of the email
-     * @param string $reply_to The email address listed as reply to
-     * @param string $reply_to_name The reply name, if any
-     * @return static
+     * Sends a mail using a template
+     * @param string|array $to The adress(es) where the mail will be sent
+     * @param string $subject The subject of the mail
+     * @param string $template The template to use as the body of the mail
+     * @param array $vars Vars to add as template vars
+     * @param array $options The options of the mail, if any
+     * @param array $attachments The attachments, if any, to the mail
+     * @param string|array $bcc Bcc recipients, if any
+     * * @throws \Exception If the mail couldn't be sent
      */
-    public function setSender(string $reply_to, string $reply_to_name = '') : static
+    public function sendTemplate(string|array $to, string $subject, string $template, array $vars = [], array $options = [], array $attachments = [], string|array $bcc = [])
     {
-        $this->reply_to = $reply_to;
-        if ($reply_to_name) {
-            $this->reply_to_name = $reply_to_name;
-        }
-    }
+        $message = $this->getTemplate($template, $vars);
 
-    /**
-     * Sets the way how the email message is send
-     * @param bool $is_html If true, will send the email as html
-     * @return static
-     */
-    public function isHtml(bool $is_html) : static
-    {
-        $this->is_html = $is_html;
-
-        return $this;
+        $this->send($to, $subject, $message, $options, $attachments, $bcc);
     }
 
     /**
@@ -130,41 +125,5 @@ class Mail
         }
 
         return nl2br($content);
-    }
-
-    /**
-     * Sends a mail
-     * @param string|array $to The adress(es) where the mail will be sent
-     * @param string $subject The subject of the mail
-     * @param string $message The body of the mail
-     * @param array $attachments The attachments, if any, to the mail
-     * @param string|array $bcc Bcc recipients, if any
-     */
-    public function send(string|array $to, string $subject, string $message, array $attachments = [], string|array $bcc = [])
-    {
-        $this->app->plugins->run('mail_send', $to, $subject, $message, $attachments, $this);
-
-        try {
-            $this->driver->setRecipient($to);
-            $this->driver->setSubject($subject);
-            $this->driver->setBody($message, $this->is_html);
-            $this->driver->setFrom($this->from, $this->from_name);
-            $this->driver->setSender($this->reply_to, $this->reply_to_name);
-
-            if ($attachments) {
-                $this->driver->setAttachments($attachments);
-            }
-            if ($bcc) {
-                $this->driver->setRecipientBcc($bcc);
-            }
-
-            $this->driver->send();
-
-            $this->app->plugins->run('mail_sent', $to, $subject, $message, $attachments, $this);
-        } catch (\Exception $e) {
-            $this->app->plugins->run('mail_send_error', $e->getMessage(), $to, $subject, $message, $attachments, $this);
-
-            throw new \Exception(App::__('mail_error', ['{ERROR}' => $e->getMessage()]));
-        }
     }
 }
