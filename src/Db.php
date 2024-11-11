@@ -119,12 +119,17 @@ class Db
     /**
      * @var DriverInterface $read_driver The handle for the read queries
      */
-    public readonly  DriverInterface $read_driver;
+    public readonly DriverInterface $read_driver;
 
     /**
      * @var DriverInterface $write_driver The handle for the write queries
      */
     public readonly DriverInterface $write_driver;
+
+    /**
+     * @var array $last_query Contains the sql code and the params of the last executed query
+     */
+    protected array $last_query = ['sql' => '', 'params' => []];
 
     /**
      * @var array $supported_drivers The supported drivers
@@ -323,6 +328,8 @@ class Db
         }
 
         try {
+            $this->last_query = ['sql' => $sql, 'params' => $params];
+
             $result = $handle->query($sql, $params);
         } catch (\Exception $e) {
             throw new \Exception('Query Error: ' . $this->getQueryError($e->getMessage(), $sql, $params));
@@ -332,7 +339,7 @@ class Db
             $exec_time = $this->app->timer->end('sql');
 
             $this->queries_time+= $exec_time;
-            $this->queries[] = [$sql, $params, $exec_time];
+            $this->queries[] = [$this->getFullQuery($sql, $params), $exec_time];
         }
 
         return new DbResult($handle, $result);
@@ -389,6 +396,39 @@ class Db
         }
 
         return $error;
+    }
+
+    /**
+     * Returns the sql code of the last executed query.
+     * !!!It should be used for debugging purposes only, as it will contain the params as well!!!
+     * @return string
+     */
+    public function getLastQuery() : string
+    {
+        return $this->getFullQuery($this->last_query['sql'], $this->last_query['params']);
+    }
+
+    /**
+     * Returns the full query, with the params replaced
+     * !!!Is used for debugging purposes only!!!
+     * @param string $sql The sql code
+     * @param array $params The query params
+     * @return string
+     */
+    protected function getFullQuery(string $sql, array $params) : string
+    {
+        $search = [];
+        $replace = [];
+
+        $i = 0;
+        foreach ($params as $param => $value) {
+            $search[$i] = ':' . $param;
+            $replace[$i] = $this->read_driver->quote($value);
+
+            $i++;
+        }
+
+        return str_replace($search, $replace, $sql);
     }
 
     /**

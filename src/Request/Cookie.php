@@ -12,7 +12,7 @@ use Mars\App;
  * The COOKIE Request Class
  * Handles the $_COOKIE interactions
  */
-class Cookie extends Base
+class Cookie extends Input
 {
     /**
      * Builds the Cookie Request object

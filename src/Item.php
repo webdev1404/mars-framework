@@ -51,6 +51,11 @@ abstract class Item extends Entity
      * @var array $ignore Array listing the custom properties (not found in the corresponding db table) which should be ignored when inserting/updating
      */
     protected static array $ignore = [];
+    
+    /**
+     * @var bool $bind_data If true, when saving the object, the data will be bound to the object's columns
+     */
+    protected static bool $bind_data = false;
 
     /**
      * @var array $original Array containing the original properties
@@ -58,9 +63,9 @@ abstract class Item extends Entity
     protected array $original = [];
 
     /**
-     * @var bool $original_store If false, no original data will be set
+     * @var bool $original_keep If false, no original data will be set
      */
-    protected static bool $original_store = true;
+    protected static bool $original_keep = true;
 
     /**
      * @var array $original_list If specified, only the properties in the list will be stored as original data
@@ -508,7 +513,11 @@ abstract class Item extends Entity
         unset($data['errors']);
 
         if (static::$ignore) {
-            $data = filterProperties($data, static::$ignore);
+            $data = App::filterProperties($data, static::$ignore);
+        }
+
+        if (static::$bind_data) {
+            $data = $this->db->bind($this->getTable(), $data);
         }
 
         return $data;
@@ -588,7 +597,7 @@ abstract class Item extends Entity
      */
     protected function getOriginalData(array $data) : array
     {
-        if (!static::$original_store) {
+        if (!static::$original_keep) {
             return [];
         }
 

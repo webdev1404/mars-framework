@@ -47,6 +47,11 @@ class Pdo implements DriverInterface
             unset($this->handle);
         }
     }
+
+    public function quote(string $string) : string
+    {
+        return $this->handle->quote($string);
+    }
     
     /**
      * @see \Mars\Db\DriverInterface::begin()

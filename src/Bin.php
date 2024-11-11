@@ -195,11 +195,12 @@ class Bin
      * Returns the value of a command line option
      * @param string $name The name of the option
      * @param string $filter The filter to apply to the option, if any. See class Filter for a list of filters
+     * @param mixed $default_value The default value to return if the option is not found
      * @return string The option
      */
-    public function getOption(string $name, string $filter = '') : mixed
+    public function getOption(string $name, string $filter = '', mixed $default_value = '') : mixed
     {
-        $option = $this->options[$name] ?? null;
+        $option = $this->options[$name] ?? $default_value;
         if ($filter) {
             $option = $this->app->filter->value($option, $filter);
         }

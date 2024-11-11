@@ -12,7 +12,7 @@ use Mars\App;
  * The SERVER Class
  * Handles the $_SERVER interactions
  */
-class Server extends Base
+class Server extends Input
 {
     /**
      * Builds the Server Request object

@@ -15,13 +15,13 @@ final class HttpRequestTest extends Base
     {
         parent::setUp();
 
-        $this->url = $this->app->base_url . '/vendor/webdev1404/mars/tests/data/request-test.php';
+        $this->url = $this->app->base_url . '/vendor/webdev1404/mars-framework/tests/data/request-test.php';
     }
 
     public function testError()
     {
         $req = $this->app->http->request;
-        $response = $req->get($this->app->base_url . '/vendor/webdev1404/mars/tests/data/request-test123.php');
+        $response = $req->get($this->app->base_url . '/vendor/webdev1404/mars-framework/tests/data/request-test123.php');
 
         $this->assertSame($response->code, 404);
         $this->assertFalse($response->ok());
@@ -50,8 +50,8 @@ final class HttpRequestTest extends Base
 
     public function testGetFile()
     {
-        $url = $this->app->base_url . '/vendor/webdev1404/mars/tests/data/sample.txt';
-        $filename = $this->app->base_path . '/vendor/webdev1404/mars/tests/data/http-data/sample.txt';
+        $url = $this->app->base_url . '/vendor/webdev1404/mars-framework/tests/data/sample.txt';
+        $filename = $this->app->base_path . '/vendor/webdev1404/mars-framework/tests/data/http-data/sample.txt';
 
         $req = $this->app->http->request;
         $response = $req->getFile($url, $filename);

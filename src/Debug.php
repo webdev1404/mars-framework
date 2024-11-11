@@ -94,7 +94,7 @@ class Debug
 
         $i = 1;
         foreach ($this->app->db->queries as $query) {
-            echo "<tr><td>{$i}</td><td><div class=\"debug-query\">" . $this->app->escape->html($query[0]) . '</div><div class="debug-query-params">' . $this->getDbQueryParams($query[1]) . "</div></td><td>{$query[2]}s</td><td>" . $this->app->format->percentage($query[2], $db_time) . '%</td></tr>';
+            echo "<tr><td>{$i}</td><td><div class=\"debug-query\">" . $this->app->escape->html($query[0]) . "</div></td><td>{$query[1]}s</td><td>" . $this->app->format->percentage($query[1], $db_time) . '%</td></tr>';
             $i++;
         }
 

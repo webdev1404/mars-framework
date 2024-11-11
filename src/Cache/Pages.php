@@ -43,7 +43,7 @@ class Pages extends Cacheable
         if ($this->app->config->debug || $this->app->config->development) {
             return;
         }
-        if ($this->app->method != 'get') {
+        if ($this->app->request->method != 'get') {
             return;
         }
 

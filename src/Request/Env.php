@@ -12,7 +12,7 @@ use Mars\App;
  * The ENV Class
  * Handles the $_ENV interactions
  */
-class Env extends Base
+class Env extends Input
 {
     /**
      * Builds the Server Request object

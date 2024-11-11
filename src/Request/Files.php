@@ -12,12 +12,12 @@ use Mars\App;
  * The FILES Request Class
  * Handles the $_UPLOAD interactions
  */
-class Files extends Base
+class Files extends Input
 {
     /**
      * @var array $disallowed_extensions The extensions of the files which are disallowed at upload
      */
-    protected array $disallowed_extensions = ['php', 'cgi', 'pl', 'py', 'exe', 'sh', 'bin'];
+    protected array $disallowed_extensions = ['php', 'cgi', 'pl', 'py', 'exe', 'com', 'bat', 'sh', 'bin'];
 
     /**
      * Builds the Files Request object

@@ -12,7 +12,7 @@ use Mars\App;
  * The REQUEST Request Class
  * Handles the $_POST interactions
  */
-class Request extends Base
+class Request extends Input
 {
     /**
      * Builds the Request object

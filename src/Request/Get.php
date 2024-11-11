@@ -12,7 +12,7 @@ use Mars\App;
  * The GET Request Class
  * Handles the $_GET interactions
  */
-class Get extends Base
+class Get extends Input
 {
     /**
      * Builds the Get Request object

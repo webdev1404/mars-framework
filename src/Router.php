@@ -111,7 +111,7 @@ class Router
      */
     protected function getRoute()
     {
-        $method = $this->app->method;
+        $method = $this->app->request->method;
         if (!isset($this->routes_list[$method])) {
             return null;
         }

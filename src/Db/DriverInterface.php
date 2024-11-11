@@ -27,6 +27,13 @@ interface DriverInterface
      * Disconnects from the database
      */
     public function disconnect();
+
+    /**
+     * Quotes a string
+     * @param string $string The string to quote
+     * @return string The quoted string
+     */
+    public function quote(string $string) : string;
     
     /**
      * Begins a transaction

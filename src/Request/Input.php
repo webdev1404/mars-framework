@@ -1,6 +1,6 @@
 <?php
 /**
-* The Base Request Class
+* The Base Input Class
 * @package Mars
 */
 
@@ -9,10 +9,10 @@ namespace Mars\Request;
 use Mars\App;
 
 /**
- * The Base Request Class
+ * The Base Input Class
  * Base class for the Request classes
  */
-abstract class Base
+abstract class Input
 {
     use \Mars\AppTrait;
 

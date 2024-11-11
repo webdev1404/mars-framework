@@ -20,7 +20,7 @@ class Config extends Data
     /**
      * @var int $error_reporting The error reporting level
      */
-    public int $error_reporting = E_ALL & ~E_NOTICE & ~E_STRICT & ~E_DEPRECATED; 
+    public int $error_reporting = E_ALL & ~E_NOTICE & ~E_STRICT & ~E_DEPRECATED;
 
     /**
      * @var bool $log_errors If true, will log all errors to the log files
@@ -80,7 +80,7 @@ class Config extends Data
     /**
      * @var bool $development Set to true to enable development mode
      */
-    public bool $development = false;   
+    public bool $development = false;
 
     /**
      * @var int $development_display_errors Controls whether errors should be displayed or not, when development is enabled

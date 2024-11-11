@@ -6,6 +6,7 @@
 
 namespace Mars;
 
+use Mars\Request\Input;
 use Mars\Request\Get;
 use Mars\Request\Post;
 use Mars\Request\Request as RequestObj;
@@ -68,6 +69,11 @@ class Request
     public Files $files;
 
     /**
+     * @var Input $input The default input object to use when get() is called
+     */
+    protected Input $input;
+
+    /**
      * Builds the request object
      * @param App $app The app object
      */
@@ -75,22 +81,39 @@ class Request
     {
         $this->app = $app;
 
-        if (!$this->app->is_bin) {
-            $this->method = $this->app->method;
-        }
-
+        $this->method = $this->getMethod();
+        
         $this->get = new \Mars\Request\Get($this->app);
         $this->post = new \Mars\Request\Post($this->app);
         $this->request = new \Mars\Request\Request($this->app);
-        $this->all = $this->request;
         $this->cookie = new \Mars\Request\Cookie($this->app);
         $this->server = new \Mars\Request\Server($this->app);
         $this->env = new \Mars\Request\Env($this->app);
         $this->files = new \Mars\Request\Files($this->app);
+        $this->all = $this->request;
+
+        if ($this->method == 'post') {
+            $this->input = $this->post;
+        } else {
+            $this->input = $this->get;
+        }
     }
 
     /**
-     * Returns the value of a variable from $_REQUEST
+     * Returns the request method: get/post/put
+     * @return string
+     */
+    protected function getMethod() : string
+    {
+        if ($this->app->is_bin) {
+            return '';
+        }
+
+        return strtolower($_SERVER['REQUEST_METHOD']);
+    }
+
+    /**
+     * Returns the value of a variable from either $_GET or $_POST
      * Shorthand for $this->request->get()
      * @param string $filter The filter to apply to the value, if any. See class Filter for a list of filters
      * @param mixed $default_value The default value to return if the variable is not set
@@ -99,16 +122,16 @@ class Request
      */
     public function get(string $name, string $filter = '', mixed $default_value = '', bool $is_array = false) : mixed
     {
-        return $this->request->get($name, $filter, $default_value, $is_array);
+        return $this->input->get($name, $filter, $default_value, $is_array);
     }
     /**
-     * Returns all the request data from $_REQUEST
+     * Returns all the request data from either $_GET or $_POST
      * Shorthand for $this->request->getAll()
      * @return array
      */
     public function getAll() : array
     {
-        return $this->request->getAll();
+        return $this->input->getAll();
     }
 
     /**

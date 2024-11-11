@@ -37,11 +37,6 @@ class App extends \stdClass
     public readonly string $scheme;
 
     /**
-     * @var string $method The request method. get/post.
-     */
-    public readonly string $method;
-
-    /**
      * @var string $protocol The server protocol
      */
     public readonly string $protocol;
@@ -261,19 +256,18 @@ class App extends \stdClass
      * Protected constructor
      */
     protected function __construct()
-    {        
+    {
         $this->version = '1.0';
         $this->is_bin = $this->getIsBin();
         $this->base_path = $this->getBasePath();
         $this->base_url = $this->getBaseUrl();
-        $this->development = $this->config->development;        
+        $this->development = $this->config->development;
 
         $this->setErrors();
 
         if (!$this->is_bin) {
             $this->is_https = $this->getIsHttps();
             $this->scheme = $this->getScheme();
-            $this->method = $this->getRequestMethod();
             $this->protocol = $this->getProtocol();
             $this->is_http2 = $this->getIsHttp2();
             $this->ip = $this->getIp();
@@ -429,15 +423,6 @@ class App extends \stdClass
         }
 
         return 'http://';
-    }
-
-    /**
-     * Returns the request method: get/post/put
-     * @return string
-     */
-    protected function getRequestMethod() : string
-    {
-        return strtolower($_SERVER['REQUEST_METHOD']);
     }
 
     /**
