@@ -6,6 +6,7 @@
 
 namespace Mars;
 
+use Mars\App\InstanceTrait;
 use Mars\Session\DriverInterface;
 
 /**
@@ -14,7 +15,7 @@ use Mars\Session\DriverInterface;
  */
 class Session
 {
-    use AppTrait;
+    use InstanceTrait;
 
     /**
      * @var Drivers $drivers The drivers object

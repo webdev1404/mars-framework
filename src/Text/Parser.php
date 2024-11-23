@@ -6,13 +6,15 @@
 
 namespace Mars\Text;
 
+use Mars\App\InstanceTrait;
+
 /**
  * The Text Parser Class
  * Parses text
  */
 class Parser
 {
-    use \Mars\AppTrait;
+    use InstanceTrait;
 
     /**
      * Parses the text for links and rel="nofollow"

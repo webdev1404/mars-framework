@@ -7,17 +7,21 @@
 namespace Mars\Mvc;
 
 use Mars\App;
+use Mars\App\InstanceTrait;
+use Mars\Debug\InfoTrait;
+use Mars\Hidden;
 use Mars\Escape;
 use Mars\Filter;
 use Mars\Request;
 use Mars\Uri;
 use Mars\Validator;
 use Mars\System\Plugins;
-use Mars\Extensions\Extension;
 use Mars\Alerts\Errors;
 use Mars\Alerts\Messages;
 use Mars\Alerts\Info;
 use Mars\Alerts\Warnings;
+use Mars\Extensions\Extension;
+use Mars\Validation\ValidateTrait;
 
 /**
  * The Controller Class
@@ -25,26 +29,56 @@ use Mars\Alerts\Warnings;
  */
 abstract class Controller extends \stdClass
 {
-    use \Mars\AppTrait;
-    //use ReflectionTrait;
-    use \Mars\ValidationTrait {
+    use InstanceTrait;
+    use InfoTrait;
+    use ValidateTrait {
         validate as protected validateData;
     }
 
     /**
      * @var string $default_method Default method to be executed on dispatch/route or if the requested method doesn't exist or is not public
      */
-    public string $default_method = '';
+    public string $default_method {
+        get {
+            if (isset($this->default_method)) {
+                return $this->default_method;
+            }
+
+            $this->default_method = $this->app->getMethod($this->parent->name ?? 'index');
+
+            return $this->default_method;
+        }
+    }
 
     /**
      * @var string $default_success_method Method to be executed on dispatch/route, if the requested method returns true
      */
-    public string $default_success_method = '';
+    public string $default_success_method {
+        get {
+            if (isset($this->default_success_method)) {
+                return $this->default_success_method;
+            }
+
+            $this->default_success_method = $this->default_method;
+
+            return $this->default_success_method;
+        }
+    }
 
     /**
      * @var string $default_error_method Method to be executed on dispatch/route, if the requested method returns false
      */
-    public string $default_error_method = '';
+    public string $default_error_method {
+        get {
+            if (isset($this->default_error_method)) {
+                return $this->default_error_method;
+            }
+
+            $this->default_error_method = $this->default_method;
+
+            return $this->default_error_method;
+        }
+    }
 
     /**
      * @var string $current_method The name of the currently executed method
@@ -54,12 +88,38 @@ abstract class Controller extends \stdClass
     /**
      * @var string $path The controller's parents's dir. Alias for $this->parent->path
      */
-    public string $path = '';
+    public protected(set) string $path {
+        get {
+            if (isset($this->path)) {
+                return $this->path;
+            }
+
+            $this->path = '';
+            if ($this->parent) {
+                $this->path = $this->parent->path;
+            }
+
+            return $this->path;
+        }
+    }
 
     /**
      * @var string $url The controller's parent's url. Alias for $this->parent->url
      */
-    public string $url = '';
+    public string $url {
+        get {
+            if (isset($this->url)) {
+                return $this->url;
+            }
+
+            $this->url = '';
+            if ($this->parent) {
+                $this->url = $this->parent->url;
+            }
+
+            return $this->url;
+        }
+    }
 
     /**
      * @var Extension $parent The parent extension
@@ -69,62 +129,134 @@ abstract class Controller extends \stdClass
     /**
      * @var object $model The model object
      */
-    public object $model;
+    public ?object $model {
+        get {
+            if (isset($this->model)) {
+                return $this->model;
+            }
+            
+            $this->model = null;
+            if ($this->load_model) {
+                $this->model = $this->getModel();
+            }
+
+            return $this->model;
+        }
+    }
 
     /**
      * @var View $view The view object
      */
-    public View $view;
+    public ?View $view {
+        get {
+            if (isset($this->view)) {
+                return $this->view;
+            }
+
+            $this->view = null;
+            if ($this->load_view) {
+                $this->view = $this->getView();
+            }
+
+            return $this->view;
+        }
+    }
 
     /**
      * @var Filter $filter The filter object. Alias for $this->app->filter
      */
-    protected Filter $filter;
+    #[Hidden]
+    protected Filter $filter {
+        get {
+            return $this->app->filter;
+        }
+    }
 
     /**
      * @var Escape $escape Alias for $this->app->escape
      */
-    protected Escape $escape;
+    #[Hidden]
+    protected Escape $escape {
+        get {
+            return $this->app->escape;
+        }
+    }
 
     /**
      * @var Request $request The request object. Alias for $this->app->request
      */
-    protected Request $request;
+    #[Hidden]
+    protected Request $request {
+        get {
+            return $this->app->request;
+        }
+    }
 
     /**
      * @var Validator $uri Alias for $this->app->uri
      */
-    protected Uri $uri;
+    #[Hidden]
+    protected Uri $uri {
+        get {
+            return $this->app->uri;
+        }
+    }
 
     /**
      * @var Validator $validator Alias for $this->app->validator
      */
-    protected Validator $validator;
+    #[Hidden]
+    protected Validator $validator {
+        get {
+            return $this->app->validator;
+        }
+    }
 
     /**
      * @var Plugins $plugins Alias for $this->app->plugins
      */
-    protected Plugins $plugins;
+    #[Hidden]
+    protected Plugins $plugins {
+        get {
+            return $this->app->plugins;
+        }
+    }
 
     /**
      * @var Errors $errors The errors object. Alias for $this->app->errors
      */
-    protected Errors $errors;
+    protected Errors $errors {
+        get {
+            return $this->app->errors;
+        }
+    }
 
     /**
      * @var Messages $messages The messages object. Alias for $this->app->messages
      */
-    protected Messages $messages;
+    protected Messages $messages {
+        get {
+            return $this->app->messages;
+        }
+    }
 
     /**
      * @var Info $info The info object. Alias for $this->app->info
      */
-    protected Info $info;
+    protected Info $info {
+        get {
+            return $this->app->info;
+        }
+    }
 
     /**
      * @var Warnings $warnings The warnings object. Alias for $this->app->warnings
      */
-    protected Warnings $warnings;
+    protected Warnings $warnings    {
+        get {
+            return $this->app->warnings;
+        }
+    }
 
     /**
      * @var bool $load_model If true, will automatically load the model
@@ -146,53 +278,12 @@ abstract class Controller extends \stdClass
      * @param Extension $parent The parent extension
      * @param App $app The app object
      */
-    public function __construct(Extension $parent = null, App $app = null)
+    public function __construct(?Extension $parent = null, ?App $app = null)
     {
         $this->app = $app ?? $this->getApp();
         $this->parent = $parent;
-        if ($parent) {
-            $this->path = $this->parent->path;
-            $this->url = $this->parent->url;
-        }
 
-        //set the default methods to the name of the extension, if not already set
-        $default_method = $this->app->getMethod($this->parent->name ?? 'index');
-        if (!$this->default_method) {
-            $this->default_method = $default_method;
-        }
-        if (!$this->default_success_method) {
-            $this->default_success_method = $default_method;
-        }
-        if (!$this->default_error_method) {
-            $this->default_error_method = $default_method;
-        }
-
-        $this->prepare();
         $this->init();
-
-        if ($this->load_model) {
-            $this->model = $this->getModel();
-        }
-        if ($this->load_view) {
-            $this->view = $this->getView();
-        }
-    }
-
-    /**
-     * Prepares the controller's properties
-     */
-    protected function prepare()
-    {
-        $this->filter = $this->app->filter;
-        $this->escape = $this->app->escape;
-        $this->request = $this->app->request;
-        $this->uri = $this->app->uri;
-        $this->validator = $this->app->validator;
-        $this->plugins = $this->app->plugins;
-        $this->errors = $this->app->errors;
-        $this->messages = $this->app->messages;
-        $this->warnings = $this->app->warnings;
-        $this->info = $this->app->info;
     }
 
     /**

@@ -13,8 +13,6 @@ use Mars\App;
  */
 class VariableRawParser extends VariableParser
 {
-    use \Mars\AppTrait;
-
     /**
      * @see \Mars\Templates\DriverInterface::parse()
      * {@inheritdoc}

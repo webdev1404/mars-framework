@@ -6,6 +6,7 @@
 
 namespace Mars;
 
+use Mars\App\InstanceTrait;
 use Mars\Alerts\Errors;
 
 /**
@@ -14,7 +15,7 @@ use Mars\Alerts\Errors;
  */
 class Validator
 {
-    use AppTrait;
+    use InstanceTrait;
 
     /**
      * @var Errors $errors The generated errors, if any

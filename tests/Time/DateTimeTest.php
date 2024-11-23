@@ -11,8 +11,8 @@ final class DateTimeTest extends Base
     {
         $datetime = $this->app->datetime;
 
-        $this->assertEquals($datetime->get('0'), '0000-00-00 00:00:00');
-        $this->assertEquals($datetime->get(''), '0000-00-00 00:00:00');
+        $this->assertEquals($datetime->get('0'), null);
+        $this->assertEquals($datetime->get(''), null);
         $this->assertEquals($datetime->get('2022-01-18 11:24:32'), '2022-01-18 11:24:32');
         $this->assertEquals($datetime->get('1642505072'), '2022-01-18 11:24:32');
     }

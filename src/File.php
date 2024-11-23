@@ -6,13 +6,15 @@
 
 namespace Mars;
 
+use Mars\App\InstanceTrait;
+
 /**
  * The File Class
  * Filesystem functionality
  */
 class File
 {
-    use AppTrait;
+    use InstanceTrait;
 
     /**
      * If specified, will limit that can be accessed to folder $open_basedir
@@ -37,6 +39,8 @@ class File
         } else {
             $this->open_basedir = $this->app->config->open_basedir;
         }
+
+        $this->open_basedir = '';
     }
 
     /**
@@ -199,11 +203,13 @@ class File
             return '';
         }
 
+        $ext = strtolower(trim($ext));
+
         if ($add_dot) {
-            return '.' . strtolower($ext);
+            return '.' . $ext;
         }
 
-        return strtolower($ext);
+        return $ext;
     }
 
     /**
@@ -224,10 +230,9 @@ class File
     /**
      * Builds a path from an array.
      * @param array $elements The elements from which the path will be built. Eg: $elements=array('/var','www'); it will return /var/www
-     * @param bool $fix_path If true, will fix the path by adding a slash
      * @return string The built path
      */
-    public function buildPath(array $elements, bool $fix_path = false) : string
+    public function buildPath(array $elements) : string
     {
         if (!$elements) {
             return '';
@@ -235,12 +240,7 @@ class File
 
         $elements = array_filter($elements);
 
-        $path = '/' . implode('/', $elements);
-        if ($fix_path) {
-            $path = App::fixPath($path);
-        }
-
-        return $path;
+        return '/' . implode('/', $elements);
     }
 
     /**

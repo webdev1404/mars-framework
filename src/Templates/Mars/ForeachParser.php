@@ -6,12 +6,14 @@
 
 namespace Mars\Templates\Mars;
 
+use Mars\App\InstanceTrait;
+
 /**
  * The Foreach Hander
  */
 class ForeachParser
 {
-    use \Mars\AppTrait;
+    use InstanceTrait;
     
     /**
      * @var array $foreach_keys Array where existing vars with the same name as a foreach key are temporarily stored
@@ -30,7 +32,7 @@ class ForeachParser
     public function parse(string $content, array $params = []) : string
     {
         $content = preg_replace_callback('/\{\%\s*foreach(.*) as (.*)\%\}/isU', function (array $match) {
-            $variable_parser = new VariableParser($this->app);
+            $variable_parser = new VariableParser;
 
             $variable = $variable_parser->replaceVariables(trim($match[1]));
             $expression = trim($match[2]);

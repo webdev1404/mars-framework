@@ -12,8 +12,6 @@ namespace Mars;
  */
 class Entities implements \IteratorAggregate
 {
-    use AppTrait;
-
     /**
      * @var array $data Array containing the objects
      */
@@ -123,7 +121,7 @@ class Entities implements \IteratorAggregate
      * @param int $id The id of the object to return. If null, all the objects are returned
      * @return mixed
      */
-    public function get(int $id = null)
+    public function get(?int $id = null)
     {
         if ($id === null) {
             return $this->data;

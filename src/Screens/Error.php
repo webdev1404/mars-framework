@@ -6,13 +6,15 @@
 
 namespace Mars\Screens;
 
+use Mars\App\InstanceTrait;
+
 /**
  * The Error Screen
  * Displays an error screen
  */
 class Error
 {
-    use \Mars\AppTrait;
+    use InstanceTrait;
 
     /**
      * Outputs the error screen

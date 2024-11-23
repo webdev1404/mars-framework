@@ -7,6 +7,7 @@
 namespace Mars\Session;
 
 use Mars\App;
+use Mars\App\InstanceTrait;
 
 /**
  * The Db Session Class
@@ -14,7 +15,7 @@ use Mars\App;
  */
 class Db implements DriverInterface, \SessionHandlerInterface, \SessionUpdateTimestampHandlerInterface
 {
-    use \Mars\AppTrait;
+    use InstanceTrait;
 
     /**
      * @var string $table The table where the sessions are stored

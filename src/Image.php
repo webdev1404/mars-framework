@@ -7,6 +7,7 @@
 namespace Mars;
 
 use GdImage;
+use Mars\App\InstanceTrait;
 use Mars\Images\DriverInterface;
 
 /**
@@ -14,7 +15,7 @@ use Mars\Images\DriverInterface;
  */
 class Image
 {
-    use AppTrait;
+    use InstanceTrait;
 
     /**
      * @var Drivers $drivers The drivers object
@@ -53,9 +54,9 @@ class Image
      * Constructs the image object
      * @param App $app The app object
      */
-    public function __construct(App $app = null)
+    public function __construct(App $app)
     {
-        $this->app = $app ?? $this->getApp();
+        $this->app = $app;
         $this->drivers = new Drivers($this->supported_drivers, DriverInterface::class, '', $this->app);
         $this->operations = new Handlers($this->supported_operations, $this->app);
         $this->operations->setStore(false);

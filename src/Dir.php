@@ -6,13 +6,15 @@
 
 namespace Mars;
 
+use Mars\App\InstanceTrait;
+
 /**
  * The Dir Class
  * Folder Filesystem functionality
  */
 class Dir
 {
-    use AppTrait;
+    use InstanceTrait;
 
     /**
      * Check that the filname [file/folder] doesn't contain invalid chars. and is located in the right path. Throws a fatal error for an invalid filename
@@ -200,11 +202,9 @@ class Dir
 
         $this->create($destination);
 
-        $destination = App::fixPath($destination);
-
         $iterator = $this->getIterator($source);
         foreach ($iterator as $file) {
-            $target_file = $destination . $this->getName($file);
+            $target_file = $destination . '/' . $this->getName($file);
 
             if ($file->isDir()) {
                 $this->create($target_file);

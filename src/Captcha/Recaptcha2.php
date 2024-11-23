@@ -7,6 +7,7 @@
 namespace Mars\Captcha;
 
 use Mars\App;
+use Mars\App\InstanceTrait;
 use Mars\Http\Request;
 
 /**
@@ -15,7 +16,7 @@ use Mars\Http\Request;
  */
 class Recaptcha2 implements DriverInterface
 {
-    use \Mars\AppTrait;
+    use InstanceTrait;
 
     /**
      * Builds the recaptcha2 object

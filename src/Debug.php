@@ -6,13 +6,15 @@
 
 namespace Mars;
 
+use Mars\App\InstanceTrait;
+
 /**
  * The Debug Class
  * Contains debug functionality and outputs debug info
  */
 class Debug
 {
-    use AppTrait;
+    use InstanceTrait;
 
     /**
      * @var array $info Debug info
@@ -56,7 +58,7 @@ class Debug
         echo '<tr><td><strong>Memory Usage</strong></td><td>' . $this->app->format->filesize(memory_get_usage(true)) . '</td></tr>';
         echo '<tr><td><strong>Memory Peak Usage</strong></td><td>' . $this->app->format->filesize(memory_get_peak_usage(true)) . '</td></tr>';
         echo '<tr><td><strong>DB Queries</strong></td><td>' . count($this->app->db->queries) . '</td></tr>';
-        echo '<tr><td><strong>Loaded Templates</strong></td><td>' . count($this->app->theme->getLoadedTemplates()) . '</td></tr>';
+        echo '<tr><td><strong>Loaded Templates</strong></td><td>' . count($this->app->theme->templates_loaded) . '</td></tr>';
         echo '<tr><td><strong>Included Files</strong></td><td>' . count(get_included_files()) . '</td></tr>';
         echo '</table><br><br>';
     }
@@ -121,15 +123,14 @@ class Debug
     public function outputPlugins()
     {
         $execution_time = $this->app->timer->getExecutionTime();
-        $plugins = $this->app->plugins->getPlugins();
-        if (!$plugins) {
+        if (!$this->app->plugins->plugins) {
             return;
         }
 
         echo '<table class="grid debug-grid debug-grid-plugins">';
         echo '<tr><th colspan="3">Plugins</th></tr>';
 
-        foreach ($plugins as $plugin) {
+        foreach ($this->app->plugins->plugins as $plugin) {
             if (!isset($this->app->plugins->exec_time[$plugin->name])) {
                 continue;
             }
@@ -151,11 +152,10 @@ class Debug
         echo '</table><br><br>';
 
         if ($this->app->request->get->has('show-hooks')) {
-            $hooks = $this->app->plugins->getHooks();
             echo '<table class="grid debug-grid debug-grid-hooks">';
             echo '<tr><th colspan="3">Hooks</th></tr>';
 
-            foreach ($hooks as $hook => $hook_data) {
+            foreach ($this->app->plugins->hooks as $hook => $hook_data) {
                 echo "<tr><td>" . $this->app->escape->html($hook) . '</td></tr>';
             }
 
@@ -185,7 +185,7 @@ class Debug
         echo '<table class="grid debug-grid debug-grid-templates">';
         echo '<tr><th colspan="1">Loaded templates</th></tr>';
         echo '<tr><td class="left">';
-        App::pp($this->app->theme->getLoadedTemplates(), false, false);
+        App::pp($this->app->theme->templates_loaded, false, false);
         echo '</td></tr>';
         echo '</table><br><br>';
     }

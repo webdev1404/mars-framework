@@ -7,6 +7,7 @@
 namespace Mars\Ui;
 
 use Mars\App;
+use Mars\App\InstanceTrait;
 
 /**
  * The Pagination Class
@@ -14,7 +15,7 @@ use Mars\App;
  */
 class Pagination
 {
-    use \Mars\AppTrait;
+    use InstanceTrait;
 
     /**
      * @var string $base_url The generic base_url where the number of the page will be appended

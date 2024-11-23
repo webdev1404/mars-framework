@@ -564,7 +564,7 @@ class Config extends Data
      * @param App $app The app object
      */
     public function __construct(App $app)
-    {
+    {        
         $this->app = $app;
 
         $this->read();

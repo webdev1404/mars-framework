@@ -6,6 +6,7 @@
 
 namespace Mars;
 
+use Mars\App\InstanceTrait;
 use Mars\Serializers\DriverInterface;
 
 /**
@@ -15,7 +16,7 @@ use Mars\Serializers\DriverInterface;
  */
 class Serializer
 {
-    use AppTrait;
+    use InstanceTrait;
 
     /**
      * @var Drivers $drivers The drivers object

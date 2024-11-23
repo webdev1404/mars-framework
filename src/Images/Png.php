@@ -25,7 +25,7 @@ class Png extends Image implements DriverInterface
      * @see \Mars\Images\DriverInterface::__construct()
      * {@inheritdoc}
      */
-    public function __construct(string $filename, App $app = null)
+    public function __construct(string $filename, App $app)
     {
         parent::__construct($filename, $app);
 

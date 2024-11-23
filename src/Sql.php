@@ -6,13 +6,15 @@
 
 namespace Mars;
 
+use Mars\App\InstanceTrait;
+
 /**
  * The Sql Builder Class.
  * Builds sql code
  */
 class Sql
 {
-    use AppTrait;
+    use InstanceTrait;
 
     /**
      * @var string $sql The sql code

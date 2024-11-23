@@ -19,7 +19,7 @@ interface DriverInterface
      * @param string $filename The image's filename
      * @param App $app The app object
      */
-    public function __construct(string $filename, App $app = null);
+    public function __construct(string $filename, App $app);
 
     /**
      * Determines if the image is valid

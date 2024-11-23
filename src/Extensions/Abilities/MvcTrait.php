@@ -54,11 +54,11 @@ trait MvcTrait
         }
 
         $controller_class = $this->getMvcClass(App::EXTENSIONS_DIRS['controllers'], $controller);
-        
-        $class_name = $this->getRootNamespace() . App::getClass($this->name) . "\\" . $controller_class;
+    ;
+        $class_name = $this->namespace . "\\" . $controller_class;
 
         $this->controller = new $class_name($this, $this->app);
-
+var_dump($this->controller);die;
         return $this->controller;
     }
 
@@ -85,7 +85,7 @@ trait MvcTrait
      * @param string $view The name of the view
      * @return View The view
      */
-    public function getView(string $view = '', Controller $controller = null) : View
+    public function getView(string $view = '', ?Controller $controller = null) : View
     {
         if (!$view) {
             $view = $this->name;

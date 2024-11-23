@@ -6,7 +6,9 @@
 
 namespace Mars;
 
+use Mars\App\InstanceTrait;
 use Mars\Alerts\Errors;
+use Mars\Validation\ValidateTrait;
 
 /**
  * The Item Class
@@ -17,8 +19,8 @@ use Mars\Alerts\Errors;
  */
 abstract class Item extends Entity
 {
-    use AppTrait;
-    use ValidationTrait {
+    use InstanceTrait;
+    use ValidateTrait {
         validate as protected validateData;
     }
 
@@ -127,7 +129,7 @@ abstract class Item extends Entity
      * @param mixed $data If data is an int, will load the data with id = data from the database. If string will load the data with name = data. If an array or oject, will assume the array contains the object's data. If null, will load the defaults
      * @param App $app The app object
      */
-    public function __construct($data = 0, App $app = null)
+    public function __construct($data = 0, ?App $app = null)
     {
         $this->app = $app ?? $this->getApp();
         $this->db = $this->app->db;
@@ -286,15 +288,6 @@ abstract class Item extends Entity
     }
 
     /**
-     * Returns the array with the default properties
-     * @return array
-     */
-    protected function getDefaultsArray() : array
-    {
-        return static::$defaults_array;
-    }
-
-    /**
      * Determines if the object's id is set
      * @return bool
      */
@@ -307,11 +300,15 @@ abstract class Item extends Entity
      * @see \Mars\Entity::set()
      * {@inheritdoc}
      */
-    public function set(array|object $data) : static
+    public function set(array|object $data, bool $overwrite = true) : static
     {
         $this->original = $this->getOriginalData(App::array($data));
+        
+        parent::set($data, $overwrite);
 
-        return parent::set($data);
+        $this->prepare();
+
+        return $this;
     }
 
     /**
@@ -319,7 +316,7 @@ abstract class Item extends Entity
      * @param int $id The id to return the data for
      * @return object The row, or null on failure
      */
-    public function getRow(int $id) : ?object
+    public function getRowById(int $id) : ?object
     {
         return $this->db->selectById($this->getTable(), $id, $this->getIdField());
     }
@@ -352,7 +349,7 @@ abstract class Item extends Entity
 
         if (is_numeric($data)) {
             //load the data from the db, by id
-            $data = $this->getRow($data);
+            $data = $this->getRowById($data);
         } elseif (is_string($data)) {
             //load the data from the db, by name
             $data = $this->getRowByName($data);
@@ -364,8 +361,6 @@ abstract class Item extends Entity
 
         //set the data from the array/object
         $this->set($data);
-
-        $this->prepare();
 
         return $this;
     }

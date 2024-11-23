@@ -7,6 +7,7 @@
 namespace Mars\Device;
 
 use Mars\App;
+use Mars\App\InstanceTrait;
 
 /**
  * The Detect Device Class
@@ -14,24 +15,15 @@ use Mars\App;
  */
 class MobileDetect implements DriverInterface
 {
-    use \Mars\AppTrait;
-
-    /**
-     * Builds the Device object
-     * @param App $app The app object
-     */
-    public function __construct(App $app = null)
-    {
-        $this->app = $app ?? $this->getApp();
-    }
+    use InstanceTrait;
 
     /**
      * @see \Mars\Device\DriverInterface::get()
      * {@inheritdoc}
      */
-    public function get(string $useragent = null) : string
+    public function get(string $useragent = '') : string
     {
-        $useragent = $useragent ?? $this->app->useragent;
+        $useragent = $useragent ? $useragent : $this->app->useragent;
         $handle = new \Detection\MobileDetect;
         $handle->setUserAgent($useragent);
 

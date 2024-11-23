@@ -6,13 +6,15 @@
 
 namespace Mars\Response\Types;
 
+use Mars\App\InstanceTrait;
+
 /**
  * The Html Response Class
  * Generates a html response
  */
 class Html implements DriverInterface
 {
-    use \Mars\AppTrait;
+    use InstanceTrait;
 
     /**
      * @see \Mars\Response\DriverInterface::get()

@@ -6,6 +6,7 @@
 
 namespace Mars;
 
+use Mars\App\InstanceTrait;
 use Mars\Captcha\DriverInterface;
 
 /**
@@ -14,7 +15,7 @@ use Mars\Captcha\DriverInterface;
  */
 class Captcha
 {
-    use AppTrait;
+    use InstanceTrait;
 
     /**
      * @var bool $enabled Will be set to true, if captcha is enabled
@@ -41,9 +42,9 @@ class Captcha
     /**
      * Builds the captcha object
      */
-    public function __construct(App $app = null)
+    public function __construct(App $app)
     {
-        $this->app = $app ?? $this->getApp();
+        $this->app = $app;
 
         if (!$this->app->config->captcha_enable) {
             return;

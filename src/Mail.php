@@ -6,6 +6,7 @@
 
 namespace Mars;
 
+use Mars\App\InstanceTrait;
 use Mars\Mail\DriverInterface;
 
 /**
@@ -14,7 +15,7 @@ use Mars\Mail\DriverInterface;
  */
 class Mail
 {
-    use AppTrait;
+    use InstanceTrait;
 
     /**
      * @var Drivers $drivers The drivers object
@@ -37,9 +38,9 @@ class Mail
      * Constructs the mail object
      * @param App $app The app object
      */
-    public function __construct(App $app = null)
+    public function __construct(App $app)
     {
-        $this->app = $app ?? $this->getApp();
+        $this->app = $app;
         $this->drivers = new Drivers($this->supported_drivers, DriverInterface::class, 'mail', $this->app);
         $this->driver = $this->drivers->get($this->app->config->mail_driver);
     }

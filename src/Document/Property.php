@@ -6,13 +6,15 @@
 
 namespace Mars\Document;
 
+use Mars\App\InstanceTrait;
+
 /**
  * The Document Property Class
  * Stores the value of a document's property. Eg: title
  */
 abstract class Property
 {
-    use \Mars\AppTrait;
+    use InstanceTrait;
 
     /**
      * @var string $value The property's value

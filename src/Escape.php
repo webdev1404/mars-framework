@@ -6,13 +6,15 @@
 
 namespace Mars;
 
+use Mars\App\InstanceTrait;
+
 /**
  * The Escapes Class
  * Escape values
  */
 class Escape
 {
-    use AppTrait;
+    use InstanceTrait;
 
     /**
      * Converts special chars. to html entitites

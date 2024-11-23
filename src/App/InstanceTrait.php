@@ -1,27 +1,34 @@
 <?php
 /**
-* The Use App Trait
+* The App Instance Trait
 * @package Mars
 */
 
-namespace Mars;
+namespace Mars\App;
+
+use Mars\App;
+use Mars\Hidden;
+use Mars\Debug\InfoTrait;
 
 /**
- * The App Trait
+ * The App Instance Trait
  * Trait injecting/pulling the $app dependency into the current object
  */
-trait AppTrait
+trait InstanceTrait
 {
+    use InfoTrait;
+
     /**
      * @var App $app The app object
      */
+    #[Hidden]
     protected App $app;
 
     /**
      * Builds the object
      * @param App $app The app object
      */
-    public function __construct(App $app = null)
+    public function __construct(?App $app = null)
     {
         $this->app = $app ?? App::get();
     }
@@ -53,17 +60,5 @@ trait AppTrait
     public function __wakeup()
     {
         $this->app = App::get();
-    }
-
-    /**
-     * Removes properties which shouldn't be displayed by var_dump/print_r
-     */
-    public function __debugInfo()
-    {
-        $properties = get_object_vars($this);
-
-        unset($properties['app']);
-
-        return $properties;
     }
 }

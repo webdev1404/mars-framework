@@ -7,6 +7,7 @@
 namespace Mars\Session;
 
 use Mars\App;
+use Mars\App\InstanceTrait;
 
 /**
  * The Memcache Session Class
@@ -14,7 +15,7 @@ use Mars\App;
  */
 class Memcache implements DriverInterface, \SessionHandlerInterface, \SessionUpdateTimestampHandlerInterface
 {
-    use \Mars\AppTrait;
+    use InstanceTrait;
 
     /**
      * @var int $lifetime The session's lifetime

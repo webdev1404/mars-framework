@@ -6,6 +6,7 @@
 
 namespace Mars;
 
+use Mars\App\InstanceTrait;
 use Mars\Device\DriverInterface;
 
 /**
@@ -14,7 +15,7 @@ use Mars\Device\DriverInterface;
  */
 class Device
 {
-    use AppTrait;
+    use InstanceTrait;
 
     /**
      * @var Drivers $drivers The drivers object

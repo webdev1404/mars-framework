@@ -6,6 +6,8 @@
 
 namespace Mars;
 
+use Mars\App\InstanceTrait;
+use Mars\LazyLoad\GhostTrait;
 use Mars\Request\Input;
 use Mars\Request\Get;
 use Mars\Request\Post;
@@ -21,57 +23,101 @@ use Mars\Request\Files;
  */
 class Request
 {
-    use AppTrait;
+    use InstanceTrait;
+    use GhostTrait;
 
     /**
-     * @var string $method The request method. get/post.
+     * @var RequestObj $request Alias for $request
      */
-    public readonly string $method;
+    public RequestObj $all {
+        get {
+            if (isset($this->all)) {
+                return $this->all;
+            }
+
+            $this->all = $this->request;
+
+            return $this->all;
+        }
+    }
+
+    /**
+     * @var RequestObj $request Object containing the request data
+     */
+    #[LazyLoad]
+    public RequestObj $request;
 
     /**
      * @var Get $get Object containing the get data
      */
+    #[LazyLoad]
     public Get $get;
 
     /**
      * @var Post $post Object containing the post data
      */
+    #[LazyLoad]
     public Post $post;
-
-    /**
-     * @var RequestObj $request Object containing the request data
-     */
-    public RequestObj $request;
-
-    /**
-     * @var RequestObj $request Alias for $request
-     */
-    public RequestObj $all;
 
     /**
      * @var Cookie $cookie Object containing the cookie data
      */
+    #[LazyLoad]
     public Cookie $cookie;
 
     /**
      * @var Server $server Object containing the server data
      */
+    #[LazyLoad]
     public Server $server;
 
     /**
      * @var Env $env Object containing the env data
      */
+    #[LazyLoad]
     public Env $env;
 
     /**
      * @var Files $files Object containing the files data
      */
+    #[LazyLoad]
     public Files $files;
 
     /**
      * @var Input $input The default input object to use when get() is called
      */
-    protected Input $input;
+    public Input $input {
+        get {
+            if (isset($this->input)) {
+                return $this->input;
+            }
+
+            $this->input = $this->get;
+            if ($this->method == 'post') {
+                $this->input = $this->post;
+            }
+
+            return $this->input;
+        }
+    }
+
+    /**
+     * @var string $method The request method. get/post.
+     */
+    public protected(set) string $method {
+        get {
+            if (isset($this->method)) {
+                return $this->method;
+            }
+
+            $this->method = '';
+            if ($this->app->is_web) {
+                $this->method = strtolower($_SERVER['REQUEST_METHOD']);
+            } 
+
+            return $this->method;
+        }
+    }
 
     /**
      * Builds the request object
@@ -79,37 +125,9 @@ class Request
      */
     public function __construct(App $app)
     {
+        $this->lazyLoad($app);
+
         $this->app = $app;
-
-        $this->method = $this->getMethod();
-        
-        $this->get = new \Mars\Request\Get($this->app);
-        $this->post = new \Mars\Request\Post($this->app);
-        $this->request = new \Mars\Request\Request($this->app);
-        $this->cookie = new \Mars\Request\Cookie($this->app);
-        $this->server = new \Mars\Request\Server($this->app);
-        $this->env = new \Mars\Request\Env($this->app);
-        $this->files = new \Mars\Request\Files($this->app);
-        $this->all = $this->request;
-
-        if ($this->method == 'post') {
-            $this->input = $this->post;
-        } else {
-            $this->input = $this->get;
-        }
-    }
-
-    /**
-     * Returns the request method: get/post/put
-     * @return string
-     */
-    protected function getMethod() : string
-    {
-        if ($this->app->is_bin) {
-            return '';
-        }
-
-        return strtolower($_SERVER['REQUEST_METHOD']);
     }
 
     /**
@@ -139,11 +157,11 @@ class Request
      * @param string $action_param The action param
      * @return string The action
      */
-    public function getAction(string $action_param = null) : string
+    public function getAction(string $action_param = '') : string
     {
-        $action_param = $action_param ?? $this->app->config->request_action_param;
+        $action_param = $action_param ? $action_param : $this->app->config->request_action_param;
 
-        return $this->all->get($action_param);
+        return $this->request->get($action_param);
     }
 
     /**
@@ -153,11 +171,11 @@ class Request
      * @param string $orderby_param The name of the orderby param
      * @return string The 'order by' value
      */
-    public function getOrderBy(array $valid_fields = [], string $default_field = '', string $orderby_param = null) : string
+    public function getOrderBy(array $valid_fields = [], string $default_field = '', string $orderby_param = '') : string
     {
-        $orderby_param = $orderby_param ?? $this->app->config->request_orderby_param;
+        $orderby_param = $orderby_param ? $orderby_param : $this->app->config->request_orderby_param;
 
-        $orderby = $this->all->get($orderby_param);
+        $orderby = $this->request->get($orderby_param);
 
         if ($valid_fields) {
             if (array_is_list($valid_fields)) {
@@ -185,7 +203,7 @@ class Request
     {
         $order_param = $order_param ?? $this->app->config->request_order_param;
 
-        $order = strtolower($this->all->get($order_param));
+        $order = strtolower($this->request->get($order_param));
 
         if ($order == 'asc') {
             return 'ASC';
@@ -201,10 +219,10 @@ class Request
      * @param string $page_param The name of the page param
      * @return int The value of the current page
      */
-    public function getPage(string $page_param = null) : int
+    public function getPage(string $page_param = '') : int
     {
-        $page_param = $page_param ?? $this->app->config->request_page_param;
+        $page_param = $page_param ? $page_param : $this->app->config->request_page_param;
 
-        return $this->all->get($page_param, 'absint');
+        return $this->request->get($page_param, 'absint');
     }
 }

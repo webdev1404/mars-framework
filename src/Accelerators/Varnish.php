@@ -7,6 +7,7 @@
 namespace Mars\Accelerators;
 
 use Mars\App;
+use Mars\App\InstanceTrait;
 use Mars\Http\Request;
 
 /**
@@ -14,7 +15,7 @@ use Mars\Http\Request;
  */
 class Varnish implements DriverInterface
 {
-    use \Mars\AppTrait;
+    use InstanceTrait;
 
     /**
      * @see \Mars\Accelerators\DriverInterface::delete()

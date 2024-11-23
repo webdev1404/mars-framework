@@ -7,6 +7,7 @@
 namespace Mars\Helpers;
 
 use Mars\App;
+use Mars\App\InstanceTrait;
 use Mars\Handlers;
 
 /**
@@ -15,7 +16,7 @@ use Mars\Handlers;
  */
 class Minifier
 {
-    use \Mars\AppTrait;
+    use InstanceTrait;
 
     /**
      * @var Handlers $minifiers The screens handlers
@@ -35,9 +36,9 @@ class Minifier
      * Constructs the screens object
      * @param App $app The app object
      */
-    public function __construct(App $app = null)
+    public function __construct(App $app)
     {
-        $this->app = $app ?? $this->getApp();
+        $this->app = $app;
         $this->minifiers = new Handlers($this->minifiers_list, $this->app);
     }
 

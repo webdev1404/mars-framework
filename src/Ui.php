@@ -6,12 +6,14 @@
 
 namespace Mars;
 
+use Mars\App\InstanceTrait;
+
 /**
  * The User Interface (UI) Class
  */
 class Ui
 {
-    use AppTrait;
+    use InstanceTrait;
 
     /**
      * @var Handlers $handlers The handlers object

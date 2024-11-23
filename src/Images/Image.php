@@ -8,6 +8,7 @@ namespace Mars\Images;
 
 use GdImage;
 use Mars\App;
+use Mars\App\InstanceTrait;
 use Mars\Images\Operations\Resize;
 
 /**
@@ -15,7 +16,7 @@ use Mars\Images\Operations\Resize;
  */
 abstract class Image
 {
-    use \Mars\AppTrait;
+    use InstanceTrait;
 
     /**
      * @var string $filename The image's filename
@@ -46,9 +47,9 @@ abstract class Image
      * @see \Mars\Images\DriverInterface::__construct()
      * {@inheritdoc}
      */
-    public function __construct(string $filename, App $app = null)
+    public function __construct(string $filename, App $app)
     {
-        $this->app = $app ?? $this->getApp();
+        $this->app = $app;
         $this->filename = $filename;
         $this->optimize = $this->app->config->image_optimize;
     }

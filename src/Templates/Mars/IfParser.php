@@ -11,8 +11,6 @@ namespace Mars\Templates\Mars;
  */
 class IfParser
 {
-    use \Mars\AppTrait;
-
     /**
      * @see \Mars\Templates\DriverInterface::parse()
      * {@inheritdoc}
@@ -20,11 +18,13 @@ class IfParser
     public function parse(string $content, array $params = []) : string
     {
         $content = preg_replace_callback('/\{\%\s*if(.*)\s*\%\}/iU', function (array $match) {
-            return '<?php if(' . $this->getCondition($match) . '){ ?>';
+            $condition = $this->getCondition($match);
+            
+            return '<?php if(!empty(' . $this->getCondition($match) . ')){ ?>';
         }, $content);
 
         $content = preg_replace_callback('/\{\%\s*elseif(.*)\s*\%\}/isU', function (array $match) {
-            return '<?php } elseif(' . $this->getCondition($match) . '){ ?>';
+            return '<?php } elseif(!empty(' . $this->getCondition($match) . ')){ ?>';
         }, $content);
 
         $content = preg_replace('/\{\%\s*else\s*\%\}/iU', '<?php } else { ?>', $content);

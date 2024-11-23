@@ -6,12 +6,14 @@
 
 namespace Mars\Filters;
 
+use Mars\App\InstanceTrait;
+
 /**
  * The Slug Filter Class
  */
 class Slug
 {
-    use \Mars\AppTrait;
+    use InstanceTrait;
 
     /**
      * @see \Mars\Filter::slug()

@@ -6,6 +6,7 @@
 
 namespace Mars;
 
+use Mars\App\InstanceTrait;
 use Mars\Http\Request;
 
 /**
@@ -14,7 +15,7 @@ use Mars\Http\Request;
  */
 class Http
 {
-    use AppTrait;
+    use InstanceTrait;
 
     /**
      * @var Request $request The request object

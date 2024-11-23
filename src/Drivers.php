@@ -6,13 +6,15 @@
 
 namespace Mars;
 
+use Mars\App\InstanceTrait;
+
 /**
  * The Driver Class
  * Encapsulates a list of suported drivers
  */
 class Drivers
 {
-    use AppTrait;
+    use InstanceTrait;
     use \Mars\Lists\ListTrait;
 
     /**
@@ -32,7 +34,7 @@ class Drivers
      * @param string $config_key The name of the key from where we'll read additional supported drivers from app->config->drivers
      * @param App $app The app object
      */
-    public function __construct(array $list, string $interface_name, string $config_key = '', App $app = null)
+    public function __construct(array $list, string $interface_name, string $config_key = '', ?App $app = null)
     {
         $this->app = $app ?? $this->getApp();
         $this->list = $list;

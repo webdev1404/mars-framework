@@ -6,6 +6,7 @@
 
 namespace Mars;
 
+use Mars\App\InstanceTrait;
 use Mars\Accelerators\DriverInterface;
 
 /**
@@ -14,7 +15,7 @@ use Mars\Accelerators\DriverInterface;
  */
 class Accelerator
 {
-    use AppTrait;
+    use InstanceTrait;
 
     /**
      * @var bool $enabled Will be set to true, if enabled

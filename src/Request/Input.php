@@ -7,6 +7,7 @@
 namespace Mars\Request;
 
 use Mars\App;
+use Mars\App\InstanceTrait;
 
 /**
  * The Base Input Class
@@ -14,7 +15,7 @@ use Mars\App;
  */
 abstract class Input
 {
-    use \Mars\AppTrait;
+    use InstanceTrait;
 
     /**
      * The data to read from
@@ -48,7 +49,7 @@ abstract class Input
         }
         
         if ($is_array) {
-            $value = App::array($value);
+            $value = (array)$value;
         }
 
         $value = $this->app->filter->trim($value);
@@ -77,7 +78,7 @@ abstract class Input
      * @param string $name The name of the variable
      * @return mixed The value
      */
-    public function getRaw(string $name)
+    public function getRaw(string $name) : mixed
     {
         return $this->data[$name] ?? '';
     }

@@ -7,6 +7,7 @@
 namespace Mars\Session;
 
 use Mars\App;
+use Mars\App\InstanceTrait;
 
 /**
  * The Php Session Class
@@ -14,7 +15,7 @@ use Mars\App;
  */
 class Php implements DriverInterface
 {
-    use \Mars\AppTrait;
+    use InstanceTrait;
 
     /**
      * Builds the Php Session driver

@@ -6,13 +6,15 @@
 
 namespace Mars;
 
+use Mars\App\InstanceTrait;
+
 /**
  * The Handlers Class
  * Encapsulates a list of suported handlers
  */
 class Handlers
 {
-    use AppTrait;
+    use InstanceTrait;
     use \Mars\Lists\ListTrait {
         add as addToList;
         remove as removeFromList;
@@ -38,7 +40,7 @@ class Handlers
      * @param array $list The list of supported handlers
      * @param App $app The app object
      */
-    public function __construct(array $list, App $app = null)
+    public function __construct(array $list, ?App $app = null)
     {
         $this->app = $app ?? $this->getApp();
         $this->list = $list;

@@ -6,6 +6,7 @@
 
 namespace Mars;
 
+use Mars\App\InstanceTrait;
 use Mars\Document\Css;
 use Mars\Document\Javascript;
 use Mars\Document\Meta;
@@ -18,7 +19,7 @@ use Mars\Document\Title;
  */
 class Document
 {
-    use AppTrait;
+    use InstanceTrait;
 
     /**
      * @var Css $css The css object

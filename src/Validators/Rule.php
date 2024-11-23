@@ -7,13 +7,14 @@
 namespace Mars\Validators;
 
 use Mars\App;
+use Mars\App\InstanceTrait;
 
 /**
  * The Base Validator Class
  */
 abstract class Rule
 {
-    use \Mars\AppTrait;
+    use InstanceTrait;
 
     /**
      * @var string $error_string The error string

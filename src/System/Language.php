@@ -25,6 +25,8 @@ class Language extends \Mars\Extensions\Language
 
         parent::__construct($app->config->language, $app);
 
+        include($this->path . '/init.php');
+
         $this->loadFile('errors');
     }
 }

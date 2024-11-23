@@ -7,6 +7,7 @@
 namespace Mars\Templates;
 
 use Mars\App;
+use Mars\App\InstanceTrait;
 use Mars\Handlers;
 
 /**
@@ -33,7 +34,7 @@ use Mars\Handlers;
  */
 class Mars implements DriverInterface
 {
-    use \Mars\AppTrait;
+    use InstanceTrait;
 
     /**
      * @var Handlers $handlers The parsers object

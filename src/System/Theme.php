@@ -17,7 +17,12 @@ class Theme extends \Mars\Extensions\Theme
     /**
      * @var bool $is_homepage Set to true if the homepage is currently displayed
      */
-    public bool $is_homepage = false;
+    public bool $is_homepage {
+        get {
+            return $this->app->is_homepage;
+        }
+        set {}
+    }
 
     /**
      * Builds the theme
@@ -30,10 +35,6 @@ class Theme extends \Mars\Extensions\Theme
         }
         
         parent::__construct($app->config->theme, $app);
-
-        $this->is_homepage = $this->app->is_homepage;
-
-        $this->templates = new Templates($app);
 
         include($this->path . '/init.php');
     }

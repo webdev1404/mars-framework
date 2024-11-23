@@ -6,6 +6,7 @@
 
 namespace Mars;
 
+use Mars\App\InstanceTrait;
 use Mars\Html\TagInterface;
 use Mars\Html\Tag;
 use Mars\Html\Form;
@@ -17,7 +18,7 @@ use Mars\Html\Input\Select;
  */
 class Html
 {
-    use AppTrait;
+    use InstanceTrait;
 
     /**
      * @var Handlers $handlers The tags object

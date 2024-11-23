@@ -6,13 +6,15 @@
 
 namespace Mars;
 
+use Mars\App\InstanceTrait;
+
 /**
  * The Route Class
  * Implements the View functionality of the MVC pattern
  */
 class Router
 {
-    use AppTrait;
+    use InstanceTrait;
 
     /**
      * @var array $routes_list The defined routes list

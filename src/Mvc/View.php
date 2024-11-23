@@ -7,6 +7,7 @@
 namespace Mars\Mvc;
 
 use Mars\App;
+use Mars\App\InstanceTrait;
 use Mars\Document;
 use Mars\Escape;
 use Mars\Filter;
@@ -25,7 +26,7 @@ use Mars\Extensions\Extension;
  */
 abstract class View
 {
-    use \Mars\AppTrait;
+    use InstanceTrait;
 
     /**
      * @var string $default_method Default method to be executed on dispatch/route or if the requested method doesn't exist or is not public
@@ -117,7 +118,7 @@ abstract class View
      * @param Controller $controller The controller the view belongs to
      * @param App $app the app object
      */
-    public function __construct(Controller $controller, App $app = null)
+    public function __construct(Controller $controller, ?App $app = null)
     {
         $this->app = $app ?? $this->getApp();
         $this->controller = $controller;

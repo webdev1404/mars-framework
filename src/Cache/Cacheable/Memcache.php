@@ -7,6 +7,7 @@
 namespace Mars\Cache\Cacheable;
 
 use Mars\App;
+use Mars\App\InstanceTrait;
 
 /**
  * The Memcache Driver
@@ -14,7 +15,7 @@ use Mars\App;
  */
 class Memcache implements DriverInterface
 {
-    use \Mars\AppTrait;
+    use InstanceTrait;
 
     /**
      * @param App $app The app object

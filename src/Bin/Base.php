@@ -6,17 +6,19 @@
 
 namespace Mars\Bin;
 
+use Mars\App\InstanceTrait;
+
 /**
  * The Base Bin Handler
  */
 abstract class Base
 {
-    use \Mars\AppTrait;
+    use InstanceTrait;
 
     /**
      * @var int $padding_right The default right padding
      */
-    protected int $padding_right = 5;
+    public int $padding_right = 5;
 
     /**
      * Returns the max length of a column

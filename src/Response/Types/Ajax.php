@@ -7,6 +7,7 @@
 namespace Mars\Response\Types;
 
 use Mars\App;
+use Mars\App\InstanceTrait;
 
 /**
  * The Ajax Response Class
@@ -14,7 +15,7 @@ use Mars\App;
  */
 class Ajax implements DriverInterface
 {
-    use \Mars\AppTrait;
+    use InstanceTrait;
 
     /**
      * @see \Mars\Response\DriverInterface::get()

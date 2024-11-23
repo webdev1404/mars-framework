@@ -65,10 +65,10 @@ final class ItemTest extends Base
         $this->assertTrue($car->is());
     }
 
-    public function testGetRow()
+    public function testGetRowById()
     {
         $car = new Car;
-        $row = $car->getRow(1);
+        $row = $car->getRowById(1);
 
         $this->assertSame($row->id, 1);
         $this->assertSame($row->name, 'mercedes');

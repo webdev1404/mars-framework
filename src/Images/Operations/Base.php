@@ -8,6 +8,7 @@ namespace Mars\Images\Operations;
 
 use GdImage;
 use Mars\App;
+use Mars\App\InstanceTrait;
 use Mars\Images\Image;
 
 /**
@@ -15,7 +16,7 @@ use Mars\Images\Image;
  */
 abstract class Base
 {
-    use \Mars\AppTrait;
+    use InstanceTrait;
 
     /**
      * @var Image $source The source image

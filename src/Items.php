@@ -6,6 +6,7 @@
 
 namespace Mars;
 
+use Mars\App\InstanceTrait;
 use Mars\Alerts\Errors;
 
 /**
@@ -17,7 +18,7 @@ use Mars\Alerts\Errors;
  */
 abstract class Items extends Entities
 {
-    use AppTrait;
+    use InstanceTrait;
 
     /**
      * @var Errors $errors The generated errors, if any
@@ -49,7 +50,7 @@ abstract class Items extends Entities
      * @param bool $load If true, will automatically load the items
      * @param App $app The app object
      */
-    public function __construct(bool $load = false, App $app = null)
+    public function __construct(bool $load = false, ?App $app = null)
     {
         $this->app = $app ?? $this->getApp();
         $this->db = $this->app->db;
@@ -241,7 +242,7 @@ abstract class Items extends Entities
      * @param int|array $ids The IDs to delete. If null, all the current loaded objects will be deleted
      * @return int The number of affected rows
      */
-    public function delete(int|array $ids = null) : int
+    public function delete(int|array|null $ids = null) : int
     {
         $ids = (array)($ids ?? $this->getIds());
         if (!$ids) {

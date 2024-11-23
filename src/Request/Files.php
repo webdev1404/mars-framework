@@ -149,7 +149,7 @@ class Files extends Input
      */
     protected function getFilename(string $name, string $upload_dir, bool $append_suffix = false, bool $append_suffix_if_file_exists = true) : string
     {
-        $filename = App::fixPath($upload_dir) . $this->app->filter->filename($name);
+        $filename = $upload_dir . '/' . $this->app->filter->filename($name);
 
         if (!$append_suffix && $append_suffix_if_file_exists) {
             if (is_file($filename)) {

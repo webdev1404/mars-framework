@@ -7,6 +7,7 @@
 namespace Mars\Alerts;
 
 use Mars\App;
+use Mars\App\InstanceTrait;
 
 /**
  * The Alerts Class
@@ -15,6 +16,8 @@ use Mars\App;
  */
 abstract class Alerts
 {
+    use InstanceTrait;
+    
     /**
      * @var array $alerts Array with all the generated alerts
      */

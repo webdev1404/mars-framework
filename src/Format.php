@@ -7,6 +7,7 @@
 namespace Mars;
 
 use DateTime;
+use Mars\App\InstanceTrait;
 
 /**
  * The Format Class
@@ -14,7 +15,7 @@ use DateTime;
  */
 class Format
 {
-    use AppTrait;
+    use InstanceTrait;
 
     /**
      * @var string $datetime_format The datetime format

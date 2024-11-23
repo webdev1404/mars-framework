@@ -13,8 +13,6 @@ use Mars\App;
  */
 class VariableDoubleParser extends VariableParser
 {
-    use \Mars\AppTrait;
-
     /**
      * @see \Mars\Templates\DriverInterface::parse()
      * {@inheritdoc}

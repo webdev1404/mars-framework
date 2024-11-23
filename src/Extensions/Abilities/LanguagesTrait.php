@@ -26,7 +26,7 @@ trait LanguagesTrait
             $file = $this->name;
         }
         if ($prefix === null) {
-            $prefix = $this->name;
+            $prefix = $this->name . '.';
         }
 
         $filename = $this->path . '/' . App::EXTENSIONS_DIRS['languages'] . '/' . $this->app->lang->name . '/' . $file . '.php';

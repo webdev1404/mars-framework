@@ -6,13 +6,15 @@
 
 namespace Mars;
 
+use Mars\App\InstanceTrait;
+
 /**
  * The Filter Class
  * Filters values
  */
 class Filter
 {
-    use AppTrait;
+    use InstanceTrait;
 
     /**
      * @var Handlers $filters The filters object
@@ -177,7 +179,7 @@ class Filter
      * @param string $encoding The encoding of the text
      * @return string The filtered html
      */
-    public function html(string $html, string $allowed_elements = null, string $allowed_attributes = null, string $encoding = 'UTF-8') : string
+    public function html(string $html, ?string $allowed_elements = null, ?string $allowed_attributes = null, string $encoding = 'UTF-8') : string
     {
         return $this->filters->map($html, function ($html) use ($allowed_elements, $allowed_attributes, $encoding) {
             return $this->filters->get('html')->filter($html, $allowed_elements, $allowed_attributes, $encoding);

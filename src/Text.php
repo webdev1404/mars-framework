@@ -6,13 +6,15 @@
 
 namespace Mars;
 
+use Mars\App\InstanceTrait;
+
 /**
  * The Text Class
  * Text processing functionality
  */
 class Text
 {
-    use AppTrait;
+    use InstanceTrait;
 
     /**
      * @var Handlers $handlers The operations object

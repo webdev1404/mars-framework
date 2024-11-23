@@ -7,6 +7,7 @@
 namespace Mars\Cache;
 
 use Mars\App;
+use Mars\App\InstanceTrait;
 
 /**
  * The Templates Cache Class
@@ -14,7 +15,7 @@ use Mars\App;
  */
 class Templates
 {
-    use \Mars\AppTrait;
+    use InstanceTrait;
 
     /**
      * @var string $path The folder where the templates will be cached

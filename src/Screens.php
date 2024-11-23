@@ -6,6 +6,7 @@
 
 namespace Mars;
 
+use Mars\App\InstanceTrait;
 use Mars\Serializers\DriverInterface;
 
 /**
@@ -14,7 +15,7 @@ use Mars\Serializers\DriverInterface;
  */
 class Screens
 {
-    use AppTrait;
+    use InstanceTrait;
 
     /**
      * @var Handlers $screens The screens handlers

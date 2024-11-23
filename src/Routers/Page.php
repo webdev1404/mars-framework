@@ -7,6 +7,7 @@
 namespace Mars\Routers;
 
 use Mars\App;
+use Mars\App\InstanceTrait;
 
 /**
  * The Page Router Class
@@ -14,7 +15,7 @@ use Mars\App;
  */
 class Page implements HandlerInterface
 {
-    use \Mars\AppTrait;
+    use InstanceTrait;
     
     /**
      * @var string $name The template's name

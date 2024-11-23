@@ -7,6 +7,7 @@
 namespace Mars\Mvc;
 
 use Mars\App;
+use Mars\App\InstanceTrait;
 use Mars\Entities;
 
 /**
@@ -15,18 +16,18 @@ use Mars\Entities;
  */
 abstract class ModelEntities extends Entities
 {
-    use \Mars\AppTrait;
+    use InstanceTrait;
     use ModelTrait;
 
     /**
      * Builds the Model
      * @param App $app The app object
      */
-    public function __construct(App $app = null)
+    public function __construct(App $app)
     {
         parent::__construct();
 
-        $this->app = $app ?? App::getApp();
+        $this->app = $app;
 
         $this->prepare();
         $this->init();

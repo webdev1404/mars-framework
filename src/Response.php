@@ -6,6 +6,7 @@
 
 namespace Mars;
 
+use Mars\App\InstanceTrait;
 use Mars\Response\Types\DriverInterface;
 use Mars\Response\Cookies;
 use Mars\Response\Headers;
@@ -17,7 +18,7 @@ use Mars\Response\Push;
  */
 class Response
 {
-    use AppTrait;
+    use InstanceTrait;
 
     /**
      * @var Handlers $responses The $responses object

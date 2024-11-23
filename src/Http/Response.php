@@ -7,6 +7,7 @@
 namespace Mars\Http;
 
 use Mars\App;
+use Mars\App\InstanceTrait;
 
 /**
  * The Http Response Class
@@ -14,7 +15,7 @@ use Mars\App;
  */
 class Response
 {
-    use \Mars\AppTrait;
+    use InstanceTrait;
 
     /**
      * @var string $body The body
@@ -52,14 +53,14 @@ class Response
      * @param string|bool $result The curl result
      * @param App $app The app object
      */
-    public function __construct($ch, string|bool $result, App $app = null)
+    public function __construct($ch, string|bool $result, App $app)
     {
         if ($result === false) {
             $this->error_no = curl_errno($ch);
             $this->error = curl_error($ch);
         }
 
-        $this->app = $app ?? $this->getApp();
+        $this->app = $app;
         $this->code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         $this->info = curl_getinfo($ch);
         $this->headers = $this->buildHeaders();

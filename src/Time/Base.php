@@ -7,6 +7,7 @@
 namespace Mars\Time;
 
 use Mars\App;
+use Mars\App\InstanceTrait;
 use DateTimeZone;
 use DateTime;
 use DateInterval;
@@ -17,8 +18,8 @@ use DateInterval;
  */
 abstract class Base
 {
-    use \Mars\AppTrait;
-
+    use InstanceTrait;
+    
     /**
      * @var string $timezone_id The
      */
@@ -38,7 +39,7 @@ abstract class Base
     /**
      * @var string $default_value The default value
      */
-    protected string $default_value = '';
+    protected ?string $default_value = null;
 
     /**
      * Builds the time object
@@ -107,9 +108,9 @@ abstract class Base
     /**
      * Returns a formatted datetime
      * @param int|string|\DateTime $datetime The datetime
-     * @return string The formatted datetime
+     * @return string|null The formatted datetime
      */
-    public function get(int|string|DateTime $datetime) : string
+    public function get(int|string|DateTime $datetime) : string|null
     {
         if (!$datetime) {
             return $this->default_value;

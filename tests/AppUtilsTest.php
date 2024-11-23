@@ -11,12 +11,6 @@ final class AppUtilsTest extends Base
 {
     protected array $data = ['foo' => 'bar', 'abc' => 'baz', 'def' => 'bay'];
 
-    public function testfixPath()
-    {
-        $this->assertSame(App::fixPath('/var/www/html'), '/var/www/html');
-        $this->assertSame(App::fixPath('/var/www/html/'), '/var/www/html');
-    }
-
     public function testGetClass()
     {
         $this->assertSame(App::getClass('my class'), 'MyClass');
@@ -81,11 +75,5 @@ final class AppUtilsTest extends Base
     {
         $this->assertSame(App::unset(['a' => 1, 'b' => 2, 'c' => 3], ['a', 'b']), ['c' => 3]);
         $this->assertSame(App::unset(['a' => 1, 'b' => 2, 'c' => 3], 'a'), ['b' => 2, 'c' => 3]);
-    }
-
-    public function testPadInt()
-    {
-        $this->assertSame(App::padInt(12), '12');
-        $this->assertSame(App::padInt(2), '02');
     }
 }

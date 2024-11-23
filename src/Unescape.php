@@ -6,13 +6,15 @@
 
 namespace Mars;
 
+use Mars\App\InstanceTrait;
+
 /**
  * The Unescape Class
  * Unescapes values
  */
 class Unescape
 {
-    use AppTrait;
+    use InstanceTrait;
 
     /**
      * Converts html entitites back to characters

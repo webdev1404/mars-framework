@@ -6,13 +6,15 @@
 
 namespace Mars;
 
+use Mars\App\InstanceTrait;
+
 /**
  * The Random Class
  * Generates random numbers/strings
  */
 class Random
 {
-    use AppTrait;
+    use InstanceTrait;
 
     /**
      * Returns a random string

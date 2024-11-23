@@ -7,8 +7,10 @@
 namespace Mars\Mvc;
 
 use Mars\App;
+use Mars\App\InstanceTrait;
 use Mars\Entity;
 use Mars\Alerts\Errors;
+use Mars\Validation\ValidateTrait;
 
 /**
  * The Model Item Class
@@ -16,10 +18,10 @@ use Mars\Alerts\Errors;
  */
 abstract class ModelEntity extends Entity
 {
-    use \Mars\AppTrait;
-    use \Mars\ValidationTrait,ModelTrait {
-        \Mars\ValidationTrait::validate as protected validateData;
-        ModelTrait::validate insteadof \Mars\ValidationTrait;
+    use InstanceTrait;
+    use ValidateTrait, ModelTrait {
+        ValidateTrait::validate as protected validateData;
+        ModelTrait::validate insteadof ValidateTrait;
     }
 
     /**
@@ -46,11 +48,11 @@ abstract class ModelEntity extends Entity
      * Builds the Model
      * @param App $app The app object
      */
-    public function __construct(App $app = null)
+    public function __construct(App $app)
     {
         parent::__construct();
 
-        $this->app = $app ?? App::getApp();
+        $this->app = $app;
         $this->errors = new Errors($this->app);
 
         $this->prepare();

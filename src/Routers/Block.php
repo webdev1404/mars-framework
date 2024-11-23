@@ -7,6 +7,7 @@
 namespace Mars\Routers;
 
 use Mars\App;
+use Mars\App\InstanceTrait;
 
 /**
  * The Block Router Class
@@ -14,7 +15,7 @@ use Mars\App;
  */
 class Block
 {
-    use \Mars\AppTrait;
+    use InstanceTrait;
 
     /**
      * @var string $module_name The module's name

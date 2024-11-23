@@ -6,13 +6,15 @@
 
 namespace Mars\Document;
 
+use Mars\App\InstanceTrait;
+
 /**
  * The Document Tags Class
  * Stores the custom header html tags used by a document
  */
 abstract class Tags
 {
-    use \Mars\AppTrait;
+    use InstanceTrait;
     use \Mars\Lists\ListTrait;
 
     /**

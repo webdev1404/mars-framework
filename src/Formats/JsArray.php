@@ -6,12 +6,14 @@
 
 namespace Mars\Formats;
 
+use Mars\App\InstanceTrait;
+
 /**
  * The JsArray Format Class
  */
 class JsArray
 {
-    use \Mars\AppTrait;
+    use InstanceTrait;
 
     /**
      * @see \Mars\Format::jsArray()

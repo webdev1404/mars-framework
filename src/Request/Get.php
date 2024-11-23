@@ -21,7 +21,7 @@ class Get extends Input
     public function __construct(App $app)
     {
         parent::__construct($app);
-
+        
         $this->data = &$_GET;
     }
 }

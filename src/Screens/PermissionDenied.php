@@ -6,13 +6,15 @@
 
 namespace Mars\Screens;
 
+use Mars\App\InstanceTrait;
+
 /**
  * The Permission Denied Screen
  * Displays the Permission Denied screen
  */
 class PermissionDenied
 {
-    use \Mars\AppTrait;
+    use InstanceTrait;
 
     /**
      * Displays the Permission Denied screen

@@ -4,16 +4,16 @@
 * @package Mars
 */
 
-namespace Mars;
+namespace Mars\App;
 
 /**
  * The App Utils Trait
  * Trait containing utility methods
  */
-trait AppUtilsTrait
+trait UtilsTrait
 {
     /**
-     * Returns a language string
+     * Returns a html escaped language string
      * @param string $str The string index as defined in the languages file
      * @param array $replace Array with key & values to be used for to search & replace, if any
      * @return string The language string
@@ -26,61 +26,17 @@ trait AppUtilsTrait
             $str = str_replace(array_keys($replace), $replace, $str);
         }
 
-        return $str;
+        return static::$instance->escape->html($str);
     }
 
     /**
-     * Returns a string based on the count of $items.
-     * @param string $str_single If count($items) == 1 will return $this->app->lang->strings[$str_single]
-     * @param string $str_multi If count($items) == 1 will return $this->app->lang->strings[$str_multi]. Will also replace {COUNT} with the actual count number
-     * @param Countable $items The items to count
-     * @param string $count_str The part which will be replaced with the count number. Default: {COUNT}
-     * @return string
+     * Html escapes a string. Shorthand for $app->escape->html($value)
+     * @param string $value The value to escape
+     * @return string The escaped value
      */
-    public static function __c(string $str_single, string $str_multi, \Countable $items, string $count_str = '{COUNT}') : string
+    public static function e(string $value) : string
     {
-        $count = count($items);
-        if ($count == 1) {
-            return static::__($str_single, []);
-        } else {
-            return static::__($str_multi, [$count_str => $count]);
-        }
-    }
-
-    /**
-     * Escapes a language string. Shorthand for e(__($str))
-     * @param string $str The string index as defined in the languages file
-     * @param array $replace Array with key & values to be used for to search & replace, if any
-     * @return string
-     */
-    public static function __e(string $str, array $replace = []) : string
-    {
-        return static::e(static::__($str, $replace));
-    }
-
-    /**
-     * Javascript escapes a language string. Shorthand for ejs(__($str))
-     * @param string $str The string index as defined in the languages file
-     * @param array $replace Array with key & values to be used for to search & replace, if any
-     * @return string
-     */
-    public function __ejs(string $str, array $replace = []) : string
-    {
-        return static::ejs(static::__($str, $replace));
-    }
-
-    /**
-     * Adds a slash at the end of a path, if it's not already there
-     * @param string $path The path
-     * @return string The path
-     */
-    public static function fixPath(string $path) : string
-    {
-        if (!$path) {
-            return '';
-        }
-
-        return rtrim($path, '/');
+        return static::$instance->escape->html($value);
     }
 
     /**
@@ -219,16 +175,6 @@ trait AppUtilsTrait
         }
 
         return $array;
-    }
-
-    /**
-     * Pads a number with a leading 0 if it's below 10. Eg: if $number = 6 returns 06
-     * @param int $number The number
-     * @return string The number with a leading 0
-     */
-    public static function padInt(int $number) : string
-    {
-        return str_pad($number, 2, '0', STR_PAD_LEFT);
     }
 
     /********************** DEBUG FUNCTIONS ***************************************/

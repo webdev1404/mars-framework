@@ -11,8 +11,8 @@ final class TimeTest extends Base
     {
         $time = $this->app->time;
 
-        $this->assertEquals($time->get('0'), '00:00:00');
-        $this->assertEquals($time->get(''), '00:00:00');
+        $this->assertEquals($time->get('0'), null);
+        $this->assertEquals($time->get(''), null);
         $this->assertEquals($time->get('2022-01-18 11:24:32'), '11:24:32');
         $this->assertEquals($time->get('1642505072'), '11:24:32');
     }

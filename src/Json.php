@@ -6,13 +6,15 @@
 
 namespace Mars;
 
+use Mars\App\InstanceTrait;
+
 /**
  * The Json Class
  * Encodes/Decodes data using json
  */
 class Json
 {
-    use AppTrait;
+    use InstanceTrait;
 
     /**
      * Encodes data

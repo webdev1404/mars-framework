@@ -18,11 +18,6 @@ class Time extends Base
     protected string $format = 'H:i:s';
 
     /**
-     * {@inheritDoc}
-     */
-    protected string $default_value = '00:00:00';
-
-    /**
      * Returns the number of minutes and seconds from $seconds. Eg: for 90 seconds returns 1 min and 30 sec.
      * @param int $seconds The number of seconds
      * @return array Returns an array with the number of minutes & seconds

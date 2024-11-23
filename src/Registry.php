@@ -6,13 +6,15 @@
 
 namespace Mars;
 
+use Mars\App\InstanceTrait;
+
 /**
  * The Registry Class
  * Stores/Retrives values
  */
 class Registry
 {
-    use AppTrait;
+    use InstanceTrait;
 
     /**
      * @var array $data Array storing the data

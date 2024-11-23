@@ -6,13 +6,15 @@
 
 namespace Mars\Document;
 
+use Mars\App\InstanceTrait;
+
 /**
  * The Document Urls Class
  * Abstract class containing the urls & their corresponding locations used by a document
  */
 abstract class Urls
 {
-    use \Mars\AppTrait;
+    use InstanceTrait;
 
     /**
      * @var array $urls Array with all the urls to be outputed

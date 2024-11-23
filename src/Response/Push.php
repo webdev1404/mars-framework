@@ -7,6 +7,7 @@
 namespace Mars\Response;
 
 use Mars\App;
+use Mars\App\InstanceTrait;
 
 /**
  * The Server Push Class
@@ -14,7 +15,7 @@ use Mars\App;
  */
 class Push
 {
-    use \Mars\AppTrait;
+    use InstanceTrait;
     use \Mars\Lists\ListTrait {
         \Mars\Lists\ListTrait::add as addToList;
         \Mars\Lists\ListTrait::remove as removeFromList;
@@ -32,6 +33,10 @@ class Push
     public function __construct(App $app)
     {
         $this->app = $app;
+
+        if ($this->app->is_web && $this->app->config->http2_push && $this->app->is_http2) {
+            $this->enabled = true;
+        }
 
         if (!$this->app->is_bin && $this->app->config->http2_push && $this->app->is_http2) {
             $this->enabled = true;

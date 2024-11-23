@@ -7,6 +7,7 @@
 namespace Mars\Html;
 
 use Mars\App;
+use Mars\App\InstanceTrait;
 
 /**
  * The Tag Class
@@ -14,7 +15,7 @@ use Mars\App;
  */
 class Tag implements TagInterface
 {
-    use \Mars\AppTrait;
+    use InstanceTrait;
 
     /**
      * @var string $type The tag's attributes, if any

@@ -43,15 +43,20 @@ class Entity extends \stdClass
     /**
      * Sets the object's properties
      * @param array|object $data The data
+     * @param bool $overwrite If true, the data will overwrite the existing properties, if the properties already exist
      * @return static
      */
-    public function set(array|object $data) : static
+    public function set(array|object $data, bool $overwrite = true) : static
     {
         if (!$data) {
             return $this;
         }
 
         foreach ($data as $name => $val) {
+            if (!$overwrite && isset($this->$name)) {
+                continue;
+            }
+
             $this->$name = $val;
         }
 
@@ -59,23 +64,13 @@ class Entity extends \stdClass
     }
 
     /**
-     * Adds $data, if it doesn't already exist
+     * Adds $data, if it doesn't already exist. Equivalent to set with $overwrite = false
      * @param array|object $data The data
      * @return static
      */
     public function add(array|object $data) : static
     {
-        if (!$data) {
-            return $this;
-        }
-
-        foreach ($data as $name => $val) {
-            if (!isset($this->$name)) {
-                $this->$name = $val;
-            }
-        }
-
-        return $this;
+        return $this->set($data, false);
     }
 
     /**

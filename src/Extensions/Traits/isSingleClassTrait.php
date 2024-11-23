@@ -4,9 +4,10 @@
 * @package Mars
 */
 
-namespace Mars\Extensions;
+namespace Mars\Extensions\Traits;
 
 use Mars\App;
+use Mars\Extensions\Module;
 
 /**
  * The isSingleClassTrait Trait
@@ -18,9 +19,9 @@ trait isSingleClassTrait
      * Builds the extension
      * @param App $app The app object
      */
-    public function __construct(App $app = null)
+    public function __construct(App $app)
     {
-        $this->app = $app ?? $this->getApp();
+        $this->app = $app;
 
         //extract the plugin's name and module from it's path
         $rc = new \ReflectionClass($this);

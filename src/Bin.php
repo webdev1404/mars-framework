@@ -6,15 +6,153 @@
 
 namespace Mars;
 
+use Mars\App\InstanceTrait;
+
 /**
  * The Bin Class
  */
 class Bin
 {
-    use AppTrait;
+    use InstanceTrait;
 
     /**
-     * @param array $colors Array defining the user colors
+     * @var Handlers $handlers The printers object
+     */
+    public protected(set) Handlers $printers {
+        get {
+            if (isset($this->printers)) {
+                return $this->printers;
+            }
+
+            $this->printers = new Handlers($this->supported_printers);
+
+            return $this->printers;
+        }
+    }
+
+    /**
+     * @var array $argv List of arguments
+     */
+    public protected(set) array $argv {
+        get {
+            if (isset($this->argv)) {
+                return $this->argv;
+            }
+
+            global $argv;
+            $this->argv = $argv ?? [];
+
+            //remove the script name
+            array_shift($this->argv);
+
+            return $this->argv;
+        }
+    }
+
+    /**
+     * @var array $commands List of commands
+     */
+    public protected(set) array $commands {
+        get {
+            if (isset($this->commands)) {
+                return $this->commands;
+            }
+
+            $this->commands = [];
+            foreach ($this->argv as $arg) {
+                if (str_starts_with($arg, '-')) {
+                    continue;
+                }
+
+                $this->commands = explode(':', $arg);
+                break;
+            }
+
+            return $this->commands;
+        }
+    }
+
+    /**
+     * @var string $command_name The name of the command
+     */
+    public protected(set) string $command_name {
+        get {
+            if (isset($this->command_name)) {
+                return $this->command_name;
+            }
+
+            $this->command_name = $this->commands[0] ?? '';
+            
+            return $this->command_name;
+        }
+    }
+
+    /**
+     * @var string $command_action The action of the command
+     */
+    public protected(set) string $command_action {
+        get {
+            if (isset($this->command_action)) {
+                return $this->command_action;
+            }
+
+            $slice = array_slice($this->commands, 1);
+
+            $this->command_action = implode(':', $slice);
+
+            return $this->command_action;
+        }
+    }
+
+    /**
+     * @var array $options List of options
+     */
+    public protected(set) array $options {
+        get {
+            if (isset($this->options)) {
+                return $this->options;
+            }
+
+            $this->options = [];
+            foreach ($this->argv as $arg) {
+                if (str_starts_with($arg, '--')) {
+                    $parts = explode('=', substr($arg, 2));
+
+                    $this->options[$parts[0]] = $parts[1] ?? true;
+                } elseif (str_starts_with($arg, '-')) {
+                    $parts = explode('=', substr($arg, 1));
+
+                    if (count($parts) > 1) {
+                        $this->options[$parts[0]] = $parts[1] ?? '';
+                    } else {
+                        $name = substr($arg, 1);
+
+                        $this->options[$name] = true;
+                    }
+                }
+            }
+
+            return $this->options;
+        }
+    }
+
+    /**
+     * @var string $newline The newline
+     */
+    public string $newline {
+        get {
+            if (isset($this->newline)) {
+                return $this->newline;
+            }
+
+            $this->newline = $this->app->is_bin ? "\n" : '<br>';
+
+            return $this->newline;
+        }
+    }
+
+    /**
+     * @var array $colors Array defining the user colors
      */
     public array $colors = [
         '' => '0',
@@ -43,34 +181,9 @@ class Bin
     ];
 
     /**
-     * @var Handlers $handlers The printers object
-     */
-    public readonly Handlers $printers;
-
-    /**
-     * @param array $argv List of arguments
-     */
-    protected array $argv = [];
-
-    /**
-     * @param array $commands List of commands
-     */
-    protected array $commands = [];
-
-    /**
-     * @param array $options List of options
-     */
-    protected array $options = [];
-
-    /**
-     * @param string $newline The newline
-     */
-    protected string $newline = "\n";
-
-    /**
      * @var array $supported_printers The list of supported printers
      */
-    protected array $supported_printers = [
+    public array $supported_printers = [
         'list' => '\Mars\Bin\Listing',
         'list_multi' => '\Mars\Bin\ListingMulti',
         'table' => '\Mars\Bin\Table'
@@ -82,113 +195,19 @@ class Bin
      */
     public function __construct(App $app)
     {
-        global $argv;
         $this->app = $app;
-        $this->printers = new Handlers($this->supported_printers, $this->app);
-        $this->argv = $argv ?? [];
 
-        if (isset($argv[1])) {
-            $this->commands = $this->getCommands();
-            $this->options = $this->getOptions();
-        }
-
-        if (!$this->app->is_bin) {
-            $this->newline = '<br>';
-        }
+        $this->app->plugins->run('boot_bin', $this);
     }
 
     /**
-     * Returns the arguments list, from CLI arguments
-     * @return array
+     * Returns true if a command line option has been defined
+     * @param string $name The name of the option
+     * @return bool
      */
-    public function getArgv() : array
+    public function hasOption(string $name) : bool
     {
-        return $this->argv;
-    }
-
-    /**
-     * Returns an argument value
-     * @return string The argument value
-     */
-    public function getArg(int $index) : string
-    {
-        return $this->argv[$index + 1] ?? '';
-    }
-
-    /**
-     * Returns the commands list, from CLI arguments
-     * @return array
-     */
-    public function getCommands() : array
-    {
-        global $argv;
-        if ($this->commands) {
-            return $this->commands;
-        }
-
-        $commands = [];
-        foreach ($argv as $i => $option) {
-            if (!$i || str_starts_with($option, '-')) {
-                continue;
-            }
-
-            $commands = explode(':', $option);
-            break;
-        }
-
-        return $commands;
-    }
-
-    /**
-     * Returns the main command name
-     * @return string
-     */
-    public function getCommandName() : string
-    {
-        if (!$this->commands) {
-            return '';
-        }
-
-        return $this->commands[0];
-    }
-
-    /**
-     * Returns the main command action
-     * @return string
-     */
-    public function getCommandAction() : string
-    {
-        $slice = array_slice($this->commands, 1);
-
-        return implode(':', $slice);
-    }
-
-    /**
-     * Returns the options, from CLI arguments
-     * @return array
-     */
-    public function getOptions() : array
-    {
-        global $argv;
-        if ($this->options) {
-            return $this->options;
-        }
-
-        $options = [];
-        foreach ($argv as $option) {
-            if (str_starts_with($option, '--')) {
-                $parts = explode('=', substr($option, 2));
-                $name = $parts[0];
-                $value = $parts[1] ?? '';
-
-                $options[$name] = $value;
-            } elseif (str_starts_with($option, '-')) {
-                $name = substr($option, 1);
-                $options[$name] = true;
-            }
-        }
-
-        return $options;
+        return isset($this->options[$name]);
     }
 
     /**
@@ -206,16 +225,6 @@ class Bin
         }
 
         return $option;
-    }
-
-    /**
-     * Returns true if a command line option has been defined
-     * @param string $name The name of the option
-     * @return bool
-     */
-    public function hasOption(string $name) : bool
-    {
-        return isset($this->options[$name]);
     }
 
     /**
@@ -250,7 +259,6 @@ class Bin
     {
         return trim(fgets(STDIN));
     }
-
 
     /**
      * Outputs a newline

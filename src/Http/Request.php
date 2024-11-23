@@ -7,6 +7,7 @@
 namespace Mars\Http;
 
 use Mars\App;
+use Mars\App\InstanceTrait;
 
 /**
  * The Http Request Class
@@ -14,7 +15,7 @@ use Mars\App;
  */
 class Request
 {
-    use \Mars\AppTrait;
+    use InstanceTrait;
 
     /**
      * @var int $timeout The timeout, in seconds
@@ -45,10 +46,10 @@ class Request
      * Builds the Http Request object
      * @param App $app The app object
      */
-    public function __construct(App $app = null)
+    public function __construct(App $app)
     {
-        $this->app = $app ?? $this->getApp();
-        $this->useragent = $this->app->getUseragent();
+        $this->app = $app;
+        $this->useragent = $this->app->useragent;
         $this->options = $this->app->config->curl_options;
     }
 

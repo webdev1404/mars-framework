@@ -7,6 +7,7 @@
 namespace Mars\Response;
 
 use Mars\App;
+use Mars\App\InstanceTrait;
 
 /**
  * The Cookie Response Class
@@ -14,7 +15,7 @@ use Mars\App;
  */
 class Cookies
 {
-    use \Mars\AppTrait;
+    use InstanceTrait;
 
     /**
      * @var int $expires The cookie's expires timestamp
@@ -68,7 +69,7 @@ class Cookies
      * @param bool $encode If true will encode the data
      * @return static
      */
-    public function set(string $name, $data, ?int $expires = null, ?string $path = null, ?string $domain = null, bool $secure = null, bool $httponly = null, bool $encode = true) : static
+    public function set(string $name, $data, ?int $expires = null, ?string $path = null, ?string $domain = null, ?bool $secure = null, ?bool $httponly = null, bool $encode = true) : static
     {
         if ($encode) {
             $data = $this->app->json->encode($data);

@@ -7,6 +7,7 @@
 namespace Mars\Mail;
 
 use Mars\App;
+use Mars\App\InstanceTrait;
 
 /**
  * The PhpMailer Class
@@ -14,7 +15,7 @@ use Mars\App;
  */
 class PhpMailer implements DriverInterface
 {
-    use \Mars\AppTrait;
+    use InstanceTrait;
 
     /**
      * @var object $handle The driver's handle

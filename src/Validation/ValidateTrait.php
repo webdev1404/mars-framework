@@ -1,13 +1,13 @@
 <?php
 /**
-* The Validation Trait
+* The Validate Trait
 * @package Mars
 */
 
-namespace Mars;
+namespace Mars\Validation;
 
 /**
- * The Validation Trait
+* The Validate Trait
  * Provides validation functionality
  * Classes using this trait must set these properties:
  * public readonly Errors $errors;
@@ -15,7 +15,7 @@ namespace Mars;
  * protected array $validation_rules_to_skip = [];
  * protected array $validation_error_strings = [];
  */
-trait ValidationTrait
+trait ValidateTrait
 {
     /**
      * @var Errors $errors The generated errors, if any

@@ -6,13 +6,15 @@
 
 namespace Mars\Screens;
 
+use Mars\App\InstanceTrait;
+
 /**
  * The Fatal Error Screen
  * Displays a fatal error screen
  */
 class FatalError
 {
-    use \Mars\AppTrait;
+    use InstanceTrait;
 
     /**
      * Displays a fatal error screen

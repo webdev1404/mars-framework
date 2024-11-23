@@ -6,15 +6,11 @@
 
 namespace Mars\Templates\Mars;
 
-use Mars\App;
-
 /**
  * The Variable Hander
  */
 class VariableParser
 {
-    use \Mars\AppTrait;
-
     /**
      * @internal
      */
@@ -58,15 +54,6 @@ class VariableParser
         'https' => ['$this->app->uri->toHttps', 10],
         'ajax' => ['$this->app->uri->addAjax', 10],
     ];
-
-    /**
-     * Builds the VariableParser object
-     * @param App $app The app object
-     */
-    public function __construct(App $app)
-    {
-        $this->app = $app;
-    }
 
     /**
      * Adds a supported modifier to the list

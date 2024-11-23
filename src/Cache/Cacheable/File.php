@@ -6,13 +6,15 @@
 
 namespace Mars\Cache\Cacheable;
 
+use Mars\App\InstanceTrait;
+
 /**
  * The Cachable File Driver
  * Driver which stores on disk the cached resources
  */
 class File implements DriverInterface
 {
-    use \Mars\AppTrait;
+    use InstanceTrait;
 
     /**
      * @see \Mars\Cache\Cachable\DriverInterface::get()

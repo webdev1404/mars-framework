@@ -17,9 +17,9 @@ class Timestamp extends Base
     /**
      * Returns a timestamp from a datetime
      * @param int|string|\DateTime $datetime The datetime
-     * @return string The timestamp
+     * @return string|null The timestamp
      */
-    public function get(int|string|DateTime $datetime) : string
+    public function get(int|string|DateTime $datetime) : string|null
     {
         if (!$datetime) {
             return 0;

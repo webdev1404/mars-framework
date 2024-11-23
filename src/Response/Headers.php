@@ -7,6 +7,7 @@
 namespace Mars\Response;
 
 use Mars\App;
+use Mars\App\InstanceTrait;
 
 /**
  * The Headers Response Class
@@ -14,7 +15,7 @@ use Mars\App;
  */
 class Headers
 {
-    use \Mars\AppTrait;
+    use InstanceTrait;
     use \Mars\Lists\ListTrait;
 
     /**

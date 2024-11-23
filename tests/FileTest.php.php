@@ -127,7 +127,6 @@ final class FileTest extends Base
 
         $this->assertSame($file->buildPath([]), '');
         $this->assertSame($file->buildPath(['var', 'www', 'html']), '/var/www/html');
-        $this->assertSame($file->buildPath(['var', 'www', 'html'], true), '/var/www/html/');
         $this->assertSame($file->buildPath(['var', 'www', '', 'html', 'somefile.txt']), '/var/www/html/somefile.txt');
     }
 

@@ -6,13 +6,15 @@
 
 namespace Mars;
 
+use Mars\App\InstanceTrait;
+
 /**
  * The Data Class.
  * Represent data stored in the format name => value
  */
 abstract class Data extends \stdClass
 {
-    use AppTrait;
+    use InstanceTrait;
 
     /**
      * Determines if a property with the given name exists and is not empty

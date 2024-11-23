@@ -15,32 +15,32 @@ class Table extends Base
     /**
      * @var string $header_color The default header color
      */
-    protected string $header_color = 'header';
+    public string $header_color = 'header';
 
     /**
      * @var string $header_align The default header align
      */
-    protected string $header_align = 'left';
+    public string $header_align = 'left';
 
     /**
      * @var string $data_color The default data color
      */
-    protected string $data_color = 'default';
+    public string $data_color = 'default';
 
     /**
      * @var string $data_align The default data align
      */
-    protected string $data_align = 'left';
+    public string $data_align = 'left';
 
     /**
      * @var int $padding_left The default left padding
      */
-    protected int $padding_left = 2;
+    public int $padding_left = 2;
 
     /**
      * @var int $padding_right The default right padding
      */
-    protected int $padding_right = 2;
+    public int $padding_right = 2;
 
     /**
      * Prints a table

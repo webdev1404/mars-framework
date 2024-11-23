@@ -24,7 +24,7 @@ trait ModelTrait
      * Builds the Model
      * @param App $app The app object
      */
-    public function __construct(App $app = null)
+    public function __construct(App $app)
     {
         parent::__construct($app);
 
@@ -47,9 +47,9 @@ trait ModelTrait
     {
     }
 
-    /**
-     * @see Mars\ValidationTrait::validate()
+    /**     
      * {@inheritdoc}
+     * @see \Mars\Validation\ValidateTrait::validate()
      */
     public function validate(array|object $data = []) : bool
     {

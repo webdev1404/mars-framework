@@ -7,6 +7,7 @@
 namespace Mars\Cache;
 
 use Mars\App;
+use Mars\App\InstanceTrait;
 use Mars\Drivers;
 use Mars\Cache\Cacheable\DriverInterface;
 
@@ -16,7 +17,7 @@ use Mars\Cache\Cacheable\DriverInterface;
  */
 abstract class Cacheable
 {
-    use \Mars\AppTrait;
+    use InstanceTrait;
 
     /**
      * @var Drivers $drivers The drivers object

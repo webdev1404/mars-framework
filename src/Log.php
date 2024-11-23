@@ -6,13 +6,15 @@
 
 namespace Mars;
 
+use Mars\App\InstanceTrait;
+
 /**
  * The Log Class
  * The system's log object
  */
 class Log
 {
-    use AppTrait;
+    use InstanceTrait;
 
     /**
      * @var string $suffix The log file's suffix

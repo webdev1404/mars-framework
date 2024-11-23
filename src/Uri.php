@@ -6,13 +6,15 @@
 
 namespace Mars;
 
+use Mars\App\InstanceTrait;
+
 /**
  * The Uri Class
  * Functionality for building & handling urls
  */
 class Uri
 {
-    use AppTrait;
+    use InstanceTrait;
 
     /**
      * Determines if $url is a valid url
@@ -31,7 +33,7 @@ class Uri
      */
     public function isLocal(string $url) : bool
     {
-        if (!str_starts_with(App::fixPath(trim($url)) . '/', $this->app->base_url)) {
+        if (!str_starts_with(trim($url) . '/', $this->app->base_url)) {
             return false;
         }
 
@@ -208,8 +210,23 @@ class Uri
             $path_parts[] = rawurlencode($part);
         }
 
-        return App::fixPath($base_url) . '/' . implode('/', $path_parts);
+        return $base_url . '/' . implode('/', $path_parts);
     }
+
+    /**
+     * Normalizes an url. It will add $base_url to $url if $url is not a valid url
+     * @param string $url The url
+     * @param string $base_url The base url
+     * @return string The normalized url
+     */
+    public function normalizeUrl(string $url, string $base_url) : string
+	{
+		if (!$this->isUrl($url)) {
+			return $base_url . '/' . ltrim($url, '/');
+		}
+
+		return $url;
+	}
 
     /**
      * Adds http:// at the beginning of $url, if it isn't already there

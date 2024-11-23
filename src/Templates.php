@@ -6,6 +6,7 @@
 
 namespace Mars;
 
+use Mars\App\InstanceTrait;
 use Mars\Templates\DriverInterface;
 
 /**
@@ -13,7 +14,7 @@ use Mars\Templates\DriverInterface;
  */
 class Templates
 {
-    use AppTrait;
+    use InstanceTrait;
 
     /**
      * @var Drivers $drivers The drivers object

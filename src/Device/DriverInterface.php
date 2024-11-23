@@ -13,8 +13,8 @@ interface DriverInterface
 {
     /**
      * Returns the device's type: desktop,tablet,smartphone
-     * @param string $useragent The useragent. If null, the user's useragent is used
+     * @param string $useragent The useragent. If empty, the user's useragent is used
      * @return string
      */
-    public function get(string $useragent = null) : string;
+    public function get(string $useragent = '') : string;
 }
