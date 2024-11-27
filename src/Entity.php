@@ -100,6 +100,6 @@ class Entity extends \stdClass
             return $data;
         }
 
-        return App::array($this);
+        return App::getArray($this);
     }
 }

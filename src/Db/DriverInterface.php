@@ -29,6 +29,13 @@ interface DriverInterface
     public function disconnect();
 
     /**
+     * Returns an iterator for the results
+     * @param resource $result The result
+     * @return \Iterator The iterator
+     */
+    public function getIterator($result) : \Iterator;
+
+    /**
      * Quotes a string
      * @param string $string The string to quote
      * @return string The quoted string
@@ -38,7 +45,7 @@ interface DriverInterface
     /**
      * Begins a transaction
      */
-    public function begin();
+    public function beginTransaction();
     
     /**
      * Commits a transaction

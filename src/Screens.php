@@ -39,7 +39,7 @@ class Screens
     public function __construct(App $app)
     {
         $this->app = $app;
-        $this->screens = new Handlers($this->screens_list, $this->app);
+        $this->screens = new Handlers($this->screens_list, null, $this->app);
     }
 
     /**

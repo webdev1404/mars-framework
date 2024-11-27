@@ -14,12 +14,12 @@ class Pdo implements DriverInterface
     /**
      * @var PDO $handle The PDO handle
      */
-    protected \PDO $handle;
+    protected ?\PDO $handle = null;
 
     /**
      * @var object The result of the last query operation
      */
-    protected $result;
+    protected ?\PDOStatement $result;
 
     /**
      * @see \Mars\Db\DriverInterface::connect()
@@ -28,8 +28,8 @@ class Pdo implements DriverInterface
     public function connect(string $hostname, string $port, string $username, string $password, string $database, bool $persistent, string $charset)
     {
         $dsn = "mysql:host={$hostname};port={$port};dbname={$database};charset={$charset}";
-        $options = [\PDO::ATTR_PERSISTENT => $persistent];
-
+        $options = [\PDO::ATTR_PERSISTENT => $persistent, \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION];
+        
         try {
             $this->handle = new \PDO($dsn, $username, $password, $options);
         } catch (\PDOException $e) {
@@ -48,16 +48,29 @@ class Pdo implements DriverInterface
         }
     }
 
+    /**
+     * @see \Mars\Db\DriverInterface::getIterator()
+     * {@inheritdoc}
+     */
+    public function getIterator($result) : \Iterator
+    {
+        return $result->getIterator();
+    }
+
+    /**
+     * @see \Mars\Db\DriverInterface::quote()
+     * {@inheritdoc}
+     */
     public function quote(string $string) : string
     {
         return $this->handle->quote($string);
     }
     
     /**
-     * @see \Mars\Db\DriverInterface::begin()
+     * @see \Mars\Db\DriverInterface::beginTransaction()
      * {@inheritdoc}
      */
-    public function begin()
+    public function beginTransaction()
     {
         $this->handle->beginTransaction();
     }
@@ -88,12 +101,14 @@ class Pdo implements DriverInterface
     {
         try {
             if ($params) {
-                $this->result = $this->handle->prepare($sql);
+                $this->result = $this->handle->prepare($sql);                
                 $this->result->execute($this->getParams($params));
-            } else {
+                $this->result->setFetchMode(\PDO::FETCH_OBJ);
+            } else {                
                 $this->result = $this->handle->query($sql);
+                $this->result->setFetchMode(\PDO::FETCH_OBJ);
             }
-        } catch (\PDOException $e) {
+        } catch (\PDOException $e) {            
             $this->result = null;
 
             throw new \Exception($e->getMessage());
@@ -112,8 +127,7 @@ class Pdo implements DriverInterface
         $keys = array_map(function ($key) {
             return ':' . $key;
         }, array_keys($params));
-        
-            
+                    
         return array_combine($keys, $params);
     }
 

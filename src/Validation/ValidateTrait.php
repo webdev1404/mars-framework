@@ -7,7 +7,7 @@
 namespace Mars\Validation;
 
 /**
-* The Validate Trait
+ * The Validate Trait
  * Provides validation functionality
  * Classes using this trait must set these properties:
  * public readonly Errors $errors;

@@ -25,7 +25,7 @@ trait LanguagesTrait
         if (!$file) {
             $file = $this->name;
         }
-        if ($prefix === null) {
+        if ($prefix === null && $this->name) {
             $prefix = $this->name . '.';
         }
 

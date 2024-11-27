@@ -112,7 +112,6 @@ trait UtilsTrait
     public static function getProperties(array|object $data, array $properties = []) : array
     {
         $properties_array = [];
-
         if ($properties) {
             foreach ($properties as $name) {
                 if (static::hasProperty($data, $name)) {
@@ -137,11 +136,43 @@ trait UtilsTrait
     }
 
     /**
+     * Returns the properties of an object
+     * @param object $object The object
+     * @return array The properties
+     */
+    public static function getObjectProperties(object $object) : array
+    {
+        return get_object_vars($object);
+    }
+
+    /**
+     * Returns an object from an class/callable...
+     * @param mixed $class The class/callable etc..
+     * @param mixed $args The arguments to pass to the constructor
+     * @return object
+     */
+    public static function getObject(mixed $class, ...$args) : object
+    {
+        $args[] = static::$instance;
+
+        $object = null;
+        if (is_string($class)) {
+            $object = new $class(...$args);
+        } elseif(is_callable($class)) {
+            $object = $class($args);
+        } else {
+            $object = (object)$class;
+        }
+
+        return $object;
+    }
+
+    /**
      * Returns an array from an array/object/iterator
      * @param mixed $array The array
      * @return array
      */
-    public static function array($array) : array
+    public static function getArray(mixed $array) : array
     {
         if (!$array) {
             return [];
@@ -156,6 +187,20 @@ trait UtilsTrait
         } else {
             return (array)$array;
         }
+    }
+
+    /**
+     * Maps a value [scalar|array] to a callback
+     * @param mixed $value The value
+     * @param callable $callback The callback function
+     */
+    public static function map($value, callable $callback)
+    {
+        if (is_array($value)) {
+            return array_map($callback, $value);
+        }
+
+        return $callback($value);
     }
 
     /**

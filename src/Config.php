@@ -6,12 +6,19 @@
 
 namespace Mars;
 
+use Mars\App\InstanceTrait;
+use Mars\Data\PropertiesTrait;
+
 /**
  * The Config Class
  * Stores the system's config options
  */
-class Config extends Data
+#[\AllowDynamicProperties]
+class Config
 {
+    use InstanceTrait;
+    use PropertiesTrait;
+
     /**
      * @var int $display_errors Controls whether errors should be displayed or not
      */
@@ -108,34 +115,34 @@ class Config extends Data
     public string $db_driver = 'pdo';
 
     /**
-     * @var string $db_hostname The db hostname
+     * @var string|array $db_hostname The db hostname
      */
-    public string $db_hostname = 'localhost';
+    public string|array $db_hostname = 'localhost';
 
     /**
-     * @var string $db_port	The db port
+     * @var string|array $db_port	The db port
      */
-    public string $db_port = '3306';
+    public string|array $db_port = '3306';
 
     /**
-     * @var string $db_username The db username
+     * @var string|array $db_username The db username
      */
-    public string $db_username = '';
+    public string|array $db_username = '';
 
     /**
-     * @var string $db_password The db password
+     * @var string|array $db_password The db password
      */
-    public string $db_password = '';
+    public string|array $db_password = '';
 
     /**
-     * @var string $db_name The db name
+     * @var string|array $db_name The db name
      */
-    public string $db_name = '';
+    public string|array $db_name = '';
 
     /**
-     * @var bool $db_persistent If true, the db connection will be persistent
+     * @var bool|array $db_persistent If true, the db connection will be persistent
      */
-    public bool $db_persistent = false;
+    public bool|array $db_persistent = false;
 
     /**
      * @var string $db_charset The db charset
@@ -338,6 +345,16 @@ class Config extends Data
      * @var bool $mail_smt_secure The smtp secure connection. Supported options: tls, ssl
      */
     public bool $mail_smtp_secure = false;
+
+    /**
+     * @var string $cache_hash The hash algorithm used to generate the cache filenames
+     */
+    public string $cache_hash = 'sha256';
+
+    /**
+     * @var string $cache_driver
+     */
+    public string $cache_driver = 'file';
 
     /**
      * @var bool $cache_page_enable If true, will enable the content cache functionality

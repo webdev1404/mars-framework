@@ -8,6 +8,8 @@ namespace Mars\System;
 
 use Mars\App;
 use Mars\App\InstanceTrait;
+use Mars\Extensions\Module;
+use Mars\Extensions\Plugin;
 
 /**
  * The Plugins Class
@@ -45,8 +47,8 @@ class Plugins
             }
 
             $this->plugins = [];
-return $this->plugins;
-            $modules_namespace = '\\' . Module::getNamespace() . '\\';
+
+            $modules_namespace = '\\' . Module::getBaseNamespace() . '\\';
 
             $plugins = $this->app->config->plugins ?? [];                
             foreach ($plugins as $class_name) {                

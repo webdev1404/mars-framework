@@ -8,13 +8,14 @@ namespace Mars\Alerts;
 
 use Mars\App;
 use Mars\App\InstanceTrait;
+use Traversable;
 
 /**
  * The Alerts Class
  * Container for alerts
  *
  */
-abstract class Alerts
+abstract class Alerts implements \Countable, \IteratorAggregate
 {
     use InstanceTrait;
     
@@ -22,6 +23,15 @@ abstract class Alerts
      * @var array $alerts Array with all the generated alerts
      */
     protected array $alerts = [];
+
+    /**
+     * Returns the iterator
+     * @return \Iterator
+     */
+    public function getIterator(): \Iterator
+    {
+        return new \ArrayIterator($this->alerts);
+    }
 
     /**
      * Returns the count of generated alerts

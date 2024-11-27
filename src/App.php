@@ -27,7 +27,8 @@ use Mars\System\Theme;
  * The App Class
  * The system's main object
  */
-class App extends \stdClass
+#[\AllowDynamicProperties]
+class App
 {
     use UtilsTrait;
     use GhostTrait;
@@ -36,12 +37,8 @@ class App extends \stdClass
     /**
      * @var string $version The version
      */
-    public protected(set) string $version {
-        get {
-            $this->version = '1.0.0';
-
-            return $this->version;
-        }
+    public string $version {
+        get => '1.0.0';
     }
 
     /**
@@ -361,9 +358,9 @@ class App extends \stdClass
                 return $this->is_web;
             }
 
-            $this->web = !$this->is_bin;
+            $this->is_web = !$this->is_bin;
 
-            return $this->web;
+            return $this->is_web;
         }
     }
 
@@ -694,6 +691,7 @@ class App extends \stdClass
      * @const array CACHE_DIRS The locations of the cache subdirs
      */
     public const array CACHE_DIRS = [
+        'data' => 'data',
         'templates' => 'templates',
         'css' => 'css',
         'js' => 'js'
@@ -717,7 +715,15 @@ class App extends \stdClass
         $this->setErrorReporting();
         
         $this->assignDirs(static::DIRS);
-        $this->assignUrls(static::URLS);
+        $this->assignUrls(static::URLS);        
+    }
+
+    /**
+     * Boots the app
+     */
+    public function boot()
+    {
+        $this->outputIfCached();
     }
 
     /**
@@ -736,11 +742,11 @@ class App extends \stdClass
     }
 
     /**
-     * Adds objects to the lazy loading objects map
+     * Loads objects from the list
      * @param array $list The list of the objects to add
      * @return static
      */
-    public function map(array $list) : static
+    public function load(array $list) : static
     {
         $ghost_list = [];
         $proxy_list = [];
@@ -792,13 +798,7 @@ class App extends \stdClass
     protected function resolve(string $name) : object
     {
         if (isset(static::$objects_map[$name])) {
-            $class = static::$objects_map[$name];
-
-            if (is_callable($class)) {
-                return $class(static::$instance);
-            }
-
-            return new $class(static::$instance);
+            return static::getObject(static::$objects_map[$name]);
         }
 
         throw new \Exception("Can't resolve object. Invalid name: {$name}");
@@ -927,6 +927,16 @@ class App extends \stdClass
     }
 
     /**
+     * Outputs the content if the page is cached
+     */
+    protected function outputIfCached()
+    {
+        if ($this->config->cache_page_enable) {
+            $this->cache->pages->output();
+        }
+    }
+
+    /**
      * Starts the output buffering.
      */
     public function start()
@@ -954,7 +964,9 @@ class App extends \stdClass
         $this->plugins->run('app_end', $output);
 
         //cache the output, if required
-        $this->cache->store($output);
+        if ($this->app->config->cache_page_enable) {
+            $this->cache->pages->store($output);
+        }
         
         $output = $this->response->output($output);
     }

@@ -12,7 +12,7 @@ use Mars\Db\DriverInterface;
  * The Database Result Class
  * Handles the database results
  */
-class DbResult
+class DbResult implements \Countable, \IteratorAggregate
 {
     /**
      * @var DriverInterface $handle The handle which generated the result
@@ -41,6 +41,15 @@ class DbResult
     public function __destruct()
     {
         $this->handle->free($this->result);
+    }
+
+    /**
+     * Returns the iterator for the results
+     * @return \Iterator The iterator
+     */
+    public function getIterator() : \Iterator
+    {
+        return $this->handle->getIterator($this->result);
     }
 
     /**
@@ -77,7 +86,7 @@ class DbResult
      */
     public function fetch(string $class_name = '') : ?object
     {
-        return $this->fetchObject($class_name);
+        return $this->handle->fetchObject($this->result, $class_name);
     }
 
     /**
@@ -106,7 +115,7 @@ class DbResult
      */
     public function all(bool|string $class_name = '') : array
     {
-        return $this->fetchAll($class_name);
+        return $this->handle->fetchAll($this->result, $class_name);
     }
 
     /**

@@ -31,87 +31,171 @@ abstract class View
     /**
      * @var string $default_method Default method to be executed on dispatch/route or if the requested method doesn't exist or is not public
      */
-    public string $default_method = '';
+    public string $default_method {
+        get {
+            if (isset($this->default_method)) {
+                return $this->default_method;
+            }
+
+            //set the default methods to the name of the extension, if not already set
+            $this->default_method = '';
+            if ($this->parent) {
+                $this->default_method = $this->app->getMethod($this->parent->name);
+            }
+           
+            return $this->default_method;
+        }
+    }
 
     /**
      * @var string $template The name of the template which will be rendered when render() is called
      */
-    protected string $template = '';
+    public protected(set) string $template = '';
 
     /**
      * @var string $path The controller's parents's dir. Alias for $this->parent->path
      */
-    public string $path = '';
+    public protected(set) string $path {
+        get {
+            if (isset($this->path)) {
+                return $this->path;
+            }
+
+            $this->path = '';
+            if ($this->parent) {
+                $this->path = $this->parent->path;
+            }
+
+            return $this->path;
+        }
+    }
 
     /**
      * @var string $url The controller's parent's url. Alias for $this->parent->url
      */
-    public string $url = '';
+    public protected(set) string $url {
+        get {
+            if (isset($this->url)) {
+                return $this->url;
+            }
+
+            $this->url = '';
+            if ($this->parent) {
+                $this->url = $this->parent->url;
+            }
+
+            return $this->url;
+        }
+    }
 
     /**
      * @var string $url_static The controller's parent's url static. Alias for $this->parent->url_static
      */
-    public string $url_static = '';
+    public protected(set) string $url_static {
+        get {
+            if (isset($this->url_static)) {
+                return $this->url_static;
+            }
+
+            $this->url_static = '';
+            if ($this->parent) {
+                $this->url_static = $this->parent->url_static;
+            }
+
+            return $this->url_static;
+        }
+    }
 
     /**
      * @var Extension $parent The parent extension
      */
-    protected Extension $parent;
+    protected ?Extension $parent {
+        get => $this->controller->parent;
+    }
 
     /**
      * @var Controller $controller The controller
      */
-    protected Controller $controller;
+    public protected(set) Controller $controller;
 
     /**
      * @var object $model The model
      */
-    protected object $model;
+    protected  object $model {
+        get => $this->controller->model;
+    }
 
     /**
      * @var Document $document Alias for $this->app->document
      */
-    protected Document $document;
+    #[Hidden]
+    protected Document $document {
+        get => $this->app->document;
+    }
 
     /**
      * @var Html $html Alias for $this->app->html
      */
-    protected Html $html;
+    #[Hidden]
+    protected Html $html {
+        get => $this->app->html;
+    }
 
     /**
      * @var Escape $escape Alias for $this->app->escape
      */
-    protected Escape $escape;
+    #[Hidden]
+    protected Escape $escape {
+        get => $this->app->escape;
+    }
 
     /**
      * @var Filter $filter Alias for $this->app->filter
      */
-    protected Filter $filter;
+    #[Hidden]
+    protected Filter $filter {
+        get => $this->app->filter;
+    }
 
     /**
      * @var Format $format Alias for $this->app->format
      */
-    protected Format $format;
+    #[Hidden]
+    protected Format $format {
+        get => $this->app->format;
+    }
 
     /**
      * @var Uri $uri Alias for $this->app->uri
      */
-    public Uri $uri;
+    #[Hidden]
+    public Uri $uri {
+        get => $this->app->uri;
+    }
 
     /**
      * @var Ui $ui Alias for $this->app->ui
      */
-    protected Ui $ui;
+    #[Hidden]
+    protected Ui $ui {
+        get => $this->app->ui;
+    }
 
     /**
      * @var Text $uri Alias for $this->app->text
      */
-    protected Text $text;
+    #[Hidden]
+    protected Text $text {
+        get => $this->app->text;
+    }
 
     /**
      * @var Plugins $plugins Alias for $this->app->plugins
      */
-    protected Plugins $plugins;
+    #[Hidden]
+    protected Plugins $plugins {
+        get => $this->app->plugins;
+    }
 
     /**
      * Builds the View
@@ -122,37 +206,8 @@ abstract class View
     {
         $this->app = $app ?? $this->getApp();
         $this->controller = $controller;
-        $this->model = $this->controller->model;
-        $this->parent = $this->controller->parent;
-        if ($this->parent) {
-            $this->path = $this->parent->path;
-            $this->url = $this->parent->url;
-            $this->url_static = $this->parent->url_static;
-        }
 
-        //set the default methods to the name of the extension, if not already set
-        if (!$this->default_method) {
-            $this->default_method = $this->app->getMethod($this->parent->name);
-        }
-
-        $this->prepare();
         $this->init();
-    }
-
-    /**
-     * Prepares the view
-     */
-    protected function prepare()
-    {
-        $this->document = $this->app->document;
-        $this->escape = $this->app->escape;
-        $this->filter = $this->app->filter;
-        $this->format = $this->app->format;
-        $this->html = $this->app->html;
-        $this->text = $this->app->text;
-        $this->ui = $this->app->ui;
-        $this->uri = $this->app->uri;
-        $this->plugins = $this->app->plugins;
     }
 
     /**

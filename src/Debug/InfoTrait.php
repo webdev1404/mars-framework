@@ -1,16 +1,17 @@
 <?php
 /**
-* The App Instance Trait
+* The Debug Info Trait
 * @package Mars
 */
 
 namespace Mars\Debug;
 
+/**
+ * The Debug Info Trait
+ * Removes properties which have the #[Hidden] attribute set from the debug info
+ */
 trait InfoTrait
 {
-    /**
-     * Removes properties which have the #[Hidden] attribute set
-     */
     public function __debugInfo()
     {
         $hidden = [];

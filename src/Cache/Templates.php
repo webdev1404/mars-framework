@@ -20,17 +20,16 @@ class Templates
     /**
      * @var string $path The folder where the templates will be cached
      */
-    protected string $path = '';
+    protected string $path {
+        get {
+            if (isset($this->path)) {
+                return $this->path;
+            }
 
-    /**
-     * Builds the page cache object
-     * @param App $app The app object
-     */
-    public function __construct(App $app)
-    {
-        $this->app = $app ?? App::get();
+            $this->path = $this->app->cache_path . '/templates';
 
-        $this->path = $this->app->cache_path . '/templates';
+            return $this->path;
+        }
     }
 
     /**
@@ -90,7 +89,7 @@ class Templates
     /**
      * Clears all the cached templates
      */
-    public function clearAll()
+    public function clear()
     {
         $this->app->dir->clean($this->path);
     }

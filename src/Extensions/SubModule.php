@@ -9,7 +9,7 @@ namespace Mars\Extensions;
 use Mars\App;
 
 /**
-* The SubModule Extension Class
+ * The SubModule Extension Class
  * Base class for all extensions found in the modules folder
  */
 abstract class SubModule extends Module
@@ -62,7 +62,11 @@ abstract class SubModule extends Module
     public function loadLanguage(string $file = '', ?string $prefix = null) : static
     {
         if ($prefix === null) {
-            $prefix = $this->module_name . '.'. $this->name . '.';
+            $prefix = $this->module_name . '.';
+
+            if ($this->name) {
+                $prefix.= $this->name . '.';
+            }
         }
 
         return parent::loadLanguage($file, $prefix);

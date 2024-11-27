@@ -18,7 +18,10 @@ trait ModelTrait
     /**
      * @var Plugins $plugins Alias for $this->app->plugins
      */
-    protected Plugins $plugins;
+    #[Hidden]
+    protected Plugins $plugins {
+        get => $this->app->plugins;
+    }
 
     /**
      * Builds the Model
@@ -28,16 +31,7 @@ trait ModelTrait
     {
         parent::__construct($app);
 
-        $this->prepare();
         $this->init();
-    }
-
-    /**
-     * Prepares the model's properties
-     */
-    protected function prepare()
-    {
-        $this->plugins = $this->app->plugins;
     }
 
     /**

@@ -65,8 +65,7 @@ class Response
     public function __construct(App $app)
     {
         $this->app = $app;
-        $this->responses = new Handlers($this->supported_responses, $this->app);
-        $this->responses->setInterface(DriverInterface::class);
+        $this->responses = new Handlers($this->supported_responses, DriverInterface::class, $this->app);
         $this->headers = new Headers($this->app);
         $this->cookies = new Cookies($this->app);
         $this->push = new Push($this->app);

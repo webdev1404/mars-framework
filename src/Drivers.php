@@ -7,6 +7,7 @@
 namespace Mars;
 
 use Mars\App\InstanceTrait;
+use \Mars\Lists\ListTrait;
 
 /**
  * The Driver Class
@@ -15,7 +16,7 @@ use Mars\App\InstanceTrait;
 class Drivers
 {
     use InstanceTrait;
-    use \Mars\Lists\ListTrait;
+    use ListTrait;
 
     /**
      * @var string $interface_name The interface the driver must implement

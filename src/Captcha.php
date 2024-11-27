@@ -20,40 +20,49 @@ class Captcha
     /**
      * @var bool $enabled Will be set to true, if captcha is enabled
      */
-    protected bool $enabled = false;
+    public bool $enabled {
+        get => $this->app->config->captcha_enable;
+    }
 
     /**
      * @var Drivers $drivers The drivers object
      */
-    public readonly Drivers $drivers;
+    public protected(set) Drivers $drivers {
+        get {
+            if (isset($this->drivers)) {
+                return $this->drivers;
+            }
+
+            $this->drivers = new Drivers($this->supported_drivers, DriverInterface::class, 'captcha', $this->app);
+
+            return $this->drivers;
+        }
+    }
 
     /**
      * @var DriverInterface $driver The driver object
      */
-    public readonly DriverInterface $driver;
+    protected ?DriverInterface $driver {
+        get {
+            if (!$this->enabled) {
+                return null;
+            }
+            if (isset($this->driver)) {
+                return $this->driver;
+            }
+
+            $this->driver = $this->drivers->get($this->app->config->captcha_driver);
+
+            return $this->driver;
+        }
+    }
 
     /**
      * @var array $supported_drivers The supported drivers
      */
     protected array $supported_drivers = [
-        'recaptcha2' => '\Mars\Captcha\Recaptcha2'
+        'recaptcha2' => \Mars\Captcha\Recaptcha2::class
     ];
-
-    /**
-     * Builds the captcha object
-     */
-    public function __construct(App $app)
-    {
-        $this->app = $app;
-
-        if (!$this->app->config->captcha_enable) {
-            return;
-        }
-
-        $this->enabled = true;
-        $this->drivers = new Drivers($this->supported_drivers, DriverInterface::class, 'captchae', $this->app);
-        $this->driver = $this->drivers->get($this->app->config->captcha_driver);
-    }
 
     /**
      * Checks the captcha is correct

@@ -9,7 +9,7 @@ namespace Mars\Lazyload;
 use Mars\App;
 
 /**
-* The Ghost LazyLoad Trait
+ * The Ghost LazyLoad Trait
  * Trait which lazy loads properties marked by the #[Lazyload] attribute and uses the ghost method
  */
 trait GhostTrait

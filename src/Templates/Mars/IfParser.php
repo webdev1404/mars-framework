@@ -6,11 +6,15 @@
 
 namespace Mars\Templates\Mars;
 
+use Mars\App\InstanceTrait;
+
 /**
  * The If Hander
  */
 class IfParser
 {
+    use InstanceTrait;
+    
     /**
      * @see \Mars\Templates\DriverInterface::parse()
      * {@inheritdoc}

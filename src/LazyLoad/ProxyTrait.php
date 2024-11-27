@@ -9,7 +9,7 @@ namespace Mars\LazyLoad;
 use Mars\App;
 
 /**
-* The Proxy LazyLoad Trait
+ * The Proxy LazyLoad Trait
  * Trait which lazy loads properties
  */
 trait ProxyTrait

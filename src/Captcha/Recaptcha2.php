@@ -8,7 +8,6 @@ namespace Mars\Captcha;
 
 use Mars\App;
 use Mars\App\InstanceTrait;
-use Mars\Http\Request;
 
 /**
  * The Recaptcha2 Captcha Driver Class
@@ -39,15 +38,13 @@ class Recaptcha2 implements DriverInterface
      */
     public function check() : bool
     {
-        $request = new Request;
-
         $post_data = [
             'secret' => $this->app->config->captcha_recaptcha_private_key,
             'response' => $this->app->request->post('g-recaptcha-response'),
-            'remoteip' => $this->app->user->ip
+            'remoteip' => $this->app->ip
         ];
 
-        $response = $request->post('https://www.google.com/recaptcha/api/siteverify', $post_data);
+        $response = $this->app->http->request->post('https://www.google.com/recaptcha/api/siteverify', $post_data);
 
         $data = $response->getJson();
 

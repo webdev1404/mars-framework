@@ -2,7 +2,14 @@
 
 use Mars\App;
 
-include_once(__DIR__ . '/Base.php');
+include_once(dirname(__DIR__) . '/Base.php');
+
+class TestObj
+{
+    public function __construct(App $app)
+    {
+    }
+}
 
 /**
  * @ignore
@@ -63,12 +70,23 @@ final class AppUtilsTest extends Base
         $this->assertSame(App::filterProperties((object)$this->data, ['foo', 'abc']), ['def' => 'bay']);
     }
 
-    public function testArray()
+    public function testgetArray()
     {
-        $this->assertIsArray(App::array(null));
-        $this->assertIsArray(App::array(12));
-        $this->assertIsArray(App::array('my string'));
-        $this->assertIsArray(App::array(['my string']));
+        $this->assertIsArray(App::getArray(null));
+        $this->assertIsArray(App::getArray(12));
+        $this->assertIsArray(App::getArray('my string'));
+        $this->assertIsArray(App::getArray(['my string']));
+    }
+
+    public function testgetObject()
+    {
+        $obj = App::getObject(TestObj::class);
+        $this->assertInstanceOf(TestObj::class, $obj);
+
+        $obj = App::getObject(function(){
+            return new TestObj(App::get());
+        });
+        $this->assertInstanceOf(TestObj::class, $obj);        
     }
 
     public function testUnset()

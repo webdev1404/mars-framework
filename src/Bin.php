@@ -184,9 +184,9 @@ class Bin
      * @var array $supported_printers The list of supported printers
      */
     public array $supported_printers = [
-        'list' => '\Mars\Bin\Listing',
-        'list_multi' => '\Mars\Bin\ListingMulti',
-        'table' => '\Mars\Bin\Table'
+        'list' => Mars\Bin\Listing::class,
+        'list_multi' => \Mars\Bin\ListingMulti::class,
+        'table' => \Mars\Bin\Table::class
     ];
 
     /**

@@ -15,11 +15,10 @@ trait ListTrait
     /**
      * @var array $list The list of elements in the name => value format
      */
-    protected array $list = [];
+    public protected(set) array $list = [];
 
     /**
      * Check if a specific element exists in the list.
-     *
      * @param string $name The name of the element to check.
      * @return bool Returns true if the element exists, false otherwise.
      */

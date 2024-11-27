@@ -19,110 +19,84 @@ class Memcache
     use InstanceTrait;
 
     /**
+     * @var bool $enabled Will be set to true, if memcache is enabled
+     */
+    public bool $enabled {
+        get => $this->app->config->memcache_enable;
+    }
+
+    /**
      * @var Drivers $drivers The drivers object
      */
-    public readonly Drivers $drivers;
+    public protected(set) Drivers $drivers {
+        get {
+            if (isset($this->drivers)) {
+                return $this->drivers;
+            }
+
+            $this->drivers = new Drivers($this->supported_drivers, DriverInterface::class, 'memcache', $this->app);
+
+            return $this->drivers;
+        }
+    }
 
     /**
      * @var DriverInterface $driver The driver object
      */
-    public readonly DriverInterface $driver;
+    protected ?DriverInterface $driver {
+        get {
+            if (!$this->enabled) {
+                return null;
+            }            
+            if (isset($this->driver)) {
+                return $this->driver;
+            }
+
+            $this->driver = $this->drivers->get($this->app->config->memcache_driver);
+            $this->driver->connect($this->host, $this->port);
+
+            return $this->driver;
+        }
+    }
 
     /**
      * @var string $host The host to connect to
      */
-    protected string $host = '';
+    protected string $host {
+        get => $this->app->config->memcache_host;
+    }
 
     /**
      * @var string $port The port to connect to
      */
-    protected string $port = '';
+    protected string $port {
+        get => $this->app->config->memcache_port;
+    }
 
     /**
      * @var string $key Secret key used to identify the site
      */
-    protected string $key = '';
-
-    /**
-     * @var bool $enabled Will be set to true, if memcache is enabled
-     */
-    protected bool $enabled = false;
-
-    /**
-     * @var bool $connected Set to true, if the connection to the memcache server has been made
-     */
-    protected bool $connected = false;
+    protected string $key {
+        get => $this->app->config->key;
+    }
 
     /**
      * @var array $supported_drivers The supported drivers
      */
     protected array $supported_drivers = [
-        'redis' => '\Mars\Memcache\Redis',
-        'memcache' => '\Mars\Memcache\Memcache',
-        'memcached' => '\Mars\Memcache\Memcached'
+        'redis' => \Mars\Memcache\Redis::class,
+        'memcache' => \Mars\Memcache\Memcache::class,
+        'memcached' => \Mars\Memcache\Memcached::class
     ];
-
-    /**
-     * Constructs the memcache object
-     * @param App $app The app object
-     */
-    public function __construct(App $app)
-    {
-        $this->app = $app;
-
-        if (!$this->app->config->memcache_enable) {
-            return;
-        }
-
-        $this->host = $this->app->config->memcache_host;
-        $this->port = $this->app->config->memcache_port;
-        $this->key = $this->app->config->key;
-        $this->enabled = true;
-        $this->drivers = new Drivers($this->supported_drivers, DriverInterface::class, 'memcache', $this->app);
-    }
 
     /**
      * Destroys the memcache object. Disconnects from the memcache server
      */
     public function __destruct()
     {
-        $this->disconnect();
-    }
-
-    /**
-     * Returns true if memcache is enabled
-     */
-    public function isEnabled() : bool
-    {
-        return $this->enabled;
-    }
-
-    /**
-     * Connects to the memcache server
-     */
-    protected function connect()
-    {
-        if (!$this->enabled || $this->connected) {
-            return;
+        if (isset($this->driver)) {
+            $this->driver->disconnect();
         }
-
-        $this->driver = $this->drivers->get($this->app->config->memcache_driver);
-
-        $this->driver->connect($this->host, $this->port);
-
-        $this->connected = true;
-    }
-
-    /**
-     * Disconnects from the memcache server
-     */
-    protected function disconnect()
-    {
-        if (!$this->connected) {
-            return;
-        }
-
-        $this->driver->disconnect();
     }
 
     /**
@@ -137,9 +111,6 @@ class Memcache
     {
         if (!$this->enabled) {
             return false;
-        }
-        if (!$this->connected) {
-            $this->connect();
         }
 
         if ($serialize) {
@@ -162,10 +133,7 @@ class Memcache
         if (!$this->enabled) {
             return false;
         }
-        if (!$this->connected) {
-            $this->connect();
-        }
-
+    
         if ($serialize) {
             $value = $this->app->serializer->serialize($value, false);
         }
@@ -183,9 +151,6 @@ class Memcache
     {
         if (!$this->enabled) {
             return false;
-        }
-        if (!$this->connected) {
-            $this->connect();
         }
 
         $value = $this->driver->get($key . '-' . $this->key);
@@ -207,9 +172,6 @@ class Memcache
         if (!$this->enabled) {
             return false;
         }
-        if (!$this->connected) {
-            $this->connect();
-        }
 
         return $this->driver->exists($key . '-' . $this->key);
     }
@@ -225,9 +187,6 @@ class Memcache
         if (!$this->enabled) {
             return false;
         }
-        if (!$this->connected) {
-            $this->connect();
-        }
 
         return $this->driver->delete($key . '-' . $this->key);
     }
@@ -240,9 +199,6 @@ class Memcache
     {
         if (!$this->enabled) {
             return $this;
-        }
-        if (!$this->connected) {
-            $this->connect();
         }
 
         $this->driver->deleteAll();

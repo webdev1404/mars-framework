@@ -60,8 +60,7 @@ class Html
     public function __construct(App $app)
     {
         $this->app = $app;
-        $this->tags = new Handlers($this->supported_tags, $this->app);
-        $this->tags->setInterface(TagInterface::class);
+        $this->tags = new Handlers($this->supported_tags, TagInterface::class, $this->app);
     }
 
     /**

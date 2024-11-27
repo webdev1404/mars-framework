@@ -1,27 +1,23 @@
 <?php
 /**
-* The Data Class
+* The Data Properties Trait
 * @package Mars
 */
 
-namespace Mars;
-
-use Mars\App\InstanceTrait;
+namespace Mars\Data;
 
 /**
- * The Data Class.
+* The Data Properties Trait
  * Represent data stored in the format name => value
  */
-abstract class Data extends \stdClass
+trait PropertiesTrait
 {
-    use InstanceTrait;
-
     /**
      * Determines if a property with the given name exists and is not empty
      * @param string $name The name of the property
      * @return bool
      */
-    public function has(string $name) : bool
+    public function exists(string $name) : bool
     {
         return empty($this->$name);
     }

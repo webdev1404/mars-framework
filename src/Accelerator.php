@@ -20,17 +20,42 @@ class Accelerator
     /**
      * @var bool $enabled Will be set to true, if enabled
      */
-    protected bool $enabled = false;
+    public bool $enabled {
+        get => $this->app->config->accelerator_enable;
+    }
 
     /**
      * @var Drivers $drivers The drivers object
      */
-    public readonly Drivers $drivers;
+    public protected(set) Drivers $drivers {
+        get {
+            if (isset($this->drivers)) {
+                return $this->drivers;
+            }
+
+            $this->drivers = new Drivers($this->supported_drivers, DriverInterface::class, 'accelerators', $this->app);
+
+            return $this->drivers;
+        }
+    }
 
     /**
      * @var DriverInterface $driver The driver object
      */
-    public readonly DriverInterface $driver;
+    protected ?DriverInterface $driver {
+        get {
+            if (!$this->enabled) {
+                return null;
+            }            
+            if (isset($this->driver)) {
+                return $this->driver;
+            }
+
+            $this->driver = $this->drivers->get($this->app->config->accelerator_driver);
+
+            return $this->driver;
+        }
+    }
 
     /**
      * @var array $supported_drivers The supported drivers
@@ -38,31 +63,6 @@ class Accelerator
     protected array $supported_drivers = [
         'varnish' => '\Mars\Accelerators\Varnish'
     ];
-
-    /**
-     * Constructs the accelerator object
-     * @param App $app The app object
-     */
-    public function __construct(App $app)
-    {
-        $this->app = $app;
-
-        if (!$this->app->config->accelerator_enable) {
-            return;
-        }
-
-        $this->enabled = true;
-        $this->drivers = new Drivers($this->supported_drivers, DriverInterface::class, 'accelerators', $this->app);
-        $this->driver = $this->drivers->get($this->app->config->accelerator_driver);
-    }
-
-    /**
-     * Returns true if memcache is enabled
-     */
-    public function isEnabled() : bool
-    {
-        return $this->enabled;
-    }
 
     /**
      * Deletes $url from the accelerator's cache

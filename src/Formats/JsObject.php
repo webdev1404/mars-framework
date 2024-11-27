@@ -19,7 +19,7 @@ class JsObject extends JsArray
      */
     public function format(array $data, bool $quote = true, array $dont_quote_array = []) : string
     {
-        $data = App::array($data);
+        $data = App::getArray($data);
 
         if (!$data) {
             return '{}';

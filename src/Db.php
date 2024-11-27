@@ -20,112 +20,194 @@ class Db
     /**
      * @var Drivers $drivers The drivers object
      */
-    public readonly Drivers $drivers;
+    public protected(set) Drivers $drivers {
+        get {
+            if (isset($this->drivers)) {
+                return $this->drivers;
+            }
 
-    /**
-     * @var array $queries The list of executed queries, if debug is on
-     */
-    public array $queries = [];
+            $this->drivers = new Drivers($this->supported_drivers, DriverInterface::class, 'db', $this->app);
 
-    /**
-     * @var float $queries_time The total time needed to execute the queries, if debug is on
-     */
-    public float $queries_time = 0;
-
-    /**
-     * @var bool $debug If true, the db will be run in debug mode
-     */
-    public bool $debug = false;
-
-    /**
-     * @var string $charset The charset
-     */
-    protected string $charset = '';
-
-    /**
-     * @var bool $connected Set to true, if the connection to the db server has been made
-     */
-    protected bool $connected = false;
-
-    /**
-     * @var bool $use_same_handle True if the same handle is used for both read & write queries
-     */
-    protected bool $use_same_handle = true;
+            return $this->drivers;
+        }
+    }
 
     /**
      * @var bool $use_multi If true, will use multiple databases for read & write queries
      */
-    protected bool $use_multi = false;
+    protected bool $use_multi {
+        get => is_array($this->app->config->db_hostname);
+    }
+
+    /**
+     * @var int $read_key The key of the server used for read queries
+     */
+    protected int $read_key {
+        get {
+            if (isset($this->read_key)) {
+                return $this->read_key;
+            }
+
+            $this->read_key = 0;            
+            if ($this->use_multi) {
+                $this->read_key = mt_rand(0, count($this->app->config->db_hostname) - 1);
+            }
+    
+            return $this->read_key;
+        }
+    }
 
     /**
      * @var string $read_hostname The hostname to connect to for read queries
      */
-    protected string $read_hostname = '';
+    protected string $read_hostname {
+        get => $this->use_multi ? $this->app->config->db_hostname[$this->read_key] : $this->app->config->db_hostname;
+    }
 
     /**
      * @var string $read_port The port to connect to for read queries
      */
-    protected string $read_port = '';
+    protected string $read_port {
+        get => $this->use_multi ? $this->app->config->db_port[$this->read_key] : $this->app->config->db_port;
+    }
 
     /**
      * @var string $read_username The username used to connect to the read server
      */
-    protected string $read_username = '';
+    protected string $read_username {
+        get => $this->use_multi ? $this->app->config->db_username[$this->read_key] : $this->app->config->db_username;
+    }
 
     /**
      * @var string $read_password The password used to connect to the read server
      */
-    protected string $read_password = '';
+    protected string $read_password {
+        get => $this->use_multi ? $this->app->config->db_password[$this->read_key] : $this->app->config->db_password;
+    }
 
     /**
      * @var string $read_database The database to connect to the read server
      */
-    protected string $read_database = '';
+    protected string $read_database {
+        get => $this->use_multi ? $this->app->config->db_name[$this->read_key] : $this->app->config->db_name;
+    }
 
     /**
      * @var bool $read_pesistent If true, the read db connection will be persistent
      */
-    protected bool $read_persistent = false;
+    protected bool $read_persistent {
+        get => $this->use_multi ? $this->app->config->db_persistent[$this->read_key] : $this->app->config->db_persistent;
+    }
 
     /**
      * @var string $write_hostname The hostname to connect to for write queries
      */
-    protected string $write_hostname = '';
+    protected string $write_hostname {
+        get => $this->use_multi ? $this->app->config->db_hostname[0] : $this->app->config->db_hostname;
+    }
 
     /**
      * @var string $write_port The port to connect to for write queries
      */
-    protected string $write_port = '';
+    protected string $write_port {
+        get => $this->use_multi ? $this->app->config->db_port[0] : $this->app->config->db_port;
+    }
 
     /**
      * @var string $write_username The username used to connect to the write server
      */
-    protected string $write_username = '';
+    protected string $write_username {
+        get => $this->use_multi ? $this->app->config->db_username[0] : $this->app->config->db_username;
+    }
 
     /**
      * @var string $write_password The password used to connect to the write server
      */
-    protected string $write_password = '';
+    protected string $write_password {
+        get => $this->use_multi ? $this->app->config->db_password[0] : $this->app->config->db_password;
+    }
 
     /**
      * @var string $write_database The database to connect to the write server
      */
-    protected string $write_database = '';
+    protected string $write_database {
+        get => $this->use_multi ? $this->app->config->db_name[0] : $this->app->config->db_name;
+    }
 
     /**
      * @var bool $write_pesistent If true, the write db connection will be persistent
      */
-    protected bool $write_persistent = false;
+    protected bool $write_persistent {
+        get => $this->use_multi ? $this->app->config->db_persistent[0] : $this->app->config->db_persistent;
+    }
 
     /**
      * @var DriverInterface $read_driver The handle for the read queries
      */
-    public readonly DriverInterface $read_driver;
+    protected DriverInterface $read_driver {
+        get {
+            if (isset($this->read_driver)) {
+                return $this->read_driver;
+            }
+
+            try {
+                if ($this->use_multi) {
+                    $this->read_driver = $this->drivers->get($this->app->config->db_driver);
+                    $this->read_driver->connect($this->read_hostname, $this->read_port, $this->read_username, $this->read_password, $this->read_database, $this->read_persistent, $this->charset);                
+                } else {
+                    $this->read_driver = $this->write_driver;
+                }
+            } catch (\Exception $e) {
+                throw new \Exception('Error connecting to the database: ' . $e->getMessage());
+            }
+
+            return $this->read_driver;
+        }
+    }
 
     /**
      * @var DriverInterface $write_driver The handle for the write queries
      */
-    public readonly DriverInterface $write_driver;
+    protected DriverInterface $write_driver {
+        get {
+            if (isset($this->write_driver)) {
+                return $this->write_driver;
+            }
+
+            try {
+                $this->write_driver = $this->drivers->get($this->app->config->db_driver);
+                $this->write_driver->connect($this->write_hostname, $this->write_port, $this->write_username, $this->write_password, $this->write_database, $this->write_persistent, $this->charset);
+            } catch (\Exception $e) {
+                throw new \Exception('Error connecting to the database: ' . $e->getMessage());
+            }
+
+            return $this->write_driver;
+        }
+    }
+
+    /**
+     * @var string $charset The charset
+     */
+    protected string $charset {
+        get => $this->app->config->db_charset;
+    }
+    
+    /**
+     * @var array $queries The list of executed queries, if debug is on
+     */
+    public protected(set) array $queries = [];
+
+    /**
+     * @var float $queries_time The total time needed to execute the queries, if debug is on
+     */
+    public protected(set) float $queries_time = 0;
+
+    /**
+     * @var bool $debug If true, the db will be run in debug mode
+     */
+    public bool $debug{
+        get => $this->app->config->db_debug;
+    }
 
     /**
      * @var array $last_query Contains the sql code and the params of the last executed query
@@ -136,112 +218,20 @@ class Db
      * @var array $supported_drivers The supported drivers
      */
     protected array $supported_drivers = [
-        'pdo' => '\Mars\Db\Pdo'
+        'pdo' => \Mars\Db\Pdo::class
     ];
-
-    /**
-     * Constructs the db object
-     * @param App $app The app object
-     */
-    public function __construct(App $app)
-    {
-        $this->app = $app;
-
-        $this->use_multi = is_array($this->app->config->db_hostname);
-        $this->charset = $this->app->config->db_charset;
-        $this->debug = $this->app->config->db_debug;
-        $this->drivers = new Drivers($this->supported_drivers, DriverInterface::class, 'db', $this->app);
-
-        $this->setReadHost();
-        $this->setWriteHost();
-    }
 
     /**
      * Destroys the database object. Disconnects from the database server
      */
     public function __destruct()
     {
-        $this->disconnect();
-    }
-
-    /**
-     * Returns the key of the server used for read queries
-     * @param string|array $hostname The db hostname
-     */
-    protected function getReadKey(string|array $hostname) : int
-    {
-        if ($this->use_multi) {
-            return mt_rand(0, count($hostname) - 1);
+        if (isset($this->read_driver)) {
+            $this->read_driver->disconnect();
         }
-
-        return 0;
-    }
-
-    /**
-     * Sets the read hostname
-     */
-    protected function setReadHost()
-    {
-        $key = $this->getReadKey($this->app->config->db_hostname);
-
-        $this->read_hostname = $this->use_multi ? $this->app->config->db_hostname[$key] : $this->app->config->db_hostname;
-        $this->read_port = $this->use_multi ? $this->app->config->db_port[$key] : $this->app->config->db_port;
-        $this->read_username = $this->use_multi ? $this->app->config->db_username[$key] : $this->app->config->db_username;
-        $this->read_password = $this->use_multi ? $this->app->config->db_password[$key] : $this->app->config->db_password;
-        $this->read_database = $this->use_multi ? $this->app->config->db_name[$key] : $this->app->config->db_name;
-        $this->read_persistent = $this->use_multi ? $this->app->config->db_persistent[$key] : $this->app->config->db_persistent;
-    }
-
-    /**
-     * Sets the write hostname
-     */
-    protected function setWriteHost()
-    {
-        $this->write_hostname = $this->use_multi ? $this->app->config->db_hostname[0] : $this->app->config->db_hostname;
-        $this->write_port = $this->use_multi ? $this->app->config->db_port[0] : $this->app->config->db_port;
-        $this->write_username = $this->use_multi ? $this->app->config->db_username[0] : $this->app->config->db_username;
-        $this->write_password = $this->use_multi ? $this->app->config->db_password[0] : $this->app->config->db_password;
-        $this->write_database = $this->use_multi ? $this->app->config->db_name[0] : $this->app->config->db_name;
-        $this->write_persistent = $this->use_multi ? $this->app->config->db_persistent[0] : $this->app->config->db_persistent;
-    }
-
-    /**
-     * Connects to the database server(s)
-     */
-    protected function connect()
-    {
-        if ($this->connected) {
-            return;
+        if (isset($this->write_driver)) {
+            $this->write_driver->disconnect();
         }
-
-        try {
-            $this->write_driver = $this->drivers->get($this->app->config->db_driver);
-            $this->write_driver->connect($this->write_hostname, $this->write_port, $this->write_username, $this->write_password, $this->write_database, $this->write_persistent, $this->charset);
-
-            if ($this->use_same_handle) {
-                $this->read_driver = $this->write_driver;
-            } else {
-                $this->read_driver = $this->drivers->get($this->app->config->db_driver);
-                $this->read_driver->connect($this->read_hostname, $this->read_port, $this->read_username, $this->read_password, $this->read_database, $this->read_persistent, $this->charset);
-            }
-        } catch (\Exception $e) {
-            throw new \Exception('Error connecting to the database: ' . $e->getMessage());
-        }
-
-        $this->connected = true;
-    }
-
-    /**
-     * Disconnects from the database server
-     */
-    protected function disconnect()
-    {
-        if (!$this->connected) {
-            return;
-        }
-
-        $this->read_driver->disconnect();
-        $this->write_driver->disconnect();
     }
 
     /**
@@ -253,13 +243,12 @@ class Db
         return new Sql($this->app);
     }
 
-
     /**
      * Begins a transaction
      */
-    public function begin()
+    public function beginTransaction()
     {
-        $this->write_driver->begin();
+        $this->write_driver->beginTransaction();
     }
 
     /**
@@ -285,7 +274,7 @@ class Db
      * @return object The result
      * @throws Exception If the query fails
      */
-    public function readQuery(string | Sql $sql, array $params = []) : DbResult
+    public function readQuery(string|Sql $sql, array $params = []) : DbResult
     {
         return $this->query($sql, $params, true);
     }
@@ -312,8 +301,8 @@ class Db
      */
     public function query(string|Sql $sql, array $params = [], ?bool $is_read = null) : DbResult
     {
-        if (!$this->connected) {
-            $this->connect();
+        if ($this->debug) {
+            $this->app->timer->start('sql');
         }
 
         if ($sql instanceof Sql) {
@@ -323,10 +312,6 @@ class Db
         }
 
         $handle = $this->getQueryHandle($sql, $is_read);
-
-        if ($this->debug) {
-            $this->app->timer->start('sql');
-        }
 
         try {
             $this->last_query = ['sql' => $sql, 'params' => $params];
@@ -350,12 +335,11 @@ class Db
      * Returns the handle used to process the query
      * @param string $sql The sql query
      * @param bool $is_read If true, this is a read query
+     * @return DriverInterface The handle
      */
     protected function getQueryHandle(string $sql, ?bool $is_read = null) : DriverInterface
     {
-        if ($this->use_same_handle) {
-            return $this->read_driver;
-        } else {
+        if ($this->use_multi) {
             if ($is_read === null) {
                 $is_read = $this->isReadQuery($sql);
             }
@@ -365,6 +349,8 @@ class Db
             }
 
             return $this->write_driver;
+        } else {
+            return $this->read_driver;            
         }
     }
 
@@ -375,8 +361,8 @@ class Db
      */
     protected function isReadQuery(string $sql) : bool
     {
-        if (stripos(trim($sql), 'select') !== 0) {
-            return false;
+        if (str_starts_with(trim($sql), 'select')) {
+            return true;
         }
 
         return true;

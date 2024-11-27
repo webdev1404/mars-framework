@@ -23,6 +23,10 @@ class Escape
      */
     public function html(?string $value) : string
     {
+        if (!$value) {
+            return '';
+        }
+
         return htmlspecialchars($value, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML5, 'UTF-8');
     }
 
@@ -34,6 +38,10 @@ class Escape
      */
     public function htmlx2(?string $value, bool $nl2br = true) : string
     {
+        if (!$value) {
+            return '';
+        }
+        
         $value = $this->html($this->html($value));
 
         if ($nl2br) {

@@ -27,7 +27,17 @@ abstract class ModelEntity extends Entity
     /**
      * @var Errors $errors The generated errors, if any
      */
-    public Errors $errors;
+    public Errors $errors {
+        get {
+            if (isset($this->errors)) {
+                return $this->errors;
+            }
+
+            $this->errors = new Errors($this->app);
+
+            return $this->errors;
+        }
+    }
 
     /**
      * @var array $validation_rules Validation rules
@@ -50,12 +60,10 @@ abstract class ModelEntity extends Entity
      */
     public function __construct(App $app)
     {
+        $this->app = $app;
+
         parent::__construct();
 
-        $this->app = $app;
-        $this->errors = new Errors($this->app);
-
-        $this->prepare();
         $this->init();
     }
 }

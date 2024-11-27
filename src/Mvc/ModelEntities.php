@@ -25,11 +25,10 @@ abstract class ModelEntities extends Entities
      */
     public function __construct(App $app)
     {
-        parent::__construct();
-
         $this->app = $app;
+        
+        parent::__construct();        
 
-        $this->prepare();
         $this->init();
     }
 }

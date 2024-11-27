@@ -106,7 +106,7 @@ abstract class Controller extends \stdClass
     /**
      * @var string $url The controller's parent's url. Alias for $this->parent->url
      */
-    public string $url {
+    public protected(set) string $url {
         get {
             if (isset($this->url)) {
                 return $this->url;
@@ -124,12 +124,12 @@ abstract class Controller extends \stdClass
     /**
      * @var Extension $parent The parent extension
      */
-    public ?Extension $parent;
+    public protected(set) ?Extension $parent;
 
     /**
      * @var object $model The model object
      */
-    public ?object $model {
+    public protected(set) ?object $model {
         get {
             if (isset($this->model)) {
                 return $this->model;
@@ -147,7 +147,7 @@ abstract class Controller extends \stdClass
     /**
      * @var View $view The view object
      */
-    public ?View $view {
+    public protected(set) ?View $view {
         get {
             if (isset($this->view)) {
                 return $this->view;
@@ -167,9 +167,7 @@ abstract class Controller extends \stdClass
      */
     #[Hidden]
     protected Filter $filter {
-        get {
-            return $this->app->filter;
-        }
+        get => $this->app->filter;
     }
 
     /**
@@ -177,9 +175,7 @@ abstract class Controller extends \stdClass
      */
     #[Hidden]
     protected Escape $escape {
-        get {
-            return $this->app->escape;
-        }
+        get => $this->app->escape;
     }
 
     /**
@@ -187,9 +183,7 @@ abstract class Controller extends \stdClass
      */
     #[Hidden]
     protected Request $request {
-        get {
-            return $this->app->request;
-        }
+        get => $this->app->request;
     }
 
     /**
@@ -197,9 +191,7 @@ abstract class Controller extends \stdClass
      */
     #[Hidden]
     protected Uri $uri {
-        get {
-            return $this->app->uri;
-        }
+        get => $this->app->uri;
     }
 
     /**
@@ -207,9 +199,7 @@ abstract class Controller extends \stdClass
      */
     #[Hidden]
     protected Validator $validator {
-        get {
-            return $this->app->validator;
-        }
+        get => $this->app->validator;
     }
 
     /**
@@ -217,45 +207,35 @@ abstract class Controller extends \stdClass
      */
     #[Hidden]
     protected Plugins $plugins {
-        get {
-            return $this->app->plugins;
-        }
+        get => $this->app->plugins;
     }
 
     /**
      * @var Errors $errors The errors object. Alias for $this->app->errors
      */
     protected Errors $errors {
-        get {
-            return $this->app->errors;
-        }
+        get => $this->app->errors;
     }
 
     /**
      * @var Messages $messages The messages object. Alias for $this->app->messages
      */
     protected Messages $messages {
-        get {
-            return $this->app->messages;
-        }
+        get => $this->app->messages;
     }
 
     /**
      * @var Info $info The info object. Alias for $this->app->info
      */
     protected Info $info {
-        get {
-            return $this->app->info;
-        }
+        get => $this->app->info;
     }
 
     /**
      * @var Warnings $warnings The warnings object. Alias for $this->app->warnings
      */
     protected Warnings $warnings    {
-        get {
-            return $this->app->warnings;
-        }
+        get => $this->app->warnings;
     }
 
     /**
@@ -301,42 +281,6 @@ abstract class Controller extends \stdClass
     public function setDefaultMethods(string $method) : static
     {
         $this->default_success_method = $method;
-        $this->default_error_method = $method;
-
-        return $this;
-    }
-
-    /**
-     * Sets the default method to be executed, if the requested one doesn't exist/is not public
-     * @param string $method The name of the method
-     * @return static
-     */
-    public function setDefaultMethod(string $method) : static
-    {
-        $this->default_method = $method;
-
-        return $this;
-    }
-
-    /**
-     * Sets the success method. Called after the main method, if it returns true
-     * @param string $method The name of the method
-     * @return static
-     */
-    public function setDefaultSuccessMethod(string $method) : static
-    {
-        $this->default_success_method = $method;
-
-        return $this;
-    }
-
-    /**
-     * Sets the error method. Called after the main method, if it returns false
-     * @param string $method The name of the method
-     * @return static
-     */
-    public function setDefaultErrorMethod(string $method) : static
-    {
         $this->default_error_method = $method;
 
         return $this;
@@ -490,7 +434,7 @@ abstract class Controller extends \stdClass
         $data_array = ['success'=> true, 'error' => $this->app->errors->getFirst(), 'message' => $this->app->messages->getFirst(), 'warning' => $this->app->warnings->getFirst(), 'info' => $this->app->info->getFirst()];
 
         if ($this->app->success()) {
-            $data_array = $data_array + App::array($data);
+            $data_array = $data_array + App::getArray($data);
         } else {
             $data_array['success'] = false;
         }

@@ -8,7 +8,7 @@ namespace Mars\Extensions;
 
 use Mars\App;
 use Mars\Extensions\Root\Module;
-use Mars\Extensions\Traits\isInsideAModuleTrait;
+
 use Mars\Extensions\Traits\isSingleClassTrait;
 use Mars\Extensions\Abilities\LanguagesTrait;
 use Mars\Extensions\Abilities\TemplatesTrait;
@@ -17,15 +17,8 @@ use Mars\Extensions\Abilities\TemplatesTrait;
  * The Plugin Class
  * Object corresponding to a plugin extension
  */
-abstract class Plugin extends Extension
+abstract class Plugin extends SubModuleSingleFile
 {
-    use isInsideAModuleTrait, isSingleClassTrait {
-        isInsideAModuleTrait::__construct as __constructModule;
-        isSingleClassTrait::__construct as __constructParent;
-    }
-    use LanguagesTrait;
-    use TemplatesTrait;
-    
     /**
      * @var string $title The plugin's title
      */
@@ -57,16 +50,8 @@ abstract class Plugin extends Extension
      */
     public function __construct(App $app)
     {
-        $this->__constructParent($app);
+        parent::__construct($app);
 
         $this->app->plugins->addHooks($this, $this->hooks);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function getRoot() : Base
-    {
-        return new Module($this->app);
     }
 }

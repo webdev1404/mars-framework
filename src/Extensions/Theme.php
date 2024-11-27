@@ -95,34 +95,7 @@ class Theme extends Extension
     /**
      * @var array $vars The theme's vars are stored here
      */
-    public array $vars {
-        get {
-            if (isset($this->vars)) {
-                return $this->vars;
-            }
-
-            $this->vars = [
-                'app' => $this->app,
-                'this' => $this,
-                'theme' => $this,
-                'config' => $this->app->config,
-
-                'html' => $this->app->html,
-                'ui' => $this->app->ui,
-                'uri' => $this->app->uri,
-                'escape' => $this->app->escape,
-                'format' => $this->app->format,
-
-                'plugins' => $this->app->plugins,
-
-                'request' => $this->app->request,
-                'get' => $this->app->request->get,
-                'post' => $this->app->request->post,                
-            ];
-
-            return $this->vars;
-        }
-    }
+    public array $vars = [];
 
     /**
      * @var array Array with the list of loaded templates
@@ -165,6 +138,33 @@ class Theme extends Extension
         $this->lazyLoad($app);
 
         parent::__construct($name, $app);
+
+        $this->prepareVars();
+    }
+
+    /**
+     * Prepare the vars
+     */
+    protected function prepareVars()
+    {       
+        $this->vars = [
+            'app' => $this->app,
+            'this' => $this,
+            'theme' => $this,
+            'config' => $this->app->config,
+
+            'html' => $this->app->html,
+            'ui' => $this->app->ui,
+            'uri' => $this->app->uri,
+            'escape' => $this->app->escape,
+            'format' => $this->app->format,
+
+            'plugins' => $this->app->plugins,
+
+            'request' => $this->app->request,
+            'get' => $this->app->request->get,
+            'post' => $this->app->request->post,
+        ];
     }
 
     /**
@@ -195,7 +195,7 @@ class Theme extends Extension
      * @return static
      */
     public function addVar(string $name, $value) : static
-    {
+    {        
         $this->vars[$name] = $value;
 
         return $this;

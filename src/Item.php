@@ -302,7 +302,7 @@ abstract class Item extends Entity
      */
     public function set(array|object $data, bool $overwrite = true) : static
     {
-        $this->original = $this->getOriginalData(App::array($data));
+        $this->original = $this->getOriginalData(App::getArray($data));
         
         parent::set($data, $overwrite);
 

@@ -54,11 +54,11 @@ trait MvcTrait
         }
 
         $controller_class = $this->getMvcClass(App::EXTENSIONS_DIRS['controllers'], $controller);
-    ;
-        $class_name = $this->namespace . "\\" . $controller_class;
+
+        $class_name = $this->namespace . '\\' . $controller_class;
 
         $this->controller = new $class_name($this, $this->app);
-var_dump($this->controller);die;
+
         return $this->controller;
     }
 
@@ -75,7 +75,7 @@ var_dump($this->controller);die;
 
         $model_class = $this->getMvcClass(App::EXTENSIONS_DIRS['models'], $model);
 
-        $class_name = $this->getRootNamespace() . App::getClass($this->name) . "\\" . $model_class;
+        $class_name = $this->namespace . '\\' . $model_class;
 
         return new $class_name($this->app);
     }
@@ -94,6 +94,7 @@ var_dump($this->controller);die;
         $view_class = $this->getMvcClass(App::EXTENSIONS_DIRS['views'], $view);
 
         $class_name = $this->getRootNamespace() . App::getClass($this->name) . "\\" . $view_class;
+        $class_name = $this->namespace . '\\' . $view_class;
 
         return new $class_name($controller, $this->app);
     }
