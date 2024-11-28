@@ -85,6 +85,16 @@ class Config
     public string|array $debug_ips = [];
 
     /**
+     * @var bool $debug_db Set to true to enable the db debug data
+     */
+    public bool $debug_db = false;
+
+    /**
+     * @var bool $debug_plugins Set to true to enable the db debug data
+     */
+    public bool $debug_plugins = false;
+
+    /**
      * @var bool $development Set to true to enable development mode
      */
     public bool $development = false;
@@ -148,11 +158,6 @@ class Config
      * @var string $db_charset The db charset
      */
     public string $db_charset = 'utf8mb4';
-
-    /**
-     * @var bool $db_debug Set to true to enable the db debug data
-     */
-    public bool $db_debug = false;
 
     /**
      * Change the driver only if you know what you're doing! Preferably at installation time.

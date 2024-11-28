@@ -12,6 +12,7 @@ use Mars\Document\Javascript;
 use Mars\Document\Meta;
 use Mars\Document\Rss;
 use Mars\Document\Title;
+use Mars\Lazyload\GhostTrait;
 
 /**
  * The Device Class
@@ -20,30 +21,36 @@ use Mars\Document\Title;
 class Document
 {
     use InstanceTrait;
+    use GhostTrait;
 
     /**
      * @var Css $css The css object
      */
+    #[LazyLoad]
     public Css $css;
 
     /**
      * @var Javascript $javascript The javascript object
      */
+    #[LazyLoad]
     public Javascript $javascript;
 
     /**
      * @var Meta $meta The meta object
      */
+    #[LazyLoad]
     public Meta $meta;
 
     /**
      * @var Rss $rss The rss object
      */
+    #[LazyLoad]
     public Rss $rss;
 
     /**
      * @var Title $title The title object
      */
+    #[LazyLoad]
     public Title $title;
 
     /**
@@ -52,12 +59,8 @@ class Document
      */
     public function __construct(App $app)
     {
-        $this->app = $app;
+        $this->lazyLoad($app);
 
-        $this->css = new Css($this->app);
-        $this->javascript = new Javascript($this->app);
-        $this->meta = new Meta($this->app);
-        $this->rss = new Rss($this->app);
-        $this->title = new Title($this->app);
+        $this->app = $app;
     }
 }

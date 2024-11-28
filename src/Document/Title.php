@@ -13,19 +13,19 @@ namespace Mars\Document;
 class Title extends Property
 {
     /**
-     * Returns the value of the property
-     * @return string
+     * @var string $value The property's value
      */
-    public function get() : string
-    {
-        $parts = [
-            $this->app->config->title_prefix,
-            $this->value,
-            $this->app->config->title_suffix
-        ];
-
-        $parts = array_filter($parts);
-
-        return implode($this->app->config->title_separator, $parts);
+    public string $value {
+        get {
+            $parts = [
+                $this->app->config->title_prefix,
+                $this->value,
+                $this->app->config->title_suffix
+            ];
+    
+            $parts = array_filter($parts);
+    
+            return implode($this->app->config->title_separator, $parts);
+        }
     }
 }

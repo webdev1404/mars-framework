@@ -19,43 +19,41 @@ class Filter
     /**
      * @var Handlers $filters The filters object
      */
-    public readonly Handlers $filters;
+    public protected(set) Handlers $filters {
+        get {
+            if (isset($this->filters)) {
+                return $this->filters;
+            }
+
+            $this->filters = new Handlers($this->supported_filters, null, $this->app);
+
+            return $this->filters;
+        }
+    }
 
     /**
      * @var array $supported_filters The list of supported filters
      */
     protected array $supported_filters = [
-        'str' => ['string'],
-        'string' => ['string'],
-        'int' => ['int'],
-        'pos' => ['absint'],
-        'float' => ['float'],
-        'abs' => ['abs'],
-        'absint' => ['absint'],
-        'absfloat' => ['absfloat'],
-        'id' => ['id'],
-        'trim' => ['trim'],
-        'tags' => ['tags'],
-        'html' => '\Mars\Filters\Html',
-        'alpha' => '\Mars\Filters\Alpha',
-        'alnum' => '\Mars\Filters\Alnum',
-        'filename' => '\Mars\Filters\Filename',
-        'filepath' => '\Mars\Filters\Filepath',
-        'url' => '\Mars\Filters\Url',
-        'email' => '\Mars\Filters\Email',
-        'slug' => '\Mars\Filters\Slug',
-        'interval' => '\Mars\Filters\Interval',
-        'exists' => '\Mars\Filters\Exists',
+        'html' => \Mars\Filters\Html::class,
+        'alpha' => \Mars\Filters\Alpha::class,
+        'alnum' => \Mars\Filters\Alnum::class,
+        'filename' => \Mars\Filters\Filename::class,
+        'filepath' => \Mars\Filters\Filepath::class,
+        'url' => \Mars\Filters\Url::class,
+        'email' => \Mars\Filters\Email::class,
+        'slug' => \Mars\Filters\Slug::class,
+        'interval' => \Mars\Filters\Interval::class,
+        'exists' => \Mars\Filters\Exists::class,
     ];
+
     /**
-     * Builds the text object
-     * @param App $app The app object
+     * @var array $aliases The list of filter aliases
      */
-    public function __construct(App $app)
-    {
-        $this->app = $app;
-        $this->filters = new Handlers($this->supported_filters, null, $this->app);
-    }
+    protected array $aliases = [
+        'str' => 'string',
+        'pos' => 'absint',
+    ];
 
     /**
      * Filters a value
@@ -65,12 +63,20 @@ class Filter
      */
     public function value($value, string $filter)
     {
+        if (isset($this->aliases[$filter])) {
+            $filter = $this->aliases[$filter];
+        }
+
         if (method_exists($this, $filter)) {
             return $this->$filter($value);
         }
 
         return App::map($value, function ($value) use ($filter) {
-            return $this->filters->get($filter)->filter($value);
+            try {
+                return $this->filters->get($filter)->filter($value);
+            } catch (\Exception $e) {
+                throw new \Exception("Filter {$filter} not found");
+            }
         });
     }
 

@@ -19,7 +19,16 @@ abstract class Property
     /**
      * @var string $value The property's value
      */
-    protected string $value = '';
+    public string $value = '';
+
+    /**
+     * Returns the value of the property
+     * @return string
+     */
+    public function get() : string
+    {
+        return $this->value;
+    }
 
     /**
      * Sets the value of the property
@@ -31,14 +40,5 @@ abstract class Property
         $this->value = $value;
 
         return $this;
-    }
-
-    /**
-     * Returns the value of the property
-     * @return string
-     */
-    public function get() : string
-    {
-        return $this->value;
     }
 }

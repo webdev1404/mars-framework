@@ -38,20 +38,22 @@ class Plugins
      * @var array $plugins Array holding the plugin objects
      */
     public protected(set) array $plugins {
-        get {            
+        get {                        
             if (isset($this->plugins)) {
                 return $this->plugins;
             }
             if (!$this->enabled) {
-                return $this->plugins;
+                return [];
             }
 
             $this->plugins = [];
+            
+            $modules_namespace = Module::getBaseNamespace() . '\\';
 
-            $modules_namespace = '\\' . Module::getBaseNamespace() . '\\';
+            $plugins = $this->app->config->plugins ?? [];
+            foreach ($plugins as $class_name) {
+                $class_name = ltrim($class_name, '\\');
 
-            $plugins = $this->app->config->plugins ?? [];                
-            foreach ($plugins as $class_name) {                
                 if (!str_starts_with($class_name, $modules_namespace)) {
                     throw new \Exception("Plugin {$class_name} must belong to the {$modules_namespace} namespace");
                 }
@@ -69,40 +71,57 @@ class Plugins
     }
 
     /**
+     * @var bool $debug If true, we'll collect debug data 
+     */
+    public bool $debug{
+        get => $this->app->config->debug_plugins;
+    }
+
+    /**
      * @var array $hooks Registered hooks
      */
     public protected(set) array $hooks = [];
 
     /**
-     * @var array $hooks_exec Executed hooks. Set only if debug is enabled
-     */
-    public protected(set) array $hooks_exec = [];
-
-    /**
-     * @var array $hooks_exec_time The execution time for all hooks is stored here. Set only if debug is enabled
+     * @var array $hooks_exec_time The execution time for all hooks. Set only if debug is enabled
      */
     public protected(set) array $hooks_exec_time = [];
 
     /**
-     * @var array $exec_time The execution time for all plugins is stored here. Set only if debug is enabled
+     * @var array $exec_time The execution time for all plugins. Set only if debug is enabled
      */
     public protected(set) array $exec_time = [];
 
     /**
+     * @var array $total_time The total execution time. Set only if debug is enabled
+     */
+    public protected(set) float $total_time = 0;    
+
+    /**
      * Registers hooks for execution
      * @param Plugin $plugin The plugin executing the hook
-     * @param string|array $hooks The names of the hooks at which the plugin will be attached
+     * @param array $hooks The list of hooks the plugin will be attached to
      * @return $this
      */
-    public function addHooks(Plugin $plugin, string|array $hooks) : static
+    public function addHooks(Plugin $plugin, array $hooks) : static
     {
         if (!$this->enabled) {
             return $this;
         }
 
         $hooks = (array)$hooks;
-        foreach ($hooks as $hook => $method) {
-            $this->hooks[$hook][] = [$plugin, $method];
+        foreach ($hooks as $hook) {
+            if (is_string($hook)) {
+                $name = $hook;
+                $method = $hook;
+                $priority = 100;
+            } elseif (is_array($hook)) {
+                $name = $hook['name'];
+                $method = $hook['method'] ?? $name;
+                $priority = $hook['priority'] ?? 100;
+            }
+
+            $this->hooks[$name][] = [$plugin::class, $method, $priority];
         }
 
         return $this;
@@ -120,18 +139,29 @@ class Plugins
             return $args[0] ?? null;
         }
 
-        if ($this->app->config->debug) {
-            $this->hooks_exec[] = $hook;
-        }
+        //sort the hooks by priority
+        $hooks_array = $this->hooks[$hook];
+        usort($hooks_array, function($a, $b) {
+            return $a[2] <=> $b[2];
+        });
 
         $return_value = null;
-
-        foreach ($this->hooks[$hook] as $hook_data) {
-            if ($this->app->config->debug) {
+        
+        foreach ($hooks_array as $hook_data) {
+            if ($this->debug) {
                 $this->startTimer();
             }
 
-            $plugin_return_value = call_user_func_array($hook_data, $args);
+            $class_name = $hook_data[0];
+            $plugin = $this->plugins[$class_name] ?? null;
+            $method = $hook_data[1];
+
+            if (!$plugin) {
+                throw new \Exception("Plugin {$class_name} not found on the list of loaded plugins");
+            }
+
+
+            $plugin_return_value = call_user_func_array([$plugin, $method], $args);
 
             if ($plugin_return_value !== null) {
                 if (isset($args[0])) {
@@ -141,8 +171,8 @@ class Plugins
                 $return_value = $plugin_return_value;
             }
 
-            if ($this->app->config->debug) {
-                $this->endTimer($hook_data[0]->name, $hook);
+            if ($this->debug) {
+                $this->endTimer($class_name, $hook);
             }
         }
 
@@ -176,6 +206,8 @@ class Plugins
     protected function endTimer(string $name, string $hook)
     {
         $time = $this->app->timer->end('plugin_run');
+
+        $this->total_time+= $time;
 
         $this->exec_time[$name] = $this->exec_time[$name] ?? 0;
         $this->hooks_exec_time[$hook] = $this->hooks_exec_time[$hook] ?? 0;

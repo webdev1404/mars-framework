@@ -7,6 +7,7 @@
 namespace Mars\Document;
 
 use Mars\App\InstanceTrait;
+use Mars\Lists\ListTrait;
 
 /**
  * The Document Tags Class
@@ -15,7 +16,7 @@ use Mars\App\InstanceTrait;
 abstract class Tags
 {
     use InstanceTrait;
-    use \Mars\Lists\ListTrait;
+    use ListTrait;
 
     /**
      * Outputs a tag

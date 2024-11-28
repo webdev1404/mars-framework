@@ -24,7 +24,7 @@ class MobileDetect implements DriverInterface
     public function get(string $useragent = '') : string
     {
         $useragent = $useragent ? $useragent : $this->app->useragent;
-        $handle = new \Detection\MobileDetect;
+        $handle = new \Detection\MobileDetect;   
         $handle->setUserAgent($useragent);
 
         if ($handle->isTablet()) {

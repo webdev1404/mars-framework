@@ -206,7 +206,7 @@ class Db
      * @var bool $debug If true, the db will be run in debug mode
      */
     public bool $debug{
-        get => $this->app->config->db_debug;
+        get => $this->app->config->debug_db;
     }
 
     /**

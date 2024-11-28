@@ -20,42 +20,71 @@ class Device
     /**
      * @var Drivers $drivers The drivers object
      */
-    public readonly Drivers $drivers;
+    public protected(set) Drivers $drivers {
+        get {
+            if (isset($this->drivers)) {
+                return $this->drivers;
+            }
+
+            $this->drivers = new Drivers($this->supported_drivers, DriverInterface::class, 'device', $this->app);
+
+            return $this->drivers;
+        }
+    }
 
     /**
-     * @var string $type The device type. Eg: desktop/tablet/smartphone
+     * @var string $device The device type. Eg: desktop/tablet/smartphone
      */
-    public readonly string $type;
+    public protected(set) string $device {
+        get {
+            if (isset($this->device)) {
+                return $this->device;
+            }
+
+            $this->device = '';
+            if (!$this->app->config->device_start || $this->app->is_bin) {
+                return $this->device;
+            }
+            if ($this->app->config->development_device) {
+                $this->device = $this->app->config->development_device;
+                return $this->device;
+            }
+
+            $device = $this->app->session->get('device');
+            if ($device !== null) {
+                $this->device = $device;
+                return $this->device;
+            }
+
+            //do we get the device name from varnish?
+            if (isset($_SERVER['X-Device'])) {
+                if (in_array($_SERVER['X-Device'], $this->devices)) {
+                    $this->device = $_SERVER['X-Device'];
+                }
+            }
+
+            if (!$this->device) {
+                $driver = $this->drivers->get($this->app->config->device_driver);
+                $this->device = $driver->get();
+            }
+
+            $this->app->session->set('device', $this->device);
+
+            return $this->device;
+        }
+    }
 
     /**
      * @var string $devices Array listing the supported devices
      */
-    public readonly array $devices;
+    public protected(set) array $devices = ['desktop', 'tablet', 'smartphone'];
 
     /**
      * @var array $supported_drivers The supported drivers
      */
     protected array $supported_drivers = [
-        'mobile_detect' => '\Mars\Device\MobileDetect'
+        'mobile_detect' => \Mars\Device\MobileDetect::class
     ];
-
-    /**
-     * Builds the device object
-     * @param App $app The app object
-     */
-    public function __construct(App $app)
-    {
-        $this->app = $app;
-
-        if (!$this->app->config->device_start || $this->app->is_bin) {
-            return;
-        }
-
-        $this->devices = ['desktop', 'tablet', 'smartphone'];
-        $this->drivers = new Drivers($this->supported_drivers, DriverInterface::class, 'device', $this->app);
-
-        $this->type = $this->getDevice();
-    }
 
     /**
      * Returns the current device
@@ -63,39 +92,7 @@ class Device
      */
     public function get() : string
     {
-        return $this->type;
-    }
-
-    /**
-     * Detects the user's device
-     * @return string The user's device
-     */
-    protected function getDevice() : string
-    {
-        if ($this->app->config->development_device) {
-            return $this->app->config->development_device;
-        }
-
-        $device = $this->app->session->get('device');
-        if ($device !== null) {
-            return $device;
-        }
-
-        //do we get the device name from varnish?
-        if (isset($_SERVER['X-Device'])) {
-            if (in_array($_SERVER['X-Device'], $this->devices)) {
-                $device = $_SERVER['X-Device'];
-            }
-        }
-
-        if (!$device) {
-            $driver = $this->drivers->get($this->app->config->device_driver);
-            $device = $driver->get();
-        }
-
-        $this->app->session->set('device', $device);
-
-        return $device;
+        return $this->device;
     }
 
     /**
@@ -104,7 +101,7 @@ class Device
      */
     public function isDesktop() : bool
     {
-        if (!$this->type || $this->type == 'desktop') {
+        if (!$this->device || $this->device == 'desktop') {
             return true;
         }
 
@@ -117,7 +114,7 @@ class Device
      */
     public function isMobile() : bool
     {
-        if ($this->type == 'tablet' || $this->type == 'smartphone') {
+        if ($this->device == 'tablet' || $this->device == 'smartphone') {
             return true;
         }
 
@@ -130,7 +127,7 @@ class Device
      */
     public function isTablet() : bool
     {
-        if ($this->type == 'tablet') {
+        if ($this->device == 'tablet') {
             return true;
         }
 
@@ -143,7 +140,7 @@ class Device
      */
     public function isSmartphone() : bool
     {
-        if ($this->type == 'smartphone') {
+        if ($this->device == 'smartphone') {
             return true;
         }
 

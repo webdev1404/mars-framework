@@ -17,31 +17,29 @@ class Debug
     use InstanceTrait;
 
     /**
-     * @var array $info Debug info
-     */
-    public array $info = [];
-
-    /**
      * Outputs all the debug info
      */
     public function output()
     {
         echo '<div id="debug-info">';
 
-        $this->app->plugins->run('debug_output_start', $this);
+        $this->app->plugins->run('debug_output_step1', $this);
 
         $this->outputInfo();
-        $this->outputExecutionTime();
+        $this->outputExecutionTime();    
+
+        $this->app->plugins->run('debug_output_step2', $this);
+        
+        $this->outputPlugins();        
+        $this->outputDbQueries();
+
+        $this->app->plugins->run('debug_output_step3', $this);
+
+        $this->outputLoadedTemplates();
         $this->outputOpcacheInfo();
         $this->outputPreloadInfo();
 
-        $this->app->plugins->run('debug_output_middle', $this);
-
-        $this->outputDbQueries();
-        $this->outputPlugins();
-        $this->outputLoadedTemplates();
-
-        $this->app->plugins->run('debug_output_end', $this);
+        $this->app->plugins->run('debug_output_step4', $this);
 
         echo '</div>';
     }
@@ -54,12 +52,12 @@ class Debug
         echo '<table class="grid debug-grid">';
         echo '<tr><th colspan="3">Debug Info</th></tr>';
         echo '<tr><td><strong>Execution Time</strong></td><td>' . $this->app->timer->getExecutionTime() . 's</td></tr>';
-        echo '<tr><td><strong>Output Size</strong></td><td>' . $this->app->format->filesize($this->info['output_size'] ?? 0) . '</td></tr>';
-        echo '<tr><td><strong>Memory Usage</strong></td><td>' . $this->app->format->filesize(memory_get_usage(true)) . '</td></tr>';
-        echo '<tr><td><strong>Memory Peak Usage</strong></td><td>' . $this->app->format->filesize(memory_get_peak_usage(true)) . '</td></tr>';
+        echo '<tr><td><strong>Output Size</strong></td><td>' . $this->app->format->filesize($this->app->output_size) . '</td></tr>';
+        echo '<tr><td><strong>Memory Usage</strong></td><td>' . $this->app->format->filesize(\memory_get_usage(true)) . '</td></tr>';
+        echo '<tr><td><strong>Memory Peak Usage</strong></td><td>' . $this->app->format->filesize(\memory_get_peak_usage(true)) . '</td></tr>';
         echo '<tr><td><strong>DB Queries</strong></td><td>' . count($this->app->db->queries) . '</td></tr>';
         echo '<tr><td><strong>Loaded Templates</strong></td><td>' . count($this->app->theme->templates_loaded) . '</td></tr>';
-        echo '<tr><td><strong>Included Files</strong></td><td>' . count(get_included_files()) . '</td></tr>';
+        echo '<tr><td><strong>Included Files</strong></td><td>' . count(\get_included_files()) . '</td></tr>';
         echo '</table><br><br>';
     }
 
@@ -69,52 +67,14 @@ class Debug
     public function outputExecutionTime()
     {
         $execution_time = $this->app->timer->getExecutionTime();
-        $db_time = $this->app->db->queries_time;
-        $plugins_time = $this->getPluginsExecTime();
-
-        $output_content_time = $this->info['output_content_time'] ?? 0;
 
         echo '<table class="grid debug-grid">';
         echo '<tr><th colspan="3">Execution Time</th></tr>';
         echo '<tr><td><strong>Execution Time</strong></td><td>' . $execution_time . 's</td><td></td></tr>';
-        echo "<tr><td><strong>DB Queries</strong></td><td>{$db_time}s</td><td>" . $this->app->format->percentage($db_time, $execution_time) . '%</td></tr>';
-        echo "<tr><td><strong>Plugins</strong></td><td>{$plugins_time}s</td><td>" . $this->app->format->percentage($plugins_time, $execution_time) . '%</td></tr>';
-        echo "<tr><td><strong>Generate Output</strong></td><td>{$output_content_time}s</td><td>" . $this->app->format->percentage($output_content_time, $execution_time) . '%</td></tr>';
+        echo "<tr><td><strong>DB Queries</strong></td><td>{$this->app->db->queries_time}s</td><td>" . $this->app->format->percentage($this->app->db->queries_time, $execution_time) . '%</td></tr>';
+        echo "<tr><td><strong>Plugins</strong></td><td>{$this->app->plugins->total_time}s</td><td>" . $this->app->format->percentage($this->app->plugins->total_time, $execution_time) . '%</td></tr>';
+        echo "<tr><td><strong>Generate Output</strong></td><td>{$this->app->output_time}s</td><td>" . $this->app->format->percentage($this->app->output_time, $execution_time) . '%</td></tr>';
         echo '</table><br><br>';
-    }
-
-    /**
-     * Outputs mysql info
-     */
-    public function outputDbQueries()
-    {
-        $execution_time = $this->app->timer->getExecutionTime();
-        $db_time = $this->app->db->queries_time;
-
-        echo '<table class="grid debug-grid debug-db-grid">';
-        echo '<tr><th colspan="4">Queries</th></tr>';
-
-        $i = 1;
-        foreach ($this->app->db->queries as $query) {
-            echo "<tr><td>{$i}</td><td><div class=\"debug-query\">" . $this->app->escape->html($query[0]) . "</div></td><td>{$query[1]}s</td><td>" . $this->app->format->percentage($query[1], $db_time) . '%</td></tr>';
-            $i++;
-        }
-
-        echo '</table><br><br>';
-    }
-
-    /**
-     * Returns the query params, ready for outputing
-     * @param array $params The query params
-     * @return string
-     */
-    public function getDbQueryParams(array $params) : string
-    {
-        if (!$params) {
-            return '';
-        }
-
-        return \json_encode($params);
     }
 
     /**
@@ -129,52 +89,42 @@ class Debug
 
         echo '<table class="grid debug-grid debug-grid-plugins">';
         echo '<tr><th colspan="3">Plugins</th></tr>';
-
-        foreach ($this->app->plugins->plugins as $plugin) {
-            if (!isset($this->app->plugins->exec_time[$plugin->name])) {
+        foreach ($this->app->plugins->plugins as $name => $plugin) {
+            if (!isset($this->app->plugins->exec_time[$name])) {
                 continue;
             }
 
-            $exec_time = $this->app->plugins->exec_time[$plugin->name];
-
-            echo "<tr><td>" . $this->app->escape->html($plugin->title) . "</td><td>" . floatval($exec_time) . "</td><td>" . $this->app->format->percentage($exec_time, $execution_time) . '%</td></tr>';
+            $exec_time = $this->app->plugins->exec_time[$name] ?? 0;
+            echo "<tr><td>" . $this->app->escape->html($name) . "</td><td>" . $exec_time . "s</td><td>" . $this->app->format->percentage($exec_time, $execution_time) . '%</td></tr>';
         }
-
         echo '</table><br><br>';
+
 
         echo '<table class="grid debug-grid debug-grid-hooks" style="width:auto;">';
         echo '<tr><th colspan="3">Hooks Execution Time</th></tr>';
-
         foreach ($this->app->plugins->hooks_exec_time as $hook => $exec_time) {
-            echo "<tr><td>" . $this->app->escape->html($hook) . "</td><td>" . floatval($exec_time) . "</td><td>" . $this->app->format->percentage($exec_time, $execution_time) . '%</td></tr>';
+            echo "<tr><td>" . $this->app->escape->html($hook) . "</td><td>" . $exec_time . "s</td><td>" . $this->app->format->percentage($exec_time, $execution_time) . '%</td></tr>';
         }
-
         echo '</table><br><br>';
-
-        if ($this->app->request->get->has('show-hooks')) {
-            echo '<table class="grid debug-grid debug-grid-hooks">';
-            echo '<tr><th colspan="3">Hooks</th></tr>';
-
-            foreach ($this->app->plugins->hooks as $hook => $hook_data) {
-                echo "<tr><td>" . $this->app->escape->html($hook) . '</td></tr>';
-            }
-
-            echo '</table><br><br>';
-        }
     }
 
     /**
-     * Computes the execution time of the plugins
-     * @return int
+     * Outputs mysql info
      */
-    public function getPluginsExecTime() : float
+    public function outputDbQueries()
     {
-        $time = 0;
-        if (!$this->app->plugins->exec_time) {
-            return $time;
+        $execution_time = $this->app->timer->getExecutionTime();
+
+        echo '<table class="grid debug-grid debug-db-grid">';
+        echo '<tr><th colspan="4">Queries</th></tr>';
+
+        $i = 1;
+        foreach ($this->app->db->queries as $query) {
+            echo "<tr><td>{$i}</td><td><div class=\"debug-query\">" . $this->app->escape->html($query[0]) . "</div></td><td>{$query[1]}s</td><td>" . $this->app->format->percentage($query[1], $this->app->db->queries_time) . '%</td></tr>';
+            $i++;
         }
 
-        return array_sum($this->app->plugins->exec_time);
+        echo '</table><br><br>';
     }
 
     /**
@@ -262,67 +212,14 @@ class Debug
     }
 
     /**
-     * Outputs the memory usage
-     * @param string $text Text to output before the memory usage
-     * @param bool $die If true,will call die after the mem usage is printed
-     */
-    public function outputMemoryUsage(string $text = '', bool $die = false)
-    {
-        $usage = round(memory_get_usage(true) / 1048576, 4);
-        $peak = round(memory_get_peak_usage(true) / 1048576, 4);
-
-        $diff_usage = 0;
-        $diff_peak = 0;
-        if (isset($GLOBALS['debug_memory_usage'])) {
-            $diff_usage = $usage - floatval($GLOBALS['debug_memory_usage']);
-            $diff_peak = $peak - floatval($GLOBALS['debug_memory_peak']);
-        }
-
-        $GLOBALS['debug_memory_usage'] = $usage;
-        $GLOBALS['debug_memory_peak'] = $peak;
-
-        if ($text) {
-            echo $text . '<br />';
-        }
-
-        echo 'Usage ' . $usage . 'MB  [<span style="color:#ff0000">' . $diff_usage . ' MB</span>]<br />';
-        echo 'Peak ' . $peak . 'MB [<span style="color:green">' . $diff_peak . ' MB</span>]<hr />';
-
-        if ($die) {
-            die;
-        }
-    }
-
-    /**
      * Outputs the backtrace
      * @param int $options The backtrace options. By default, the args are not printed. Set $options to 0 for the args to be shown
      */
-    public function backtrace(int $options = DEBUG_BACKTRACE_IGNORE_ARGS)
+    public static function backtrace(int $options = DEBUG_BACKTRACE_IGNORE_ARGS)
     {
         echo '<pre>';
-        debug_print_backtrace($options);
+        \debug_print_backtrace($options);
         die;
-    }
-
-    /**
-     * Dumps the superglobals.
-     * Xdebug must be available
-     * @param bool $die If true,will call die after the mem usage is printed
-     */
-    public function dump(bool $die = false)
-    {
-        ini_set('xdebug.dump.GET', '*');
-        ini_set('xdebug.dump.POST', '*');
-        ini_set('xdebug.dump.FILES', '*');
-        ini_set('xdebug.dump.COOKIES', '*');
-        ini_set('xdebug.dump.SESSION', '*');
-        ini_set('xdebug.dump.SERVER', '*');
-
-        xdebug_dump_superglobals();
-
-        if ($die) {
-            die;
-        }
     }
 
     /**
@@ -332,31 +229,31 @@ class Debug
      * @param bool $show_params If true,will include the params
      * @param int $params The params count
      */
-    public function startTrace(string $filename, bool $show_params = true, int $params = 6)
+    public static function startTrace(string $filename, bool $show_params = true, int $params = 6)
     {
         if ($show_params) {
             ini_set('xdebug.collect_params', $params);
         }
 
-        xdebug_start_trace($filename);
+        \xdebug_start_trace($filename);
     }
 
     /**
      * Stops a trace
      * Xdebug must be available
      */
-    public function stopTrace()
+    public static function stopTrace()
     {
-        xdebug_stop_trace();
+        \xdebug_stop_trace();
     }
 
     /**
      * Starts the code coverage. Should be used in pair with getCoverage
      * Xdebug must be available
      */
-    public function startCoverage()
+    public static function startCoverage()
     {
-        xdebug_start_code_coverage();
+        \xdebug_start_code_coverage();
     }
 
     /**
@@ -364,9 +261,9 @@ class Debug
      * Xdebug must be available
      * @param bool $die If true, will call die after the data is printed
      */
-    public function getCoverage(bool $die = false)
+    public static function getCoverage(bool $die = false)
     {
-        \var_dump(xdebug_get_code_coverage());
+        \var_dump(\xdebug_get_code_coverage());
 
         if ($die) {
             die;
@@ -378,9 +275,9 @@ class Debug
      * Xdebug must be available
      * @param bool $die If true, will call die after the data is printed
      */
-    public function functionStackbool($die = false)
+    public static function getFunctionStack(bool $die = false)
     {
-        \var_dump(xdebug_get_function_stack());
+        \var_dump(\xdebug_get_function_stack());
 
         if ($die) {
             die;
@@ -391,9 +288,9 @@ class Debug
      * Prints the function stack
      * Xdebug must be available
      */
-    public function printFunctionStack()
+    public static function printFunctionStack()
     {
-        xdebug_get_function_stack();
+        \xdebug_get_function_stack();
     }
 
     /**
@@ -401,33 +298,9 @@ class Debug
      * Xdebug must be available
      * @param bool $die If true, will call die after the data is printed
      */
-    public function headers(bool $die = false)
+    public static function headers(bool $die = false)
     {
-        \var_dump(xdebug_get_headers());
-        if ($die) {
-            die;
-        }
-    }
-
-    /**
-     * Returns info about the current class/file/line/func
-     * Xdebug must be available
-     * @param bool $die If true, will call die after the data is printed
-     */
-    public function get(bool $die = false)
-    {
-        $class = xdebug_call_class();
-        $file = xdebug_call_file();
-        $line = xdebug_call_line();
-        $func = xdebug_call_function();
-
-        echo $file . '<br />';
-        if ($class) {
-            echo $class . '<br />';
-        }
-        echo $func . '<br />';
-        echo $line . '<hr />';
-
+        \var_dump(\xdebug_get_headers());
         if ($die) {
             die;
         }

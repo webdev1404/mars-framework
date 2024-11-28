@@ -6,8 +6,6 @@
 
 namespace Mars\Document;
 
-use Mars\App;
-
 /**
  * The Document's Css Urls Class
  * Class containing the css urls/stylesheets used by a document
@@ -15,19 +13,11 @@ use Mars\App;
 class Css extends Urls
 {
     /**
+     * @see \Mars\Document\Urls::$version
      * {@inheritdoc}
      */
-    protected string $push_type = 'style';
-
-    /**
-     * Builds the javascript object
-     * @param App $app The app object
-     */
-    public function __construct(App $app)
-    {
-        $this->app = $app;
-
-        $this->version = $this->app->config->css_version;
+    protected string $version {
+        get => $this->app->config->css_version;
     }
 
     /**

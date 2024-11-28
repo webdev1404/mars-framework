@@ -27,11 +27,6 @@ abstract class Urls
     protected string $version = '';
 
     /**
-     * @var string $push_type The http2 push type
-     */
-    protected string $push_type = '';
-
-    /**
      * Outputs an url
      * @param string $url The url to output
      * @param bool $async If true, will apply the async attr
@@ -50,11 +45,15 @@ abstract class Urls
      * @param bool $defer If true, will apply the defer attr
      * @return static
      */
-    public function add(string $url, string $location = 'head', int $priority = 100, $version = true, bool $async = false, bool $defer = false) : static
+    public function load(string $url, string $location = 'head', int $priority = 100, $version = true, bool $async = false, bool $defer = false) : static
     {
         $this->urls[$url] = [
-            'location' => $location, 'priority' => $priority, 'version' => $version,
-            'async' => $async, 'defer' => $defer, 'is_local' => $this->app->uri->isLocal($url)
+            'location' => $location, 
+            'priority' => $priority, 
+            'version' => $version,
+            'async' => $async, 
+            'defer' => $defer, 
+            'is_local' => $this->app->uri->isLocal($url)
         ];
 
         return $this;
@@ -65,7 +64,7 @@ abstract class Urls
      * @param string $url The url to unload
      * @return static
      */
-    public function remove(string $url) : static
+    public function unload(string $url) : static
     {
         if (!isset($this->urls[$url])) {
             return $this;
@@ -151,14 +150,5 @@ abstract class Urls
         }
 
         return $this->app->uri->build($url, ['ver' => $version]);
-    }
-
-    /**
-     * http2 pushes the url, if enabled
-     * @param string $url The url to push
-     */
-    protected function pushUrl(string $url)
-    {
-        $this->app->response->push->add($url, $this->push_type);
     }
 }

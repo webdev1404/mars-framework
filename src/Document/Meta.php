@@ -6,8 +6,6 @@
 
 namespace Mars\Document;
 
-use Mars\App;
-
 /**
  * The Document's Meta Tag Class
  * Stores the meta tags used by a document

@@ -10,7 +10,8 @@ namespace Mars;
  * The Entity Class
  * Contains the functionality of a basic object
  */
-class Entity extends \stdClass
+#[\AllowDynamicProperties]
+class Entity
 {
     /**
      * Builds an object

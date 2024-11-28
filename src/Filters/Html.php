@@ -50,7 +50,5 @@ class Html
         $html = $purifier->purify($html);
 
         return $this->app->plugins->filter('filters_html_filter', $html, $this);
-
-        return $html;
     }
 }

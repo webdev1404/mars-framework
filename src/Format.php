@@ -18,52 +18,30 @@ class Format
     use InstanceTrait;
 
     /**
-     * @var string $datetime_format The datetime format
+     * @var Handlers $format The format object
      */
-    protected string $datetime_format = 'D M d, Y h:i:s';
+    public protected(set) Handlers $format {
+        get {
+            if (isset($this->format)) {
+                return $this->format;
+            }
 
-    /**
-     * @var string $date_format The date format
-     */
-    protected string $date_format = 'D M d, Y';
+            $this->format = new Handlers($this->supported_formats, null, $this->app);
 
-    /**
-     * @var string $time_format The time format
-     */
-    protected string $time_format = 'h:i:s';
-
-    /**
-     * @var Handlers $formats The formats object
-     */
-    public readonly Handlers $formats;
+            return $this->format;
+        }
+    }
 
     /**
      * @var array $supported_formats The list of supported formats
      */
     protected array $supported_formats = [
-        'lower' => ['lower'],
-        'upper' => ['upper'],
-        'round' => ['round'],
-        'number' => ['number'],
-        'datetime' => ['datetime'],
-        'date' => ['date'],
-        'time' => ['time'],
-        'percentage' => '\Mars\Formats\Percentage',
-        'filesize' => '\Mars\Formats\Filesize',
-        'time_interval' => '\Mars\Formats\TimeInterval',
-        'js_array' => '\Mars\Formats\JsArray',
-        'js_object' => '\Mars\Formats\JsObject',
+        'percentage' => \Mars\Formats\Percentage::class,
+        'filesize' => \Mars\Formats\Filesize::class,
+        'time_interval' => \Mars\Formats\TimeInterval::class,
+        'js_array' => \Mars\Formats\JsArray::class,
+        'js_object' => \Mars\Formats\JsObject::class,
     ];
-
-    /**
-     * Builds the text object
-     * @param App $app The app object
-     */
-    public function __construct(App $app)
-    {
-        $this->app = $app;
-        $this->formats = new Handlers($this->supported_formats, null, $this->app);
-    }
 
     /**
      * Converts a value to lowercase
@@ -127,7 +105,7 @@ class Format
     public function percentage(float|array $number, float $total, int $decimals = 4) : float|array
     {
         return App::map($number, function ($number) use ($total, $decimals) {
-            return $this->formats->get('percentage')->format($number, $total, $decimals);
+            return $this->format->get('percentage')->format($number, $total, $decimals);
         });
     }
 
@@ -140,7 +118,7 @@ class Format
     public function filesize(int|float|array $bytes, int $digits = 2) : string|array
     {
         return App::map($bytes, function ($bytes) use ($digits) {
-            return $this->formats->get('filesize')->format($bytes, $digits);
+            return $this->format->get('filesize')->format($bytes, $digits);
         });
     }
 
@@ -190,7 +168,7 @@ class Format
     public function timeInterval(int|array $seconds, string $separator1 = ' ', string $separator2 = ', ') : string|array
     {
         return App::map($seconds, function ($seconds) use ($separator1, $separator2) {
-            return $this->formats->get('time_interval')->format($seconds, $separator1, $separator2);
+            return $this->format->get('time_interval')->format($seconds, $separator1, $separator2);
         });
     }
 
@@ -203,7 +181,7 @@ class Format
      */
     public function jsArray(array $data, bool $quote = true, array $dont_quote_array = []) : string
     {
-        return $this->formats->get('js_array')->format($data, $quote, $dont_quote_array);
+        return $this->format->get('js_array')->format($data, $quote, $dont_quote_array);
     }
 
     /**
@@ -215,6 +193,6 @@ class Format
      */
     public function jsObject(array|object$data, bool $quote = true, array $dont_quote_array = [])
     {
-        return $this->formats->get('js_object')->format($data, $quote, $dont_quote_array);
+        return $this->format->get('js_object')->format($data, $quote, $dont_quote_array);
     }
 }

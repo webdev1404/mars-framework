@@ -14,7 +14,7 @@ class Exception extends \Exception
     /**
      * @var string $type The type of the exception.
      */
-    public readonly string $type;
+    public protected(set) string $type;
 
     /**
      * Constructs a new Exception object
@@ -28,14 +28,5 @@ class Exception extends \Exception
         $this->type = $type;
 
         parent::__construct($message, $code, $previous);
-    }
-
-    /**
-     * Gets the type of the exception.
-     * @return string The type of the exception.
-     */
-    public function getType() : string
-    {
-        return $this->type;
     }
 }

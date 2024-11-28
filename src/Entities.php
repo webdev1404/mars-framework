@@ -10,7 +10,7 @@ namespace Mars;
  * The Entities Class
  * Container of multiple objects
  */
-class Entities implements \IteratorAggregate
+class Entities implements \Countable, \IteratorAggregate
 {
     /**
      * @var array $data Array containing the objects
@@ -20,7 +20,7 @@ class Entities implements \IteratorAggregate
     /**
      * @var string $class The class of the loaded objects
      */
-    protected static string $class = '\Mars\Entity';
+    protected static string $class = \Mars\Entity::class;
 
     /**
      * Builds the objects
@@ -44,7 +44,7 @@ class Entities implements \IteratorAggregate
      * Returns the number of loaded objects
      * @return int
      */
-    public function getCount() : int
+    public function count() : int
     {
         return count($this->data);
     }
@@ -64,10 +64,10 @@ class Entities implements \IteratorAggregate
 
     /**
      * Sets the data/objects
-     * @param iterable $data The entities array
+     * @param array|object $data The entities array
      * @return static
      */
-    public function set(iterable $data) : static
+    public function set(array|object $data) : static
     {
         $this->data = [];
 
@@ -76,10 +76,10 @@ class Entities implements \IteratorAggregate
 
     /**
      * Adds $data to the existing data/objects
-     * @param object|iterable $data The data to add
+     * @param array|object $data The data to add
      * @return static
      */
-    public function add(object|iterable $data) : static
+    public function add(array|object $data) : static
     {
         if (is_object($data)) {
             $data = [$data];
@@ -141,7 +141,6 @@ class Entities implements \IteratorAggregate
         }
 
         $class_name = $this->getClass();
-
         return new $class_name($data);
     }
 

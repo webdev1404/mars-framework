@@ -17,31 +17,28 @@ class File
     use InstanceTrait;
 
     /**
-     * If specified, will limit that can be accessed to folder $open_basedir
+     *@var string $open_basedir If specified, will limit that can be accessed to folder $open_basedir
      */
-    protected string $open_basedir = '';
+    public string $open_basedir {
+        get {
+            if (isset($this->open_basedir)) {
+                return $this->open_basedir;
+            }
+
+            if ($this->app->config->open_basedir === true) {
+                $this->open_basedir = $this->app->base_path;
+            } else {
+                $this->open_basedir = $this->app->config->open_basedir;
+            }
+
+            return $this->open_basedir;
+        }
+    }
 
     /**
      * @var int $max_chars The maximum number of chars allowed in $filename
      */
     protected int $max_chars = 300;
-
-    /**
-     * Constructs the file object
-     * @param App $app The app object
-     */
-    public function __construct(App $app)
-    {
-        $this->app = $app;
-
-        if ($this->app->config->open_basedir === true) {
-            $this->open_basedir = $this->app->base_path;
-        } else {
-            $this->open_basedir = $this->app->config->open_basedir;
-        }
-
-        $this->open_basedir = '';
-    }
 
     /**
      * Checks a filename for invalid characters. Throws a fatal error if it founds invalid chars.
@@ -147,21 +144,6 @@ class File
     public function getFilename(string $filename) : string
     {
         return pathinfo($filename, PATHINFO_BASENAME);
-    }
-
-    /**
-     * Generates a random filename
-     * @param string $extension The extension of the file, if any
-     * @return string A random filename
-     */
-    public function getRandomFilename(string $extension = '') : string
-    {
-        $filename = $this->app->random->getString();
-        if (!$extension) {
-            return $filename;
-        }
-
-        return $this->addExtension($extension, $filename);
     }
 
     /**
@@ -284,6 +266,21 @@ class File
     }
 
     /**
+     * Generates a random filename
+     * @param string $extension The extension of the file, if any
+     * @return string A random filename
+     */
+    public function getRandomFilename(string $extension = '') : string
+    {
+        $filename = $this->app->random->getString();
+        if (!$extension) {
+            return $filename;
+        }
+
+        return $this->addExtension($extension, $filename);
+    }
+
+    /**
      * Returns a temporary filename
      * @param string $name The name of the file
      * @param string $dir The dir of the temp. filename
@@ -295,7 +292,7 @@ class File
             $dir = $this->app->tmp_path;
         }
 
-        $tmp_filename = $dir . '/' . $this->app->random->getString() . time();
+        $tmp_filename = $dir . '/' . $this->getRandomFilename() . time();
         if ($name) {
             $tmp_filename .= '-' . basename($name);
         }

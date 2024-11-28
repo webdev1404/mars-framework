@@ -37,9 +37,7 @@ class App
     /**
      * @var string $version The version
      */
-    public string $version {
-        get => '1.0.0';
-    }
+    public string $version = '1.0.0';
 
     /**
      * @var Accelerator $accelerator The accelerator object
@@ -645,6 +643,16 @@ class App
     protected static array $objects_map = [];
 
     /**
+     * @var int $output_size The size of the output. Set if debug is on
+     */
+    public protected(set) int $output_size = 0;
+
+    /**
+     * @var int $output_time The time it took to generate the output. Set if debug is on
+     */
+    public protected(set) float $output_time = 0;
+
+    /**
      * @const array DIRS The locations of the used dirs
      */
     public const array DIRS = [
@@ -992,10 +1000,13 @@ class App
             $output = $content;
         }
 
-        $output = $this->plugins->filter('app_filter_output', $output, $this);
+        $output = $this->plugins->filter('app_filter_output', $output, $this);        
 
         if ($this->config->debug) {
-            $output.= $this->getDebugOutput($output);
+            $this->output_size = strlen($output);
+            $this->output_time = $this->timer->end('app_output_content');
+
+            $output.= $this->getDebugOutput();
         }
 
         return $output;
@@ -1003,14 +1014,10 @@ class App
 
     /**
      * Returns the debug output, if debug is on
-     * @param string $output The generated output
      * @return string
      */
-    protected function getDebugOutput(string $output) : string
+    protected function getDebugOutput() : string
     {
-        $this->debug->info['output_size'] = strlen($output);
-        $this->debug->info['output_content_time'] = $this->timer->end('app_output_content');
-
         ob_start();
         $this->debug->output();
         return ob_get_clean();
