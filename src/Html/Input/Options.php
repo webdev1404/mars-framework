@@ -6,11 +6,13 @@
 
 namespace Mars\Html\Input;
 
+use Mars\Html\Tag;
+
 /**
  * The Options Class
  * Renders the select options
  */
-class Options extends \Mars\Html\Tag
+class Options extends Tag
 {
     /**
      * {@inheritdoc}

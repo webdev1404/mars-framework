@@ -7,6 +7,7 @@
 namespace Mars;
 
 use Mars\App\InstanceTrait;
+use Mars\Lazyload\GhostTrait;
 use Mars\Http\Request;
 
 /**
@@ -16,10 +17,12 @@ use Mars\Http\Request;
 class Http
 {
     use InstanceTrait;
+    use GhostTrait;
 
     /**
      * @var Request $request The request object
      */
+    #[LazyLoad]
     public Request $request;
 
     /**
@@ -28,8 +31,8 @@ class Http
      */
     public function __construct(App $app)
     {
-        $this->app = $app;
+        $this->lazyLoad($app);
 
-        $this->request = new Request($app);
+        $this->app = $app;
     }
 }

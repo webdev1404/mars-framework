@@ -6,11 +6,13 @@
 
 namespace Mars\Html\Input;
 
+use Mars\Html\Tag;
+
 /**
  * The Optgroup Class
  * Renders an optgroup tag
  */
-class Optgroup extends \Mars\Html\Tag
+class Optgroup extends Tag
 {
     /**
      * {@inheritdoc}

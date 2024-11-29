@@ -1,15 +1,15 @@
 <?php
 /**
-* The PDO Database Driver
+* The Mysql Database Driver
 * @package Mars
 */
 
 namespace Mars\Db;
 
 /**
- * The PDO Database Driver
+* The Mysql Database Driver
  */
-class Pdo implements DriverInterface
+class Mysql implements DriverInterface
 {
     /**
      * @var PDO $handle The PDO handle

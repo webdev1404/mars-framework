@@ -18,6 +18,11 @@ class Tag implements TagInterface
     use InstanceTrait;
 
     /**
+     * @var string $tag The tag's tag
+     */
+    protected string $tag = '';
+
+    /**
      * @var string $type The tag's attributes, if any
      */
     public array $attributes = [];
@@ -26,11 +31,6 @@ class Tag implements TagInterface
      * @var bool $escape If true, will escape the content
      */
     public bool $escape = true;
-
-    /**
-     * @var string $tag The tag's tag
-     */
-    protected string $tag = '';
 
     /**
      * @var string $newline Newline to add after the tag, if any
@@ -67,24 +67,12 @@ class Tag implements TagInterface
         $attributes = $this->getAttributes($attributes);
 
         if ($text) {
-            return "<{$this->tag}{$attributes}>" . $this->escape($text) . "</{$this->tag}>" . $this->newline;
+            $text = $this->escape ? $this->app->escape->html($text) : $text;
+
+            return "<{$this->tag}{$attributes}>" . $text . "</{$this->tag}>" . $this->newline;
         } else {
             return "<{$this->tag}{$attributes}>" . $this->newline;
         }
-    }
-
-    /**
-     * Html Escapes $value
-     * @param string $value The value to escape
-     * @return string The escaped value
-     */
-    protected function escape(string $value) : string
-    {
-        if ($this->escape) {
-            return $this->app->escape->html($value);
-        }
-
-        return $value;
     }
 
     /**

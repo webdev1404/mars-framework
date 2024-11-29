@@ -6,11 +6,13 @@
 
 namespace Mars\Html\Input;
 
+use \Mars\Html\Tag;
+
 /**
  * The Label Class
  * Renders a label tag
  */
-class Label extends \Mars\Html\Tag
+class Label extends Tag
 {
     /**
      * {@inheritdoc}

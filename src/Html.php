@@ -23,45 +23,45 @@ class Html
     /**
      * @var Handlers $handlers The tags object
      */
-    public readonly Handlers $tags;
+    public protected(set) Handlers $tags {
+        get {
+            if (isset($this->tags)) {
+                return $this->tags;
+            }
+
+            $this->tags = new Handlers($this->supported_tags, TagInterface::class, $this->app);
+
+            return $this->tags;
+        }
+    }
 
     /**
      * @var array $supported_tags The list of supported tags
      */
     protected array $supported_tags = [
-        'img' => '\Mars\Html\Img',
-        'picture' => '\Mars\Html\Picture',
-        'a' => '\Mars\Html\A',
-        'ul' => '\Mars\Html\Lists\UL',
-        'ol' => '\Mars\Html\Lists\OL',
-        'form' => '\Mars\Html\Form',
-        'input' => '\Mars\Html\Input\Input',
-        'input_hidden' => '\Mars\Html\Input\Hidden',
-        'input_email' => '\Mars\Html\Input\Email',
-        'input_password' => '\Mars\Html\Input\Password',
-        'input_phone' => '\Mars\Html\Input\Phone',
-        'textarea' => '\Mars\Html\Input\Textarea',
-        'button' => '\Mars\Html\Input\Button',
-        'submit' => '\Mars\Html\Input\Submit',
-        'checkbox' => '\Mars\Html\Input\Checkbox',
-        'radio' => '\Mars\Html\Input\Radio',
-        'radio_group' => '\Mars\Html\Input\RadioGroup',
-        'options' => '\Mars\Html\Input\Options',
-        'select' => '\Mars\Html\Input\Select',
-        'datetime' => '\Mars\Html\Input\Datetime',
-        'date' => '\Mars\Html\Input\Date',
-        'time' => '\Mars\Html\Input\Time'
+        'img' => \Mars\Html\Img::class,
+        'picture' => \Mars\Html\Picture::class,
+        'a' => \Mars\Html\A::class,
+        'ul' => \Mars\Html\Lists\UL::class,
+        'ol' => \Mars\Html\Lists\OL::class,
+        'form' => \Mars\Html\Form::class,
+        'input' => \Mars\Html\Input\Input::class,
+        'input_hidden' => \Mars\Html\Input\Hidden::class,
+        'input_email' => \Mars\Html\Input\Email::class,
+        'input_password' => \Mars\Html\Input\Password::class,
+        'input_phone' => \Mars\Html\Input\Phone::class,
+        'textarea' => \Mars\Html\Input\Textarea::class,
+        'button' => \Mars\Html\Input\Button::class,
+        'submit' => \Mars\Html\Input\Submit::class,
+        'checkbox' => \Mars\Html\Input\Checkbox::class,
+        'radio' => \Mars\Html\Input\Radio::class,
+        'radio_group' => \Mars\Html\Input\RadioGroup::class,
+        'options' => \Mars\Html\Input\Options::class,
+        'select' => \Mars\Html\Input\Select::class,
+        'datetime' => \Mars\Html\Input\Datetime::class,
+        'date' => \Mars\Html\Input\Date::class,
+        'time' => \Mars\Html\Input\Time::class
     ];
-
-    /**
-     * Builds the text object
-     * @param App $app The app object
-     */
-    public function __construct(App $app)
-    {
-        $this->app = $app;
-        $this->tags = new Handlers($this->supported_tags, TagInterface::class, $this->app);
-    }
 
     /**
      * Returns a tag
@@ -73,17 +73,11 @@ class Html
      */
     public function getTag(string $type, string $text = '', array $attributes = [], array $properties = []) : string
     {
-        return $this->tags->get($type)->html($text, $attributes, $properties);
-    }
-
-    /**
-     * Returns the alt attribute of an image from the url
-     * @param string $url The image's url
-     * @return string The alt attribute
-     */
-    protected function getImgAlt(string $url) : string
-    {
-        return basename($url);
+        try {
+            return $this->tags->get($type)->html($text, $attributes, $properties);
+        } catch (\Exception $e) {
+            throw new \Exception("Invalid html tag {$type}");
+        }
     }
 
     /**
@@ -97,10 +91,6 @@ class Html
      */
     public function img(string $url, int $width = 0, int $height = 0, string $alt = '', array $attributes = []) : string
     {
-        if (!$alt) {
-            $alt = $this->getImgAlt($url);
-        }
-
         $attributes = $attributes + ['src' => $url, 'alt' => $alt, 'width' => $width, 'height' => $height];
 
         return $this->getTag('img', '', $attributes);
@@ -112,9 +102,9 @@ class Html
      * @param int $height The image's height
      * @return string The html code
      */
-    public function imgWh(int $width = 0, int $height = 0) : string
+    public function imgWH(int $width = 0, int $height = 0) : string
     {
-        return (new Tag)->getAttributes(['width' => $width, 'height' => $height]);
+        return new Tag($this->app)->getAttributes(['width' => $width, 'height' => $height]);
     }
 
     /**
@@ -129,10 +119,6 @@ class Html
      */
     public function picture(string $url, array $source_images, int $width = 0, int $height = 0, string $alt = '', array $attributes = []) : string
     {
-        if (!$alt) {
-            $alt = $this->getImgAlt($url);
-        }
-
         $attributes = $attributes + ['src' => $url, 'alt' => $alt, 'width' => $width, 'height' => $height];
 
         return $this->getTag('picture', '', $attributes, $source_images);
@@ -147,14 +133,11 @@ class Html
      */
     public function a(string $url, string $text = '', array $attributes = []) : string
     {
-        if (!$url) {
-            $url = 'javascript:void(0)';
-        }
         if (!$text) {
             $text = $url;
         }
 
-        $attributes = $attributes + ['href' => $url];
+        $attributes = ['href' => $url] + $attributes;
 
         return $this->getTag('a', $text, $attributes);
     }
@@ -197,11 +180,7 @@ class Html
      */
     public function checked(bool $checked = true) : string
     {
-        if ($checked) {
-            return ' checked';
-        }
-
-        return '';
+        return $checked ? ' checked' : '';
     }
 
     /**
@@ -222,11 +201,7 @@ class Html
      */
     public function disabled(bool $disabled = true) : string
     {
-        if ($disabled) {
-            return ' disabled';
-        }
-
-        return '';
+        return $disabled ? ' disabled' : '';
     }
 
     /**
@@ -236,11 +211,7 @@ class Html
      */
     public function hidden(bool $hidden = true) : string
     {
-        if ($hidden) {
-            return ' style="display:none"';
-        }
-
-        return '';
+        return $hidden ? ' style="display:none"' : '';
     }
 
     /**
@@ -250,11 +221,7 @@ class Html
      */
     public function required(bool $required = true) : string
     {
-        if ($required) {
-            return ' required';
-        }
-
-        return '';
+        return $required ? ' required' : '';
     }
 
     /**
@@ -268,7 +235,7 @@ class Html
     {
         $attributes = ['action' => $url, 'method' => $method] + $attributes;
 
-        return (new Form)->open($attributes);
+        return new Form($this->app)->open($attributes);
     }
 
     /**
@@ -277,7 +244,7 @@ class Html
      */
     public function formClose() : string
     {
-        return (new Form)->close();
+        return new Form($this->app)->close();
     }
 
     /**
@@ -458,7 +425,7 @@ class Html
     {
         $attributes = ['name' => $name] + $attributes;
 
-        return (new Select)->open($attributes);
+        return new Select($this->app)->open($attributes);
     }
 
     /**
@@ -467,7 +434,7 @@ class Html
      */
     public function selectClose() : string
     {
-        return (new Select)->close();
+        return new Select($this->app)->close();
     }
 
     /**

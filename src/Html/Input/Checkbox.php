@@ -29,7 +29,7 @@ class Checkbox extends Input
 
         $html = parent::html($text, $attributes, $properties);
         if ($label) {
-            $html.= (new Label($this->app))->html($label, ['for' => $attributes['id']]);
+            $html.= new Label($this->app)->html($label, ['for' => $attributes['id']]);
         }
 
         return $html;

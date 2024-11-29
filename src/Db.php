@@ -218,7 +218,7 @@ class Db
      * @var array $supported_drivers The supported drivers
      */
     protected array $supported_drivers = [
-        'pdo' => \Mars\Db\Pdo::class
+        'mysql' => \Mars\Db\Mysql::class
     ];
 
     /**

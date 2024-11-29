@@ -6,11 +6,13 @@
 
 namespace Mars\Html\Input;
 
+use \Mars\Html\Tag;
+
 /**
  * The Textarea Class
  * Renders a textarea field
  */
-class Textarea extends \Mars\Html\Tag
+class Textarea extends Tag
 {
     /**
      * {@inheritdoc}

@@ -61,7 +61,7 @@ class Accelerator
      * @var array $supported_drivers The supported drivers
      */
     protected array $supported_drivers = [
-        'varnish' => '\Mars\Accelerators\Varnish'
+        'varnish' => \Mars\Accelerators\Varnish::class
     ];
 
     /**

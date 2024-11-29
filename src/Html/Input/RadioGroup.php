@@ -6,11 +6,13 @@
 
 namespace Mars\Html\Input;
 
+use \Mars\Html\Tag;
+
 /**
  * The Checkbox Class
  * Renders a checkbox
  */
-class RadioGroup extends \Mars\Html\Tag
+class RadioGroup extends Tag
 {
     /**
      * @see \Mars\Html\TagInterface::html()
@@ -24,10 +26,10 @@ class RadioGroup extends \Mars\Html\Tag
         if (!$values) {
             return '';
         }
-
-        $html = '';
+        
         $radio = new Radio($this->app);
 
+        $html = '';
         foreach ($values as $value => $label) {
             $html.= $radio->html('', ['value' => $value, 'checked' => $value == $checked] + $attributes, ['label' => $label]);
         }

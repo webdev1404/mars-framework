@@ -23,11 +23,6 @@ class Request
     public int $timeout = 30;
 
     /**
-     * @var string $useragent The useragent used when making requests
-     */
-    public string $useragent = '';
-
-    /**
      * @var bool $follow_location Determines the value of CURLOPT_FOLLOWLOCATION
      */
     public bool $follow_location = true;
@@ -38,27 +33,38 @@ class Request
     public bool $show_headers = false;
 
     /**
-     * @var array $options Array listing CURL options, if any
+     * @var bool $verify_ssl If true, the ssl certificate will be verified
      */
-    public array $options = [];
+    public bool $verify_ssl = true;
 
     /**
-     * Builds the Http Request object
-     * @param App $app The app object
+     * @var string $useragent The useragent used when making requests
      */
-    public function __construct(App $app)
-    {
-        $this->app = $app;
-        $this->useragent = $this->app->useragent;
-        $this->options = $this->app->config->curl_options;
+    public string $useragent {
+        get => $this->app->useragent;
     }
 
     /**
-     * @param array $options The curl options
+     * @var array $options Array listing CURL options, if any
      */
-    public function setOptions(array $options) : static
+    public array $options {
+        get {
+            if (isset($this->options)) {
+                return $this->options;
+            }
+
+            $this->options = $this->app->config->curl_options;
+
+            return $this->options;
+        }
+    }
+
+    /**
+     * Resets the options
+     */
+    public function resetOptions() : static
     {
-        $this->options = $options;
+        $this->options = $this->app->config->curl_options;
 
         return $this;
     }
@@ -80,36 +86,46 @@ class Request
         $show_headers = $options['show_headers'] ?? $this->show_headers;
         $useragent = $options['useragent'] ?? $this->useragent;
         $timeout = $options['timeout'] ?? $this->timeout;
+        $verify_ssl = $options['verify_ssl'] ?? $this->verify_ssl;
         $custom_request = $options['custom_request'] ?? '';
 
-        unset($options['headers'], $options['referer'], $options['cookie_file'], $options['follow_location'], $options['show_headers'], $options['useragent'], $options['timeout'], $options['custom_request']);
+        unset($options['headers'], $options['referer'], $options['cookie_file'], $options['follow_location'], $options['show_headers'], 
+              $options['useragent'], $options['timeout'], $options['custom_request'], $options['verify_ssl']);
 
         $ch = curl_init();
 
+        $curl_options = [
+            CURLOPT_URL => $url,
+            CURLOPT_FOLLOWLOCATION => $follow_location,
+            CURLOPT_HEADER => $show_headers,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLINFO_HEADER_OUT => true,
+            CURLOPT_TIMEOUT => $timeout
+        ];
+
         if ($headers) {
-            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+            $curl_options[CURLOPT_HTTPHEADER] = $headers;
         }
         if ($referer) {
-            curl_setopt($ch, CURLOPT_REFERER, $referer);
+            $curl_options[CURLOPT_REFERER] = $referer;
         }
         if ($cookie_file) {
-            curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_file);
-            curl_setopt($ch, CURLOPT_COOKIEJAR, $cookie_file);
+            $curl_options[CURLOPT_COOKIEFILE] = $cookie_file;
+            $curl_options[CURLOPT_COOKIEJAR] = $cookie_file;
         }
         if ($useragent) {
-            curl_setopt($ch, CURLOPT_USERAGENT, $useragent);
+            $curl_options[CURLOPT_USERAGENT] = $useragent;
         }
         if ($custom_request) {
-            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $custom_request);
+            $curl_options[CURLOPT_CUSTOMREQUEST] = $custom_request;
         }
 
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, $follow_location);
-        curl_setopt($ch, CURLOPT_HEADER, $show_headers);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLINFO_HEADER_OUT, true);
-        curl_setopt($ch, CURLOPT_TIMEOUT, $timeout);
+        if (!$verify_ssl) {
+            $curl_options[CURLOPT_SSL_VERIFYPEER] = false;
+            $curl_options[CURLOPT_SSL_VERIFYHOST] = false;
+        }
 
+        $options = $options + $curl_options;
         curl_setopt_array($ch, $options);
 
         return $ch;

@@ -6,11 +6,13 @@
 
 namespace Mars\Html\Input;
 
+use \Mars\Html\Tag;
+
 /**
  * The Datetime Class
  * Renders a field from where a date & time can be picked
  */
-class Datetime extends \Mars\Html\Tag
+class Datetime extends Tag
 {
     /**
      * @see \Mars\Html\TagInterface::html()

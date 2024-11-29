@@ -6,21 +6,23 @@
 
 namespace Mars\Html\Input;
 
+use Mars\Html\Tag;
+
 /**
  * The Input Class
  * Renders an input field
  */
-class Input extends \Mars\Html\Tag
+class Input extends Tag
 {
-    /**
-     * @var string $type The input's type
-     */
-    protected string $type = 'text';
-
     /**
      * {@inheritdoc}
      */
     protected string $tag = 'input';
+
+    /**
+     * @var string $type The input's type
+     */
+    protected string $type = 'text';
 
     /**
      * @see \Mars\Html\TagInterface::html()

@@ -53,7 +53,7 @@ class Drivers
     {
         if ($this->config_key) {
             if (isset($this->app->config->drivers[$this->config_key])) {
-                $this->list = $this->list + $this->app->config->drivers[$this->config_key];
+                $this->list = $this->app->config->drivers[$this->config_key] + $this->list;
             }
         }
 

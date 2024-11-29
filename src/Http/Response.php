@@ -8,44 +8,93 @@ namespace Mars\Http;
 
 use Mars\App;
 use Mars\App\InstanceTrait;
+use CurlHandle;
 
 /**
  * The Http Response Class
  * Encapsulates a http response
  */
-class Response
+class Response implements \Stringable
 {
     use InstanceTrait;
 
     /**
-     * @var string $body The body
+     * @var int $code The http code of the response
      */
-    public string $body = '';
+    public int $code {
+        get => curl_getinfo($this->ch, CURLINFO_HTTP_CODE);
+    }
 
     /**
      * @var array $headers Array listing the response headers
      */
-    public array $headers = [];
+    public protected(set) array $headers {
+        get {
+            if (isset($this->headers)) {
+                return $this->headers;
+            }
+
+            if (!isset($this->info['request_header'])) {
+                $this->headers = [];
+                return $this->headers;
+            }
+    
+            if (!is_array($this->info['request_header'])) {
+                $this->headers = explode("\n", $this->info['request_header']);
+                return $this->headers;
+            }
+    
+            $this->headers = $this->info['request_header'];
+
+            return $this->headers;
+        }
+    }
 
     /**
-     * @var int $code The http code of the response
+     * @var string $body The body
      */
-    public int $code = 0;
+    public string $body {
+        get => is_bool($this->result) ? '' : $this->result;
+    }
 
     /**
      * @var int $error_no The generated error number, if any
      */
-    public string $error_no = '';
+    public string $error_no {
+        get => $this->result === false ? curl_errno($this->ch) : '';
+    }
 
     /**
      * @var string $error The generated error, if any
      */
-    public string $error = '';
+    public string $error {
+        get => $this->result === false ? curl_error($this->ch) : '';
+    }
 
     /**
      * @var array $info The request info
      */
-    protected array $info = [];
+    public protected(set) array $info {
+        get {
+            if (isset($this->info)) {
+                return $this->info;
+            }
+
+            $this->info = curl_getinfo($this->ch);
+
+            return $this->info;
+        }
+    }
+
+    /**
+     * @var bool|string $result The result of the request
+     */
+    protected bool|string $result;
+
+    /**
+     * @var CurlHandle $ch The curl handle
+     */
+    protected CurlHandle $ch;
 
     /**
      * Builds the curl result object
@@ -53,18 +102,20 @@ class Response
      * @param string|bool $result The curl result
      * @param App $app The app object
      */
-    public function __construct($ch, string|bool $result, App $app)
+    public function __construct(CurlHandle $ch, string|bool $result, App $app)
     {
-        if ($result === false) {
-            $this->error_no = curl_errno($ch);
-            $this->error = curl_error($ch);
-        }
-
         $this->app = $app;
-        $this->code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        $this->info = curl_getinfo($ch);
-        $this->headers = $this->buildHeaders();
-        $this->body = is_bool($result) ? '' : $result;
+        $this->ch = $ch;
+        $this->result = $result;
+    }
+
+    /**
+     * Returns the body of the request
+     * @return string
+     */
+    public function __toString() : string
+    {
+        return (string)$this->body();
     }
 
     /**
@@ -79,15 +130,6 @@ class Response
 
         return true;
     }
-    
-    /**
-     * Returns the body of the request
-     * @return string
-     */
-    public function __toString() : string
-    {
-        return $this->getBody();
-    }
 
     /**
      * Returns the generated response
@@ -99,63 +141,11 @@ class Response
     }
 
     /**
-     * Alias for get()
-     */
-    public function getBody() : string
-    {
-        return $this->body;
-    }
-
-    /**
      * Returns the generated response as json code
      * @return mixed
      */
     public function getJson() : mixed
     {
         return $this->app->json->decode($this->body);
-    }
-
-    /**
-     * Get the HTTP response code.
-     * @return int The HTTP response code.
-     */
-    public function getCode() : int
-    {
-        return $this->code;
-    }
-
-    /**
-     * Retrieves the error message.
-     * @return string The error message.
-     */
-    public function getError() : string
-    {
-        return $this->error;
-    }
-
-    /**
-     * Retrieves the headers from the HTTP response.
-     * @return array An array of headers.
-     */
-    public function getHeaders() : array
-    {
-        return $this->headers;
-    }
-
-    /**
-     * Returns the request headers
-     * @return array
-     */
-    protected function buildHeaders() : array
-    {
-        if (!isset($this->info['request_header'])) {
-            return [];
-        }
-
-        if (!is_array($this->info['request_header'])) {
-            return explode("\n", $this->info['request_header']);
-        }
-
-        return $this->info['request_header'];
     }
 }

@@ -19,8 +19,8 @@ final class HtmlTest extends Base
     {
         $html = $this->app->html;
 
-        $this->assertSame($html->imgWh(200, 100), ' width="200" height="100"');
-        $this->assertSame($html->imgWh(), '');
+        $this->assertSame($html->imgWH(200, 100), ' width="200" height="100"');
+        $this->assertSame($html->imgWH(), '');
     }
 
     public function testPicture()

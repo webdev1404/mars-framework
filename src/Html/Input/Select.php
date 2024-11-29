@@ -6,11 +6,13 @@
 
 namespace Mars\Html\Input;
 
+use \Mars\Html\Tag;
+
 /**
  * The Select Class
  * Renders a select field
  */
-class Select extends \Mars\Html\Tag
+class Select extends Tag
 {
     /**
      * @var string $type The tag's type
@@ -35,7 +37,7 @@ class Select extends \Mars\Html\Tag
     public function html(string $text = '', array $attributes = [], array $properties = []) : string
     {
         $html = $this->open($attributes);
-        $html.= (new Options($this->app))->html('', [], $properties);
+        $html.= new Options($this->app)->html('', [], $properties);
         $html.= $this->close();
 
         return $html;

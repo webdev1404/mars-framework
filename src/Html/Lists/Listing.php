@@ -6,11 +6,13 @@
 
 namespace Mars\Html\Lists;
 
+use Mars\Html\Tag;
+
 /**
  * The List Class
  * Renders a list
  */
-abstract class Listing extends \Mars\Html\Tag
+abstract class Listing extends Tag
 {
     /**
      * @see \Mars\Html\TagInterface::html()
