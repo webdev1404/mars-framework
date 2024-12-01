@@ -4,11 +4,12 @@
 * @package Mars
 */
 
-namespace Mars\Helpers;
+namespace Mars\Assets;
 
 use Mars\App;
 use Mars\App\InstanceTrait;
 use Mars\Handlers;
+use Mars\Assets\Minifiers\DriverInterface;
 
 /**
  * The Asset Minifier Class
@@ -21,26 +22,26 @@ class Minifier
     /**
      * @var Handlers $minifiers The screens handlers
      */
-    public readonly Handlers $minifiers;
+    public protected(set) Handlers $minifiers {
+        get {
+            if (isset($this->minifiers)) {
+                return $this->minifiers;
+            }
+
+            $this->minifiers = new Handlers($this->minifiers_list, DriverInterface::class, $this->app);
+
+            return $this->minifiers;
+        }
+    }
 
     /**
      * @var array $minifiers_list The list of supported minifiers
      */
     protected array $minifiers_list = [
-        'html' => '\Mars\Minifiers\Html',
-        'css' => '\Mars\Minifiers\Css',
-        'js' => '\Mars\Minifiers\Javascript'
+        'html' => \Mars\Assets\Minifiers\Html::class,
+        'css' => \Mars\AssetsMinifiers\Css::class,
+        'js' => \Mars\AssetsMinifiers\Javascript::class            
     ];
-
-    /**
-     * Constructs the screens object
-     * @param App $app The app object
-     */
-    public function __construct(App $app)
-    {
-        $this->app = $app;
-        $this->minifiers = new Handlers($this->minifiers_list, $this->app);
-    }
 
     /**
      * Minifies html code

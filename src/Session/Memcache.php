@@ -30,7 +30,7 @@ class Memcache implements DriverInterface, \SessionHandlerInterface, \SessionUpd
     {
         $this->app = $app;
 
-        if (!$this->app->memcache->isEnabled()) {
+        if (!$this->app->memcache->enabled) {
             throw new \Exception('Memcache must be enabled to be able to use the session memcache driver');
         }
 

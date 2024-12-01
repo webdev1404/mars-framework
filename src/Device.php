@@ -42,7 +42,7 @@ class Device
             }
 
             $this->device = '';
-            if (!$this->app->config->device_start || $this->app->is_bin) {
+            if ($this->app->is_bin) {
                 return $this->device;
             }
             if ($this->app->config->development_device) {

@@ -23,13 +23,13 @@ class FatalError
      */
     public function output(string $text, ?bool $escape_html = null)
     {
-        $escape_html = $escape_html ?? !$this->app->is_bin;
+        $escape_html = $escape_html ?? $this->app->is_web;
         
         if ($escape_html) {
             $text = $this->app->escape->html($text);
         }
 
-        if (!$this->app->is_bin) {
+        if ($this->app->is_web) {
             $text = nl2br($text);
         }
 

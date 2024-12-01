@@ -19,12 +19,37 @@ class Log
     /**
      * @var string $suffix The log file's suffix
      */
-    protected string $suffix = '';
+    protected string $suffix {
+        get {
+            if (isset($this->suffix)) {
+                return $this->suffix;
+            }
+
+            $ext = 'log';
+            if ($this->app->is_bin) {
+                $ext = 'bin.log';
+            }
+
+            $this->suffix = date($this->app->config->log_suffix) . '.' . $ext;
+
+            return $this->suffix;
+        }
+    }
 
     /**
      * @var string $date The log date
      */
-    protected string $date = '';
+    protected string $date {
+        get {
+            if (isset($this->date)) {
+                return $this->date;
+            }
+
+            $this->date = date($this->app->config->log_date_format);
+
+            return $this->date;
+        }
+    }
 
     /**
      * @var array $handles The log files's handles
@@ -38,15 +63,7 @@ class Log
     public function __construct(App $app)
     {
         $this->app = $app;
-
-        $ext = '.log';
-        if ($this->app->is_bin) {
-            $ext = '.bin.log';
-        }
-
-        $this->suffix = date($this->app->config->log_suffix) . $ext;
-        $this->date = date($this->app->config->log_date_format);
-
+        
         if ($this->app->config->log_errors) {
             set_error_handler([$this, 'handleError'], $this->app->config->log_error_reporting);
         }

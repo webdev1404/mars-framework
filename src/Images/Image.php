@@ -9,7 +9,6 @@ namespace Mars\Images;
 use GdImage;
 use Mars\App;
 use Mars\App\InstanceTrait;
-use Mars\Images\Operations\Resize;
 
 /**
  * The Image Base Class

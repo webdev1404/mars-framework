@@ -172,11 +172,6 @@ class Config
     public string $session_driver = 'php';
 
     /**
-     * @var bool $session_start If false, will not start the session functionality
-     */
-    public bool $session_start = true;
-
-    /**
      * @var string $session_table The table where sessions are stored if the session_driver=db
      */
     public string $session_table = 'sessions';
@@ -240,11 +235,6 @@ class Config
      * @var string $accelerator_driver The accelerator driver. Supported options: varnish
      */
     public string $accelerator_driver = 'varnish';
-
-    /**
-     * @var bool $device_start If false, will not start the device detection functionality
-     */
-    public bool $device_start = true;
 
     /**
      * @var int $cookie_expire_days The interval, in days, for which the cookies will be valid
@@ -624,10 +614,6 @@ class Config
      */
     public function normalize()
     {
-        if ($this->device_start) {
-            $this->session_start = true;
-        }
-
         if ($this->development) {
             $this->css_version = time();
             $this->javascript_version = time();

@@ -8,14 +8,12 @@ namespace Mars\Images;
 
 use GdImage;
 use Mars\App;
-use Mars\Images\Image;
 
 /**
  * The Gif Image Class
  */
 class Gif extends Image implements DriverInterface
 {
-
     /**
      * @var string $mime_type The image's mime type
      */

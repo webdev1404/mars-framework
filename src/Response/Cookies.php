@@ -20,41 +20,36 @@ class Cookies
     /**
      * @var int $expires The cookie's expires timestamp
      */
-    protected string $expires = '';
+    protected int $expires {
+        get => time() + (3600 * 24 * $this->app->config->cookie_expire_days);
+    }
 
     /**
      * @var string $path The cookie's path
      */
-    protected string $path = '';
+    protected string $path {
+        get => $this->app->config->cookie_path;
+    }
 
     /**
      * @var string $domain The cookie's domain
      */
-    protected string $domain = '';
+    protected string $domain {
+        get => $this->app->config->cookie_domain;
+    }
 
     /**
      * @var string $secure If true the cookies will only be sent over secure connections.
      */
-    protected bool $secure = false;
+    protected bool $secure {
+        get => $this->app->config->cookie_secure;
+    }
 
     /**
      * @var bool $httponly If true then httponly flag will be set for the cookies
      */
-    public bool $httponly = true;
-
-    /**
-     * Builds the Cookie object
-     * @param App $app The app object
-     */
-    public function __construct(App $app)
-    {
-        $this->app = $app;
-
-        $this->expires = time() + 3600 * 24 * $this->app->config->cookie_expire_days;
-        $this->path = $this->app->config->cookie_path;
-        $this->domain = $this->app->config->cookie_domain;
-        $this->secure = $this->app->config->cookie_secure;
-        $this->httponly = $this->app->config->cookie_httponly;
+    public bool $httponly {
+        get => $this->app->config->cookie_httponly;
     }
 
     /**

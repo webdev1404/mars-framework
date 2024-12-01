@@ -18,10 +18,7 @@ class Theme extends \Mars\Extensions\Theme
      * @var bool $is_homepage Set to true if the homepage is currently displayed
      */
     public bool $is_homepage {
-        get {
-            return $this->app->is_homepage;
-        }
-        set {}
+        get => $this->app->is_homepage;
     }
 
     /**

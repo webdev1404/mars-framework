@@ -7,7 +7,6 @@
 namespace Mars;
 
 use Mars\App\InstanceTrait;
-use Mars\Serializers\DriverInterface;
 
 /**
  * The Screen Class
@@ -20,27 +19,27 @@ class Screens
     /**
      * @var Handlers $screens The screens handlers
      */
-    public readonly Handlers $screens;
+    public protected(set) Handlers $screens {
+        get {
+            if (isset($this->screens)) {
+                return $this->screens;
+            }   
+
+            $this->screens = new Handlers($this->screens_list, null, $this->app);
+
+            return $this->screens;
+        }
+    }
 
     /**
      * @var array $screens_list The list of supported screens
      */
     protected array $screens_list = [
-        'error' => '\Mars\Screens\Error',
-        'message' => '\Mars\Screens\Message',
-        'fatal_error' => '\Mars\Screens\FatalError',
-        'permission_denied' => '\Mars\Screens\PermissionDenied'
+        'error' => \Mars\Screens\Error::class,
+        'message' => \Mars\Screens\Message::class,
+        'fatal_error' => \Mars\Screens\FatalError::class,
+        'permission_denied' => \Mars\Screens\PermissionDenied::class,
     ];
-
-    /**
-     * Constructs the screens object
-     * @param App $app The app object
-     */
-    public function __construct(App $app)
-    {
-        $this->app = $app;
-        $this->screens = new Handlers($this->screens_list, null, $this->app);
-    }
 
     /**
      * Displays an error screen

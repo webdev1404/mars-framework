@@ -13,7 +13,6 @@ use Mars\Images\Image;
  */
 class Watermark extends Base
 {
-
     /**
      * Cuts a section from an image
      * @param int $cut_width The width of the cut section

@@ -31,8 +31,6 @@ class Html implements DriverInterface
      */
     public function output(string $content)
     {
-        $this->app->response->push->output();
-
         echo $content;
     }
 }

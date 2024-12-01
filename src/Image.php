@@ -20,47 +20,56 @@ class Image
     /**
      * @var Drivers $drivers The drivers object
      */
-    public readonly Drivers $drivers;
+    public protected(set) Drivers $drivers {
+        get {
+            if (isset($this->drivers)) {
+                return $this->drivers;
+            }
+
+            $this->drivers = new Drivers($this->supported_drivers, DriverInterface::class, 'images', $this->app);
+            
+            return $this->drivers;
+        }
+    }
 
     /**
      * @var Handlers $operations The operations handlers
      */
-    public readonly Handlers $operations;
+    public protected(set) Handlers $operations {
+        get {
+            if (isset($this->operations)) {
+                return $this->operations;
+            }
+
+            $this->operations = new Handlers($this->supported_operations, $this->app);
+            $this->operations->setStore(false);
+
+            return $this->operations;
+        }
+    }
 
     /**
      * @var array $supported_drivers The supported drivers
      */
     protected array $supported_drivers = [
-        'jpg' => '\Mars\Images\Jpg',
-        'jpeg' => '\Mars\Images\Jpg',
-        'png' => '\Mars\Images\Png',
-        'gif' => '\Mars\Images\Gif',
-        'webp' => '\Mars\Images\Webp',
-        'avif' => '\Mars\Images\Avif'
+        'jpg' => \Mars\Images\Jpg::class,
+        'jpeg' => \Mars\Images\Jpg::class,
+        'png' => \Mars\Images\Png::class,
+        'gif' => \Mars\Images\Gif::class,
+        'webp' => \Mars\Images\Webp::class,
+        'avif' => \Mars\Images\Avif::class
     ];
 
     /**
      * @var array $supported_operations The list of supported operations
      */
     protected array $supported_operations = [
-        'resize' => '\Mars\Images\Operations\Resize',
-        'crop' => '\Mars\Images\Operations\Crop',
-        'cut' => '\Mars\Images\Operations\Cut',
-        'convert' => '\Mars\Images\Operations\Convert',
-        'watermark' => '\Mars\Images\Operations\Watermark'
+        'resize' => \Mars\Images\Operations\Resize::class,
+        'crop' => \Mars\Images\Operations\Crop::class,
+        'cut' => \Mars\Images\Operations\Cut::class,
+        'convert' => \Mars\Images\Operations\Convert::class,
+        'watermark' => \Mars\Images\Operations\Watermark::class
     ];
-
-    /**
-     * Constructs the image object
-     * @param App $app The app object
-     */
-    public function __construct(App $app)
-    {
-        $this->app = $app;
-        $this->drivers = new Drivers($this->supported_drivers, DriverInterface::class, '', $this->app);
-        $this->operations = new Handlers($this->supported_operations, $this->app);
-        $this->operations->setStore(false);
-    }
 
     /**
      * Returns the image

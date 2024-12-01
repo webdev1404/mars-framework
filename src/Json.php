@@ -41,6 +41,15 @@ class Json
             return '';
         }
 
-        return json_decode($string, true);
+        return json_decode($string, true, 512, JSON_THROW_ON_ERROR);
+    }
+
+    public function validate(string $string) : bool
+    {
+        if (!$string) {
+            return false;
+        }
+
+        return json_validate($string);
     }
 }

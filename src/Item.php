@@ -27,7 +27,22 @@ abstract class Item extends Entity
     /**
      * @var Errors $errors The generated errors, if any
      */
-    public Errors $errors;
+    public protected(set) Errors $errors {
+        get {
+            if (isset($this->errors)) {
+                return $this->errors;
+            }
+
+            $this->errors = new Errors($this->app);
+
+            return $this->errors;
+        }
+    }
+
+    /**
+     * @var string|array $fields The database fields to load
+     */
+    public string|array $fields = '*';
 
     /**
      * @var string $table The table from which the object will be loaded.
@@ -45,11 +60,6 @@ abstract class Item extends Entity
     protected static string $name_field = 'name';
 
     /**
-     * @var string|array $fields The database fields to load
-     */
-    protected string|array $fields = '*';
-
-    /**
      * @var array $ignore Array listing the custom properties (not found in the corresponding db table) which should be ignored when inserting/updating
      */
     protected static array $ignore = [];
@@ -62,6 +72,7 @@ abstract class Item extends Entity
     /**
      * @var array $original Array containing the original properties
      */
+    #[Hidden]
     protected array $original = [];
 
     /**
@@ -115,14 +126,12 @@ abstract class Item extends Entity
     protected static array $validation_error_strings = [];
 
     /**
-     * @var bool $debug_original If true, the original data will be displayed when calling var_dump/print_r
-     */
-    protected static bool $debug_original = false;
-
-    /**
      * @var Db $db The database object. Alias for $this->app->db
      */
-    protected Db $db;
+    #[Hidden]
+    protected Db $db {
+        get => $this->app->db;
+    }
 
     /**
      * Builds an item
@@ -132,12 +141,9 @@ abstract class Item extends Entity
     public function __construct($data = 0, ?App $app = null)
     {
         $this->app = $app ?? $this->getApp();
-        $this->db = $this->app->db;
-        $this->errors = new Errors($this->app);
 
         $table = $this->getTable();
         $id_field = $this->getIdField();
-
         if (!$table) {
             throw new \Exception('The $table static property of class ' . get_class($this) . ' is not set!');
         }
@@ -155,37 +161,8 @@ abstract class Item extends Entity
 
         unset($data['app']);
         unset($data['db']);
-        unset($data['validator']);
 
         return array_keys($data);
-    }
-
-    /**
-     * Sets the app & db property when unserializing
-     */
-    public function __wakeup()
-    {
-        $this->app = $this->getApp();
-        $this->db = $this->app->db;
-        $this->validator = $this->app->validator;
-    }
-
-    /**
-     * Removes properties which shouldn't be displayed by var_dump/print_r
-     */
-    public function __debugInfo()
-    {
-        $properties = get_object_vars($this);
-
-        unset($properties['app']);
-        unset($properties['db']);
-        unset($properties['validator']);
-
-        if (!static::$debug_original) {
-            unset($properties['original']);
-        }
-
-        return $properties;
     }
 
     /**
@@ -240,27 +217,6 @@ abstract class Item extends Entity
     }
 
     /**
-     * Returns the fields used to load/select the data
-     * @return array|string The fields
-     */
-    public function getFields()
-    {
-        return $this->fields;
-    }
-
-    /**
-     * Sets the fields to load
-     * @param string|array $fields The fields to load
-     * @return static
-     */
-    public function setFields(string|array $fields = '*') : static
-    {
-        $this->fields = $fields;
-
-        return $this;
-    }
-
-    /**
      * Returns the validation rules
      * @return array The rules
      */
@@ -303,32 +259,12 @@ abstract class Item extends Entity
     public function set(array|object $data, bool $overwrite = true) : static
     {
         $this->original = $this->getOriginalData(App::getArray($data));
-        
+
         parent::set($data, $overwrite);
 
         $this->prepare();
 
         return $this;
-    }
-
-    /**
-     * Returns the row from the database, based on id
-     * @param int $id The id to return the data for
-     * @return object The row, or null on failure
-     */
-    public function getRowById(int $id) : ?object
-    {
-        return $this->db->selectById($this->getTable(), $id, $this->getIdField());
-    }
-
-    /**
-     * Returns the row from the database, based on name
-     * @param string $name The name to return the data for
-     * @return object The row, or null on failure
-     */
-    public function getRowByName(string $name) : ?object
-    {
-        return $this->db->selectRow($this->getTable(), [$this->getNameField() => $name]);
     }
 
     /**
@@ -383,6 +319,26 @@ abstract class Item extends Entity
     public function loadByName(string $name) : static
     {
         return $this->load($this->getRowByName($name));
+    }
+
+    /**
+     * Returns the row from the database, based on id
+     * @param int $id The id to return the data for
+     * @return object The row, or null on failure
+     */
+    public function getRowById(int $id) : ?object
+    {
+        return $this->db->selectById($this->getTable(), $id, $this->getIdField());
+    }
+
+    /**
+     * Returns the row from the database, based on name
+     * @param string $name The name to return the data for
+     * @return object The row, or null on failure
+     */
+    public function getRowByName(string $name) : ?object
+    {
+        return $this->db->selectRow($this->getTable(), [$this->getNameField() => $name]);
     }
 
     /**
@@ -504,8 +460,9 @@ abstract class Item extends Entity
         $id_field = $this->getIdField();
         unset($data[$id_field]);
 
-        //unset the errors property
+        //unset the errors & fields property
         unset($data['errors']);
+        unset($data['fields']);
 
         if (static::$ignore) {
             $data = App::filterProperties($data, static::$ignore);

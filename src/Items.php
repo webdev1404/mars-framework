@@ -23,7 +23,22 @@ abstract class Items extends Entities
     /**
      * @var Errors $errors The generated errors, if any
      */
-    public readonly Errors $errors;
+    public protected(set) Errors $errors {
+        get {
+            if (isset($this->errors)) {
+                return $this->errors;
+            }
+
+            $this->errors = new Errors($this->app);
+
+            return $this->errors;
+        }
+    }
+
+    /**
+     * @var string|array $fields The database fields to load
+     */
+    public string|array $fields = '*';
 
     /**
      * @var string $table The table from which the objects will be loaded
@@ -36,14 +51,12 @@ abstract class Items extends Entities
     protected static string $id_field = 'id';
 
     /**
-     * @var string|array $fields The database fields to load
-     */
-    protected string|array $fields = '*';
-
-    /**
      * @var Db $db The database object. Alias for $this->app->db
      */
-    protected Db $db;
+    #[Hidden]
+    protected Db $db {
+        get => $this->app->db;
+    }
 
     /**
      * Builds the Items object
@@ -53,8 +66,6 @@ abstract class Items extends Entities
     public function __construct(bool $load = false, ?App $app = null)
     {
         $this->app = $app ?? $this->getApp();
-        $this->db = $this->app->db;
-        $this->errors = new Errors($this->app);
 
         if ($load) {
             $this->loadAll();
@@ -75,28 +86,6 @@ abstract class Items extends Entities
     }
 
     /**
-     * Sets the app & db property when unserializing
-     */
-    public function __wakeup()
-    {
-        $this->app = $this->getApp();
-        $this->db = $this->app->db;
-    }
-
-    /**
-     * Removes properties which shouldn't be displayed by var_dump/print_r
-     */
-    public function __debugInfo()
-    {
-        $properties = get_object_vars($this);
-
-        unset($properties['app']);
-        unset($properties['db']);
-
-        return $properties;
-    }
-
-    /**
      * Returns the table name
      * @return string
      */
@@ -112,27 +101,6 @@ abstract class Items extends Entities
     public function getIdField() : string
     {
         return static::$id_field;
-    }
-
-    /**
-     * Returns the fields which will be loaded
-     * @return array|string The fields
-     */
-    public function getFields()
-    {
-        return $this->fields;
-    }
-
-    /**
-     * Sets the fields to load
-     * @param string|array $fields The fields to load
-     * @return $this
-     */
-    public function setFields(string|array $fields = '*')
-    {
-        $this->fields = $fields;
-
-        return $this;
     }
 
     /**

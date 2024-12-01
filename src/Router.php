@@ -7,6 +7,7 @@
 namespace Mars;
 
 use Mars\App\InstanceTrait;
+use Mars\Mvc\Controller;
 
 /**
  * The Route Class
@@ -17,34 +18,34 @@ class Router
     use InstanceTrait;
 
     /**
+     * @var Handlers $routes The routes handlers
+     */
+    public protected(set) Handlers $routes {
+        get {
+            if (isset($this->routes)) {
+                return $this->routes;
+            }
+
+            $this->routes = new Handlers($this->routes_types, null, $this->app);
+            $this->routes->setStore(false);
+
+            return $this->routes;
+        }
+    }
+
+    /**
      * @var array $routes_list The defined routes list
      */
     protected array $routes_list = [];
     
     /**
-     * @var Handlers $routes The routes handlers
-     */
-    public readonly Handlers $routes;
-    
-    /**
      * @var array $routes_types The list of supported routes
      */
     protected array $routes_types = [
-        'block' => '\Mars\Routers\Block',
-        'template' => '\Mars\Routers\Template',
-        'page' => '\Mars\Routers\Page',
+        'block' => \Mars\Routers\Block::class,
+        'template' => \Mars\Routers\Template::class,
+        'page' => \Mars\Routers\Page::class,
     ];
-    
-    /**
-     * Constructs the routes object
-     * @param App $app The app object
-     */
-    public function __construct(App $app)
-    {
-        $this->app = $app;
-        $this->routes = new Handlers($this->routes_types, $this->app);
-        $this->routes->setStore(false);
-    }
 
     /**
      * Adds a route

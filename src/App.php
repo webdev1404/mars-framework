@@ -11,7 +11,7 @@ use Mars\Alerts\Errors;
 use Mars\Alerts\Info;
 use Mars\Alerts\Warnings;
 use Mars\Alerts\Messages;
-use Mars\Helpers\Minifier;
+use Mars\Assets\Minifier;
 use Mars\LazyLoad\GhostTrait;
 use Mars\LazyLoad\ProxyTrait;
 use Mars\Mvc\Controller;
@@ -931,7 +931,9 @@ class App
      */
     public function output($content, string $type = '')
     {
-        echo $this->response->setType($type)->get($content);
+        $this->response->type = $type;
+
+        echo $this->response->get($content);
     }
 
     /**
@@ -986,7 +988,7 @@ class App
      */
     protected function getOutput(string $content) : string
     {
-        if ($this->response->getType() != 'html') {
+        if ($this->response->type != 'html') {
             return $content;
         }
 

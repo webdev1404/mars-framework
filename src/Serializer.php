@@ -21,42 +21,58 @@ class Serializer
     /**
      * @var Drivers $drivers The drivers object
      */
-    public readonly Drivers $drivers;
+    public protected(set) Drivers $drivers {
+        get {
+            if (isset($this->drivers)) {
+                return $this->drivers;
+            }
+
+            $this->drivers = new Drivers($this->supported_drivers, DriverInterface::class, 'serializer', $this->app);
+
+            return $this->drivers;
+        }
+    }
 
     /**
      * @var DriverInterface $driver The driver object
      */
-    public readonly DriverInterface $driver;
+    protected DriverInterface $driver {
+        get {
+            if (isset($this->driver)) {
+                return $this->driver;
+            }
+
+            $this->driver = $this->drivers->get($this->app->config->serializer_driver);
+
+            return $this->driver;
+        }
+    }
 
     /**
      * protected DriverInterface $php_driver The php driver
      */
-    protected DriverInterface $php_driver;
+    protected DriverInterface $php_driver {
+        get {
+            if (isset($this->php_driver)) {
+                return $this->php_driver;
+            }
+
+            $this->php_driver = $this->driver;
+            if ($this->app->config->serializer_driver != 'php') {
+                $this->php_driver = $this->drivers->get('php');
+            }
+
+            return $this->php_driver;
+        }
+    }
 
     /**
      * @var array $supported_drivers The supported drivers
      */
     protected array $supported_drivers = [
-        'php' => '\Mars\Serializers\Php',
-        'igbinary' => '\Mars\Serializers\Igbinary'
+        'php' => \Mars\Serializers\Php::class,
+        'igbinary' => \Mars\Serializers\Igbinary::class,
     ];
-
-    /**
-     * Constructs the serializer object
-     * @param App $app The app object
-     */
-    public function __construct(App $app)
-    {
-        $this->app = $app;
-        $this->drivers = new Drivers($this->supported_drivers, DriverInterface::class, 'serializer', $this->app);
-        $this->driver = $this->drivers->get($this->app->config->serializer_driver);
-
-        if ($this->app->config->serializer_driver == 'php') {
-            $this->php_driver = $this->driver;
-        } else {
-            $this->php_driver = $this->drivers->get('php');
-        }
-    }
 
     /**
      * Returns the driver used to serialize/unserialize

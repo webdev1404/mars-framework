@@ -24,7 +24,7 @@ class Message
      */
     public function output(string $text, string $title = '', ?bool $escape_html = null)
     {
-        $escape_html = $escape_html ?? !$this->app->is_bin;
+        $escape_html = $escape_html ?? $this->app->is_web;
 
         if ($escape_html) {
             $text = $this->app->escape->html($text);

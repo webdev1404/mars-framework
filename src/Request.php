@@ -30,15 +30,7 @@ class Request
      * @var RequestObj $request Alias for $request
      */
     public RequestObj $all {
-        get {
-            if (isset($this->all)) {
-                return $this->all;
-            }
-
-            $this->all = $this->request;
-
-            return $this->all;
-        }
+        get => $this->request;
     }
 
     /**

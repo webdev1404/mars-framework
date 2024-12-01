@@ -4,7 +4,7 @@
 * @package Mars
 */
 
-namespace Mars\Minifiers;
+namespace Mars\Assets\Minifiers;
 
 /**
  * The Minifiers Driver Interface

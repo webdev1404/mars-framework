@@ -23,7 +23,7 @@ class Ajax implements DriverInterface
      */
     public function get($content) : string
     {
-        return \json_encode($content);
+        return $this->app->json->encode($content);
     }
 
     /**

@@ -1,15 +1,15 @@
 <?php
 /**
-* The Javascript Minifier
+* The Css Minifier
 * @package Mars
 */
 
-namespace Mars\Minifiers;
+namespace Mars\Assets\Minifiers;
 
 /**
- * The Javascript Minifier
+ * The Css Minifier
  */
-class Javascript implements DriverInterface
+class Css implements DriverInterface
 {
     /**
      * @see \Mars\Minifiers\DriverInterface::minify()
@@ -17,7 +17,7 @@ class Javascript implements DriverInterface
      */
     public function minify(string $content) : string
     {
-        $minifier = new \MatthiasMullie\Minify\JS;
+        $minifier = new \MatthiasMullie\Minify\CSS;
         $minifier->add($content);
 
         return $minifier->minify();

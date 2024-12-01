@@ -8,6 +8,7 @@ namespace Mars\Response;
 
 use Mars\App;
 use Mars\App\InstanceTrait;
+use Mars\Lists\ListTrait;
 
 /**
  * The Headers Response Class
@@ -16,7 +17,7 @@ use Mars\App\InstanceTrait;
 class Headers
 {
     use InstanceTrait;
-    use \Mars\Lists\ListTrait;
+    use ListTrait;
 
     /**
      * Builds the Cookie Request object

@@ -16,67 +16,71 @@ use Mars\Session\DriverInterface;
 class Session
 {
     use InstanceTrait;
-
+    
     /**
      * @var Drivers $drivers The drivers object
      */
-    public readonly Drivers $drivers;
+    public protected(set) Drivers $drivers {
+        get {
+            if (isset($this->drivers)) {
+                return $this->drivers;
+            }
+
+            $this->drivers = new Drivers($this->supported_drivers, DriverInterface::class, 'session', $this->app);
+
+            return $this->drivers;
+        }
+    }
 
     /**
      * @var DriverInterface $driver The driver object
      */
-    public readonly DriverInterface $driver;
+    protected DriverInterface $driver;
 
     /**
      * @var string $prefix Prefix to apply to all session keys
      */
-    protected string $prefix = '';
+    protected string $prefix {
+        get {
+            if (isset($this->prefix)) {
+                return $this->prefix;
+            }
+
+            $this->prefix = $this->app->config->session_prefix;
+
+            if ($this->prefix) {
+                $this->prefix .= '-';
+            }
+
+            return $this->prefix;
+        }
+    }
+
+    /**
+     * @var bool $started True if the session has been started
+     */
+    protected bool $started = false;
 
     /**
      * @var array $supported_drivers The supported drivers
      */
     protected array $supported_drivers = [
-        'php' => '\Mars\Session\Php',
-        'db' => '\Mars\Session\Db',
-        'memcache' => '\Mars\Session\Memcache'
+        'php' => \Mars\Session\Php::class,
+        'db' => \Mars\Session\Db::class,
+        'memcache' => \Mars\Session\Memcache::class
     ];
 
     /**
-     * Builds the session object
-     * @param App $app The app object
+     * Starts the session
      */
-    public function __construct(App $app)
+    public function start()
     {
-        $this->app = $app;
-
-        if ($this->app->is_bin || !$this->app->config->session_start) {
-            return;
-        }
-        //don't start the session if the http accelerator is enabled
-        if ($this->app->config->accelerator_enable) {
-            return;
-        }
-
-        $this->drivers = new Drivers($this->supported_drivers, DriverInterface::class, 'session', $this->app);
-        $this->driver = $this->drivers->get($this->app->config->session_driver);
-        $this->prefix = $this->getPrefix();
-
         session_start();
-    }
 
-    /**
-     * Returns the session prefix
-     * @return string
-     */
-    protected function getPrefix() : string
-    {
-        $prefix = $this->app->config->session_prefix;
+        $this->started = true;
 
-        if ($prefix) {
-            $prefix = $prefix . '-';
-        }
-
-        return $prefix;
+        //get the driver manually, since we're not using it per se
+        $this->driver = $this->drivers->get($this->app->config->session_driver);
     }
 
     /**
@@ -98,6 +102,10 @@ class Session
      */
     public function getId() : string
     {
+        if (!$this->started) {
+            $this->start();
+        }
+
         return session_id();
     }
 
@@ -107,6 +115,9 @@ class Session
      */
     public function regenerateId() : string
     {
+        if (!$this->started) {
+            $this->start();
+        }
         session_regenerate_id();
 
         return $this->getId();
@@ -119,6 +130,10 @@ class Session
      */
     public function isSet(string $name) : bool
     {
+        if (!$this->started) {
+            $this->start();
+        }
+
         $key = $this->prefix . $name;
 
         return isset($_SESSION[$key]);
@@ -129,10 +144,14 @@ class Session
      * @param string $name The name of the var
      * @param bool $unserialize If true, will unserialize the returned result
      * @param mixed $not_set The return value, if $_SESSION[$name] isn't set
-     * @return mixed
+     * @return mixed Will return null if the session is not enabled
      */
     public function get(string $name, bool $unserialize = false, $not_set = null)
     {
+        if (!$this->started) {
+            $this->start();
+        }
+
         $key = $this->prefix . $name;
 
         if (!isset($_SESSION[$key])) {
@@ -157,6 +176,10 @@ class Session
      */
     public function set(string $name, $value, bool $serialize = false) : static
     {
+        if (!$this->started) {
+            $this->start();
+        }
+
         $key = $this->prefix . $name;
 
         if ($serialize) {
@@ -175,6 +198,10 @@ class Session
      */
     public function unset(string $name) : static
     {
+        if (!$this->started) {
+            $this->start();
+        }
+
         $key = $this->prefix . $name;
 
         unset($_SESSION[$key]);

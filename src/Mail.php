@@ -20,30 +20,39 @@ class Mail
     /**
      * @var Drivers $drivers The drivers object
      */
-    public readonly Drivers $drivers;
+    public protected(set) Drivers $drivers {
+        get {
+            if (isset($this->drivers)) {
+                return $this->drivers;
+            }
+
+            $this->drivers = new Drivers($this->supported_drivers, DriverInterface::class, 'mail', $this->app);
+
+            return $this->drivers;
+        }
+    }
 
     /**
      * @var DriverInterface $driver The driver object
      */
-    public readonly DriverInterface $driver;
+    protected DriverInterface $driver {
+        get {
+            if (isset($this->driver)) {
+                return $this->driver;
+            }
+
+            $this->driver = $this->drivers->get($this->app->config->mail_driver);
+
+            return $this->driver;
+        }
+    }
 
     /**
      * @var array $supported_drivers The supported drivers
      */
     protected array $supported_drivers = [
-        'phpmailer' => '\Mars\Mail\PhpMailer'
+        'phpmailer' => \Mars\Mail\PhpMailer::class
     ];
-
-    /**
-     * Constructs the mail object
-     * @param App $app The app object
-     */
-    public function __construct(App $app)
-    {
-        $this->app = $app;
-        $this->drivers = new Drivers($this->supported_drivers, DriverInterface::class, 'mail', $this->app);
-        $this->driver = $this->drivers->get($this->app->config->mail_driver);
-    }
 
     /**
      * Sends a mail
