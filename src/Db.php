@@ -305,10 +305,10 @@ class Db
             $this->app->timer->start('sql');
         }
 
-        if ($sql instanceof Sql) {
+        if ($sql instanceof Sql) {                        
+            $sql = $sql->sql;
             $params = $sql->getParams();
-            $is_read = $sql->isRead();
-            $sql = $sql->getSql();
+            $is_read = $sql->is_read;
         }
 
         $handle = $this->getQueryHandle($sql, $is_read);

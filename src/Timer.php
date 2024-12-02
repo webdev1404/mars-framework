@@ -6,29 +6,27 @@
 
 namespace Mars;
 
+use Mars\App\InstanceTrait;
+
 /**
  * The Timer Class
  * Contains timer functionality
  */
 class Timer
 {
+    use InstanceTrait;
+    
     /**
      * @var float $start The time when the script was started
      */
-    public readonly float $start;
+    public float $start {
+        get => $_SERVER['REQUEST_TIME_FLOAT'];
+    }
 
     /**
      * @var array $timers Array with the started timers
      */
     protected array $timers = [];
-
-    /**
-     * Builds the Timer object
-     */
-    public function __construct()
-    {
-        $this->start = $_SERVER['REQUEST_TIME_FLOAT'];
-    }
 
     /**
      * Gets the microtime elapsed from the script's start until the function was called
