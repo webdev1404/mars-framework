@@ -417,11 +417,6 @@ class Config
     public string $request_page_param = 'page';
 
     /**
-     * @var bool $http2_push If true, http2 push is enabled
-     */
-    public bool $http2_push = false;
-
-    /**
      * @var bool $plugins_enable True, if plugins are enabled
      */
     public bool $plugins_enable = true;
@@ -570,6 +565,11 @@ class Config
      * @var string $title_separator The separator of the title parts
      */
     public string $title_separator = ' - ';
+
+    /**
+     * @var string $timezone The timezone
+     */
+    public string $timezone = 'UTC';
 
     /**
      * Builds the Config object

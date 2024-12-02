@@ -22,7 +22,7 @@ class Min extends Rule
      * @param int $min The minimum value
      * @return bool
      */
-    public function isValid(string $value, int|float $min = null) : bool
+    public function isValid(string $value, int|float|null $min = null) : bool
     {
         if ($min === null) {
             throw new \Exception("The Validator Min rule must have the minimum number specified. Eg: min:5");

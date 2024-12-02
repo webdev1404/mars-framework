@@ -19,6 +19,7 @@ use Mars\Time\DateTime;
 use Mars\Time\Date;
 use Mars\Time\Time;
 use Mars\Time\Timestamp;
+use Mars\Time\Timezone;
 use Mars\System\Language;
 use Mars\System\Plugins;
 use Mars\System\Theme;
@@ -278,6 +279,12 @@ class App
      */
     #[LazyLoad]
     public Timestamp $timestamp;
+
+    /**
+     * @var Timezone $timezone The timezone object
+     */
+    #[LazyLoad]
+    public Timezone $timezone;
 
     /**
      * @var Timer $timer The timer object

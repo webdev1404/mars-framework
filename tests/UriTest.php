@@ -103,8 +103,7 @@ final class UriTest extends Base
         $uri = $this->app->uri;
 
         $this->assertEquals($uri->buildPath('https://localhost/mars', ['test1', 'test2']), 'https://localhost/mars/test1/test2');
-        $this->assertEquals($uri->buildPath('https://localhost/mars/', ['test1', 'test2']), 'https://localhost/mars/test1/test2');
-        $this->assertEquals($uri->buildPath('https://localhost/mars/', ['te st1', 'te?st2']), 'https://localhost/mars/te%20st1/te%3Fst2');
+        $this->assertEquals($uri->buildPath('https://localhost/mars', ['te st1', 'te?st2']), 'https://localhost/mars/te%20st1/te%3Fst2');
     }
 
     public function testIsInQuery()

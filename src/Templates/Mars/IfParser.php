@@ -24,11 +24,11 @@ class IfParser
         $content = preg_replace_callback('/\{\%\s*if(.*)\s*\%\}/iU', function (array $match) {
             $condition = $this->getCondition($match);
             
-            return '<?php if(!empty(' . $this->getCondition($match) . ')){ ?>';
+            return '<?php if(' . $this->getCondition($match) . '){ ?>';
         }, $content);
 
         $content = preg_replace_callback('/\{\%\s*elseif(.*)\s*\%\}/isU', function (array $match) {
-            return '<?php } elseif(!empty(' . $this->getCondition($match) . ')){ ?>';
+            return '<?php } elseif(' . $this->getCondition($match) . '){ ?>';
         }, $content);
 
         $content = preg_replace('/\{\%\s*else\s*\%\}/iU', '<?php } else { ?>', $content);
@@ -45,9 +45,8 @@ class IfParser
     protected function getCondition(array $match) : string
     {
         $condition = $this->trimParentheses($match[1]);
-
-        $variable_parser = new VariableParser($this->app);
-        return $variable_parser->replaceVariables($condition);
+        
+        return new VariableParser($this->app)->replaceVariables($condition);
     }
 
     /**

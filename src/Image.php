@@ -41,8 +41,8 @@ class Image
                 return $this->operations;
             }
 
-            $this->operations = new Handlers($this->supported_operations, $this->app);
-            $this->operations->setStore(false);
+            $this->operations = new Handlers($this->supported_operations, null, $this->app);
+            $this->operations->store = false;
 
             return $this->operations;
         }

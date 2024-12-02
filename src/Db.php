@@ -144,7 +144,7 @@ class Db
     /**
      * @var DriverInterface $read_driver The handle for the read queries
      */
-    protected DriverInterface $read_driver {
+    public protected(set) DriverInterface $read_driver {
         get {
             if (isset($this->read_driver)) {
                 return $this->read_driver;
@@ -168,7 +168,7 @@ class Db
     /**
      * @var DriverInterface $write_driver The handle for the write queries
      */
-    protected DriverInterface $write_driver {
+    public protected(set) DriverInterface $write_driver {
         get {
             if (isset($this->write_driver)) {
                 return $this->write_driver;
@@ -188,7 +188,7 @@ class Db
     /**
      * @var string $charset The charset
      */
-    protected string $charset {
+    public string $charset {
         get => $this->app->config->db_charset;
     }
     
@@ -305,10 +305,10 @@ class Db
             $this->app->timer->start('sql');
         }
 
-        if ($sql instanceof Sql) {                        
-            $sql = $sql->sql;
-            $params = $sql->getParams();
+        if ($sql instanceof Sql) {
             $is_read = $sql->is_read;
+            $params = $sql->getParams();
+            $sql = $sql->sql;
         }
 
         $handle = $this->getQueryHandle($sql, $is_read);

@@ -223,6 +223,8 @@ class Request
             throw new \Exception(App::__('file_error_write', ['{FILE}' => $filename]));
         }
 
+        //CURLOPT_RETURNTRANSFER must be set before CURLOPT_FILE. php bug?
+        $options[CURLOPT_RETURNTRANSFER] = true;
         $options[CURLOPT_FILE] = $f;
 
         $ch = $this->init($url, $options);

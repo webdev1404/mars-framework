@@ -15,5 +15,7 @@ class DateTime extends Base
     /**
      * {@inheritDoc}
      */
-    protected string $format = 'Y-m-d H:i:s';
+    protected string $format {
+        get => $this->app->lang->datetime_format;
+    }
 }

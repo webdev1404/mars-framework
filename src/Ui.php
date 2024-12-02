@@ -18,24 +18,24 @@ class Ui
     /**
      * @var Handlers $handlers The handlers object
      */
-    public readonly Handlers $uis;
+    public protected(set) Handlers $uis {
+        get {
+                if (isset($this->uis)) {
+                    return $this->uis;
+                }
+    
+                $this->uis = new Handlers($this->supported_uis, null, $this->app);
+    
+                return $this->uis;
+        }
+    }
 
     /**
      * @var array $supported_rules The list of supported rules
      */
     protected array $supported_uis = [
-        'pagination' => '\Mars\Ui\Pagination'
+        'pagination' => \Mars\Ui\Pagination::class
     ];
-
-    /**
-     * Builds the text object
-     * @param App $app The app object
-     */
-    public function __construct(App $app)
-    {
-        $this->app = $app;
-        $this->uis = new Handlers($this->supported_uis, $this->app);
-    }
 
     /**
      * Builds pagination. The number of pages is computed as $total_items / $items_per_page.

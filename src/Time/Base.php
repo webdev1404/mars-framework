@@ -8,7 +8,6 @@ namespace Mars\Time;
 
 use Mars\App;
 use Mars\App\InstanceTrait;
-use DateTimeZone;
 use DateTime;
 use DateInterval;
 
@@ -21,70 +20,21 @@ abstract class Base
     use InstanceTrait;
     
     /**
-     * @var string $timezone_id The
-     */
-    public string $timezone_id = 'UTC';
-
-    /**
-     * @var \DateTimeZone $timezone The timezone applied to the datetime computations
-     */
-    public static ?DateTimeZone $timezone = null;
-
-    /**
-     * @var string $format
-     *             The format string used for time representation.
+     * @var string $format The format string used for time representation.
      */
     protected string $format = '';
 
     /**
      * @var string $default_value The default value
      */
-    protected ?string $default_value = null;
-
-    /**
-     * Builds the time object
-     * Sets the default timezone to UTC
-     * @param App $app The app object
-     */
-    public function __construct(App $app)
-    {
-        $this->app = $app;
-
-        if (!static::$timezone) {
-            date_default_timezone_set('UTC');
-
-            $this->setTimezone($this->timezone_id);
-        }
-    }
-
-    /**
-     * Sets the timezone for the DateTime object.
-     * @param string $timezone_id The identifier of the timezone to set.
-     * @return static
-     */
-    public function setTimezone(string $timezone_id) : static
-    {
-        static::$timezone = new DateTimeZone($timezone_id);
-
-        return $this;
-    }
-
-    /**
-     * Resets the timezone to the default setting.
-     * @return static
-     */
-    public function resetTimezone() : static
-    {
-        return $this->setTimezone($this->timezone_id);
-    }
+    protected ?string $default_value = null;    
 
     /**
      * Returns a DateTime object from a datetime
      * @param int|string|DateTime $datetime The datetime
-     * @param bool $is_utc If true, will return the date in the UTC timezone
      * @return DateTime
      */
-    public function getDateTime(int|string|DateTime $datetime = 0, bool $is_utc = true) : DateTime
+    public function getDateTime(int|string|DateTime $datetime = 0) : DateTime
     {
         if (!$datetime instanceof DateTime) {
             if (!$datetime) {
@@ -98,9 +48,7 @@ abstract class Base
             $datetime = new DateTime($datetime);
         }
 
-        if (!$is_utc) {
-            $datetime->setTimezone(static::$timezone);
-        }
+        $datetime->setTimezone($this->app->timezone->timezone);
 
         return $datetime;
     }
@@ -108,15 +56,18 @@ abstract class Base
     /**
      * Returns a formatted datetime
      * @param int|string|\DateTime $datetime The datetime
+     * @param string|null $format The format. If null, the default format will be used
      * @return string|null The formatted datetime
      */
-    public function get(int|string|DateTime $datetime) : string|null
+    public function get(int|string|DateTime $datetime, ?string $format = null) : string|null
     {
         if (!$datetime) {
             return $this->default_value;
         }
 
-        return $this->getDateTime($datetime)->format($this->format);
+        $format ??= $this->format;
+
+        return $this->getDateTime($datetime)->format($format);
     }
 
     /**

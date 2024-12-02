@@ -23,14 +23,13 @@ class Chars extends Rule
      * @param int $max The maximum no. of chars
      * @return bool
      */
-    public function isValid(string $value, int $min = null, int $max = null) : bool
+    public function isValid(string $value, ?int $min = null, ?int $max = null) : bool
     {
         if ($min === null || $max === null) {
             throw new \Exception("The Chars Validator rule must have the minimum/maximum number of chars. specified. Eg: chars:1:5");
         }
 
         $length = mb_strlen($value);
-
         if ($length >= $min && $length <= $max) {
             return true;
         }

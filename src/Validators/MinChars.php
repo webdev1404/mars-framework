@@ -22,7 +22,7 @@ class MinChars extends Rule
      * @param int $length The minimum length of the string
      * @return bool
      */
-    public function isValid(string $value, int $length = null) : bool
+    public function isValid(string $value, ?int $length = null) : bool
     {
         if ($length === null) {
             throw new \Exception("The MinChars Validator rule must have the minimum number of chars. specified. Eg: min_chars:5");

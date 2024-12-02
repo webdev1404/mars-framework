@@ -33,7 +33,7 @@ class Uri
      */
     public function isLocal(string $url) : bool
     {
-        if (!str_starts_with(trim($url) . '/', $this->app->base_url)) {
+        if (!str_starts_with(trim($url), $this->app->base_url)) {
             return false;
         }
 

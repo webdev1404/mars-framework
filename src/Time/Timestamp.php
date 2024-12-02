@@ -19,7 +19,7 @@ class Timestamp extends Base
      * @param int|string|\DateTime $datetime The datetime
      * @return string|null The timestamp
      */
-    public function get(int|string|DateTime $datetime) : string|null
+    public function get(int|string|DateTime $datetime, ?string $format = null) : string|null
     {
         if (!$datetime) {
             return 0;

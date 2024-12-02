@@ -22,7 +22,7 @@ class Time extends DateTime
      * @param string $format The time's format
      * @return bool Returns true if the time value is valid
      */
-    public function isValid(string $value, string $format = null) : bool
+    public function isValid(string $value, ?string $format = null) : bool
     {
         $format = $format ?? $this->app->lang->time_picker_format;
 

@@ -24,7 +24,7 @@ class Datetime extends Rule
      * @param string $format The datetime's format
      * @return bool Returns true if the datetime is valid
      */
-    public function isValid(string $value, string $format = null) : bool
+    public function isValid(string $value, ?string $format = null) : bool
     {
         $format = $format ?? $this->app->lang->datetime_picker_format;
 

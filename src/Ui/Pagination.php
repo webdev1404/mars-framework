@@ -25,12 +25,35 @@ class Pagination
     /**
      * @var int $current_paget The current page
      */
-    protected int $current_page = 0;
+    protected int $current_page {
+        get {
+            if (isset($this->current_page)) {
+                return $this->current_page;
+            }
+
+            $this->current_page = $this->app->request->getPage();
+            if ($this->current_page <= 0 || $this->current_page > $this->total_pages) {
+                $this->current_page = 1;
+            }
+
+            return $this->current_page;
+        }
+    }
 
     /**
      * @var int $total_pages The total number of pages
      */
-    protected int $total_pages = 0;
+    protected int $total_pages {
+        get {
+            if (isset($this->total_pages)) {
+                return $this->total_pages;
+            }
+
+            $this->total_pages = ceil($this->total_items / $this->items_per_page);
+
+            return $this->total_pages;
+        }
+    }
 
     /**
      * @var int $total_items The total number of items
@@ -50,7 +73,17 @@ class Pagination
     /**
      * @var bool $use_seo_param If true, will use the seo param in the base url rather than append the page as a query param
      */
-    protected bool $use_seo_param = false;
+    protected bool $use_seo_param {
+        get {
+            if (isset($this->use_seo_param)) {
+                return $this->use_seo_param;
+            }
+
+            $this->use_seo_param = str_contains($this->base_url, $this->seo_param);
+
+            return $this->use_seo_param;
+        }
+    }
 
     /**
      * @var string $seo_param The string found in $base_url which will be replaced by the page number
@@ -73,9 +106,6 @@ class Pagination
         $this->items_per_page = $items_per_page;
         $this->total_items = $total_items;
         $this->max_links = $max_links;
-        $this->total_pages = $this->getTotalPages();
-        $this->current_page = $this->getCurrentPage();
-        $this->use_seo_param = $this->canUseSeoParam();
     }
 
     /**
@@ -139,38 +169,6 @@ class Pagination
         $links['last'] = $this->getLastLink();
 
         return $links;
-    }
-
-    /**
-     * Returns the total number of pages
-     * @return int
-     */
-    protected function getTotalPages() : int
-    {
-        return ceil($this->total_items / $this->items_per_page);
-    }
-
-    /**
-     * Returns the current page
-     * @return int
-     */
-    protected function getCurrentPage() : int
-    {
-        $current_page = $this->app->request->getPage();
-        if ($current_page <= 0 || $current_page > $this->total_pages) {
-            return 1;
-        }
-
-        return $current_page;
-    }
-
-    /**
-     * Returns true if the base url contains the page seo param
-     * @return bool
-     */
-    protected function canUseSeoParam() : bool
-    {
-        return str_contains($this->base_url, $this->seo_param);
     }
 
     /**

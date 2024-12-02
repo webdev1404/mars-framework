@@ -39,24 +39,29 @@ class Mars implements DriverInterface
     /**
      * @var Handlers $handlers The parsers object
      */
-    public readonly Handlers $parsers;
+    public protected(set) Handlers $parsers {
+        get {
+            if (isset($this->parsers)) {
+                return $this->parsers;
+            }
+
+            $this->parsers = new Handlers($this->supported_parsers, null, $this->app);
+
+            return $this->parsers;
+        }
+    }
 
     /**
      * @var array $supported_structures The list of supported parsers
      */
     protected array $supported_parsers = [
-        'include' => '\Mars\Templates\Mars\IncludeParser',
-        'variable_double' => '\Mars\Templates\Mars\VariableDoubleParser',
-        'variable_raw' => '\Mars\Templates\Mars\VariableRawParser',
-        'variable' => '\Mars\Templates\Mars\VariableParser',
-        'if' => '\Mars\Templates\Mars\IfParser',
-        'foreach' => '\Mars\Templates\Mars\ForeachParser'
+        'include' => \Mars\Templates\Mars\IncludeParser::class,
+        'variable_double' => \Mars\Templates\Mars\VariableDoubleParser::class,
+        'variable_raw' => \Mars\Templates\Mars\VariableRawParser::class,
+        'variable' => \Mars\Templates\Mars\VariableParser::class,
+        'if' => \Mars\Templates\Mars\IfParser::class,
+        'foreach' => \Mars\Templates\Mars\ForeachParser::class
     ];
-
-    /**
-     * @var array $parsers The parsers array
-     */
-    protected array $parsers_list = [];
 
     /**
      * Builds the Mars Template object
@@ -67,8 +72,6 @@ class Mars implements DriverInterface
         ini_set('pcre.backtrack_limit', 10000000);
 
         $this->app = $app;
-        $this->parsers = new Handlers($this->supported_parsers, $this->app);
-        $this->parsers_list = $this->parsers->getAll();
     }
 
     /**
@@ -77,7 +80,8 @@ class Mars implements DriverInterface
      */
     public function parse(string $content, array $params) : string
     {
-        foreach ($this->parsers_list as $parser) {
+        $parsers = $this->parsers->getAll();
+        foreach ($parsers as $parser) {
             $content = $parser->parse($content, $params);
         }
 

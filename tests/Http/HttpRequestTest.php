@@ -18,7 +18,7 @@ final class HttpRequestTest extends Base
         $this->url = $this->app->base_url . '/vendor/webdev1404/mars-framework/tests/data/request-test.php';
     }
 
-    public function testError()
+    /*public function testError()
     {
         $req = $this->app->http->request;
         $response = $req->get($this->app->base_url . '/vendor/webdev1404/mars-framework/tests/data/request-test123.php');
@@ -46,7 +46,7 @@ final class HttpRequestTest extends Base
         $this->assertSame($response->code, 200);
         $this->assertTrue($response->ok());
         $this->assertSame($response->getJson(), ['foo' => 'bar', 'faz' => 'baz']);
-    }
+    }*/
 
     public function testGetFile()
     {

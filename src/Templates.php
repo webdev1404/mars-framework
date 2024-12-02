@@ -19,30 +19,39 @@ class Templates
     /**
      * @var Drivers $drivers The drivers object
      */
-    public readonly Drivers $drivers;
+    public protected(set) Drivers $drivers {
+        get {
+            if (isset($this->drivers)) {
+                return $this->drivers;
+            }
+
+            $this->drivers = new Drivers($this->supported_drivers, DriverInterface::class, 'templates', $this->app);
+
+            return $this->drivers;
+        }
+    }
 
     /**
      * @var DriverInterface $driver The driver object
      */
-    public readonly DriverInterface $driver;
+    public protected(set) DriverInterface $driver {
+        get {
+            if (isset($this->driver)) {
+                return $this->driver;
+            }
+
+            $this->driver = $this->drivers->get($this->app->config->templates_driver);
+
+            return $this->driver;
+        }
+    }
 
     /**
      * @var array $supported_drivers The supported drivers
      */
     protected array $supported_drivers = [
-        'mars' => '\Mars\Templates\Mars'
+        'mars' => \Mars\Templates\Mars::class
     ];
-
-    /**
-     * Constructs the templates object
-     * @param App $app The app object
-     */
-    public function __construct(App $app)
-    {
-        $this->app = $app;
-        $this->drivers = new Drivers($this->supported_drivers, DriverInterface::class, 'templates', $this->app);
-        $this->driver = $this->drivers->get($this->app->config->templates_driver);
-    }
 
     /**
      * Parses the template content and returns it

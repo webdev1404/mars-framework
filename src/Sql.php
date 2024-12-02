@@ -7,7 +7,6 @@
 namespace Mars;
 
 use Mars\App\InstanceTrait;
-
 use Mars\Sql\DriverInterface;
 
 /**
@@ -36,7 +35,7 @@ class Sql implements \Stringable
     /**
      * @var DriverInterface $driver The driver object
      */
-    protected DriverInterface $driver {
+    public protected(set) DriverInterface $driver {
         get {
             if (isset($this->driver)) {
                 return $this->driver;

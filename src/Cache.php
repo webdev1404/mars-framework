@@ -11,7 +11,6 @@ use Mars\Cache\Pages;
 use Mars\Cache\Templates;
 use Mars\Data\PropertiesTrait;
 use Mars\Lazyload\GhostTrait;
-use Mars\Handlers;
 
 /**
  * The Cache Class

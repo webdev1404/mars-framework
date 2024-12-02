@@ -27,7 +27,7 @@ class Router
             }
 
             $this->routes = new Handlers($this->routes_types, null, $this->app);
-            $this->routes->setStore(false);
+            $this->routes->store = false;
 
             return $this->routes;
         }

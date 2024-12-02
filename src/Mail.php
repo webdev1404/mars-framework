@@ -35,7 +35,7 @@ class Mail
     /**
      * @var DriverInterface $driver The driver object
      */
-    protected DriverInterface $driver {
+    public protected(set) DriverInterface $driver {
         get {
             if (isset($this->driver)) {
                 return $this->driver;

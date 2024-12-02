@@ -43,7 +43,7 @@ class Memcache
     /**
      * @var DriverInterface $driver The driver object
      */
-    protected ?DriverInterface $driver {
+    public protected(set) ?DriverInterface $driver {
         get {
             if (!$this->enabled) {
                 return null;

@@ -20,45 +20,54 @@ class Validator
     /**
      * @var Errors $errors The generated errors, if any
      */
-    public readonly Errors $errors;
+    public protected(set) Errors $errors {
+        get {
+            if (isset($this->errors)) {
+                return $this->errors;
+            }
+
+            $this->errors = new Errors($this->app);
+
+            return $this->errors;
+        }
+    }
 
     /**
      * @var Handlers $rules The rules object
      */
-    public Handlers $rules;
+    public protected(set) Handlers $rules {
+        get {
+            if (isset($this->rules)) {
+                return $this->rules;
+            }
+
+            $this->rules = new Handlers($this->supported_rules, null, $this->app);
+
+            return $this->rules;
+        }
+    }
 
     /**
      * @var array $supported_rules The list of supported validation rules
      */
     protected array $supported_rules = [
-        'req' => '\Mars\Validators\Required',
-        'required' => '\Mars\Validators\Required',
-        'unique' => '\Mars\Validators\Unique',
-        'min' => '\Mars\Validators\Min',
-        'max' => '\Mars\Validators\Max',
-        'interval' => '\Mars\Validators\Interval',
-        'min_chars' => '\Mars\Validators\MinChars',
-        'max_chars' => '\Mars\Validators\MaxChars',
-        'chars' => '\Mars\Validators\Chars',
-        'pattern' => '\Mars\Validators\Pattern',
-        'email' => '\Mars\Validators\Email',
-        'url' => '\Mars\Validators\Url',
-        'ip' => '\Mars\Validators\Ip',
-        'time' => '\Mars\Validators\Time',
-        'date' => '\Mars\Validators\Date',
-        'datetime' => '\Mars\Validators\Datetime',
+        'req' => \Mars\Validators\Required::class,
+        'required' => \Mars\Validators\Required::class,
+        'unique' => \Mars\Validators\Unique::class,
+        'min' => \Mars\Validators\Min::class,
+        'max' => \Mars\Validators\Max::class,
+        'interval' => \Mars\Validators\Interval::class,
+        'min_chars' => \Mars\Validators\MinChars::class,
+        'max_chars' => \Mars\Validators\MaxChars::class,
+        'chars' => \Mars\Validators\Chars::class,
+        'pattern' => \Mars\Validators\Pattern::class,
+        'email' => \Mars\Validators\Email::class,
+        'url' => \Mars\Validators\Url::class,
+        'ip' => \Mars\Validators\Ip::class,
+        'time' => \Mars\Validators\Time::class,
+        'date' => \Mars\Validators\Date::class,
+        'datetime' => \Mars\Validators\Datetime::class,
     ];
-
-    /**
-     * Builds the object
-     * @param App $app The app object
-     */
-    public function __construct(App $app)
-    {
-        $this->app = $app;
-        $this->rules = new Handlers($this->supported_rules, $this->app);
-        $this->errors = new Errors($this->app);
-    }
 
     /**
      * Checks a value agains a validator

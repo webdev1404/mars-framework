@@ -115,7 +115,7 @@ class Response implements \Stringable
      */
     public function __toString() : string
     {
-        return (string)$this->body();
+        return $this->body;
     }
 
     /**

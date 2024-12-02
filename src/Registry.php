@@ -45,6 +45,10 @@ class Registry
      */
     public function get($key)
     {
+        if (!isset($this->data[$key])) {
+            return null;
+        }
+
         if (is_callable($this->data[$key])) {
             if (isset($this->instances[$key])) {
                 return $this->instances[$key];
@@ -55,6 +59,6 @@ class Registry
             return $this->instances[$key];
         }
 
-        return $this->data[$key] ?? null;
+        return $this->data[$key];
     }
 }

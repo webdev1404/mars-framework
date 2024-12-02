@@ -22,7 +22,7 @@ class Date extends Datetime
      * @param string $format The date's format
      * @return bool Returns true if the date is valid
      */
-    public function isValid(string $value, string $format = null) : bool
+    public function isValid(string $value, ?string $format = null) : bool
     {
         $format = $format ?? $this->app->lang->date_picker_format;
 

@@ -215,6 +215,6 @@ class Request
     {
         $page_param = $page_param ? $page_param : $this->app->config->request_page_param;
 
-        return $this->request->get($page_param, 'absint');
+        return $this->request->get($page_param, 'absint', 0);
     }
 }

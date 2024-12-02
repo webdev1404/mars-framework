@@ -36,7 +36,7 @@ class Serializer
     /**
      * @var DriverInterface $driver The driver object
      */
-    protected DriverInterface $driver {
+    public protected(set) DriverInterface $driver {
         get {
             if (isset($this->driver)) {
                 return $this->driver;
@@ -51,7 +51,7 @@ class Serializer
     /**
      * protected DriverInterface $php_driver The php driver
      */
-    protected DriverInterface $php_driver {
+    public protected(set) DriverInterface $php_driver {
         get {
             if (isset($this->php_driver)) {
                 return $this->php_driver;

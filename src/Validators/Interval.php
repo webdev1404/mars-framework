@@ -23,7 +23,7 @@ class Interval extends Rule
      * @param int $max The maximum value
      * @return bool
      */
-    public function isValid(string $value, int $min = null, int $max = null) : bool
+    public function isValid(string $value, ?int $min = null, ?int $max = null) : bool
     {
         if ($min === null || $max === null) {
             throw new \Exception("The Interval Validator rule must have the minimum/maximum number specified. Eg: interval:1:5");

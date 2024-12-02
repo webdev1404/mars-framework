@@ -51,7 +51,7 @@ final class ItemsTest extends Base
         $cars = new Cars;
         $cars->set($data);
 
-        $this->assertSame($cars->getCount(), 2);
+        $this->assertSame(count($cars), 2);
         $this->assertSame($cars->getIds(), [2, 3]);
 
         $car = $cars->get(2);
@@ -65,7 +65,7 @@ final class ItemsTest extends Base
         $cars = new Cars;
         $cars->loadBySql("SELECT * FROM cars");
 
-        $this->assertSame($cars->getCount(), 3);
+        $this->assertSame(count($cars), 3);
         $this->assertSame($cars->getIds(), [1, 2, 3]);
 
         $car = $cars->get(2);
@@ -79,7 +79,7 @@ final class ItemsTest extends Base
         $cars = new Cars;
         $cars->loadIds([1,3,4]);
 
-        $this->assertSame($cars->getCount(), 2);
+        $this->assertSame(count($cars), 2);
         $this->assertSame($cars->getIds(), [1, 3]);
 
         $this->assertNull($cars->get(2));

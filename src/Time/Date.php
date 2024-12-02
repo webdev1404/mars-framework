@@ -15,5 +15,7 @@ class Date extends Base
     /**
      * {@inheritDoc}
      */
-    protected string $format = 'Y-m-d';
+    protected string $format {
+        get => $this->app->lang->date_format;
+    }
 }

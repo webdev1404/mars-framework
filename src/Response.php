@@ -11,7 +11,6 @@ use Mars\Lazyload\GhostTrait;
 use Mars\Response\Types\DriverInterface;
 use Mars\Response\Cookies;
 use Mars\Response\Headers;
-use Mars\Response\Push;
 
 /**
  * The Response Class

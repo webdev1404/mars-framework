@@ -33,7 +33,7 @@ final class EntitiesTest extends Base
     public function testSet()
     {
         $ent = new Entities($this->data);
-        $this->assertSame($ent->getCount(), 2);
+        $this->assertSame(count($ent), 2);
         $this->assertSame($ent->get(), $this->data);
     }
 
@@ -51,7 +51,7 @@ final class EntitiesTest extends Base
         $ent = new Entities($this->data);
         $ent->add($this->obj3);
 
-        $this->assertSame($ent->getCount(), 3);
+        $this->assertSame(count($ent), 3);
         $this->assertSame($ent->get(), array_merge($this->data, [$this->obj3]));
     }
 
@@ -60,7 +60,7 @@ final class EntitiesTest extends Base
         $ent = new Entities($this->data);
         $this->assertFalse($ent->update(55, $this->obj3));
         $this->assertTrue($ent->update(0, $this->obj3));
-        $this->assertSame($ent->getCount(), 2);
+        $this->assertSame(count($ent), 2);
     }
 
     public function testGet()

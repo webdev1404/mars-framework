@@ -7,9 +7,6 @@
 namespace Mars\Extensions;
 
 use Mars\App;
-use Mars\Extensions\Root\Module;
-
-use Mars\Extensions\Traits\isSingleClassTrait;
 use Mars\Extensions\Abilities\LanguagesTrait;
 use Mars\Extensions\Abilities\TemplatesTrait;
 

@@ -19,24 +19,24 @@ class Text
     /**
      * @var Handlers $handlers The operations object
      */
-    public readonly Handlers $operations;
+    public protected(set) Handlers $operations {
+        get {
+            if (isset($this->operations)) {
+                return $this->operations;
+            }
+
+            $this->operations = new Handlers($this->supported_operations, null, $this->app);
+
+            return $this->operations;
+        }
+    }
 
     /**
      * @var array $supported_operations The list of supported operations
      */
     protected array $supported_operations = [
-        'parser' => '\Mars\Text\Parser'
+        'parser' => \Mars\Text\Parser::class
     ];
-
-    /**
-     * Builds the text object
-     * @param App $app The app object
-     */
-    public function __construct(App $app)
-    {
-        $this->app = $app;
-        $this->operations = new Handlers($this->supported_operations, $this->app);
-    }
 
     /**
      * Returns the first $max_length characters from text. If strlen($text) > $max_length will append $replace_with

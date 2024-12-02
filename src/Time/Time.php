@@ -15,7 +15,9 @@ class Time extends Base
     /**
      * {@inheritDoc}
      */
-    protected string $format = 'H:i:s';
+    protected string $format {
+        get => $this->app->lang->time_format;
+    }
 
     /**
      * Returns the number of minutes and seconds from $seconds. Eg: for 90 seconds returns 1 min and 30 sec.

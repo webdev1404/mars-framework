@@ -22,7 +22,7 @@ class MaxChars extends Rule
      * @param int $length The minimum length of the string
      * @return bool
      */
-    public function isValid(string $value, int $length = null) : bool
+    public function isValid(string $value, ?int $length = null) : bool
     {
         if ($length === null) {
             throw new \Exception("The  MaxChars Validator rule must have the max number of chars. specified. Eg: max_chars:5");

@@ -63,7 +63,8 @@ final class ControllerTest extends Base
     public function testDispatch()
     {
         $controller = new MyController;
-        $controller->setDefaultSuccessMethod('mySuccess')->setDefaultErrorMethod('myError');
+        $controller->default_success_method = 'mySuccess';
+        $controller->default_error_method = 'myError';
 
         ob_start();
         $controller->dispatch();

@@ -13,8 +13,8 @@ final class TimeTest extends Base
 
         $this->assertEquals($time->get('0'), null);
         $this->assertEquals($time->get(''), null);
-        $this->assertEquals($time->get('2022-01-18 11:24:32'), '11:24:32');
-        $this->assertEquals($time->get('1642505072'), '11:24:32');
+        $this->assertEquals($time->get('2022-01-18 11:24:32'), '11:24:32 am');
+        $this->assertEquals($time->get('1642505072'), '11:24:32 am');
     }
 
     public function testGetMinutes()

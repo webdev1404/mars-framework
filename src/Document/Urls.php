@@ -123,10 +123,6 @@ abstract class Urls
         foreach ($urls as $url => $data) {
             $url = $this->getUrl($url, $data['version']);
 
-            if ($data['is_local']) {
-                $this->pushUrl($url);
-            }
-
             $this->outputUrl($url, $data['async'], $data['defer']);
         }
 

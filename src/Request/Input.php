@@ -45,6 +45,10 @@ abstract class Input
     {
         $value = $this->data[$name] ?? '';
         if (!$value) {
+            if ($filter) {
+                $default_value = $this->app->filter->value($default_value, $filter);
+            }
+
             return $default_value;
         }
         
