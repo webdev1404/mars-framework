@@ -22,17 +22,15 @@ final class UrlsTest extends Base
         $css = new Css($this->app);
         $css->load('https://mydomain/css/style-1.css', 'head', 100);
         $css->load('https://mydomain/css/style-2.css', 'head', 200);
-        $css->load('https://mydomain/css/style-3.css', 'first', 300);
 
         $this->assertSame($css->get(), [
-            'https://mydomain/css/style-3.css' => ['location' => 'first', 'priority' => 300, 'version' => true, 'async' => false, 'defer' => false, 'is_local' => false],
-            'https://mydomain/css/style-2.css' => ['location' => 'head', 'priority' => 200, 'version' => true, 'async' => false, 'defer' => false, 'is_local' => false],
-            'https://mydomain/css/style-1.css' => ['location' => 'head', 'priority' => 100, 'version' => true, 'async' => false, 'defer' => false, 'is_local' => false],
+            'https://mydomain/css/style-2.css' => ['location' => 'head', 'priority' => 200, 'version' => true, 'attributes' => [], 'is_local' => false],
+            'https://mydomain/css/style-1.css' => ['location' => 'head', 'priority' => 100, 'version' => true, 'attributes' => [], 'is_local' => false],
         ]);
 
         $this->assertSame($css->get('head'), [
-            'https://mydomain/css/style-2.css' => ['location' => 'head', 'priority' => 200, 'version' => true, 'async' => false, 'defer' => false, 'is_local' => false],
-            'https://mydomain/css/style-1.css' => ['location' => 'head', 'priority' => 100, 'version' => true, 'async' => false, 'defer' => false, 'is_local' => false],
+            'https://mydomain/css/style-2.css' => ['location' => 'head', 'priority' => 200, 'version' => true, 'attributes' => [], 'is_local' => false],
+            'https://mydomain/css/style-1.css' => ['location' => 'head', 'priority' => 100, 'version' => true, 'attributes' => [], 'is_local' => false],
         ]);
 
         $this->assertSame($css->get('invalidlocation'), []);
@@ -43,17 +41,15 @@ final class UrlsTest extends Base
         $js = new Javascript($this->app);
         $js->load('https://mydomain/js/script-1.css', 'head', 100);
         $js->load('https://mydomain/js/script-2.css', 'head', 200);
-        $js->load('https://mydomain/js/script-3.css', 'first', 300);
 
         $this->assertSame($js->get(), [
-            'https://mydomain/js/script-3.css' => ['location' => 'first', 'priority' => 300, 'version' => true, 'async' => false, 'defer' => false, 'is_local' => false],
-            'https://mydomain/js/script-2.css' => ['location' => 'head', 'priority' => 200, 'version' => true, 'async' => false, 'defer' => false, 'is_local' => false],
-            'https://mydomain/js/script-1.css' => ['location' => 'head', 'priority' => 100, 'version' => true, 'async' => false, 'defer' => false, 'is_local' => false],
+            'https://mydomain/js/script-2.css' => ['location' => 'head', 'priority' => 200, 'version' => true, 'attributes' => [], 'is_local' => false],
+            'https://mydomain/js/script-1.css' => ['location' => 'head', 'priority' => 100, 'version' => true, 'attributes' => [], 'is_local' => false],
         ]);
 
         $this->assertSame($js->get('head'), [
-            'https://mydomain/js/script-2.css' => ['location' => 'head', 'priority' => 200, 'version' => true, 'async' => false, 'defer' => false, 'is_local' => false],
-            'https://mydomain/js/script-1.css' => ['location' => 'head', 'priority' => 100, 'version' => true, 'async' => false, 'defer' => false, 'is_local' => false],
+            'https://mydomain/js/script-2.css' => ['location' => 'head', 'priority' => 200, 'version' => true, 'attributes' => [], 'is_local' => false],
+            'https://mydomain/js/script-1.css' => ['location' => 'head', 'priority' => 100, 'version' => true, 'attributes' => [], 'is_local' => false],
         ]);
 
         $this->assertSame($js->get('invalidlocation'), []);

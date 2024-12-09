@@ -27,59 +27,80 @@ abstract class Urls
     protected string $version = '';
 
     /**
+     * Outputs a preload url
+     * @param string $url The url to output
+     */
+    abstract public function outputPreloadUrl(string $url);
+
+    /**
      * Outputs an url
      * @param string $url The url to output
-     * @param bool $async If true, will apply the async attr
-     * @param bool $defer If true, will apply the defer attr
-     * @param bool $is_local True, if the url is a local url
+     * @param array $attributes The attributes of the url, if any
      */
-    abstract public function outputUrl(string $url, bool $async = false, bool $defer = false);
+    abstract public function outputUrl(string $url, array $attributes = []);
 
     /**
      * Loads an url
-     * @param string $url The url to load. Will only load it once, no matter how many times the function is called with the same url
-     * @param string $location The location of the url [first|head|footer]
+     * @param string|array $url(s) The url to load. Will only load it once, no matter how many times the function is called with the same url
+     * @param string $location The location of the url [head|footer]
      * @param int $priority The url's output priority. The higher, the better
      * @param bool|string $version If string, will add the specified version. If true, will add the configured version param to the url
-     * @param bool $async If true, will apply the async attr
-     * @param bool $defer If true, will apply the defer attr
+     * @param array $attributes The attributes of the url, if any
      * @return static
      */
-    public function load(string $url, string $location = 'head', int $priority = 100, $version = true, bool $async = false, bool $defer = false) : static
+    public function load(string|array $url, string $location = 'head', int $priority = 100, bool|string $version = true, array $attributes = []) : static
     {
-        $this->urls[$url] = [
-            'location' => $location, 
-            'priority' => $priority, 
-            'version' => $version,
-            'async' => $async, 
-            'defer' => $defer, 
-            'is_local' => $this->app->uri->isLocal($url)
-        ];
+        $urls = (array)$url;
+
+        foreach ($urls as $url) {
+            $this->urls[$url] = [
+                'location' => $location, 
+                'priority' => $priority, 
+                'version' => $version,
+                'attributes' => $attributes, 
+                'is_local' => $this->app->uri->isLocal($url)
+            ];
+        }
 
         return $this;
     }
 
     /**
-     * Unloads an url
-     * @param string $url The url to unload
+     * Unloads an url/urls
+     * @param string|array $url The url(s) to unload
      * @return static
      */
-    public function unload(string $url) : static
+    public function unload(string|array $url) : static
     {
-        if (!isset($this->urls[$url])) {
-            return $this;
-        }
+        $urls = (array)$url;
 
-        unset($this->urls[$url]);
+        foreach ($urls as $url) {
+            if (isset($this->urls[$url])) {
+                unset($this->urls[$url]);
+            }
+        }       
 
         return $this;
+    }
+
+    /**
+     * Preloads an url
+     * @param string|array $url The url(s) to preload
+     * @param bool|string $version If string, will add the specified version. If true, will add the configured version param to the url
+     * @return static
+     */
+    public function preload(string|array $url, bool|string $version = true) : static
+    {
+        return $this->load($url, 'preload', version: $version);
     }
 
     /**
      * Returns the list of urls
+     * @param string $location The location of the urls [head|footer]
+     * @param bool $sort If true, will sort the urls by priority
      * @return array
      */
-    public function get(string $location = '') : array
+    public function get(string $location = '', bool $sort = true) : array
     {
         if (!$location) {
             return $this->sort($this->urls);
@@ -93,7 +114,11 @@ abstract class Urls
             return false;
         });
 
-        return $this->sort($urls);
+        if ($sort) {
+            $urls = $this->sort($urls);
+        }
+
+        return $urls;
     }
 
     /**
@@ -113,7 +138,7 @@ abstract class Urls
 
     /**
      * Outputs the urls
-     * @param string $location The location of the url [first_head|footer]
+     * @param string $location The location of the url [head|footer]
      * @return static
      */
     public function output(string $location = 'head') : static
@@ -121,9 +146,18 @@ abstract class Urls
         $urls = $this->get($location);
 
         foreach ($urls as $url => $data) {
-            $url = $this->getUrl($url, $data['version']);
+            $this->outputUrl($this->getUrl($url, $data['version']), $data['attributes']);
+        }
 
-            $this->outputUrl($url, $data['async'], $data['defer']);
+        return $this;
+    }
+
+    public function outputPreload() : static
+    {
+        $urls = $this->get('preload', false);
+
+        foreach ($urls as $url => $data) {
+            $this->outputPreloadUrl($this->getUrl($url, $data['version']));
         }
 
         return $this;
@@ -146,5 +180,19 @@ abstract class Urls
         }
 
         return $this->app->uri->build($url, ['ver' => $version]);
+    }
+
+    /**
+     * Merges the attributes and returns the code
+     * @param array $attributes The attributes
+     * @return string
+     */
+    protected function getAttributes(array $attributes) : string
+    {
+        if (!$attributes) {
+            return '';
+        }
+
+        return ' ' . implode(' ', $attributes);
     }
 }

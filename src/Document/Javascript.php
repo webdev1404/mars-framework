@@ -8,7 +8,7 @@ namespace Mars\Document;
 
 /**
  * The Document's Javascript Urls Class
- * Class containing the javascript urls/stylesheets used by a document
+ * Class containing the javascript functionality used by a document
  */
 class Javascript extends Urls
 {
@@ -21,23 +21,32 @@ class Javascript extends Urls
     }
 
     /**
+     * @see \Mars\Document\Urls::outputPreloadUrl()
+     * {@inheritdoc}
+     */
+    public function outputPreloadUrl(string $url)
+    {
+        echo '<link rel="preload" href="' . $this->app->escape->html($url) . '" as="script" />' . "\n";
+    }
+
+    /**
      * @see \Mars\Document\Urls::outputUrl()
      * {@inheritdoc}
      */
-    public function outputUrl(string $url, bool $async = false, bool $defer = false)
+    public function outputUrl(string $url, array $attributes = [])
     {
-        $async_str = '';
-        $defer_str = '';
-        if ($async) {
-            $async_str = ' async';
-        }
-        if ($defer) {
-            $defer_str = ' defer';
-        }
+        echo '<script type="text/javascript" src="' . $this->app->escape->html($url) . '"' . $this->getAttributes($attributes) . '></script>' . "\n";
+    }
 
-        echo '<script type="text/javascript" src="' . $this->app->escape->html($url) . '"' . $async_str . $defer_str . '></script>' . "\n";
-
-        return $this;
+    /**
+     * Outputs the given javascript $code
+     * @param string $code The code to output
+     */
+    public function outputCode(string $code)
+    {
+        echo '<script type="text/javascript">' . "\n";
+        echo $code . "\n";
+        echo '</script>' . "\n";
     }
 
     /**

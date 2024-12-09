@@ -12,6 +12,9 @@ use Mars\LazyLoad\GhostTrait;
 use Mars\Templates;
 use Mars\Document\Css;
 use Mars\Document\Javascript;
+use Mars\Document\Fonts;
+use Mars\Document\Images;
+use Mars\Document\Meta;
 
 /**
  * The Theme Class
@@ -23,14 +26,37 @@ class Theme extends Extension
     /**
      * @var Css $css The css object
      */
-    #[LazyLoad]
-    public Css $css;
+    public Css $css {
+        get => $this->app->document->css;
+    }
 
     /**
      * @var Javascript $javascript The javascript object
      */
-    #[LazyLoad]
-    public Javascript $javascript;
+    public Javascript $javascript {
+        get => $this->app->document->javascript;
+    }
+
+    /**
+     * @var Fonts $fonts The fonts object
+     */
+    public Fonts $fonts {
+        get => $this->app->document->fonts;
+    }
+
+    /**
+     * @var Images $images The images object
+     */
+    public Images $images {
+        get => $this->app->document->images;
+    }
+
+    /**
+     * @var Meta $meta The meta object
+     */
+    public Meta $meta {
+        get => $this->app->document->meta;
+    }
 
     /**
      * @var string $header_template The template which will be used to render the header
@@ -431,11 +457,8 @@ class Theme extends Extension
         $this->outputMeta();
         $this->outputRss();
 
-        $this->outputCssUrls('first');
-        $this->outputCssUrls('head');
-
-        $this->outputJavascriptUrls('first');
-        $this->outputJavascriptUrls('head');
+        $this->outputPreload();
+        $this->outputUrls('head');
 
         $this->app->plugins->run('theme_output_head', $this);
     }
@@ -445,9 +468,7 @@ class Theme extends Extension
      */
     public function outputFooter()
     {
-        $this->outputCssUrls('footer');
-
-        $this->outputJavascriptUrls('footer');
+        $this->outputUrls('footer');
 
         $this->app->plugins->run('theme_output_footer', $this);
     }
@@ -489,18 +510,24 @@ class Theme extends Extension
     }
 
     /**
-     * Outputs javascript inline code
-     * @param string $code The js code to output
+     * Outputs the preload links
      */
-    public function outputJavascriptCode(string $code)
+    public function outputPreload()
     {
-        if (!$code) {
-            return;
-        }
+        $this->css->outputPreload();
+        $this->javascript->outputPreload();
+        $this->fonts->outputPreload();
+        $this->images->outputPreload();
+    }
 
-        echo '<script type="text/javascript">' . "\n";
-        echo $code . "\n";
-        echo '</script>' . "\n";
+    /**
+     * Outputs the css/js/fonts urls
+     * @param string $location The location of the urls: head|footer
+     */
+    public function outputUrls(string $location)
+    {
+        $this->css->output($location);
+        $this->javascript->output($location);
     }
 
     /**
@@ -509,59 +536,16 @@ class Theme extends Extension
      */
     public function outputCssCode(string $code)
     {
-        if (!$code) {
-            return;
-        }
-
-        echo '<style type="text/css">' . "\n";
-        echo $code . "\n";
-        echo '</style>' . "\n";
+        $this->css->outputCode($code);
     }
 
-    /**
-     * Outputs the loaded css files
-     * @param bool $location The location of the urls: head|footer
+        /**
+     * Outputs javascript inline code
+     * @param string $code The js code to output
      */
-    public function outputCssUrls(string $location)
+    public function outputJavascriptCode(string $code)
     {
-        $this->app->document->css->output($location);
-    }
-
-    /**
-     * Outputs the loaded javascript files
-     * @param bool $location The location of the urls: head|footer
-     */
-    public function outputJavascriptUrls(string $location)
-    {
-        $this->app->document->javascript->output($location);
-    }
-
-    /**
-     * Outputs the main css file
-     */
-    public function outputCssUrl()
-    {
-        if (!$this->css_output) {
-            return;
-        }
-
-        $url = $this->app->base_url_static . '/' . $this->css_file;
-
-        $this->app->css->outputUrl($url);
-    }
-
-    /**
-     * Outputs the main javascript file
-     */
-    public function outputJavascriptUrl()
-    {
-        if (!$this->javascript_output) {
-            return;
-        }
-
-        $url = $this->app->base_url_static . '/' . $this->javascript_file;
-
-        $this->app->javascript->outputUrl($url);
+        $this->javascript->outputCode($code);
     }
 
     /**
@@ -569,7 +553,7 @@ class Theme extends Extension
      */
     public function outputMeta()
     {
-        $this->app->document->meta->output();
+        $this->meta->output();
     }
 
     /**

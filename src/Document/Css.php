@@ -8,7 +8,7 @@ namespace Mars\Document;
 
 /**
  * The Document's Css Urls Class
- * Class containing the css urls/stylesheets used by a document
+ * Class containing the css functionality used by a document
  */
 class Css extends Urls
 {
@@ -21,13 +21,31 @@ class Css extends Urls
     }
 
     /**
+     * @see \Mars\Document\Urls::outputPreloadUrl()
+     * {@inheritdoc}
+     */
+    public function outputPreloadUrl(string $url)
+    {
+        echo '<link rel="preload" href="' . $this->app->escape->html($url) . '" as="style" />' . "\n";
+    }
+
+    /**
      * @see \Mars\Document\Urls::outputUrl()
      * {@inheritdoc}
      */
-    public function outputUrl(string $url, bool $async = false, bool $defer = false)
+    public function outputUrl(string $url, array $attributes = [])
     {
         echo '<link rel="stylesheet" type="text/css" href="' . $this->app->escape->html($url) . '" />' . "\n";
+    }
 
-        return $this;
+    /**
+     * Outputs the given css $code
+     * @param string $code The code to output
+     */
+    public function outputCode(string $code)
+    {
+        echo '<style type="text/css">' . "\n";
+        echo $code . "\n";
+        echo '</style>' . "\n";
     }
 }

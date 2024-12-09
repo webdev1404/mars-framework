@@ -9,6 +9,8 @@ namespace Mars;
 use Mars\App\InstanceTrait;
 use Mars\Document\Css;
 use Mars\Document\Javascript;
+use Mars\Document\Fonts;
+use Mars\Document\Images;
 use Mars\Document\Meta;
 use Mars\Document\Rss;
 use Mars\Document\Title;
@@ -34,6 +36,18 @@ class Document
      */
     #[LazyLoad]
     public Javascript $javascript;
+
+    /**
+     * @var Fonts $fonts The fonts object
+     */
+    #[LazyLoad]
+    public Fonts $fonts;
+
+    /**
+     * @var Images $images The images object
+     */
+    #[LazyLoad]
+    public Images $images;
 
     /**
      * @var Meta $meta The meta object

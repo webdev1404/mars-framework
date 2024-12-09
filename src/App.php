@@ -968,7 +968,7 @@ class App
     }
 
     /**
-     * Ends the output and sets $this->app->content
+     * Ends the output and sets $this-content
      */
     public function end()
     {
@@ -981,7 +981,7 @@ class App
         $this->plugins->run('app_end', $output);
 
         //cache the output, if required
-        if ($this->app->config->cache_page_enable) {
+        if ($this->config->cache_page_enable) {
             $this->cache->pages->store($output);
         }
         
