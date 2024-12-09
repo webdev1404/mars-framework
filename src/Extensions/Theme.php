@@ -10,11 +10,11 @@ use Mars\App;
 use Mars\LazyLoad;
 use Mars\LazyLoad\GhostTrait;
 use Mars\Templates;
+use Mars\Document;
 use Mars\Document\Css;
 use Mars\Document\Javascript;
 use Mars\Document\Fonts;
 use Mars\Document\Images;
-use Mars\Document\Meta;
 
 /**
  * The Theme Class
@@ -22,6 +22,13 @@ use Mars\Document\Meta;
 class Theme extends Extension
 {
     use GhostTrait;
+
+    /**
+     * @var Document $document The document object
+     */
+    public Document $document {
+        get => $this->app->document;
+    }
 
     /**
      * @var Css $css The css object
@@ -49,13 +56,6 @@ class Theme extends Extension
      */
     public Images $images {
         get => $this->app->document->images;
-    }
-
-    /**
-     * @var Meta $meta The meta object
-     */
-    public Meta $meta {
-        get => $this->app->document->meta;
     }
 
     /**
@@ -448,17 +448,19 @@ class Theme extends Extension
     /**************** OUTPUT METHODS *************************************/
 
     /**
+     * Outputs the language code
+     */
+    public function outputLangCode()
+    {
+        echo $this->app->escape->html($this->app->lang->code);
+    }
+
+    /**
      * Outputs code in the <head>
      */
     public function outputHead()
     {
-        $this->outputTitle();
-        $this->outputEncoding();
-        $this->outputMeta();
-        $this->outputRss();
-
-        $this->outputPreload();
-        $this->outputUrls('head');
+        $this->document->outputHead();
 
         $this->app->plugins->run('theme_output_head', $this);
     }
@@ -468,7 +470,7 @@ class Theme extends Extension
      */
     public function outputFooter()
     {
-        $this->outputUrls('footer');
+        $this->document->outputFooter();
 
         $this->app->plugins->run('theme_output_footer', $this);
     }
@@ -479,55 +481,6 @@ class Theme extends Extension
     public function outputContent()
     {
         echo $this->content;
-    }
-
-    /**
-     * Outputs the language code
-     */
-    public function outputLangCode()
-    {
-        echo $this->app->escape->html($this->app->lang->code);
-    }
-
-    /**
-     * Outputs the page encoding
-     */
-    public function outputEncoding()
-    {
-        echo '<meta charset="' . $this->app->escape->html($this->app->lang->encoding) . '" />' . "\n";
-    }
-
-    /**
-     * Outputs the title
-     */
-    public function outputTitle()
-    {
-        $title = $this->app->document->title->get();
-
-        $title = $this->app->plugins->filter('theme_output_title', $title);
-
-        echo '<title>' . $this->app->escape->html($title) . '</title>' . "\n";
-    }
-
-    /**
-     * Outputs the preload links
-     */
-    public function outputPreload()
-    {
-        $this->css->outputPreload();
-        $this->javascript->outputPreload();
-        $this->fonts->outputPreload();
-        $this->images->outputPreload();
-    }
-
-    /**
-     * Outputs the css/js/fonts urls
-     * @param string $location The location of the urls: head|footer
-     */
-    public function outputUrls(string $location)
-    {
-        $this->css->output($location);
-        $this->javascript->output($location);
     }
 
     /**
@@ -546,36 +499,7 @@ class Theme extends Extension
     public function outputJavascriptCode(string $code)
     {
         $this->javascript->outputCode($code);
-    }
-
-    /**
-     * Outputs the meta tags
-     */
-    public function outputMeta()
-    {
-        $this->meta->output();
-    }
-
-    /**
-     * Outputs the rss tags
-     */
-    public function outputRss()
-    {
-        $this->app->document->rss->output();
-    }
-
-    /**
-     * Outputs the favicon
-     * @param string $icon_url The url of the png icon
-     */
-    public function outputFavicon(string $icon_url = '')
-    {
-        if (!$icon_url) {
-            $icon_url = $this->app->base_url_static . '/' . 'favicon.png';
-        }
-
-        echo '<link rel="shortcut icon" type="image/png" href="' . $this->app->escape->html($icon_url) . '" />' . "\n";
-    }
+    }    
 
     /**
      * Outputs the execution time

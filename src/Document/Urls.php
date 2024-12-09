@@ -27,10 +27,9 @@ abstract class Urls
     protected string $version = '';
 
     /**
-     * Outputs a preload url
-     * @param string $url The url to output
+     * @var string $preload_type The type of the preload
      */
-    abstract public function outputPreloadUrl(string $url);
+    protected string $preload_type = '';
 
     /**
      * Outputs an url
@@ -139,28 +138,35 @@ abstract class Urls
     /**
      * Outputs the urls
      * @param string $location The location of the url [head|footer]
-     * @return static
      */
-    public function output(string $location = 'head') : static
+    public function output(string $location = 'head')
     {
         $urls = $this->get($location);
 
         foreach ($urls as $url => $data) {
             $this->outputUrl($this->getUrl($url, $data['version']), $data['attributes']);
         }
-
-        return $this;
     }
 
-    public function outputPreload() : static
+    /**
+     * Outputs the preload urls
+     */
+    public function outputPreload()
     {
         $urls = $this->get('preload', false);
 
         foreach ($urls as $url => $data) {
             $this->outputPreloadUrl($this->getUrl($url, $data['version']));
         }
+    }
 
-        return $this;
+    /**
+     * Outputs a preload url
+     * @param string $url The url to output
+     */
+    public function outputPreloadUrl(string $url)
+    {
+        echo '<link rel="preload" href="' . $this->app->escape->html($url) . '" as="'. $this->preload_type .'" />' . "\n";
     }
 
     /**
@@ -180,19 +186,5 @@ abstract class Urls
         }
 
         return $this->app->uri->build($url, ['ver' => $version]);
-    }
-
-    /**
-     * Merges the attributes and returns the code
-     * @param array $attributes The attributes
-     * @return string
-     */
-    protected function getAttributes(array $attributes) : string
-    {
-        if (!$attributes) {
-            return '';
-        }
-
-        return ' ' . implode(' ', $attributes);
     }
 }

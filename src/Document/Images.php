@@ -13,13 +13,10 @@ namespace Mars\Document;
 class Images extends Urls
 {
     /**
-     * @see \Mars\Document\Urls::outputPreloadUrl()
+     * @see \Mars\Document\Urls::$preload_type
      * {@inheritdoc}
      */
-    public function outputPreloadUrl(string $url)
-    {
-        echo '<link rel="preload" href="' . $this->app->escape->html($url) . '" as="image" />' . "\n";
-    }
+    protected string $preload_type = 'image';
 
     /**
      * Does nothing

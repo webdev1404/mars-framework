@@ -16,9 +16,8 @@ class Rss extends Tags
      * Outputs a rss tag
      * @param string $url The url of the rss file.
      * @param string $title The title of the feed
-     * @return static
      */
-    public function outputTag(string $url, string $title) : static
+    public function outputTag(string $url, string $title)
     {
         echo '<link rel="alternate" type="application/rss+xml" title="' . $this->app->escape->html($title) . '" href="' . $this->app->escape->html($url) . '">' . "\n";
 

@@ -81,6 +81,45 @@ class Html
     }
 
     /**
+     * Merges the attributes and returns the html code
+     * @param array $attributes The attributes in the format name => value
+     * @return string The attribute's html code
+     */
+    public function getAttributes(array $attributes) : string
+    {
+        if (!$attributes) {
+            return '';
+        }
+
+        $attributes_array = [];
+
+        foreach ($attributes as $name => $value) {
+            if (is_array($value)) {
+                //don't escape if $value is an array
+                $value = reset($value);
+            } else {
+                if (!is_bool($value)) {
+                    $value = $this->app->escape->html($value);
+                }
+            }
+
+            if ($value) {
+                if (is_bool($value)) {
+                    $attributes_array[] = $name;
+                } else {
+                    $attributes_array[] = $name . '="' . $value . '"';
+                }
+            }
+        }
+
+        if (!$attributes_array) {
+            return '';
+        }
+
+        return ' ' . implode(' ', $attributes_array);
+    }
+
+    /**
      * Creates an img tag
      * @param string $url The image's url
      * @param int $width The image's width
@@ -104,7 +143,7 @@ class Html
      */
     public function imgWH(int $width = 0, int $height = 0) : string
     {
-        return new Tag($this->app)->getAttributes(['width' => $width, 'height' => $height]);
+        return $this->getAttributes(['width' => $width, 'height' => $height]);
     }
 
     /**

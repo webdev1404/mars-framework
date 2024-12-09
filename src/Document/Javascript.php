@@ -21,13 +21,10 @@ class Javascript extends Urls
     }
 
     /**
-     * @see \Mars\Document\Urls::outputPreloadUrl()
+     * @see \Mars\Document\Urls::$preload_type
      * {@inheritdoc}
      */
-    public function outputPreloadUrl(string $url)
-    {
-        echo '<link rel="preload" href="' . $this->app->escape->html($url) . '" as="script" />' . "\n";
-    }
+    protected string $preload_type = 'script';
 
     /**
      * @see \Mars\Document\Urls::outputUrl()
@@ -35,7 +32,7 @@ class Javascript extends Urls
      */
     public function outputUrl(string $url, array $attributes = [])
     {
-        echo '<script type="text/javascript" src="' . $this->app->escape->html($url) . '"' . $this->getAttributes($attributes) . '></script>' . "\n";
+        echo '<script type="text/javascript" src="' . $this->app->escape->html($url) . '"' . $this->app->html->getAttributes($attributes) . '></script>' . "\n";
     }
 
     /**

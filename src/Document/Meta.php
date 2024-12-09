@@ -16,12 +16,9 @@ class Meta extends Tags
      * Outputs a meta tag
      * @param string $name The name of the meta tag
      * @param string $content The content of the meta tag
-     * @return static
      */
-    public function outputTag(string $name, string $content) : static
+    public function outputTag(string $name, string $content)
     {
         echo '<meta name="' . $this->app->escape->html($name) . '" content="' . $this->app->escape->html($content) . '">' . "\n";
-
-        return $this;
     }
 }

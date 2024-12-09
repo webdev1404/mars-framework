@@ -13,6 +13,8 @@ use Mars\Document\Fonts;
 use Mars\Document\Images;
 use Mars\Document\Meta;
 use Mars\Document\Rss;
+use Mars\Document\Encoding;
+use Mars\Document\Favicon;
 use Mars\Document\Title;
 use Mars\Lazyload\GhostTrait;
 
@@ -68,6 +70,28 @@ class Document
     public Title $title;
 
     /**
+     * @var Encoding $encoding The encoding object
+     */
+    #[LazyLoad]
+    public Encoding $encoding;
+
+    /**
+     * @var Favicon $favicon The favicon object
+     */
+    #[LazyLoad]
+    public Favicon $favicon;
+
+    /**
+     * @var array $preload_list The list with the items which can be preloaded
+     */
+    protected array $preload_list = ['css', 'javascript', 'fonts', 'images'];
+
+    /**
+     * @var array $urls_list The list with the items which have urls to be outputted
+     */
+    protected array $urls_list = ['css', 'javascript'];
+
+    /**
      * Builds the device object
      * @param App $app The app object
      */
@@ -76,5 +100,49 @@ class Document
         $this->lazyLoad($app);
 
         $this->app = $app;
+    }
+
+    /**
+     * Outputs the required head tags
+     */
+    public function outputHead()
+    {        
+        $this->title->output();
+        $this->encoding->output();
+        $this->favicon->output();
+        $this->meta->output();
+        $this->rss->output();
+
+        $this->outputPreload();
+        $this->outputUrls('head');
+    }
+
+    /**
+     * Outputs the required footer tags
+     */
+    public function outputFooter()
+    {
+        $this->outputUrls('footer');
+    }
+
+    /**
+     * Outputs the preload urls
+     */
+    protected function outputPreload()
+    {
+        foreach ($this->preload_list as $name) {
+            $this->$name->outputPreload();
+        }
+    }
+
+    /**
+     * Outputs the urls
+     * @param string $location The location of the url [head|footer]
+     */
+    protected function outputUrls(string $location)
+    {
+        foreach ($this->urls_list as $name) {
+            $this->$name->output($location);
+        }
     }
 }

@@ -27,14 +27,11 @@ abstract class Tags
 
     /**
      * Outputs the tags
-     * @return static
      */
-    public function output() : static
+    public function output()
     {
         foreach ($this->list as $name => $value) {
             $this->outputTag($name, $value);
         }
-
-        return $this;
     }
 }

@@ -44,7 +44,7 @@ class Tag implements TagInterface
      */
     public function open(array $attributes = []) : string
     {
-        $attributes = $this->getAttributes($attributes);
+        $attributes = $this->app->html->getAttributes($attributes);
 
         return "<{$this->tag}{$attributes}>" . $this->newline;
     }
@@ -64,7 +64,7 @@ class Tag implements TagInterface
      */
     public function html(string $text = '', array $attributes = [], array $properties = []) : string
     {
-        $attributes = $this->getAttributes($attributes);
+        $attributes = $this->app->html->getAttributes($attributes);
 
         if ($text) {
             $text = $this->escape ? $this->app->escape->html($text) : $text;
@@ -73,41 +73,6 @@ class Tag implements TagInterface
         } else {
             return "<{$this->tag}{$attributes}>" . $this->newline;
         }
-    }
-
-    /**
-     * Merges the attributes and returns the html code
-     * @param array $attributes The attributes in the format name => value
-     * @return string The attribute's html code
-     */
-    public function getAttributes(array $attributes) : string
-    {
-        $attributes_array = [];
-
-        foreach ($attributes as $name => $value) {
-            if (is_array($value)) {
-                //don't escape if $value is an array
-                $value = reset($value);
-            } else {
-                if (!is_bool($value)) {
-                    $value = $this->app->escape->html($value);
-                }
-            }
-
-            if ($value) {
-                if (is_bool($value)) {
-                    $attributes_array[] = $name;
-                } else {
-                    $attributes_array[] = $name . '="' . $value . '"';
-                }
-            }
-        }
-
-        if (!$attributes_array) {
-            return '';
-        }
-
-        return ' ' . implode(' ', $attributes_array);
     }
 
     /**
