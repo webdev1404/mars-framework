@@ -16,15 +16,15 @@ class Javascript extends Urls
      * @see \Mars\Document\Urls::$version
      * {@inheritdoc}
      */
-    protected string $version {
+    public protected(set) string $version {
         get => $this->app->config->javascript_version;
     }
 
     /**
-     * @see \Mars\Document\Urls::$preload_type
+     * @see \Mars\Document\Urls::$type
      * {@inheritdoc}
      */
-    protected string $preload_type = 'script';
+    public protected(set) string $type = 'script';
 
     /**
      * @see \Mars\Document\Urls::outputUrl()
@@ -53,7 +53,7 @@ class Javascript extends Urls
      */
     public function encode($data) : string
     {
-        return json_encode($data);
+        return $this->app->json->encode($data);
     }
 
     /**
@@ -63,6 +63,6 @@ class Javascript extends Urls
      */
     public function decode(string $data)
     {
-        return json_decode($data, true);
+        return $this->app->json->decode($data, true);
     }
 }

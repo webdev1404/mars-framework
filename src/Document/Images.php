@@ -13,10 +13,10 @@ namespace Mars\Document;
 class Images extends Urls
 {
     /**
-     * @see \Mars\Document\Urls::$preload_type
+     * @see \Mars\Document\Urls::$type
      * {@inheritdoc}
      */
-    protected string $preload_type = 'image';
+    public protected(set) string $type = 'image';
 
     /**
      * Does nothing

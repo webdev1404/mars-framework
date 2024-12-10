@@ -7,19 +7,22 @@
 namespace Mars\Document;
 
 /**
-* The Fonts Urls Class
+ * The Fonts Urls Class
  * Class containing the fonts functionality used by a document
  */
 class Fonts extends Urls
 {
     /**
-     * @see \Mars\Document\Urls::outputPreloadUrl()
+     * @see \Mars\Document\Urls::$type
      * {@inheritdoc}
      */
-    public function outputPreloadUrl(string $url)
-    {
-        echo '<link rel="preload" href="' . $this->app->escape->html($url) . '" as="font" crossorigin="anonymous" />' . "\n";
-    }
+    public protected(set) string $type = 'font';
+
+    /**
+     * @see \Mars\Document\Urls::$crossorigin
+     * {@inheritdoc}
+     */
+    public protected(set) string $crossorigin = 'anonymous';
 
     /**
      * Does nothing

@@ -13,7 +13,7 @@ namespace Mars\Time;
 class Time extends Base
 {
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     protected string $format {
         get => $this->app->lang->time_format;

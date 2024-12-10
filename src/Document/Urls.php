@@ -17,19 +17,24 @@ abstract class Urls
     use InstanceTrait;
 
     /**
-     * @var array $urls Array with all the urls to be outputed
-     */
-    protected array $urls = [];
-
-    /**
      * @var string $version The version to be applied to the urls
      */
-    protected string $version = '';
+    public protected(set) string $version = '';
 
     /**
-     * @var string $preload_type The type of the preload
+     * @var string $type The type of the preload
      */
-    protected string $preload_type = '';
+    public protected(set) string $type = '';
+
+    /**
+     * @var string $crossorigin The crossorigin attribute of the url
+     */
+    public protected(set) string $crossorigin = '';
+
+    /**
+     * @var array $urls Array with all the urls to be outputed
+     */
+    public protected(set) array $urls = [];
 
     /**
      * Outputs an url
@@ -41,23 +46,30 @@ abstract class Urls
     /**
      * Loads an url
      * @param string|array $url(s) The url to load. Will only load it once, no matter how many times the function is called with the same url
-     * @param string $location The location of the url [head|footer]
+     * @param string $type The type of the url [head|footer]
      * @param int $priority The url's output priority. The higher, the better
-     * @param bool|string $version If string, will add the specified version. If true, will add the configured version param to the url
+     * @param bool $early_hints If true, will output the url as an early hint
      * @param array $attributes The attributes of the url, if any
      * @return static
      */
-    public function load(string|array $url, string $location = 'head', int $priority = 100, bool|string $version = true, array $attributes = []) : static
+    public function load(string|array $url, string $type = 'head', int $priority = 100, bool $early_hints = false, array $attributes = []) : static
     {
         $urls = (array)$url;
 
         foreach ($urls as $url) {
-            $this->urls[$url] = [
-                'location' => $location, 
+            $full_url = $url;
+            if ($this->version && $this->app->uri->isLocal($url)) {                
+                $full_url = $this->app->uri->build($url, ['ver' => $this->version]);
+            }
+
+            if ($early_hints) {
+                //add the url as an 103 Early Hints header
+            }
+
+            $this->urls[$type][$url] = [
+                'url' => $full_url,
                 'priority' => $priority, 
-                'version' => $version,
                 'attributes' => $attributes, 
-                'is_local' => $this->app->uri->isLocal($url)
             ];
         }
 
@@ -74,8 +86,10 @@ abstract class Urls
         $urls = (array)$url;
 
         foreach ($urls as $url) {
-            if (isset($this->urls[$url])) {
-                unset($this->urls[$url]);
+            foreach ($this->urls as $type => $urls_array) {
+                if (isset($urls_array[$url])) {
+                    unset($this->urls[$type][$url]);
+                }
             }
         }       
 
@@ -85,33 +99,33 @@ abstract class Urls
     /**
      * Preloads an url
      * @param string|array $url The url(s) to preload
-     * @param bool|string $version If string, will add the specified version. If true, will add the configured version param to the url
      * @return static
      */
-    public function preload(string|array $url, bool|string $version = true) : static
+    public function preload(string|array $url) : static
     {
-        return $this->load($url, 'preload', version: $version);
+        return $this->load($url, 'preload');
     }
 
     /**
+     * Prefetches an url
+     * @param string|array $url The url(s) to prefetch
+     * @param bool|string $version If string, will add the specified version. If true, will add the configured version param to the url
+     * @return static
+     */
+    public function prefetch(string|array $url, bool|string $version = true) : static
+    {
+        return $this->load($url, 'prefetch');
+    }
+   
+    /**
      * Returns the list of urls
-     * @param string $location The location of the urls [head|footer]
+     * @param string $type The type of the url [head|footer]
      * @param bool $sort If true, will sort the urls by priority
      * @return array
      */
-    public function get(string $location = '', bool $sort = true) : array
+    public function get(string $type, bool $sort = true) : array
     {
-        if (!$location) {
-            return $this->sort($this->urls);
-        }
-
-        $urls = array_filter($this->urls, function ($url) use ($location) {
-            if ($url['location'] == $location) {
-                return true;
-            }
-
-            return false;
-        });
+        $urls = $this->urls[$type] ?? [];
 
         if ($sort) {
             $urls = $this->sort($urls);
@@ -137,54 +151,14 @@ abstract class Urls
 
     /**
      * Outputs the urls
-     * @param string $location The location of the url [head|footer]
+     * @param string $type The type of the url [head|footer]
      */
-    public function output(string $location = 'head')
+    public function output(string $type)
     {
-        $urls = $this->get($location);
+        $urls = $this->get($type);
 
         foreach ($urls as $url => $data) {
-            $this->outputUrl($this->getUrl($url, $data['version']), $data['attributes']);
+            $this->outputUrl($data['url'], $data['attributes']);
         }
-    }
-
-    /**
-     * Outputs the preload urls
-     */
-    public function outputPreload()
-    {
-        $urls = $this->get('preload', false);
-
-        foreach ($urls as $url => $data) {
-            $this->outputPreloadUrl($this->getUrl($url, $data['version']));
-        }
-    }
-
-    /**
-     * Outputs a preload url
-     * @param string $url The url to output
-     */
-    public function outputPreloadUrl(string $url)
-    {
-        echo '<link rel="preload" href="' . $this->app->escape->html($url) . '" as="'. $this->preload_type .'" />' . "\n";
-    }
-
-    /**
-     * Returns an url with the version appended, if required
-     * @param string $url The url to append the version to
-     * @param bool|string $version If string, will add the specified version. If true, will add the configured version param to the url
-     * @return string The url
-     */
-    public function getUrl(string $url, bool|string $version = true) : string
-    {
-        if (!$version) {
-            return $url;
-        }
-
-        if (is_bool($version)) {
-            $version = $this->version;
-        }
-
-        return $this->app->uri->build($url, ['ver' => $version]);
     }
 }

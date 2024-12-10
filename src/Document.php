@@ -9,6 +9,9 @@ namespace Mars;
 use Mars\App\InstanceTrait;
 use Mars\Document\Css;
 use Mars\Document\Javascript;
+use Mars\Document\Preload;
+use Mars\Document\Prefetch;
+use Mars\Document\Preconnect;
 use Mars\Document\Fonts;
 use Mars\Document\Images;
 use Mars\Document\Meta;
@@ -52,6 +55,24 @@ class Document
     public Images $images;
 
     /**
+     * @var Preload $preload The preload object
+     */
+    #[LazyLoad]
+    public Preload $preload;
+
+    /**
+     * @var Prefetch $prefetch The prefetch object
+     */
+    #[LazyLoad]
+    public Prefetch $prefetch;
+
+    /**
+     * @var Preconnect $preconnect The preconnect object
+     */
+    #[LazyLoad]
+    public Preconnect $preconnect;
+
+    /**
      * @var Meta $meta The meta object
      */
     #[LazyLoad]
@@ -79,12 +100,7 @@ class Document
      * @var Favicon $favicon The favicon object
      */
     #[LazyLoad]
-    public Favicon $favicon;
-
-    /**
-     * @var array $preload_list The list with the items which can be preloaded
-     */
-    protected array $preload_list = ['css', 'javascript', 'fonts', 'images'];
+    public Favicon $favicon;    
 
     /**
      * @var array $urls_list The list with the items which have urls to be outputted
@@ -113,7 +129,10 @@ class Document
         $this->meta->output();
         $this->rss->output();
 
-        $this->outputPreload();
+        $this->preload->output();
+        $this->prefetch->output();
+        $this->preconnect->output();
+        
         $this->outputUrls('head');
     }
 
@@ -123,16 +142,6 @@ class Document
     public function outputFooter()
     {
         $this->outputUrls('footer');
-    }
-
-    /**
-     * Outputs the preload urls
-     */
-    protected function outputPreload()
-    {
-        foreach ($this->preload_list as $name) {
-            $this->$name->outputPreload();
-        }
     }
 
     /**

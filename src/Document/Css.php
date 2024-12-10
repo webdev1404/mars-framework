@@ -16,15 +16,15 @@ class Css extends Urls
      * @see \Mars\Document\Urls::$version
      * {@inheritdoc}
      */
-    protected string $version {
+    public protected(set) string $version {
         get => $this->app->config->css_version;
     }
 
     /**
-     * @see \Mars\Document\Urls::$preload_type
+     * @see \Mars\Document\Urls::$type
      * {@inheritdoc}
      */
-    protected string $preload_type = 'style';
+    public protected(set) string $type = 'style';
 
     /**
      * @see \Mars\Document\Urls::outputUrl()

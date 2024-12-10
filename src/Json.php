@@ -33,15 +33,16 @@ class Json
     /**
      * Decodes a string
      * @param string $string The string to decode
+     * @param bool $associative If true, the returned data will be an associative array
      * @return mixed The decoded data
      */
-    public function decode(string $string)
+    public function decode(string $string, ?bool $associative = true)
     {
         if (!$string) {
             return '';
         }
 
-        return json_decode($string, true, 512, JSON_THROW_ON_ERROR);
+        return json_decode($string, $associative, 512, JSON_THROW_ON_ERROR);
     }
 
     public function validate(string $string) : bool
