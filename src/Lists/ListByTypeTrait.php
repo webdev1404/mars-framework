@@ -23,7 +23,7 @@ trait ListByTypeTrait
      */
     public function exists(string $value) : bool
     {
-        foreach ($this->list as $type => $values) {
+        foreach ($this->{static::$property} as $type => $values) {
             if (array_search($value, $values) !== false) {
                 return true;
             }
@@ -39,10 +39,10 @@ trait ListByTypeTrait
     public function get(string $type = '') : array
     {
         if ($type) {
-            return $this->list[$type] ?? [];
+            return $this->{static::$property}[$type] ?? [];
         }
 
-        return $this->list;
+        return $this->{static::$property};
     }
 
     /**
@@ -55,7 +55,7 @@ trait ListByTypeTrait
     {
         $values = (array)$values;
 
-        $this->list[$type] = array_merge($this->list[$type] ?? [], $values);
+        $this->{static::$property}[$type] = array_merge($this->{static::$property}[$type] ?? [], $values);
 
         return $this;
     }
@@ -69,14 +69,14 @@ trait ListByTypeTrait
     public function remove(string|array $values, string $type = '') : static
     {
         if ($type) {
-            $this->list[$type] = App::remove($this->list[$type] ?? [], $values);
+            $this->{static::$property}[$type] = App::remove($this->{static::$property}[$type] ?? [], $values);
 
             return $this;
         }
 
 
-        foreach ($this->list as $key => $list_values) {
-            $this->list[$key] = App::remove($list_values, $values);
+        foreach ($this->{static::$property} as $key => $list_values) {
+            $this->{static::$property}[$key] = App::remove($list_values, $values);
         }
 
         return $this;
@@ -89,7 +89,7 @@ trait ListByTypeTrait
     public function count() : int
     {
         $count = 0;
-        foreach ($this->list as $values) {
+        foreach ($this->{static::$property} as $values) {
             $count += count($values);
         }
 
@@ -101,6 +101,6 @@ trait ListByTypeTrait
      */
     public function getIterator() : \Traversable
     {
-        return new \RecursiveArrayIterator($this->list);
+        return new \RecursiveArrayIterator($this->{static::$property});
     }
 }

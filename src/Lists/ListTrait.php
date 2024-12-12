@@ -21,7 +21,7 @@ trait ListTrait
      */
     public function exists(string $name) : bool
     {
-        return isset($this->list[$name]);
+        return isset($this->{static::$property}[$name]);
     }
 
     /**
@@ -31,10 +31,10 @@ trait ListTrait
     public function get(string $name = '')
     {
         if (!$name) {
-            return $this->list;
+            return $this->{static::$property};
         }
 
-        return $this->list[$name] ?? null;
+        return $this->{static::$property}[$name] ?? null;
     }
 
     /**
@@ -45,7 +45,7 @@ trait ListTrait
      */
     public function add(string $name, string $value) : static
     {
-        $this->list[$name] = $value;
+        $this->{static::$property}[$name] = $value;
 
         return $this;
     }
@@ -57,7 +57,7 @@ trait ListTrait
      */
     public function set(array $list) : static
     {
-        $this->list = $list;
+        $this->{static::$property} = $list;
         
         return $this;
     }
@@ -69,8 +69,8 @@ trait ListTrait
      */
     public function remove(string $name) : static
     {
-        if (isset($this->list[$name])) {
-            unset($this->list[$name]);
+        if (isset($this->{static::$property}[$name])) {
+            unset($this->{static::$property}[$name]);
         }
 
         return $this;

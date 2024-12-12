@@ -11,13 +11,14 @@ use Mars\App;
 /**
  * The List Trait
  * Encapsulates a simple list
+ * The 'protected static string $property' property must be defined in the class using this trait
  */
 trait ListSimpleTrait
 {
     /**
-     * @var array $list The list of elements
+     * The name of the property which holds the list
      */
-    public protected(set) array $list = [];
+    //protected static string $property = 'list';
 
     /**
      * Check if a specific element exists in the list.
@@ -26,7 +27,11 @@ trait ListSimpleTrait
      */
     public function exists(string $value) : bool
     {
-        return array_search($value, $this->list);
+         if (array_search($value, $this->{static::$property}) === false) {
+             return false;
+         }
+
+        return true;
     }
 
     /**
@@ -34,7 +39,33 @@ trait ListSimpleTrait
      */
     public function get() : array
     {
-        return $this->list;
+        return $this->{static::$property};
+    }
+
+     /**
+     * Returns the first element
+     * @return string The alert
+     */
+    public function getFirst()
+    {
+        if (!$this->{static::$property}) {
+            return '';
+        }
+
+        return reset($this->{static::$property});
+    }
+
+     /**
+     * Returns the last element
+     * @return string The alert
+     */
+    public function getLast()
+    {
+        if (!$this->{static::$property}) {
+            return '';
+        }
+
+        return end($this->{static::$property});
     }
 
     /**
@@ -46,7 +77,7 @@ trait ListSimpleTrait
     {
         $values = (array)$values;
 
-        $this->list = array_merge($this->list, $values);
+        $this->{static::$property} = array_merge($this->{static::$property}, $values);
 
         return $this;
     }
@@ -60,7 +91,18 @@ trait ListSimpleTrait
     {
         $values = (array)$values;
 
-        $this->list = $values;
+        $this->{static::$property} = $values;
+
+        return $this;
+    }
+
+    /**
+     * Resets the list
+     * @return static
+     */
+    public function reset() : static
+    {
+        $this->{static::$property} = [];
 
         return $this;
     }
@@ -72,7 +114,7 @@ trait ListSimpleTrait
      */
     public function remove(string|array $values) : static
     {
-        $this->list = App::remove($this->list, $values);
+        $this->{static::$property} = App::remove($this->{static::$property}, $values);
 
         return $this;
     }
@@ -83,7 +125,7 @@ trait ListSimpleTrait
      */
     public function count() : int
     {
-        return count($this->list);
+        return count($this->{static::$property});
     }
 
     /**
@@ -91,6 +133,6 @@ trait ListSimpleTrait
      */
     public function getIterator() : \Traversable
     {
-        return new \ArrayIterator($this->list);
+        return new \ArrayIterator($this->{static::$property});
     }
 }

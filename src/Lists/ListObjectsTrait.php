@@ -56,11 +56,11 @@ trait ListObjectsTrait
         if ($this->store && isset($this->objects[$name])) {
             return $this->objects[$name];
         }
-        if (!isset($this->list[$name])) {
+        if (!isset($this->{static::$property}[$name])) {
             throw new \Exception("Unknown object '{$name}'");
         }
   
-        $object = App::getObject($this->list[$name], ...$args);
+        $object = App::getObject($this->{static::$property}[$name], ...$args);
 
         if ($this->interface_name) {
             if (!$object instanceof $this->interface_name) {
@@ -85,7 +85,7 @@ trait ListObjectsTrait
             return $this->objects;
         }
 
-        foreach ($this->list as $name => $class) {
+        foreach ($this->{static::$property} as $name => $class) {
             $this->get($name);
         }
 

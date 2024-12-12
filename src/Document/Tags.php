@@ -19,6 +19,16 @@ abstract class Tags implements \Countable, \IteratorAggregate
     use ListTrait;
 
     /**
+     * @var array $list The list of tags
+     */
+    protected array $list = [];
+    
+    /**
+     * @internal
+     */
+    protected static string $property = 'list';
+
+    /**
      * Outputs a tag
      * @param string $name The name of the tag
      * @param string $value The value of the tag

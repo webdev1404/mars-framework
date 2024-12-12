@@ -37,6 +37,16 @@ class Headers
     public protected(set) CSP $csp;
 
     /**
+     * @var array $list The list of headers
+     */
+    protected array $list = [];
+    
+    /**
+     * @internal
+     */
+    protected static string $property = 'list';
+
+    /**
      * Builds the Cookie Request object
      * @param App $app The app object
      */

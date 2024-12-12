@@ -25,6 +25,16 @@ class Preload
     protected array $allowed_types = ['script', 'style', 'font', 'image'];
 
     /**
+     * @var array $urls Array with all the urls to preload
+     */
+    protected array $urls = [];
+
+    /**
+     * @internal
+     */
+    protected static string $property = 'urls';
+
+    /**
      * Sends the Preload headers
      */
     public function send()

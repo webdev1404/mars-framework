@@ -19,11 +19,21 @@ class Preconnect
     use ListSimpleTrait;
 
     /**
+     * @var array $urls Array with all the urls to preload
+     */
+    protected array $urls = [];
+
+    /**
+     * @internal
+     */
+    protected static string $property = 'urls';
+
+    /**
      * Sends the Preconnect headers
      */
     public function send()
     {
-        foreach ($this->list as $url) {
+        foreach ($this->urls as $url) {
             header("Link: <{$url}>; rel=preconnect", false);
         }
     }

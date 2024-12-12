@@ -8,7 +8,7 @@ namespace Mars\Alerts;
 
 use Mars\App;
 use Mars\App\InstanceTrait;
-use Traversable;
+use Mars\Lists\ListSimpleTrait;
 
 /**
  * The Alerts Class
@@ -18,6 +18,9 @@ use Traversable;
 abstract class Alerts implements \Countable, \IteratorAggregate
 {
     use InstanceTrait;
+    use ListSimpleTrait {
+        ListSimpleTrait::add as listAdd;
+    }
     
     /**
      * @var array $alerts Array with all the generated alerts
@@ -25,83 +28,33 @@ abstract class Alerts implements \Countable, \IteratorAggregate
     protected array $alerts = [];
 
     /**
-     * Returns the iterator
-     * @return \Iterator
+     * @internal
      */
-    public function getIterator(): \Iterator
-    {
-        return new \ArrayIterator($this->alerts);
-    }
-
-    /**
-     * Returns the count of generated alerts
-     * @return int
-     */
-    public function count() : int
-    {
-        return count($this->alerts);
-    }
-
-    /**
-     * Returns the generated alerts
-     * @return array The alerts
-     */
-    public function get() : array
-    {
-        return $this->alerts;
-    }
-
-    /**
-     * Returns the first generated alert
-     * @return string The alert
-     */
-    public function getFirst()
-    {
-        if (!$this->alerts) {
-            return '';
-        }
-
-        return reset($this->alerts);
-    }
+    protected static string $property = 'alerts';
 
     /**
      * Adds an alert or multiple alerts to the alerts list.
-     * @param string|array|Alerts $alert The alert text
+     * @param string|array|Alerts $alerts The alert(s) text
      * @return static
      */
-    public function add(string|array|Alerts $alert) : static
+    public function add(string|array|Alerts $alerts) : static
     {
-        if ($alert instanceof Alerts) {
-            $alerts = $alert->get();
-        } else {
-            $alerts = (array)$alert;
+        if ($alerts instanceof Alerts) {
+            $alerts = $alerts->get();
         }
-
-        foreach ($alerts as $text) {
-            $this->alerts[] = $text;
-        }
+        
+        $this->listAdd($alerts);
 
         return $this;
     }
 
     /**
      * Resets the current alerts then adds the new alerts
-     * @param string|array $alert The alert text
+     * @param string|array|Alerts $alert The alert text
      * @return static
      */
-    public function set(string|array $alert) : static
+    public function set(string|array|Alerts $alert) : static
     {
         return $this->reset()->add($alert);
-    }
-
-    /**
-     * Deletes the currently generated errors
-     * @return static
-     */
-    public function reset() : static
-    {
-        $this->alerts = [];
-
-        return $this;
-    }
+    }   
 }

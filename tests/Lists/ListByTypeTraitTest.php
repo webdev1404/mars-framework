@@ -3,58 +3,74 @@ use Mars\Lists\ListByTypeTrait;
 
 include_once(dirname(__DIR__) . '/Base.php');
 
-class ListByTypeTraitTest extends TestCase
+class ElementsByType
 {
     use ListByTypeTrait;
 
+    protected static string $property = 'list';
+    protected array $list = [];
+}
+
+class ListByTypeTraitTest extends Base
+{
     public function testAddAndExists()
     {
-        $this->add('type1', 'value1');
-        $this->assertTrue($this->exists('value1'));
-        $this->assertFalse($this->exists('value2'));
+        $elements = new ElementsByType;
 
-        $this->add('type1', ['value2', 'value3']);
-        $this->assertTrue($this->exists('value2'));
-        $this->assertTrue($this->exists('value3'));
+        $elements->add('type1', 'value1');
+        $this->assertTrue($elements->exists('value1'));
+        $this->assertFalse($elements->exists('value2'));
+
+        $elements->add('type1', ['value2', 'value3']);
+        $this->assertTrue($elements->exists('value2'));
+        $this->assertTrue($elements->exists('value3'));
     }
 
     public function testGet()
     {
-        $this->add('type1', 'value1');
-        $this->add('type2', ['value2', 'value3']);
+        $elements = new ElementsByType;
 
-        $this->assertEquals(['value1'], $this->get('type1'));
-        $this->assertEquals(['value2', 'value3'], $this->get('type2'));
-        $this->assertEquals(['type1' => ['value1'], 'type2' => ['value2', 'value3']], $this->get());
+        $elements->add('type1', 'value1');
+        $elements->add('type2', ['value2', 'value3']);
+
+        $this->assertEquals(['value1'], $elements->get('type1'));
+        $this->assertEquals(['value2', 'value3'], $elements->get('type2'));
+        $this->assertEquals(['type1' => ['value1'], 'type2' => ['value2', 'value3']], $elements->get());
     }
 
     public function testRemove()
     {
-        $this->add('type1', ['value1', 'value2']);
-        $this->remove('value1', 'type1');
-        $this->assertFalse($this->exists('value1'));
-        $this->assertTrue($this->exists('value2'));
+        $elements = new ElementsByType;
 
-        $this->add('type2', ['value3', 'value4']);
-        $this->remove(['value2', 'value3']);
-        $this->assertFalse($this->exists('value2'));
-        $this->assertFalse($this->exists('value3'));
-        $this->assertTrue($this->exists('value4'));
+        $elements->add('type1', ['value1', 'value2']);
+        $elements->remove('value1', 'type1');
+        $this->assertFalse($elements->exists('value1'));
+        $this->assertTrue($elements->exists('value2'));
+
+        $elements->add('type2', ['value3', 'value4']);
+        $elements->remove(['value2', 'value3']);
+        $this->assertFalse($elements->exists('value2'));
+        $this->assertFalse($elements->exists('value3'));
+        $this->assertTrue($elements->exists('value4'));
     }
 
     public function testCount()
     {
-        $this->add('type1', 'value1');
-        $this->add('type2', ['value2', 'value3']);
-        $this->assertEquals(2, $this->count());
+        $elements = new ElementsByType;
+
+        $elements->add('type1', 'value1');
+        $elements->add('type2', ['value2', 'value3']);
+        $this->assertEquals(3, $elements->count());
     }
 
     public function testGetIterator()
     {
-        $this->add('type1', 'value1');
-        $this->add('type2', ['value2', 'value3']);
+        $elements = new ElementsByType;
+        
+        $elements->add('type1', 'value1');
+        $elements->add('type2', ['value2', 'value3']);
 
-        $iterator = $this->getIterator();
+        $iterator = $elements->getIterator();
         $this->assertInstanceOf(\RecursiveArrayIterator::class, $iterator);
         $this->assertEquals(['type1' => ['value1'], 'type2' => ['value2', 'value3']], iterator_to_array($iterator));
     }

@@ -19,6 +19,16 @@ class Preload
     use ListSimpleTrait;
 
     /**
+     * @var array $urls Array with all the urls to preload
+     */
+    protected array $urls = [];
+
+    /**
+     * @internal
+     */
+    protected static string $property = 'urls';
+
+    /**
      * Loads the urls to be preloaded
      * @param string|array $urls The urls to preload
      * @param string $type The type of the preload

@@ -24,6 +24,16 @@ class Handlers
     public ?string $interface_name = '';
 
     /**
+     * @var array $list The list of tags
+     */
+    protected array $list = [];
+    
+    /**
+     * @internal
+     */
+    protected static string $property = 'list';
+
+    /**
      * Builds the handler object
      * @param array $list The list of supported handlers
      * @param string $interface_name The interface the handlers must implement, if any

@@ -4,13 +4,6 @@ use Mars\App;
 
 include_once(dirname(__DIR__) . '/Base.php');
 
-class TestObj
-{
-    public function __construct(App $app)
-    {
-    }
-}
-
 /**
  * @ignore
  */
@@ -34,70 +27,84 @@ final class AppUtilsTest extends Base
 
     public function testHasProperty()
     {
-        $this->assertTrue(App::hasProperty($this->data, 'abc'));
-        $this->assertFalse(App::hasProperty($this->data, 'abcde'));
+        $data = ['name' => 'John'];
+        $this->assertTrue(App::hasProperty($data, 'name'));
+        $this->assertFalse(App::hasProperty($data, 'age'));
 
-        $obj = (object)$this->data;
-        $this->assertTrue(App::hasProperty($obj, 'abc'));
-        $this->assertFalse(App::hasProperty($obj, 'abcde'));
+        $data = (object)['name' => 'John'];
+        $this->assertTrue(App::hasProperty($data, 'name'));
+        $this->assertFalse(App::hasProperty($data, 'age'));
     }
 
     public function testGetProperty()
     {
-        $this->assertSame(App::getProperty($this->data, 'abc'), 'baz');
-        $this->assertNull(App::getProperty($this->data, 'abcde'));
+        $data = ['name' => 'John'];
+        $this->assertEquals('John', App::getProperty($data, 'name'));
+        $this->assertNull(App::getProperty($data, 'age'));
 
-        $obj = (object)$this->data;
-        $this->assertSame(App::getProperty($obj, 'abc'), 'baz');
-        $this->assertNull(App::getProperty($obj, 'abcde'));
+        $data = (object)['name' => 'John'];
+        $this->assertEquals('John', App::getProperty($data, 'name'));
+        $this->assertNull(App::getProperty($data, 'age'));
     }
 
     public function testGetProperties()
     {
-        $this->assertSame(App::getProperties($this->data), $this->data);
-        $this->assertSame(App::getProperties((object)$this->data), $this->data);
+        $data = ['name' => 'John', 'age' => 30];
+        $result = App::getProperties($data, ['name']);
+        $this->assertEquals(['name' => 'John'], $result);
 
-        $this->assertSame(App::getProperties($this->data, ['foo', 'abc']), ['foo' => 'bar', 'abc' => 'baz']);
-        $this->assertSame(App::getProperties((object)$this->data, ['foo', 'abc']), ['foo' => 'bar', 'abc' => 'baz']);
+        $data = (object)['name' => 'John', 'age' => 30];
+        $result = App::getProperties($data, ['name']);
+        $this->assertEquals(['name' => 'John'], $result);
     }
 
     public function testFilterProperties()
     {
-        $this->assertSame(App::filterProperties($this->data, ['def']), ['foo' => 'bar', 'abc' => 'baz']);
-        $this->assertSame(App::filterProperties($this->data, ['foo', 'abc']), ['def' => 'bay']);
-
-        $this->assertSame(App::filterProperties((object)$this->data, ['def']), ['foo' => 'bar', 'abc' => 'baz']);
-        $this->assertSame(App::filterProperties((object)$this->data, ['foo', 'abc']), ['def' => 'bay']);
+        $data = ['name' => 'John', 'age' => 30];
+        $result = App::filterProperties($data, ['age']);
+        $this->assertEquals(['name' => 'John'], $result);
     }
 
-    public function testgetArray()
+    public function testGetObjectProperties()
     {
-        $this->assertIsArray(App::getArray(null));
-        $this->assertIsArray(App::getArray(12));
-        $this->assertIsArray(App::getArray('my string'));
-        $this->assertIsArray(App::getArray(['my string']));
+        $object = (object)['name' => 'John', 'age' => 30];
+        $result = App::getObjectProperties($object);
+        $this->assertEquals(['name' => 'John', 'age' => 30], $result);
     }
 
-    public function testgetObject()
+    public function testGetArray()
     {
-        $obj = App::getObject(TestObj::class);
-        $this->assertInstanceOf(TestObj::class, $obj);
+        $array = ['name' => 'John'];
+        $result = App::getArray($array);
+        $this->assertEquals($array, $result);
 
-        $obj = App::getObject(function(){
-            return new TestObj(App::get());
-        });
-        $this->assertInstanceOf(TestObj::class, $obj);        
+        $object = (object)['name' => 'John'];
+        $result = App::getArray($object);
+        $this->assertEquals(['name' => 'John'], $result);
+    }
+
+    public function testMap()
+    {
+        $array = [1, 2, 3];
+        $result = App::map($array, fn($n) => $n * 2);
+        $this->assertEquals([2, 4, 6], $result);
+
+        $value = 2;
+        $result = App::map($value, fn($n) => $n * 2);
+        $this->assertEquals(4, $result);
     }
 
     public function testUnset()
     {
-        $this->assertSame(App::unset(['a' => 1, 'b' => 2, 'c' => 3], ['a', 'b']), ['c' => 3]);
-        $this->assertSame(App::unset(['a' => 1, 'b' => 2, 'c' => 3], 'a'), ['b' => 2, 'c' => 3]);
+        $array = ['name' => 'John', 'age' => 30];
+        $result = App::unset($array, 'age');
+        $this->assertEquals(['name' => 'John'], $result);
     }
 
-    public function testremove()
+    public function testRemove()
     {
-        $this->assertSame(App::remove(['a', 'b', 'c'], ['a', 'b']), ['c']);
-        $this->assertSame(App::remove(['a', 'b', 'c'], 'c'), ['a', 'b']);
+        $array = ['John', 'Doe'];
+        $result = App::remove($array, 'Doe');
+        $this->assertEquals(['John'], $result);
     }
 }

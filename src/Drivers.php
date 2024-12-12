@@ -29,6 +29,16 @@ class Drivers implements \Countable, \IteratorAggregate
     protected string $config_key = '';
 
     /**
+     * @var array $list The list of tags
+     */
+    protected array $list = [];
+    
+    /**
+     * @internal
+     */
+    protected static string $property = 'list';
+
+    /**
      * Builds the driver object
      * @param array $list The list of supported drivers
      * @param string $interface_name The interface the driver must implement
