@@ -45,12 +45,11 @@ class Preload
      * @param string $type The type of the url [css|javascript|fonts|images]
      * @param string|array $url The url(s) to load
      * @param int $priority The url's output priority. The higher, the better
-     * @param bool $early_hints If true, will output the url as an early hint
      * @param array $attributes The attributes of the url, if any
      * @return static
      * @throws \Exception
      */
-    public function load(string $type, string|array $url, int $priority = 100, bool $early_hints = false, array $attributes = []) : static
+    public function load(string $type, string|array $url) : static
     {
         if (!isset($this->types[$type])) {
             throw new \Exception("Invalid preload type: {$type} for url {$url}");
@@ -58,7 +57,7 @@ class Preload
 
         $item = $this->types[$type];
 
-        $this->app->document->$item->load($url, $this->rel, $priority, $early_hints, $attributes);
+        $this->app->document->$item->preload($url);
 
         return $this;
     }
@@ -78,7 +77,7 @@ class Preload
 
         $item = $this->types[$type];
 
-        $this->app->document->$item->unload($url);
+        $this->app->document->$item->unloadPreload($url);
 
         return $this;
     }
@@ -88,13 +87,12 @@ class Preload
      */
     public function output()
     {
+        $rel = $this->rel;
         foreach ($this->list as $item) {
             $obj = $this->app->document->$item;
 
-            $urls = $obj->get($this->rel);
-            
-            foreach ($urls as $url) {
-                $this->outputUrl($obj, $url['url']);
+            foreach ($obj->$rel->get() as $url) {
+                $this->outputUrl($obj, $url);
             }
         }
     }

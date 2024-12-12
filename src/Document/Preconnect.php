@@ -6,35 +6,45 @@
 
 namespace Mars\Document;
 
+use Mars\App;
+use Mars\Document\Urls\Preload;
+
 /**
  * The Preconnect Urls Class
  * Class containing the preconnect functionality used by a document
  */
-class Preconnect extends Urls
+class Preconnect extends Preload
 {
     /**
-     * @see \Mars\Document\Urls::load()
-     * {@inheritdoc}
+     * Builds the preconnect object
+     * @param App $app The app object
      */
-    public function load(string|array $url, string $type = 'head', int $priority = 100, bool $early_hints = false, array $attributes = []) : static
+    public function __construct(App $app)
     {
-        return parent::load($url, 'preconnect', $priority, false, $attributes);
+        $this->app = $app;
+
+        $urls = $this->app->config->preconnect ?? [];
+        if ($urls) {
+            $this->load($urls);
+        }
     }
 
     /**
-     * @see \Mars\Document\Urls::output()
-     * {@inheritdoc}
+     * Outputs the preconnect urls
      */
-    public function output(string $type = '')
+    public function output()
     {
-        parent::output('preconnect');
+        foreach ($this->list as $url) {
+            $this->outputUrl($url);
+        }
     }
 
     /**
-     * Does nothing
+     * Outputs a preconnect url
+     * @param string $url The url to output
      */
-    public function outputUrl(string $url, array $attributes = [])
+    public function outputUrl(string $url)
     {
-        echo '<link rel="preconnect" href="'. $this->app->escape->html($url) .'" />';
+        echo '<link rel="preconnect" href="'. $this->app->escape->html($url) .'" />' . "\n";
     }
 }

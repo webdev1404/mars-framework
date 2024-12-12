@@ -15,5 +15,5 @@ class Prefetch extends Preload
     /**
      * @var string $rel The rel attribute of the preload
      */
-    protected string $rel = 'prefetch';    
+    protected string $rel = 'prefetch';
 }

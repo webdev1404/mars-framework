@@ -12,10 +12,7 @@ namespace Mars\Lists;
  */
 trait ListTrait
 {
-    /**
-     * @var array $list The list of elements in the name => value format
-     */
-    public protected(set) array $list = [];
+    use ListSimpleTrait;
 
     /**
      * Check if a specific element exists in the list.
@@ -54,12 +51,15 @@ trait ListTrait
     }
 
     /**
-     * Alias for add()
-     * @see ListTrait::add()
+     * Sets the list
+     * @param array $list The list of elements in the name => value format
+     * @return static
      */
-    public function set(string $name, string $value) : static
+    public function set(array $list) : static
     {
-        return $this->add($name, $value);
+        $this->list = $list;
+        
+        return $this;
     }
 
     /**

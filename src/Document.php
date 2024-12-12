@@ -100,12 +100,7 @@ class Document
      * @var Favicon $favicon The favicon object
      */
     #[LazyLoad]
-    public Favicon $favicon;    
-
-    /**
-     * @var array $urls_list The list with the items which have urls to be outputted
-     */
-    protected array $urls_list = ['css', 'javascript'];
+    public Favicon $favicon;
 
     /**
      * Builds the device object
@@ -150,8 +145,7 @@ class Document
      */
     protected function outputUrls(string $location)
     {
-        foreach ($this->urls_list as $name) {
-            $this->$name->output($location);
-        }
+        $this->css->output($location);
+        $this->javascript->output($location);
     }
 }

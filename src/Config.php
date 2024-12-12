@@ -115,9 +115,29 @@ class Config
     public string $development_device = '';
 
     /**
-     * @var string|array $custom_headers Custom headers to be sent
+     * @var array $headers Custom headers to be sent
      */
-    public string|array $custom_headers = '';
+    public array $headers = [];
+
+    /**
+     * @var array $headers_early_hints Custom scripts to be sent as early hints
+     */
+    public array $headers_early_hints = [];
+    
+    /**
+     * @var bool $headers_csp_enable If true, will enable the Content Security Policy headers
+     */
+    public bool $headers_csp_enable = true;
+
+    /**
+     * @var array $preload The urls to preload
+     */
+    public array $preload = [];
+
+    /**
+     * @var array $preconnect The urls to preconnect
+     */
+    public array $preconnect = [];
 
     /**
      * @var string $db_driver The db driver. Supported drivers: pdo

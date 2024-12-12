@@ -94,4 +94,10 @@ final class AppUtilsTest extends Base
         $this->assertSame(App::unset(['a' => 1, 'b' => 2, 'c' => 3], ['a', 'b']), ['c' => 3]);
         $this->assertSame(App::unset(['a' => 1, 'b' => 2, 'c' => 3], 'a'), ['b' => 2, 'c' => 3]);
     }
+
+    public function testremove()
+    {
+        $this->assertSame(App::remove(['a', 'b', 'c'], ['a', 'b']), ['c']);
+        $this->assertSame(App::remove(['a', 'b', 'c'], 'c'), ['a', 'b']);
+    }
 }

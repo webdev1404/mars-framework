@@ -19,6 +19,12 @@ class Images extends Urls
     public protected(set) string $type = 'image';
 
     /**
+     * @see \Mars\Document\Urls::$preload_config_key
+     * {@inheritdoc}
+     */
+    public protected(set) string $preload_config_key = 'images';
+
+    /**
      * Does nothing
      */
     public function outputUrl(string $url, array $attributes = [])

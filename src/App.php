@@ -738,6 +738,11 @@ class App
      */
     public function boot()
     {
+        //send the early hints headers as soon as possible
+        if ($this->config->headers_early_hints) {
+            $this->response->headers->early_hints->send();
+        }
+        
         $this->outputIfCached();
     }
 
@@ -843,7 +848,7 @@ class App
      * @param string $name The name of the object
      * @return static
      */
-    public function remove(string $name) : static
+    public function delete(string $name) : static
     {
         if (isset(static::$objects[$name])) {
             unset(static::$objects[$name]);

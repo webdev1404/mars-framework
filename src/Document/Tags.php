@@ -13,7 +13,7 @@ use Mars\Lists\ListTrait;
  * The Document Tags Class
  * Stores the custom header html tags used by a document
  */
-abstract class Tags
+abstract class Tags implements \Countable, \IteratorAggregate
 {
     use InstanceTrait;
     use ListTrait;

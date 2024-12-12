@@ -1,15 +1,15 @@
 <?php
 /**
-* The Routers Handlers Interface
+* The Content Interface
 * @package Mars
 */
 
-namespace Mars\Routers;
+namespace Mars\Content;
 
 /**
- * The Routers Handlers Interface
+ * The Content Interface
  */
-interface HandlerInterface
+interface ContentInterface
 {
     /**
      * Outputs the route's content

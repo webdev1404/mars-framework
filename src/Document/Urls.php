@@ -6,7 +6,12 @@
 
 namespace Mars\Document;
 
+use Mars\App;
 use Mars\App\InstanceTrait;
+use Mars\Lazyload;
+use Mars\Lazyload\GhostTrait;
+use Mars\Document\Urls\Preload;
+use Mars\Document\Urls\Prefetch;
 
 /**
  * The Document Urls Class
@@ -15,6 +20,7 @@ use Mars\App\InstanceTrait;
 abstract class Urls
 {
     use InstanceTrait;
+    use GhostTrait;
 
     /**
      * @var string $version The version to be applied to the urls
@@ -27,6 +33,11 @@ abstract class Urls
     public protected(set) string $type = '';
 
     /**
+     * @var string $preload_config_key The config key which holds the preload urls
+     */
+    public protected(set) string $preload_config_key = '';
+
+    /**
      * @var string $crossorigin The crossorigin attribute of the url
      */
     public protected(set) string $crossorigin = '';
@@ -37,6 +48,18 @@ abstract class Urls
     public protected(set) array $urls = [];
 
     /**
+     * @var Preload $preload The preload object
+     */
+    #[Lazyload]
+    public protected(set) Preload $preload;
+
+    /**
+     * @var Prefetch $prefetch The prefetch object
+     */
+    #[Lazyload]
+    public protected(set) Prefetch $prefetch;
+
+    /**
      * Outputs an url
      * @param string $url The url to output
      * @param array $attributes The attributes of the url, if any
@@ -44,26 +67,41 @@ abstract class Urls
     abstract public function outputUrl(string $url, array $attributes = []);
 
     /**
+     * Builds the Urls object
+     * @param App $app The app object
+     */
+    public function __construct(App $app)
+    {
+        $this->lazyLoad($app);
+
+        $this->app = $app;
+
+        if ($this->preload_config_key) {
+            $urls = $this->app->config->preload[$this->preload_config_key] ?? [];
+            if ($urls) {
+                $this->preload($urls);
+            }
+        }
+    }
+
+    /**
      * Loads an url
-     * @param string|array $url(s) The url to load. Will only load it once, no matter how many times the function is called with the same url
+     * @param string|array $urls The url(s) to load. Will only load it once, no matter how many times the function is called with the same url
      * @param string $type The type of the url [head|footer]
      * @param int $priority The url's output priority. The higher, the better
-     * @param bool $early_hints If true, will output the url as an early hint
+     * @param bool $preload If true, will output the url as a preload
      * @param array $attributes The attributes of the url, if any
      * @return static
      */
-    public function load(string|array $url, string $type = 'head', int $priority = 100, bool $early_hints = false, array $attributes = []) : static
+    public function load(string|array $urls, string $type = 'head', int $priority = 100, bool $preload = false, array $attributes = []) : static
     {
-        $urls = (array)$url;
+        $urls = (array)$urls;
 
         foreach ($urls as $url) {
-            $full_url = $url;
-            if ($this->version && $this->app->uri->isLocal($url)) {                
-                $full_url = $this->app->uri->build($url, ['ver' => $this->version]);
-            }
+            $full_url = $this->getUrl($url);
 
-            if ($early_hints) {
-                //add the url as an 103 Early Hints header
+            if ($preload) {
+                $this->preload($full_url, false);
             }
 
             $this->urls[$type][$url] = [
@@ -77,15 +115,48 @@ abstract class Urls
     }
 
     /**
+     * Returns the url, with the version appended
+     * @param string $url The url to append the version to
+     * @return string
+     */
+    protected function getUrl(string $url) : string
+    {
+        if (!$this->version) {
+            return $url;
+        }
+        if (!$this->app->uri->isLocal($url)) {
+            return $url;
+        }
+
+        return $this->app->uri->build($url, ['ver' => $this->version]);
+    }
+
+    /**
+     * Returns the urls, with the version appended
+     * @param string|array $urls The url(s) to append the version to
+     * @return array
+     */
+    protected function getUrls(string|array $urls) : array
+    {
+        $urls = (array)$urls;
+
+        return array_map(function($url) {
+            return $this->getUrl($url);
+        }, $urls);
+    }
+
+    /**
      * Unloads an url/urls
-     * @param string|array $url The url(s) to unload
+     * @param string|array $urls The url(s) to unload
      * @return static
      */
-    public function unload(string|array $url) : static
+    public function unload(string|array $urls) : static
     {
-        $urls = (array)$url;
+        $urls = (array)$urls;
 
         foreach ($urls as $url) {
+            $this->unloadPreload($url);
+
             foreach ($this->urls as $type => $urls_array) {
                 if (isset($urls_array[$url])) {
                     unset($this->urls[$type][$url]);
@@ -98,23 +169,64 @@ abstract class Urls
 
     /**
      * Preloads an url
-     * @param string|array $url The url(s) to preload
+     * @param string|array $urls The url(s) to preload
+     * @param bool $version If true, will append the version to the url
      * @return static
      */
-    public function preload(string|array $url) : static
+    public function preload(string|array $urls, bool $version = true) : static
+    {        
+        $urls = (array)$urls;
+
+        if ($version) {
+            $urls = $this->getUrls($urls);
+        }
+
+        $this->preload->load($urls, $this->type);
+
+        return $this;
+    }
+
+    /**
+     * Unloads the preloaded urls
+     * @param string|array $urls The url(s) to unload
+     * @return static
+     */
+    public function unloadPreload(string|array $urls) : static
     {
-        return $this->load($url, 'preload');
+        $this->preload->unload($this->getUrls($urls));
+
+        return $this;
     }
 
     /**
      * Prefetches an url
-     * @param string|array $url The url(s) to prefetch
-     * @param bool|string $version If string, will add the specified version. If true, will add the configured version param to the url
+     * @param string|array $urls The url(s) to prefetch
+     * @param bool $version If true, will append the version to the url
      * @return static
      */
-    public function prefetch(string|array $url, bool|string $version = true) : static
+    public function prefetch(string|array $urls, bool $version = true) : static
     {
-        return $this->load($url, 'prefetch');
+        $urls = (array)$urls;
+
+        if ($version) {
+            $urls = $this->getUrls($urls);
+        }
+
+        $this->prefetch->load($urls);
+
+        return $this;
+    }
+
+    /**
+     * Unloads the prefetched urls
+     * @param string|array $urls The url(s) to unload
+     * @return static
+     */
+    public function unloadPrefetch(string|array $urls) : static
+    {
+        $this->prefetch->unload($this->getUrls($urls));
+
+        return $this;
     }
    
     /**

@@ -13,7 +13,7 @@ use \Mars\Lists\ListTrait;
  * The Driver Class
  * Encapsulates a list of suported drivers
  */
-class Drivers
+class Drivers implements \Countable, \IteratorAggregate
 {
     use InstanceTrait;
     use ListTrait;

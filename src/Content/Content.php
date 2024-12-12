@@ -1,19 +1,19 @@
 <?php
 /**
-* The Page Router Class
+* The Content Class
 * @package Mars
 */
 
-namespace Mars\Routers;
+namespace Mars\Content;
 
 use Mars\App;
 use Mars\App\InstanceTrait;
 
 /**
- * The Page Router Class
- * Routes to a page
+ * The Content Class
+ * Base class for content classes
  */
-class Page implements HandlerInterface
+abstract class Content
 {
     use InstanceTrait;
     
@@ -33,32 +33,33 @@ class Page implements HandlerInterface
     protected array $meta = [];
     
     /**
-     * Builds the Template object
-     * @param string $name The template's name
+     * Builds the Content object
+     * @param string $name The name of the page/template etc..
      * @param string $title The title tag of the page
      * @param array $meta Meta data of the page
      * @param App $app The app object
      */
-    public function __construct(string $name, string $title, array $meta, App $app)
+    public function __construct(string $name, string $title = '', array $meta = [], ?App $app = null)
     {
+        $this->app = $app ?? $this->getApp();
         $this->name = $name;
         $this->title = $title;
-        $this->meta = $meta;
-        $this->app = $app;
+        $this->meta = $meta;        
     }
     
-    public function output()
+    /**
+     * Outputs the title and meta tags
+     */
+    protected function outputTitleAndMeta()
     {
-        $this->app->document->title->set($this->title);
+        if ($this->title) {
+            $this->app->document->title->set($this->title);
+        }
         
         if ($this->meta) {
             foreach ($this->meta as $name => $val) {
                 $this->app->document->meta->set($name, $val);
             }
-        }
-
-        $template = $this->app->base_path . '/app/pages/' . $this->name . '.' . App::FILE_EXTENSIONS['templates'];
-
-        echo $this->app->theme->getTemplateFromFilename($template);
+        }        
     }
 }

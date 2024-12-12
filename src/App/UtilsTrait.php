@@ -222,6 +222,26 @@ trait UtilsTrait
         return $array;
     }
 
+    /**
+     * Removes the specified values from the array
+     * @param array $array The array
+     * @param string|array The values to remove
+     * @return array The array
+     */
+    public static function remove(array $array, string|array $values) : array
+    {
+        $values = (array)$values;
+
+        foreach ($values as $value) {
+            $key = array_search($value, $array);
+            if ($key !== false) {
+                unset($array[$key]);
+            }
+        }
+
+        return $array;
+    }
+
     /********************** DEBUG FUNCTIONS ***************************************/
 
     /**

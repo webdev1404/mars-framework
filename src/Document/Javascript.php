@@ -27,6 +27,12 @@ class Javascript extends Urls
     public protected(set) string $type = 'script';
 
     /**
+     * @see \Mars\Document\Urls::$preload_config_key
+     * {@inheritdoc}
+     */
+    public protected(set) string $preload_config_key = 'javascript';
+
+    /**
      * @see \Mars\Document\Urls::outputUrl()
      * {@inheritdoc}
      */

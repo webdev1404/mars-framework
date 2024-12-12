@@ -19,6 +19,12 @@ class Fonts extends Urls
     public protected(set) string $type = 'font';
 
     /**
+     * @see \Mars\Document\Urls::$preload_config_key
+     * {@inheritdoc}
+     */
+    public protected(set) string $preload_config_key = 'fonts';
+
+    /**
      * @see \Mars\Document\Urls::$crossorigin
      * {@inheritdoc}
      */

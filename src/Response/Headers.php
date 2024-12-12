@@ -8,7 +8,11 @@ namespace Mars\Response;
 
 use Mars\App;
 use Mars\App\InstanceTrait;
+use Mars\Lazyload;
+use Mars\Lazyload\GhostTrait;
 use Mars\Lists\ListTrait;
+use Mars\Response\Headers\EarlyHints;
+use Mars\Response\Headers\CSP;
 
 /**
  * The Headers Response Class
@@ -18,6 +22,19 @@ class Headers
 {
     use InstanceTrait;
     use ListTrait;
+    use GhostTrait;
+
+    /**
+     * @var EarlyHints $early_hints The EarlyHints object
+     */
+    #[LazyLoad]
+    public protected(set) EarlyHints $early_hints;
+
+    /**
+     * @var CSP $csp The CSP object
+     */
+    #[LazyLoad]
+    public protected(set) CSP $csp;
 
     /**
      * Builds the Cookie Request object
@@ -25,11 +42,11 @@ class Headers
      */
     public function __construct(App $app)
     {
+        $this->lazyLoad($app);
+
         $this->app = $app;
 
-        if ($this->app->config->custom_headers) {
-            $this->list = $this->app->config->custom_headers;
-        }
+        $this->list = $this->app->config->headers;
     }
 
     /**

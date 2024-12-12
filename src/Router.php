@@ -8,6 +8,10 @@ namespace Mars;
 
 use Mars\App\InstanceTrait;
 use Mars\Mvc\Controller;
+use Mars\Extensions\Block;
+use Mars\Content\ContentInterface;
+use Mars\Content\Page;
+use Mars\Content\Template;
 
 /**
  * The Route Class
@@ -18,35 +22,10 @@ class Router
     use InstanceTrait;
 
     /**
-     * @var Handlers $routes The routes handlers
-     */
-    public protected(set) Handlers $routes {
-        get {
-            if (isset($this->routes)) {
-                return $this->routes;
-            }
-
-            $this->routes = new Handlers($this->routes_types, null, $this->app);
-            $this->routes->store = false;
-
-            return $this->routes;
-        }
-    }
-
-    /**
      * @var array $routes_list The defined routes list
      */
     protected array $routes_list = [];
     
-    /**
-     * @var array $routes_types The list of supported routes
-     */
-    protected array $routes_types = [
-        'block' => \Mars\Routers\Block::class,
-        'template' => \Mars\Routers\Template::class,
-        'page' => \Mars\Routers\Page::class,
-    ];
-
     /**
      * Adds a route
      * @param string $type The type: get/post/put/delete
@@ -91,20 +70,71 @@ class Router
                 $method = $parts[1];
             }
 
-            $controller = new $class_name;
-            if ($controller instanceof Controller) {
-                $controller->dispatch($method, $params);
-            } else {
-                if ($method) {
-                    call_user_func_array([$controller, $method], $params);
-                } else {
-                    throw new \Exception('No controller method to handle the route');
-                }
-            }
+            $this->outputFromClass($class_name, $method, $params);
         } elseif ($route instanceof \Closure) {
-            echo call_user_func_array($route, [$this->app]);
+            $this->outputFromClosure($route);
         } elseif (is_object($route)) {
-            $route->output();
+            $this->outputFromObject($route);
+        }
+    }
+
+    /**
+     * Outputs the content from a class
+     * @param string $class_name The class name
+     * @param string $method The method to call
+     * @param array $params The params to pass to the method
+     */
+    protected function outputFromClass(string $class_name, string $method, array $params) 
+    {
+        $controller = new $class_name;
+
+        if ($controller instanceof Controller) {
+            $controller->dispatch($method, $params);
+        } else {
+            if ($method) {
+                call_user_func_array([$controller, $method], $params);
+            } else {
+                throw new \Exception('No controller method to handle the route');
+            }
+        }
+
+    }
+
+    /**
+     * Outputs the content from a closure
+     * @param \Closure $route The closure to output
+     */
+    protected function outputFromClosure(\Closure $route)
+    {
+        ob_start();
+        $value = call_user_func_array($route, [$this->app]);
+        $content = ob_get_clean();
+
+        //if nothing was returned, output the content
+        if (!$value) {
+            $value = $content;
+        }
+
+        if (is_string($value)) {
+            echo $value;
+        } elseif (is_array($value)) {
+            $this->app->output($value, 'ajax');
+        } elseif (is_object($value)) {           
+            $this->outputFromObject($value);
+        }
+    }
+
+    /**
+     * Outputs the content from an object
+     * @param object $object The object to output
+     */
+    protected function outputFromObject(object $object)
+    {
+        if ($object instanceof ContentInterface) {
+            $object->output();
+        }
+        else {
+            $this->app->output($object, 'ajax'); 
         }
     }
 
@@ -222,7 +252,9 @@ class Router
      */
     public function block(string $route, string $module_name, string $name = '') : static
     {
-        return $this->setRoute($route, 'block', $module_name, $name);
+        $block = new Block($module_name, $name, $this->app);
+
+        return $this->setRouteObject($route, $block);
     }
     
     /**
@@ -235,7 +267,9 @@ class Router
      */
     public function template(string $route, string $template, string $title = '', array $meta = []) : static
     {
-        return $this->setRoute($route, 'template', $template, $title, $meta);
+        $template = new Template($template, $title, $meta, $this->app);
+
+        return $this->setRouteObject($route, $template);
     }
 
     /**
@@ -248,19 +282,18 @@ class Router
      */
     public function page(string $route, string $template, string $title = '', array $meta = []) : static
     {
-        return $this->setRoute($route, 'page', $template, $title, $meta);
+        $page = new Page($template, $title, $meta, $this->app);
+        
+        return $this->setRouteObject($route, $page);
     }
     
     /**
-     * Sets a route
+     * Sets the object which will handle the route
      * @param string $route The route to handle
-     * @param string $handler The handler's name
-     * @param mixed $args Arguments to pass to the handler's constructor
+     * @param object $object The object which will handle the route
      */
-    protected function setRoute(string $route, string $handler, ...$args) : static
+    protected function setRouteObject(string $route, object $obj) : static
     {
-        $obj = $this->routes->get($handler, ...$args);
-
         $this->add('get', $route, $obj);
         $this->add('post', $route, $obj);
 
