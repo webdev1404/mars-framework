@@ -29,9 +29,9 @@ class Memcached implements DriverInterface
 
         $this->handle = new \Memcached;
 
-        if (!$this->handle->addServer($host, $port)) {
+        if (!$this->handle->addServer($host, $port) || !$this->handle->getStats()) {
             throw new \Exception('Error connecting to the memcached server');
-        }
+        }        
     }
 
     /**

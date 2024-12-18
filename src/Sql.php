@@ -104,7 +104,7 @@ class Sql implements \Stringable
      * @param bool $is_read The tpye of the statement
      * @return static
      */
-    protected function start(bool $is_read = false)
+    public function start(bool $is_read = false) : static
     {
         $this->sql = '';
         $this->is_read = $is_read;    
@@ -248,14 +248,13 @@ class Sql implements \Stringable
     /**
      * Adds a JOIN clause
      * @param string $table The table to join
-     * @param string $alias The alias of the table, if any
      * @param string $using The column used in the USING part, if any
      * @param string $on Custom sql to add in the ON part of the join clause, if $using is empty
      * @return static
      */
-    public function join(string $table, string $alias = '', string $using = '', string $on = '') : static
+    public function join(string $table, string $using = '', string $on = '') : static
     {        
-        $this->sql.= $this->driver->join($table, $alias, $using, $on);
+        $this->sql.= $this->driver->join($table, $using, $on);
 
         return $this;
     }
@@ -263,14 +262,13 @@ class Sql implements \Stringable
     /**
      * Adds a LEFT JOIN clause
      * @param string $table The table to join
-     * @param string $alias The alias of the table, if any
      * @param string $using The column used in the USING part, if any
      * @param string $on Custom sql to add in the ON part of the join clause, if $using is empty
      * @return static
      */
-    public function leftJoin(string $table, string $alias = '', string $using = '', string $on = '') : static
+    public function leftJoin(string $table, string $using = '', string $on = '') : static
     {
-        $this->sql.= $this->driver->leftJoin($table, $alias, $using, $on) . ' ';
+        $this->sql.= $this->driver->leftJoin($table, $using, $on);
 
         return $this;
     }
@@ -278,16 +276,13 @@ class Sql implements \Stringable
     /**
      * Adds a RIGHT JOIN clause
      * @param string $table The table to join
-     * @param string $alias The alias of the table, if any
      * @param string $using The column used in the USING part, if any
      * @param string $on Custom sql to add in the ON part of the join clause, if $using is empty
      * @return static
      */
-    public function rightJoin(string $table, string $alias = '', string $using = '', string $on = '') : static
+    public function rightJoin(string $table, string $using = '', string $on = '') : static
     {
-        $table = $this->escapeTable($table, $alias);
-
-        $this->sql.= " RIGHT JOIN {$table}" . $this->getJoinSql($using, $on);
+        $this->sql.= $this->driver->rightJoin($table, $using, $on);
 
         return $this;
     }
@@ -295,16 +290,13 @@ class Sql implements \Stringable
     /**
      * Adds a INNER JOIN clause
      * @param string $table The table to join
-     * @param string $alias The alias of the table, if any
      * @param string $using The column used in the USING part, if any
      * @param string $on Custom sql to add in the ON part of the join clause, if $using is empty
      * @return static
      */
-    public function innerJoin(string $table, string $alias = '', string $using = '', string $on = '') : static
+    public function innerJoin(string $table, string $using = '', string $on = '') : static
     {
-        $table = $this->escapeTable($table, $alias);
-
-        $this->sql.= " INNER JOIN {$table}" . $this->getJoinSql($using, $on);
+        $this->sql.= $this->driver->innerJoin($table, $using, $on);
 
         return $this;
     }    

@@ -13,23 +13,26 @@ final class JsonTest extends Base
 
     public function testEncode()
     {
-        $json = $this->app->json;
-
-        $str = $json->encode(null);
+        $str = $this->app->json->encode(null);
         $this->assertSame($str, '');
 
-        $str = $json->encode($this->data);
+        $str = $this->app->json->encode($this->data);
         $this->assertSame($str, $this->expected);
     }
 
     public function testDecode()
     {
-        $json = $this->app->json;
-
-        $data = $json->decode('');
+        $data = $this->app->json->decode('');
         $this->assertSame($data, '');
 
-        $data = $json->decode($this->expected);
+        $data = $this->app->json->decode($this->expected);
         $this->assertSame($data, $this->data);
+    }
+
+    public function testValidate()
+    {
+        $this->assertFalse($this->app->json->validate(''));
+        $this->assertTrue($this->app->json->validate($this->expected));
+        $this->assertFalse($this->app->json->validate('invalid json string'));
     }
 }

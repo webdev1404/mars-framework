@@ -19,7 +19,7 @@ trait PropertiesTrait
      */
     public function exists(string $name) : bool
     {
-        return empty($this->$name);
+        return !empty($this->$name);
     }
 
     /**

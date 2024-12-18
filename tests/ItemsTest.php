@@ -5,7 +5,6 @@ use Mars\Items;
 
 include_once(__DIR__ . '/Base.php');
 
-
 /**
  * @ignore
  */
@@ -23,15 +22,16 @@ final class ItemsTest extends Base
     public static function setUpBeforeClass() : void
     {
         $db = App::get()->db;
+
         $db->query('DROP TABLE IF EXISTS cars');
         $db->query('
-			CREATE TABLE cars (
-				id 	INT AUTO_INCREMENT,
-				name	varchar(255),
-				color varchar(255),
+            CREATE TABLE cars (
+                id 	INT AUTO_INCREMENT,
+                name	varchar(255),
+                color varchar(255),
 
-				PRIMARY KEY(id)
-			)');
+                PRIMARY KEY(id)
+            )');
         $db->query("INSERT INTO cars VALUES(1, 'mercedes', 'black')");
         $db->query("INSERT INTO cars VALUES(2, 'ferrari', 'red')");
         $db->query("INSERT INTO cars VALUES(3, 'bmw', 'blue')");
@@ -98,5 +98,17 @@ final class ItemsTest extends Base
 
         $cars->delete([2,3]);
         $this->assertSame($cars->getTotal(), 1);
+    }
+
+    public function testGetTable()
+    {
+        $cars = new Cars;
+        $this->assertSame($cars->getTable(), 'cars');
+    }
+
+    public function testGetIdField()
+    {
+        $cars = new Cars;
+        $this->assertSame($cars->getIdField(), 'id');
     }
 }

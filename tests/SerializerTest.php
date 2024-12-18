@@ -1,5 +1,4 @@
 <?php
-
 use Mars\Serializer;
 
 include_once(__DIR__ . '/Base.php');
@@ -29,7 +28,6 @@ final class SerializerTest extends Base
         $this->app->config->serializer_driver = $this->driver;
     }
 
-
     public function testPhp()
     {
         $this->app->config->serializer_driver = 'php';
@@ -50,5 +48,25 @@ final class SerializerTest extends Base
         $this->assertEquals($serializer->serialize($this->data, false), $this->expected);
         $this->assertNotSame($serializer->serialize($this->data, true, false), $this->expected_encoded);
         $this->assertNotSame($serializer->serialize($this->data, false, false), $this->expected);
+    }
+
+    public function testUnserializePhp()
+    {
+        $this->app->config->serializer_driver = 'php';
+
+        $serializer = new Serializer($this->app);
+        $this->assertEquals($serializer->unserialize($this->expected_encoded, [], true), $this->data);
+        $this->assertEquals($serializer->unserialize($this->expected, [], false), $this->data);
+    }
+
+    public function testUnserializeIgbinary()
+    {
+        $this->app->config->serializer_driver = 'igbinary';
+
+        $serializer = new Serializer($this->app);
+        $this->assertEquals($serializer->unserialize($this->expected_encoded, [], true), $this->data);
+        $this->assertEquals($serializer->unserialize($this->expected, [], false), $this->data);
+        $this->assertNotSame($serializer->unserialize($this->expected_encoded, [], true, false), $this->data);
+        $this->assertNotSame($serializer->unserialize($this->expected, [], false, false), $this->data);
     }
 }

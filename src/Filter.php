@@ -145,7 +145,7 @@ class Filter
      * @param $value The value to filter
      * @return int|array The filtered value
      */
-    public function absfloat($value) : int|array
+    public function absfloat($value) : float|array
     {
         return App::map($value, function ($value) {
             return abs((float)$value);

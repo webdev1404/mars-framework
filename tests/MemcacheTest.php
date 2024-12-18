@@ -11,9 +11,7 @@ include_once(__DIR__ . '/Base.php');
 final class MemcacheTest extends Base
 {
     protected $driver = '';
-
     protected $host = '';
-
     protected $port = '';
 
     public function setUp() : void
@@ -105,7 +103,7 @@ final class MemcacheTest extends Base
         $this->runAssertions($memcache);
     }
 
-    /*public function testInvalidMemcacheConnection()
+    public function testInvalidMemcacheConnection()
     {
         $this->app->config->memcache_driver = 'memcache';
         $this->app->config->memcache_port = '11312';
@@ -115,19 +113,19 @@ final class MemcacheTest extends Base
         $invalid_memcache = new Memcache($this->app);
 
         $invalid_memcache->add('test_key', '12345');
-    }*/
+    }
 
-    /*public function testInvalidMemcachedConnection()
+    public function testInvalidMemcachedConnection()
     {
         $this->app->config->memcache_driver = 'memcached';
         $this->app->config->memcache_port = '11312';
 
         $this->expectException(\Exception::class);
 
-        $invalid_memcache = new Memcache($this->app, 'memcached', '127.0.0.1', '11312');
+        $invalid_memcache = new Memcache($this->app);
 
         $invalid_memcache->add('test_key', '12345');
-    }*/
+    }
 
     public function testInvalidRedisConnection()
     {
@@ -139,5 +137,46 @@ final class MemcacheTest extends Base
         $invalid_memcache = new Memcache($this->app);
 
         $invalid_memcache->add('test_key', '12345');
+    }
+
+    public function testAddWithSerialization()
+    {
+        $this->app->config->memcache_driver = 'memcache';
+
+        $memcache = new Memcache($this->app);
+        $key = $this->getKey();
+        $value = ['foo' => 'bar'];
+
+        $this->assertTrue($memcache->add($key, $value, true));
+        $this->assertEquals($memcache->get($key, true), $value);
+    }
+
+    public function testSetWithSerialization()
+    {
+        $this->app->config->memcache_driver = 'memcache';
+
+        $memcache = new Memcache($this->app);
+        $key = $this->getKey();
+        $value = ['foo' => 'bar'];
+
+        $this->assertTrue($memcache->set($key, $value, true));
+        $this->assertEquals($memcache->get($key, true), $value);
+    }
+
+    public function testDeleteAll()
+    {
+        $this->app->config->memcache_driver = 'memcache';
+
+        $memcache = new Memcache($this->app);
+        $key1 = $this->getKey();
+        $key2 = $this->getKey();
+
+        $memcache->add($key1, 'value1');
+        $memcache->add($key2, 'value2');
+
+        $memcache->deleteAll();
+
+        $this->assertFalse($memcache->exists($key1));
+        $this->assertFalse($memcache->exists($key2));
     }
 }

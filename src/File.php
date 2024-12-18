@@ -101,6 +101,20 @@ class File
     }
 
     /**
+     * Returns the path with a trailing slash
+     * @param string $path The path
+     * @return string The path with a trailing slash
+     */
+    public function slash(string $path) : string
+    {
+        if (!$path) {
+            return '';
+        }
+
+        return rtrim($path, '/') . '/';
+    }
+
+    /**
      * Returns the parent folder of $filename or empty if there isn't one
      * @param string $filename The filename for which the parent folder will be returned
      * @return string The parent folder of filename or '' if there isn't one
@@ -154,7 +168,7 @@ class File
      */
     public function appendToFilename(string $filename, string $append) : string
     {
-        return $this->getPath($filename) . '/' . $this->getFile($filename) . $append . $this->getExtension($filename, true);
+        return $this->slash($this->getPath($filename)) . $this->getFile($filename) . $append . $this->getExtension($filename, true);
     }
 
     /**
@@ -277,7 +291,7 @@ class File
             return $filename;
         }
 
-        return $this->addExtension($extension, $filename);
+        return $this->addExtension($filename, $extension);
     }
 
     /**

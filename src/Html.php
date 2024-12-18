@@ -41,15 +41,18 @@ class Html
     protected array $supported_tags = [
         'img' => \Mars\Html\Img::class,
         'picture' => \Mars\Html\Picture::class,
+        'video' => \Mars\Html\Video::class,
         'a' => \Mars\Html\A::class,
+        'div' => \Mars\Html\Div::class,
+        'p' => \Mars\Html\P::class,
         'ul' => \Mars\Html\Lists\UL::class,
         'ol' => \Mars\Html\Lists\OL::class,
         'form' => \Mars\Html\Form::class,
         'input' => \Mars\Html\Input\Input::class,
-        'input_hidden' => \Mars\Html\Input\Hidden::class,
-        'input_email' => \Mars\Html\Input\Email::class,
-        'input_password' => \Mars\Html\Input\Password::class,
-        'input_phone' => \Mars\Html\Input\Phone::class,
+        'hidden' => \Mars\Html\Input\Hidden::class,
+        'email' => \Mars\Html\Input\Email::class,
+        'password' => \Mars\Html\Input\Password::class,
+        'phone' => \Mars\Html\Input\Phone::class,
         'textarea' => \Mars\Html\Input\Textarea::class,
         'button' => \Mars\Html\Input\Button::class,
         'submit' => \Mars\Html\Input\Submit::class,
@@ -163,6 +166,22 @@ class Html
         return $this->getTag('picture', '', $attributes, $source_images);
     }
 
+     /**
+     * Creates a video tag
+     * @param string|array $url The video's source url(s)
+     * @param int $width The video's width
+     * @param int $height The video's height
+     * @param array $attributes The video's attributes
+     * @return string The html code
+     */
+    public function video(string|array $url, int $width = 0, int $height = 0, array $attributes = []) : string
+    {
+        $urls = (array)$url;
+        $attributes = $attributes + ['width' => $width, 'height' => $height];
+
+        return $this->getTag('video', '', $attributes, $urls);
+    }
+
     /**
      * Creates a link
      * @param string $url The link's url
@@ -188,6 +207,26 @@ class Html
     public function link(string $url, string $text = '', array $attributes = []) : string
     {
         return $this->a($url, $text, $attributes);
+    }
+
+    /**
+     * Creates a div
+     * @param string $text The paragraph's text
+     * @return string The html code
+     */
+    public function div(string $text, array $attributes = []) : string
+    {
+        return $this->getTag('div', $text, $attributes);
+    }
+
+    /**
+     * Creates a text paragraph
+     * @param string $text The paragraph's text
+     * @return string The html code
+     */
+    public function p(string $text, array $attributes = []) : string
+    {
+        return $this->getTag('p', $text, $attributes);
     }
 
     /**
@@ -238,7 +277,7 @@ class Html
      * @param bool $disabled The disabled flag
      * @return string
      */
-    public function disabled(bool $disabled = true) : string
+    public function isDisabled(bool $disabled = true) : string
     {
         return $disabled ? ' disabled' : '';
     }
@@ -248,7 +287,7 @@ class Html
      * @param bool $hidden The hidden flag
      * @return string
      */
-    public function hidden(bool $hidden = true) : string
+    public function isHidden(bool $hidden = true) : string
     {
         return $hidden ? ' style="display:none"' : '';
     }
@@ -258,7 +297,7 @@ class Html
      * @param bool $required The required flag
      * @return string
      */
-    public function required(bool $required = true) : string
+    public function isRequired(bool $required = true) : string
     {
         return $required ? ' required' : '';
     }
@@ -319,11 +358,11 @@ class Html
      * @param array $attributes Extra attributes in the format name => value
      * @return string The html code
      */
-    public function inputHidden(string $name, string $value, array $attributes = []) : string
+    public function hidden(string $name, string $value, array $attributes = []) : string
     {
         $attributes = ['name' => $name, 'value'=> $value] + $attributes;
 
-        return $this->getTag('input_hidden', '', $attributes);
+        return $this->getTag('hidden', '', $attributes);
     }
 
     /**
@@ -335,9 +374,9 @@ class Html
      * @param array $attributes Extra attributes in the format name => value
      * @return string The html code
      */
-    public function inputEmail(string $name, string $value = '', string $placeholder = '', bool $required = false, array $attributes = []) : string
+    public function email(string $name, string $value = '', string $placeholder = '', bool $required = false, array $attributes = []) : string
     {
-        return $this->input($name, $value, $placeholder, $required, $attributes, 'input_email');
+        return $this->input($name, $value, $placeholder, $required, $attributes, 'email');
     }
 
     /**
@@ -348,9 +387,9 @@ class Html
      * @param array $attributes Extra attributes in the format name => value
      * @return string The html code
      */
-    public function inputPassword(string $name, string $value = '', bool $required = false, array $attributes = []) : string
+    public function password(string $name, string $value = '', bool $required = false, array $attributes = []) : string
     {
-        return $this->input($name, $value, '', $required, $attributes, 'input_password');
+        return $this->input($name, $value, '', $required, $attributes, 'password');
     }
 
     /**
@@ -362,9 +401,9 @@ class Html
      * @param array $attributes Extra attributes in the format name => value
      * @return string The html code
      */
-    public function inputPhone(string $name, string $value = '', string $placeholder = '', bool $required = false, array $attributes = []) : string
+    public function phone(string $name, string $value = '', string $placeholder = '', bool $required = false, array $attributes = []) : string
     {
-        return $this->input($name, $value, $placeholder, $required, $attributes, 'input_phone');
+        return $this->input($name, $value, $placeholder, $required, $attributes, 'phone');
     }
 
     /**

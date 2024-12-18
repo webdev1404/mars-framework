@@ -169,7 +169,7 @@ class Log
      * Logs an exception
      * @param \Exceptin $e The exception to log
      */
-    public function exception(\Exception $e)
+    public function exception(\Error|\Exception|Exception $e)
     {
         $this->log('errors', $e->getMessage(), $e->getFile(), $e->getLine(), true, $e->getTraceAsString());
     }

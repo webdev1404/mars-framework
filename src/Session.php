@@ -59,7 +59,7 @@ class Session
     /**
      * @var bool $started True if the session has been started
      */
-    protected bool $started = false;
+    public protected(set) bool $started = false;
 
     /**
      * @var array $supported_drivers The supported drivers
@@ -73,7 +73,7 @@ class Session
     /**
      * Starts the session
      */
-    public function start()
+    protected function start()
     {
         session_start();
 
@@ -89,6 +89,10 @@ class Session
      */
     public function delete() : static
     {
+        if (!$this->started) {
+            $this->start();
+        }
+
         session_unset();
         session_destroy();
 

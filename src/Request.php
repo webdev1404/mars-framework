@@ -12,7 +12,7 @@ use Mars\Request\Input;
 use Mars\Request\Get;
 use Mars\Request\Post;
 use Mars\Request\Request as RequestObj;
-use Mars\Request\Cookie;
+use Mars\Request\Cookies;
 use Mars\Request\Server;
 use Mars\Request\Env;
 use Mars\Request\Files;
@@ -52,10 +52,10 @@ class Request
     public Post $post;
 
     /**
-     * @var Cookie $cookie Object containing the cookie data
+     * @var Cookies $cookies Object containing the cookie data
      */
     #[LazyLoad]
-    public Cookie $cookie;
+    public Cookies $cookies;
 
     /**
      * @var Server $server Object containing the server data

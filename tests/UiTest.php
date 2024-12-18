@@ -13,8 +13,6 @@ final class UiTest extends Base
     {
         $_REQUEST[$this->app->config->request_page_param] = 1;
 
-        $ui = $this->app->ui;
-
         $pag = new Pagination('https://www.mydomain.com/', 10, 1000, 10, $this->app);
         $links = $pag->getLinks();
 

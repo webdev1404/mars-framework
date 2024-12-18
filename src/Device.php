@@ -41,7 +41,7 @@ class Device
                 return $this->device;
             }
 
-            $this->device = '';
+            $this->device = 'desktop';
             if ($this->app->is_bin) {
                 return $this->device;
             }

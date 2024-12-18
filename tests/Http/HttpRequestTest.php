@@ -20,17 +20,16 @@ final class HttpRequestTest extends Base
 
     /*public function testError()
     {
-        $req = $this->app->http->request;
-        $response = $req->get($this->app->base_url . '/vendor/webdev1404/mars-framework/tests/data/request-test123.php');
+        echo $this->app->base_url . '/vendor/webdev1404/mars-framework/tests/data/invalid-script.php';die;
+        $response = $this->app->http->request->get($this->app->base_url . '/vendor/webdev1404/mars-framework/tests/data/invalid-script.php');
 
         $this->assertSame($response->code, 404);
         $this->assertFalse($response->ok());
-    }
+    }*/
 
     public function testGet()
     {
-        $req = $this->app->http->request;
-        $response = $req->get($this->url);
+        $response = $this->app->http->request->get($this->url);
 
         $this->assertSame($response->body, 'test12345');
         $this->assertSame($response->code, 200);
@@ -39,14 +38,13 @@ final class HttpRequestTest extends Base
 
     public function testPost()
     {
-        $req = $this->app->http->request;
-        $response = $req->post($this->url, ['foo' => 'bar', 'faz' => 'baz']);
+        $response = $this->app->http->request->post($this->url, ['foo' => 'bar', 'faz' => 'baz']);
 
         $this->assertSame($response->body, '{"foo":"bar","faz":"baz"}');
         $this->assertSame($response->code, 200);
         $this->assertTrue($response->ok());
         $this->assertSame($response->getJson(), ['foo' => 'bar', 'faz' => 'baz']);
-    }*/
+    }
 
     public function testGetFile()
     {

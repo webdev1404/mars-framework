@@ -9,8 +9,6 @@ final class UnescapeTest extends Base
 {
     public function testHtml()
     {
-        $unescape = $this->app->unescape;
-
-        $this->assertSame($unescape->html('&lt;b&gt;test&apos; test &quot; test&lt;b&gt;'), '<b>test\' test " test<b>');
+        $this->assertSame($this->app->unescape->html('&lt;b&gt;test&apos; test &quot; test&lt;b&gt;'), '<b>test\' test " test<b>');
     }
 }

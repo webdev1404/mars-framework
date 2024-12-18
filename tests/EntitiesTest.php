@@ -79,4 +79,24 @@ final class EntitiesTest extends Base
         $ent = new Entities;
         $this->assertEquals($ent->getObject($data), $obj);
     }
+
+    public function testCount()
+    {
+        $ent = new Entities($this->data);
+        $this->assertSame($ent->count(), 2);
+    }
+
+    public function testGetClass()
+    {
+        $ent = new Entities;
+        $this->assertSame($ent->getClass(), Entity::class);
+    }
+
+    public function testGetCol()
+    {
+        $ent = new Entities($this->data);
+        $this->assertSame($ent->getCol('foo'), ['bar']);
+    }
 }
+
+

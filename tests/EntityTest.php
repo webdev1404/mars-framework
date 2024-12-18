@@ -51,4 +51,28 @@ final class EntityTest extends Base
         $this->assertSame($ent->get(['foo', 'abc']), $this->data);
         $this->assertSame($ent->get(['abc']), ['abc' => 'baz']);
     }
+
+    public function testAssign()
+    {
+        $ent = new Entity();
+        $ent->assign($this->data);
+        $this->assertSame($ent->foo, 'bar');
+        $this->assertSame($ent->abc, 'baz');
+    }
+
+    public function testOverwrite()
+    {
+        $ent = new Entity($this->data);
+        $new_data = ['foo' => 'new_value'];
+        $ent->set($new_data);
+        $this->assertSame($ent->foo, 'new_value');
+    }
+
+    public function testNoOverwrite()
+    {
+        $ent = new Entity($this->data);
+        $new_data = ['foo' => 'new_value'];
+        $ent->set($new_data, false);
+        $this->assertSame($ent->foo, 'bar');
+    }
 }

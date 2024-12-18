@@ -98,7 +98,8 @@ abstract class Urls
         $urls = (array)$urls;
 
         foreach ($urls as $url) {
-            $full_url = $this->getUrl($url);
+            $is_local = $this->app->uri->isLocal($url);
+            $full_url = $this->getUrl($url, $is_local);
 
             if ($preload) {
                 $this->preload($full_url, false);
@@ -106,8 +107,9 @@ abstract class Urls
 
             $this->urls[$type][$url] = [
                 'url' => $full_url,
-                'priority' => $priority, 
+                'priority' => $priority,
                 'attributes' => $attributes, 
+                'is_local' => $is_local,
             ];
         }
 
@@ -117,14 +119,18 @@ abstract class Urls
     /**
      * Returns the url, with the version appended
      * @param string $url The url to append the version to
+     * @param bool $is_local If true, will append the version only to local urls
      * @return string
      */
-    protected function getUrl(string $url) : string
+    protected function getUrl(string $url, ?bool $is_local = null) : string
     {
         if (!$this->version) {
             return $url;
         }
-        if (!$this->app->uri->isLocal($url)) {
+        if ($is_local === null) {
+            $is_local = $this->app->uri->isLocal($url);
+        }
+        if (!$is_local) {
             return $url;
         }
 

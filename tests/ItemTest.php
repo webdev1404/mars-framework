@@ -25,6 +25,7 @@ final class ItemTest extends Base
     public static function setUpBeforeClass() : void
     {
         $db = App::get()->db;
+
         $db->query('DROP TABLE IF EXISTS cars');
         $db->query('
 			CREATE TABLE cars (
@@ -221,5 +222,23 @@ final class ItemTest extends Base
         $car->flip('color');
         $this->assertSame($car->color, 'white');
         $this->assertSame($car->getOriginal('color'), 'red');
+    }
+
+    public function testGetTable()
+    {
+        $car = new Car;
+        $this->assertSame($car->getTable(), 'cars');
+    }
+
+    public function testGetIdField()
+    {
+        $car = new Car;
+        $this->assertSame($car->getIdField(), 'id');
+    }
+
+    public function testGetNameField()
+    {
+        $car = new Car;
+        $this->assertSame($car->getNameField(), 'name');
     }
 }

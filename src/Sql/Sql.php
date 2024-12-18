@@ -206,7 +206,9 @@ abstract class Sql implements DriverInterface
     {
         $vals = [];
         foreach ($values as $col => $value) {
-            $col = $col . $suffix;
+            if ($suffix !== '') {
+                $col = $col . '_' . $suffix;
+            }
 
             if (is_array($value)) {
                 $vals[] = $this->getValue($col, $value);
@@ -368,7 +370,7 @@ abstract class Sql implements DriverInterface
     {
         $table = $this->escapeTable($table);
 
-        return " {$join} {$table}" . $this->getJoinSql($using, $on) . ' ';
+        return "{$join} {$table}" . $this->getJoinSql($using, $on) . ' ';
     }
 
     /**
@@ -425,7 +427,7 @@ abstract class Sql implements DriverInterface
             return $this;
         }        
 
-        return $this->getWhere() . ' ' . $this->escapeColumn($column) . $this->getIn($values, true) . ' ';
+        return $this->getWhere() . $this->escapeColumn($column) . $this->getIn($values, true);
     }
 
     /**

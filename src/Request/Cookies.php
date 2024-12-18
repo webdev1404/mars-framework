@@ -1,6 +1,6 @@
 <?php
 /**
-* The COOKIE Request Class
+* The Cookies Request Class
 * @package Mars
 */
 
@@ -9,10 +9,10 @@ namespace Mars\Request;
 use Mars\App;
 
 /**
- * The COOKIE Request Class
+ * The Cookies Request Class
  * Handles the $_COOKIE interactions
  */
-class Cookie extends Input
+class Cookies extends Input
 {
     /**
      * Builds the Cookie Request object

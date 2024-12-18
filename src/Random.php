@@ -62,7 +62,7 @@ class Random
      * @param int $max Highest value to be returned
      * @return int A random number
      */
-    public function getFloat(float $min, float $max) : int
+    public function getFloat(float $min, float $max) : float
     {
         return $this->randomizer->getFloat($min, $max);
     }
