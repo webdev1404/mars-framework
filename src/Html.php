@@ -10,6 +10,7 @@ use Mars\App\InstanceTrait;
 use Mars\Html\TagInterface;
 use Mars\Html\Tag;
 use Mars\Html\Form;
+use Mars\Html\Div;
 use Mars\Html\Input\Select;
 
 /**
@@ -47,6 +48,7 @@ class Html
         'p' => \Mars\Html\P::class,
         'ul' => \Mars\Html\Lists\UL::class,
         'ol' => \Mars\Html\Lists\OL::class,
+        'label' => \Mars\Html\Label::class,
         'form' => \Mars\Html\Form::class,
         'input' => \Mars\Html\Input\Input::class,
         'hidden' => \Mars\Html\Input\Hidden::class,
@@ -303,6 +305,20 @@ class Html
     }
 
     /**
+     * Returns a label
+     * @param string $text The label's text
+     * @param string $for The id of the element the label is for
+     * @param array $attributes Extra attributes in the format name => value
+     * @return string The html code
+     */
+    public function label(string $text, string $for = '', array $attributes = []) : string
+    {
+        $attributes = ['for' => $for] + $attributes;
+
+        return $this->getTag('label', $text, $attributes);
+    }
+
+    /**
      * Returns the opening tag of a form
      * @param string $url The url used as the form's action
      * @param array $attributes Extra attributes in the format name => value
@@ -346,7 +362,7 @@ class Html
      * Alias for input()
      * @see \Mars\Html::input()
      */
-    public function inputText(string $name, string $value = '', string $placeholder = '', bool $required = false, array $attributes = []) : string
+    public function text(string $name, string $value = '', string $placeholder = '', bool $required = false, array $attributes = []) : string
     {
         return $this->input($name, $value, $placeholder, $required, $attributes);
     }
