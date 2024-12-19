@@ -120,6 +120,11 @@ class Config
     public array $headers = [];
 
     /**
+     * @var bool $headers_early_hints_enable If true, will enable the early hints headers
+     */
+    public bool $headers_early_hints_enable = false;
+
+    /**
      * @var array $headers_early_hints Custom scripts to be sent as early hints
      */
     public array $headers_early_hints = [];
@@ -127,7 +132,27 @@ class Config
     /**
      * @var bool $headers_csp_enable If true, will enable the Content Security Policy headers
      */
-    public bool $headers_csp_enable = true;
+    public bool $headers_csp_enable = false;
+
+    /**
+     * @var bool $headers_csp_use_nonce If true, will use a nonce for the csp headers
+     */
+    public bool $headers_csp_use_nonce = false;
+
+    /**
+     * @var array $headers_csp_defaults The default Content Security Policy headers
+     */
+    public array $headers_csp_defaults = [
+        'default-src' => "'self'",
+		'script-src' => "'self' 'unsafe-inline'",
+        'style-src' => "'self' 'unsafe-inline'",
+        'object-src' => "'none'"
+    ];
+
+    /**
+     * @var array $headers_csp The Content Security Policy headers
+     */
+    public array $headers_csp = [];
 
     /**
      * @var array $preload The urls to preload

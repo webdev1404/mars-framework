@@ -48,7 +48,7 @@ class EarlyHints
     /**
      * Sends the Early Hints header
      */
-    public function send()
+    public function output()
     {
         //do not send early hints if we are not using http2 or above
         if ($this->app->protocol < 2) {            

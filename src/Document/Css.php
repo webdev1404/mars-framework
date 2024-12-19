@@ -47,7 +47,7 @@ class Css extends Urls
      */
     public function outputCode(string $code)
     {
-        echo '<style type="text/css">' . "\n";
+        echo '<style type="text/css"'. $this->getNonce() .'>' . "\n";
         echo $code . "\n";
         echo '</style>' . "\n";
     }

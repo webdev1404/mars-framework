@@ -593,6 +593,21 @@ class App
     public protected(set) string $extensions_url;
 
     /**
+     * @var string $nonce The nonce token
+     */
+    public protected(set) string $nonce {
+        get {
+            if (isset($this->nonce)) {
+                return $this->nonce;
+            }
+
+            $this->nonce = $this->random->getString(32);
+
+            return $this->nonce;
+        }
+    }
+
+    /**
      * @var bool $is_homepage Set to true if the homepage is currently displayed
      */
     public protected(set) bool $is_homepage {
@@ -739,8 +754,8 @@ class App
     public function boot()
     {
         //send the early hints headers as soon as possible
-        if ($this->config->headers_early_hints) {
-            $this->response->headers->early_hints->send();
+        if ($this->config->headers_early_hints_enable && $this->config->headers_early_hints) {
+            $this->response->headers->early_hints->output();
         }
         
         $this->outputIfCached();

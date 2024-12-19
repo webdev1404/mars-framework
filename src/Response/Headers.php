@@ -64,6 +64,10 @@ class Headers
      */
     public function output()
     {
+        if ($this->app->config->headers_csp_enable) {
+            $this->csp->output();
+        }
+
         foreach ($this->list as $name => $value) {
             header("{$name}: $value");
         }
