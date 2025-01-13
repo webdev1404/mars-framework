@@ -15,5 +15,5 @@ class Phone extends Input
     /**
      * {@inheritdoc}
      */
-    protected string $type = 'tel';
+    protected static string $type = 'tel';
 }

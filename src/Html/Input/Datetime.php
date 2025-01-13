@@ -18,7 +18,7 @@ class Datetime extends Tag
      * @see \Mars\Html\TagInterface::html()
      * {@inheritdoc}
      */
-    public function html(string $text = '', array $attributes = [], array $properties = []) : string
+    public function html(string $text = '', array $attributes = []) : string
     {
         $name = $attributes['name'];
         $value = $attributes['value'];

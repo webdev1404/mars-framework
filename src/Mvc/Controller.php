@@ -251,7 +251,7 @@ abstract class Controller extends \stdClass
     /**
      * @var array $validation_rules Validation rules
      */
-    protected array $validation_rules = [];
+    protected static array $validation_rules = [];
 
     /**
      * Builds the controller

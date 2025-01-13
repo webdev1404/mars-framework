@@ -18,6 +18,29 @@ class Image
     use InstanceTrait;
 
     /**
+     * @var array $supported_drivers The supported drivers
+     */
+    protected array $supported_drivers = [
+        'jpg' => \Mars\Images\Jpg::class,
+        'jpeg' => \Mars\Images\Jpg::class,
+        'png' => \Mars\Images\Png::class,
+        'gif' => \Mars\Images\Gif::class,
+        'webp' => \Mars\Images\Webp::class,
+        'avif' => \Mars\Images\Avif::class
+    ];
+
+    /**
+     * @var array $supported_operations The list of supported operations
+     */
+    protected array $supported_operations = [
+        'resize' => \Mars\Images\Operations\Resize::class,
+        'crop' => \Mars\Images\Operations\Crop::class,
+        'cut' => \Mars\Images\Operations\Cut::class,
+        'convert' => \Mars\Images\Operations\Convert::class,
+        'watermark' => \Mars\Images\Operations\Watermark::class
+    ];    
+
+    /**
      * @var Drivers $drivers The drivers object
      */
     public protected(set) Drivers $drivers {
@@ -47,29 +70,6 @@ class Image
             return $this->operations;
         }
     }
-
-    /**
-     * @var array $supported_drivers The supported drivers
-     */
-    protected array $supported_drivers = [
-        'jpg' => \Mars\Images\Jpg::class,
-        'jpeg' => \Mars\Images\Jpg::class,
-        'png' => \Mars\Images\Png::class,
-        'gif' => \Mars\Images\Gif::class,
-        'webp' => \Mars\Images\Webp::class,
-        'avif' => \Mars\Images\Avif::class
-    ];
-
-    /**
-     * @var array $supported_operations The list of supported operations
-     */
-    protected array $supported_operations = [
-        'resize' => \Mars\Images\Operations\Resize::class,
-        'crop' => \Mars\Images\Operations\Crop::class,
-        'cut' => \Mars\Images\Operations\Cut::class,
-        'convert' => \Mars\Images\Operations\Convert::class,
-        'watermark' => \Mars\Images\Operations\Watermark::class
-    ];
 
     /**
      * Returns the image

@@ -18,6 +18,13 @@ class Mail
     use InstanceTrait;
 
     /**
+     * @var array $supported_drivers The supported drivers
+     */
+    protected array $supported_drivers = [
+        'phpmailer' => \Mars\Mail\PhpMailer::class
+    ];
+
+    /**
      * @var Drivers $drivers The drivers object
      */
     public protected(set) Drivers $drivers {
@@ -46,13 +53,6 @@ class Mail
             return $this->driver;
         }
     }
-
-    /**
-     * @var array $supported_drivers The supported drivers
-     */
-    protected array $supported_drivers = [
-        'phpmailer' => \Mars\Mail\PhpMailer::class
-    ];
 
     /**
      * Sends a mail

@@ -15,5 +15,5 @@ class Date extends Input
     /**
      * {@inheritdoc}
      */
-    protected string $type = 'date';
+    protected static string $type = 'date';
 }

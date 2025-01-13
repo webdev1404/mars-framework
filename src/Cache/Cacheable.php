@@ -18,6 +18,14 @@ use Mars\Cache\Cacheable\DriverInterface;
 abstract class Cacheable
 {
     use InstanceTrait;
+    
+    /**
+     * @var array $supported_drivers The supported drivers
+     */
+    protected array $supported_drivers = [
+        'file' => \Mars\Cache\Cacheable\File::class,
+        'memcache' => \Mars\Cache\Cacheable\Memcache::class,
+    ];    
 
     /**
      * @var Drivers $drivers The drivers object
@@ -90,14 +98,6 @@ abstract class Cacheable
     protected string $hash {
         get => $this->app->config->cache_hash;
     }
-
-    /**
-     * @var array $supported_drivers The supported drivers
-     */
-    protected array $supported_drivers = [
-        'file' => \Mars\Cache\Cacheable\File::class,
-        'memcache' => \Mars\Cache\Cacheable\Memcache::class,
-    ];
 
     /**
      * Returns the file where the content will be cached

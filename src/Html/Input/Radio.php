@@ -15,5 +15,5 @@ class Radio extends Checkbox
     /**
      * {@inheritdoc}
      */
-    protected string $type = 'radio';
+    protected static string $type = 'radio';
 }

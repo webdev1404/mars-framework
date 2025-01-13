@@ -35,6 +35,18 @@ use Mars\Handlers;
 class Mars implements DriverInterface
 {
     use InstanceTrait;
+    
+    /**
+     * @var array $supported_structures The list of supported parsers
+     */
+    protected array $supported_parsers = [
+        'include' => \Mars\Templates\Mars\IncludeParser::class,
+        'variable_double' => \Mars\Templates\Mars\VariableDoubleParser::class,
+        'variable_raw' => \Mars\Templates\Mars\VariableRawParser::class,
+        'variable' => \Mars\Templates\Mars\VariableParser::class,
+        'if' => \Mars\Templates\Mars\IfParser::class,
+        'foreach' => \Mars\Templates\Mars\ForeachParser::class
+    ];    
 
     /**
      * @var Handlers $handlers The parsers object
@@ -50,18 +62,6 @@ class Mars implements DriverInterface
             return $this->parsers;
         }
     }
-
-    /**
-     * @var array $supported_structures The list of supported parsers
-     */
-    protected array $supported_parsers = [
-        'include' => \Mars\Templates\Mars\IncludeParser::class,
-        'variable_double' => \Mars\Templates\Mars\VariableDoubleParser::class,
-        'variable_raw' => \Mars\Templates\Mars\VariableRawParser::class,
-        'variable' => \Mars\Templates\Mars\VariableParser::class,
-        'if' => \Mars\Templates\Mars\IfParser::class,
-        'foreach' => \Mars\Templates\Mars\ForeachParser::class
-    ];
 
     /**
      * Builds the Mars Template object

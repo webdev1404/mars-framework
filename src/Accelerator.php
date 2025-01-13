@@ -18,6 +18,13 @@ class Accelerator
     use InstanceTrait;
 
     /**
+     * @var array $supported_drivers The supported drivers
+     */
+    protected array $supported_drivers = [
+        'varnish' => \Mars\Accelerators\Varnish::class
+    ];
+
+    /**
      * @var bool $enabled Will be set to true, if enabled
      */
     public bool $enabled {
@@ -56,13 +63,6 @@ class Accelerator
             return $this->driver;
         }
     }
-
-    /**
-     * @var array $supported_drivers The supported drivers
-     */
-    protected array $supported_drivers = [
-        'varnish' => \Mars\Accelerators\Varnish::class
-    ];
 
     /**
      * Deletes $url from the accelerator's cache

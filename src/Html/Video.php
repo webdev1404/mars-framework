@@ -15,22 +15,30 @@ class Video extends Tag
     /**
      * {@inheritdoc}
      */
-    protected string $tag = 'video';
+    protected static string $tag = 'video';
 
-    protected array $types = [
+    /**
+     * @var array $types The supported video types
+     */
+    protected static array $types = [
         'mp4' => 'video/mp4',
         'webm' => 'video/webm',
         'ogg' => 'video/ogg'
     ];
 
     /**
+     * {@inheritdoc}
+     */
+    protected static array $properties = ['urls'];
+
+    /**
      * @see \Mars\Html\TagInterface::html()
      * {@inheritdoc}
      */
-    public function html(string $text = '', array $attributes = [], array $urls = []) : string
+    public function html(string $text = '', array $attributes = []) : string
     {
-        $html = $this->open($attributes);
-        $html.= $this->getSource($urls);
+        $html = $this->open($this->getAttributes($attributes));
+        $html.= $this->getSource($attributes['urls']);
         $html.= $this->close();
 
         return $html;
@@ -64,8 +72,8 @@ class Video extends Tag
     protected function getType(string $url) : string
     {
         $ext = $this->app->file->getExtension($url);
-        if (isset($this->types[$ext])) {
-            return $this->types[$ext];
+        if (isset(static::$types[$ext])) {
+            return static::$types[$ext];
         }
 
         return '';

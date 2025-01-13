@@ -12,26 +12,45 @@ use Mars\Html\Tag;
  * The Input Class
  * Renders an input field
  */
-class Input extends Tag
+class Input extends Tag implements FormInputInterface
 {
+    use FormInputTrait;
+
     /**
      * {@inheritdoc}
      */
-    protected string $tag = 'input';
+    protected static string $tag = 'input';
 
     /**
      * @var string $type The input's type
      */
-    protected string $type = 'text';
+    protected static string $type = 'text';
+
+    /**
+     * {@inheritdoc}
+     */
+    protected static bool $always_close = false;
+
+    /**
+     * The name of the name attribute
+     * @var string
+     */
+    protected static string $name_attribute = 'name';
+
+    /**
+     * The name of the value attribute
+     * @var string
+     */
+    protected static string $value_attribute = 'value';    
 
     /**
      * @see \Mars\Html\TagInterface::html()
      * {@inheritdoc}
      */
-    public function html(string $text = '', array $attributes = [], array $properties = []) : string
+    public function html(string $text = '', array $attributes = []) : string
     {
         $attributes = $this->generateIdAttribute($attributes);
 
-        return parent::html($text, ['type' => $this->type] + $attributes, $properties);
+        return parent::html($text, ['type' => static::$type] + $attributes);
     }
 }

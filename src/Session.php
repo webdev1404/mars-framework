@@ -16,6 +16,15 @@ use Mars\Session\DriverInterface;
 class Session
 {
     use InstanceTrait;
+
+    /**
+     * @var array $supported_drivers The supported drivers
+     */
+    protected array $supported_drivers = [
+        'php' => \Mars\Session\Php::class,
+        'db' => \Mars\Session\Db::class,
+        'memcache' => \Mars\Session\Memcache::class
+    ];
     
     /**
      * @var Drivers $drivers The drivers object
@@ -60,15 +69,6 @@ class Session
      * @var bool $started True if the session has been started
      */
     public protected(set) bool $started = false;
-
-    /**
-     * @var array $supported_drivers The supported drivers
-     */
-    protected array $supported_drivers = [
-        'php' => \Mars\Session\Php::class,
-        'db' => \Mars\Session\Db::class,
-        'memcache' => \Mars\Session\Memcache::class
-    ];
 
     /**
      * Starts the session

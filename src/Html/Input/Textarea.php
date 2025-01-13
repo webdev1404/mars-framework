@@ -12,21 +12,44 @@ use \Mars\Html\Tag;
  * The Textarea Class
  * Renders a textarea field
  */
-class Textarea extends Tag
+class Textarea extends Tag implements FormInputInterface
 {
+    use FormInputTrait;
+
     /**
      * {@inheritdoc}
      */
-    protected string $tag = 'textarea';
+    protected static string $tag = 'textarea';
+
+    /**
+     * The name of the name attribute
+     * @var string
+     */
+    protected static string $name_attribute = 'name';
+
+    /**
+     * The name of the value attribute
+     * @var string
+     */
+    protected static string $value_attribute = 'value'; 
+
+    /**
+     * {@inheritdoc}
+     */
+    protected static array $properties = ['value'];
 
     /**
      * @see \Mars\Html\TagInterface::html()
      * {@inheritdoc}
      */
-    public function html(string $text = '', array $attributes = [], array $properties = []) : string
+    public function html(string $text = '', array $attributes = []) : string
     {
+        if (!$text) {
+            $text = $attributes['value'] ?? '';
+        }
+
         $attributes = $this->generateIdAttribute($attributes);
 
-        return parent::html($text, $attributes, $properties);
+        return parent::html($text, $attributes);
     }
 }

@@ -16,6 +16,44 @@ class Bin
     use InstanceTrait;
 
     /**
+     * @var array $supported_printers The list of supported printers
+     */
+    public array $supported_printers = [
+        'list' => Mars\Bin\Listing::class,
+        'list_multi' => \Mars\Bin\ListingMulti::class,
+        'table' => \Mars\Bin\Table::class
+    ];   
+        
+    /**
+     * @var array $colors Array defining the user colors
+     */
+    public array $colors = [
+        '' => '0',
+        'default' => '0',
+        'message' => '0',
+        'error' => '0;41',
+        'warning' => '93',
+        'info' => '32',
+        'header' => '0;33',
+        'list_1' => '0;32',
+        'list_2' => '0',
+        'white' => '1;37',
+        'black' => '0;30',
+        'grey' => '1;30',
+        'light_grey' => '0;37',
+        'red' => '0;31',
+        'light_red' => '1;31',
+        'green' => '0;32',
+        'light_green' => '1;32',
+        'brown' => '0;33',
+        'yellow' => '1;33',
+        'blue' => '0;34',
+        'light_blue' => '1;34',
+        'magenta' => '0;35',
+        'cyan' => '1;36',
+    ]; 
+
+    /**
      * @var Handlers $handlers The printers object
      */
     public protected(set) Handlers $printers {
@@ -150,44 +188,6 @@ class Bin
             return $this->newline;
         }
     }
-
-    /**
-     * @var array $colors Array defining the user colors
-     */
-    public array $colors = [
-        '' => '0',
-        'default' => '0',
-        'message' => '0',
-        'error' => '0;41',
-        'warning' => '93',
-        'info' => '32',
-        'header' => '0;33',
-        'list_1' => '0;32',
-        'list_2' => '0',
-        'white' => '1;37',
-        'black' => '0;30',
-        'grey' => '1;30',
-        'light_grey' => '0;37',
-        'red' => '0;31',
-        'light_red' => '1;31',
-        'green' => '0;32',
-        'light_green' => '1;32',
-        'brown' => '0;33',
-        'yellow' => '1;33',
-        'blue' => '0;34',
-        'light_blue' => '1;34',
-        'magenta' => '0;35',
-        'cyan' => '1;36',
-    ];
-
-    /**
-     * @var array $supported_printers The list of supported printers
-     */
-    public array $supported_printers = [
-        'list' => Mars\Bin\Listing::class,
-        'list_multi' => \Mars\Bin\ListingMulti::class,
-        'table' => \Mars\Bin\Table::class
-    ];
 
     /**
      * Builds the Bin object

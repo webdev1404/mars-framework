@@ -25,21 +25,6 @@ abstract class Item extends Entity
     }
 
     /**
-     * @var Errors $errors The generated errors, if any
-     */
-    public protected(set) Errors $errors {
-        get {
-            if (isset($this->errors)) {
-                return $this->errors;
-            }
-
-            $this->errors = new Errors($this->app);
-
-            return $this->errors;
-        }
-    }
-
-    /**
      * @var string|array $fields The database fields to load
      */
     public string|array $fields = '*';
@@ -118,7 +103,7 @@ abstract class Item extends Entity
     /**
      * @var array $validation_rules_to_skip Validation rules to skip when validating, if any
      */
-    protected static array $validation_rules_to_skip = [];
+    protected array $validation_rules_to_skip = [];
 
     /**
      * @var array $validation_error_strings Custom error strings
@@ -131,6 +116,21 @@ abstract class Item extends Entity
     #[Hidden]
     protected Db $db {
         get => $this->app->db;
+    }
+
+    /**
+     * @var Errors $errors The generated errors, if any
+     */
+    public protected(set) Errors $errors {
+        get {
+            if (isset($this->errors)) {
+                return $this->errors;
+            }
+
+            $this->errors = new Errors($this->app);
+
+            return $this->errors;
+        }
     }
 
     /**
@@ -214,33 +214,6 @@ abstract class Item extends Entity
         $this->$id_field = $id;
 
         return $this;
-    }
-
-    /**
-     * Returns the validation rules
-     * @return array The rules
-     */
-    protected function getValidationRules() : array
-    {
-        return static::$validation_rules;
-    }
-
-    /**
-     * Returns the validation rules to skip
-     * @return array The rules to skip
-     */
-    protected function getValidationRulesToSkip() : array
-    {
-        return static::$validation_rules_to_skip;
-    }
-
-    /**
-     * Returns the validation error strings
-     * @return array The error strings
-     */
-    protected function getValidationErrorStrings() : array
-    {
-        return static::$validation_error_strings;
     }
 
     /**

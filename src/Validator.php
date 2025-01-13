@@ -18,19 +18,31 @@ class Validator
     use InstanceTrait;
 
     /**
-     * @var Errors $errors The generated errors, if any
+     * @var array $supported_rules The list of supported validation rules
      */
-    public protected(set) Errors $errors {
-        get {
-            if (isset($this->errors)) {
-                return $this->errors;
-            }
-
-            $this->errors = new Errors($this->app);
-
-            return $this->errors;
-        }
-    }
+    protected array $supported_rules = [
+        'req' => \Mars\Validators\Required::class,
+        'required' => \Mars\Validators\Required::class,
+        'unique' => \Mars\Validators\Unique::class,
+        'text' => \Mars\Validators\Text::class,
+        'string' => \Mars\Validators\Text::class,
+        'min' => \Mars\Validators\Min::class,
+        'max' => \Mars\Validators\Max::class,
+        'int' => \Mars\Validators\IntVal::class,
+        'min_int' => \Mars\Validators\MinInt::class,
+        'max_int' => \Mars\Validators\MaxInt::class,
+        'float' => \Mars\Validators\FloatVal::class,     
+        'min_float' => \Mars\Validators\MinFloat::class,
+        'max_float' => \Mars\Validators\MaxFloat::class,   
+        'interval' => \Mars\Validators\Interval::class,        
+        'pattern' => \Mars\Validators\Pattern::class,
+        'email' => \Mars\Validators\Email::class,
+        'url' => \Mars\Validators\Url::class,
+        'ip' => \Mars\Validators\Ip::class,
+        'time' => \Mars\Validators\Time::class,
+        'date' => \Mars\Validators\Date::class,
+        'datetime' => \Mars\Validators\Datetime::class,
+    ];
 
     /**
      * @var Handlers $rules The rules object
@@ -48,26 +60,19 @@ class Validator
     }
 
     /**
-     * @var array $supported_rules The list of supported validation rules
+     * @var Errors $errors The generated errors, if any
      */
-    protected array $supported_rules = [
-        'req' => \Mars\Validators\Required::class,
-        'required' => \Mars\Validators\Required::class,
-        'unique' => \Mars\Validators\Unique::class,
-        'min' => \Mars\Validators\Min::class,
-        'max' => \Mars\Validators\Max::class,
-        'interval' => \Mars\Validators\Interval::class,
-        'min_chars' => \Mars\Validators\MinChars::class,
-        'max_chars' => \Mars\Validators\MaxChars::class,
-        'chars' => \Mars\Validators\Chars::class,
-        'pattern' => \Mars\Validators\Pattern::class,
-        'email' => \Mars\Validators\Email::class,
-        'url' => \Mars\Validators\Url::class,
-        'ip' => \Mars\Validators\Ip::class,
-        'time' => \Mars\Validators\Time::class,
-        'date' => \Mars\Validators\Date::class,
-        'datetime' => \Mars\Validators\Datetime::class,
-    ];
+    public protected(set) Errors $errors {
+        get {
+            if (isset($this->errors)) {
+                return $this->errors;
+            }
+
+            $this->errors = new Errors($this->app);
+
+            return $this->errors;
+        }
+    }
 
     /**
      * Checks a value agains a validator
@@ -103,9 +108,12 @@ class Validator
             $value = App::getProperty($data, $field);
 
             $error_field = $field_rules['field'] ?? $field;
-            $rules_list = $field_rules['rules'] ?? $field_rules;
+            $rules_array = $field_rules['rules'] ?? $field_rules;
 
-            $rules_array = explode('|', $rules_list);
+            if (is_string($rules_array)) {
+                $rules_array = explode('|', $rules_array);
+            }
+
             foreach ($rules_array as $rule) {
                 $parts = explode(':', trim($rule));
                 $rule = reset($parts);

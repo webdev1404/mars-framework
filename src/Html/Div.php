@@ -15,5 +15,5 @@ class Div extends Tag
     /**
      * {@inheritdoc}
      */
-    protected string $tag = 'div';
+    protected static string $tag = 'div';
 }

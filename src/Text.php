@@ -17,6 +17,13 @@ class Text
     use InstanceTrait;
 
     /**
+     * @var array $supported_operations The list of supported operations
+     */
+    protected array $supported_operations = [
+        'parser' => \Mars\Text\Parser::class
+    ];
+
+    /**
      * @var Handlers $handlers The operations object
      */
     public protected(set) Handlers $operations {
@@ -30,13 +37,6 @@ class Text
             return $this->operations;
         }
     }
-
-    /**
-     * @var array $supported_operations The list of supported operations
-     */
-    protected array $supported_operations = [
-        'parser' => \Mars\Text\Parser::class
-    ];
 
     /**
      * Returns the first $max_length characters from text. If strlen($text) > $max_length will append $replace_with

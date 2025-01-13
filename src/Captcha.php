@@ -16,6 +16,13 @@ use Mars\Captcha\DriverInterface;
 class Captcha
 {
     use InstanceTrait;
+    
+    /**
+     * @var array $supported_drivers The supported drivers
+     */
+    protected array $supported_drivers = [
+        'recaptcha2' => \Mars\Captcha\Recaptcha2::class
+    ];    
 
     /**
      * @var bool $enabled Will be set to true, if captcha is enabled
@@ -56,13 +63,6 @@ class Captcha
             return $this->driver;
         }
     }
-
-    /**
-     * @var array $supported_drivers The supported drivers
-     */
-    protected array $supported_drivers = [
-        'recaptcha2' => \Mars\Captcha\Recaptcha2::class
-    ];
 
     /**
      * Checks the captcha is correct

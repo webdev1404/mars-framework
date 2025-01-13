@@ -1,20 +1,21 @@
 <?php
 /**
-* The Chars Validator Class
+* The Text Validator Class
 * @package Mars
 */
 
 namespace Mars\Validators;
 
 /**
- * The Chars Validator Class
+ * The Text Validator Class
+ * Validates the number of chars of a string
  */
-class Chars extends Rule
+class Text extends Rule
 {
     /**
      * {@inheritdoc}
      */
-    protected string $error_string = 'validate_minchars_error';
+    protected string $error_string = 'validate_text_error';
 
     /**
      * Validates the number of chars of a string
@@ -26,7 +27,7 @@ class Chars extends Rule
     public function isValid(string $value, ?int $min = null, ?int $max = null) : bool
     {
         if ($min === null || $max === null) {
-            throw new \Exception("The Chars Validator rule must have the minimum/maximum number of chars. specified. Eg: chars:1:5");
+            throw new \Exception("The text validator rule must have the minimum/maximum number of chars. specified. Eg: string:1:5");
         }
 
         $length = mb_strlen($value);

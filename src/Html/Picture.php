@@ -15,19 +15,24 @@ class Picture extends Tag
     /**
      * {@inheritdoc}
      */
-    protected string $tag = 'picture';
+    protected static string $tag = 'picture';
+
+    /**
+     * {@inheritdoc}
+     */
+    protected static array $properties = ['images'];
 
     /**
      * @see \Mars\Html\TagInterface::html()
      * {@inheritdoc}
      */
-    public function html(string $text = '', array $attributes = [], array $properties = []) : string
+    public function html(string $text = '', array $attributes = []) : string
     {
         $img = new Img($this->app);
 
         $html = $this->open();
-        $html.= $this->getImages($properties);
-        $html.= $img->html('', $attributes) . "\n";
+        $html.= $this->getImages($attributes['images']);
+        $html.= $img->html('', $this->getAttributes($attributes)) . "\n";
         $html.= $this->close();
 
         return $html;

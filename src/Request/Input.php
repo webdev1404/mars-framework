@@ -21,7 +21,7 @@ abstract class Input
      * The data to read from
      * @param array $data
      */
-    protected array $data = [];
+    public array $data = [];
 
     /**
      * Determines if a variable with this name is set

@@ -15,5 +15,5 @@ class Email extends Input
     /**
      * {@inheritdoc}
      */
-    protected string $type = 'email';
+    protected static string $type = 'email';
 }

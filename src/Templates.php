@@ -17,6 +17,13 @@ class Templates
     use InstanceTrait;
 
     /**
+     * @var array $supported_drivers The supported drivers
+     */
+    protected array $supported_drivers = [
+        'mars' => \Mars\Templates\Mars::class
+    ];
+
+    /**
      * @var Drivers $drivers The drivers object
      */
     public protected(set) Drivers $drivers {
@@ -45,13 +52,6 @@ class Templates
             return $this->driver;
         }
     }
-
-    /**
-     * @var array $supported_drivers The supported drivers
-     */
-    protected array $supported_drivers = [
-        'mars' => \Mars\Templates\Mars::class
-    ];
 
     /**
      * Parses the template content and returns it

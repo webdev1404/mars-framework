@@ -8,17 +8,12 @@ namespace Mars\Html;
 
 /**
  * The Label Class
- * Renders a label
+ * Renders a label tag
  */
-class Label extends \Mars\Html\Tag
+class Label extends Tag
 {
     /**
      * {@inheritdoc}
      */
-    protected string $tag = 'label';
-
-    /**
-     * {@inheritdoc}
-     */
-    protected string $newline = '';
+    protected static string $tag = 'label';
 }

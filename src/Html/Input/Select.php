@@ -12,12 +12,31 @@ use \Mars\Html\Tag;
  * The Select Class
  * Renders a select field
  */
-class Select extends Tag
+class Select extends Tag implements FormInputInterface
 {
+    use FormInputTrait;
+
     /**
      * @var string $type The tag's type
      */
-    public string $tag = 'select';
+    public static string $tag = 'select';
+
+    /**
+     * The name of the name attribute
+     * @var string
+     */
+    protected static string $name_attribute = 'name';
+
+    /**
+     * The name of the value attribute
+     * @var string
+     */
+    protected static string $value_attribute = 'selected';
+
+    /**
+     * {@inheritdoc}
+     */
+    protected static array $properties = ['options', 'selected'];
 
     /**
      * {@inheritdoc}
@@ -34,10 +53,13 @@ class Select extends Tag
      * @see \Mars\Html\TagInterface::html()
      * {@inheritdoc}
      */
-    public function html(string $text = '', array $attributes = [], array $properties = []) : string
+    public function html(string $text = '', array $attributes = []) : string
     {
+        $options = $attributes['options'] ?? [];
+        $selected = (array)($attributes['selected'] ?? []);
+
         $html = $this->open($attributes);
-        $html.= new Options($this->app)->html('', [], $properties);
+        $html.= new Options($this->app)->html('', ['options' => $options, 'selected' => $selected]);
         $html.= $this->close();
 
         return $html;

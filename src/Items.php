@@ -21,21 +21,6 @@ abstract class Items extends Entities
     use InstanceTrait;
 
     /**
-     * @var Errors $errors The generated errors, if any
-     */
-    public protected(set) Errors $errors {
-        get {
-            if (isset($this->errors)) {
-                return $this->errors;
-            }
-
-            $this->errors = new Errors($this->app);
-
-            return $this->errors;
-        }
-    }
-
-    /**
      * @var string|array $fields The database fields to load
      */
     public string|array $fields = '*';
@@ -56,6 +41,21 @@ abstract class Items extends Entities
     #[Hidden]
     protected Db $db {
         get => $this->app->db;
+    }
+
+    /**
+     * @var Errors $errors The generated errors, if any
+     */
+    public protected(set) Errors $errors {
+        get {
+            if (isset($this->errors)) {
+                return $this->errors;
+            }
+
+            $this->errors = new Errors($this->app);
+
+            return $this->errors;
+        }
     }
 
     /**

@@ -34,7 +34,7 @@ class Preconnect extends Preload
      */
     public function output()
     {
-        foreach ($this->list as $url) {
+        foreach ($this->urls as $url) {
             $this->outputUrl($url);
         }
     }

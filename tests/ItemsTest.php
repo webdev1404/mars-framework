@@ -1,6 +1,7 @@
 <?php
 
 use Mars\App;
+use Mars\Item;
 use Mars\Items;
 
 include_once(__DIR__ . '/Base.php');
@@ -11,8 +12,21 @@ include_once(__DIR__ . '/Base.php');
 class Cars extends Items
 {
     protected static string $table = 'cars';
-    protected static string $class = 'Car';
+    protected static string $class = 'MyCar';
 }
+
+/**
+ * @ignore
+ */
+class MyCar extends Item
+{
+    protected static string $table = 'cars';
+
+    protected static array $default_override = ['color' => 'mycolor'];
+
+    protected static array $default_ignore = ['name'];
+}
+
 
 /**
  * @ignore

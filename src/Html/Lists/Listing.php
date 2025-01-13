@@ -15,13 +15,18 @@ use Mars\Html\Tag;
 abstract class Listing extends Tag
 {
     /**
+     * {@inheritdoc}
+     */
+    protected static array $properties = ['items'];
+
+    /**
      * @see \Mars\Html\TagInterface::html()
      * {@inheritdoc}
      */
     public function html(string $text = '', array $attributes = [], array $items = []) : string
     {
-        $html = $this->open($attributes);
-        $html.= $this->getItems($items);
+        $html = $this->open($this->getAttributes($attributes));
+        $html.= $this->getItems($attributes['items']);
         $html.= $this->close();
 
         return $html;

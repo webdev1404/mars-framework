@@ -16,6 +16,13 @@ class Ui
     use InstanceTrait;
 
     /**
+     * @var array $supported_rules The list of supported rules
+     */
+    protected array $supported_uis = [
+        'pagination' => \Mars\Ui\Pagination::class
+    ];
+
+    /**
      * @var Handlers $handlers The handlers object
      */
     public protected(set) Handlers $uis {
@@ -29,13 +36,6 @@ class Ui
                 return $this->uis;
         }
     }
-
-    /**
-     * @var array $supported_rules The list of supported rules
-     */
-    protected array $supported_uis = [
-        'pagination' => \Mars\Ui\Pagination::class
-    ];
 
     /**
      * Builds pagination. The number of pages is computed as $total_items / $items_per_page.

@@ -17,5 +17,5 @@ class Optgroup extends Tag
     /**
      * {@inheritdoc}
      */
-    protected string $tag = 'optgroup';
+    protected static string $tag = 'optgroup';
 }

@@ -18,6 +18,13 @@ class Sql implements \Stringable
     use InstanceTrait;
 
     /**
+     * @var array $supported_drivers The supported drivers
+     */
+    protected array $supported_drivers = [
+        'mysql' => \Mars\Sql\Mysql::class
+    ];
+
+    /**
      * @var Drivers $drivers The drivers object
      */
     public protected(set) Drivers $drivers {
@@ -46,13 +53,6 @@ class Sql implements \Stringable
             return $this->driver;
         }
     }
-
-    /**
-     * @var array $supported_drivers The supported drivers
-     */
-    protected array $supported_drivers = [
-        'mysql' => \Mars\Sql\Mysql::class
-    ];
 
     /**
      * @var string $sql The sql code

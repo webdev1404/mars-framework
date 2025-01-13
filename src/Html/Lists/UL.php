@@ -15,5 +15,5 @@ class UL extends Listing
     /**
      * {@inheritdoc}
      */
-    protected string $tag = 'ul';
+    protected static string $tag = 'ul';
 }

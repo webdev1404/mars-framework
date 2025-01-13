@@ -17,6 +17,16 @@ class Screens
     use InstanceTrait;
 
     /**
+     * @var array $screens_list The list of supported screens
+     */
+    protected array $screens_list = [
+        'error' => \Mars\Screens\Error::class,
+        'message' => \Mars\Screens\Message::class,
+        'fatal_error' => \Mars\Screens\FatalError::class,
+        'permission_denied' => \Mars\Screens\PermissionDenied::class,
+    ];    
+
+    /**
      * @var Handlers $screens The screens handlers
      */
     public protected(set) Handlers $screens {
@@ -30,16 +40,6 @@ class Screens
             return $this->screens;
         }
     }
-
-    /**
-     * @var array $screens_list The list of supported screens
-     */
-    protected array $screens_list = [
-        'error' => \Mars\Screens\Error::class,
-        'message' => \Mars\Screens\Message::class,
-        'fatal_error' => \Mars\Screens\FatalError::class,
-        'permission_denied' => \Mars\Screens\PermissionDenied::class,
-    ];
 
     /**
      * Displays an error screen

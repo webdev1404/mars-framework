@@ -19,6 +19,15 @@ class Memcache
     use InstanceTrait;
 
     /**
+     * @var array $supported_drivers The supported drivers
+     */
+    protected array $supported_drivers = [
+        'redis' => \Mars\Memcache\Redis::class,
+        'memcache' => \Mars\Memcache\Memcache::class,
+        'memcached' => \Mars\Memcache\Memcached::class
+    ];
+    
+    /**
      * @var bool $enabled Will be set to true, if memcache is enabled
      */
     public bool $enabled {
@@ -79,15 +88,6 @@ class Memcache
     protected string $key {
         get => $this->app->config->key;
     }
-
-    /**
-     * @var array $supported_drivers The supported drivers
-     */
-    protected array $supported_drivers = [
-        'redis' => \Mars\Memcache\Redis::class,
-        'memcache' => \Mars\Memcache\Memcache::class,
-        'memcached' => \Mars\Memcache\Memcached::class
-    ];
 
     /**
      * Destroys the memcache object. Disconnects from the memcache server

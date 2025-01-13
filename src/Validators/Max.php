@@ -8,6 +8,7 @@ namespace Mars\Validators;
 
 /**
  * The Max Validator Class
+ * Validates the max number of chars of a string
  */
 class Max extends Rule
 {
@@ -17,18 +18,18 @@ class Max extends Rule
     protected string $error_string = 'validate_max_error';
 
     /**
-     * Validates that a value is lower than $max
+     * Validates the number of chars of a string
      * @param string $value The value
-     * @param int $max The maximum value
+     * @param int $length The minimum length of the string
      * @return bool
      */
-    public function isValid(string $value, int|float|null $max = null) : bool
+    public function isValid(string $value, ?int $length = null) : bool
     {
-        if ($max === null) {
-            throw new \Exception("The Max Validator rule must have the max number specified. Eg: max:5");
+        if ($length === null) {
+            throw new \Exception("The max validator rule must have the max number of chars. specified. Eg: max:5");
         }
 
-        if ($value <= $max) {
+        if (mb_strlen($value) <= $length) {
             return true;
         }
 

@@ -15,5 +15,5 @@ class Button extends Input
     /**
      * {@inheritdoc}
      */
-    protected string $type = 'button';
+    protected static string $type = 'button';
 }

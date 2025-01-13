@@ -42,7 +42,7 @@ abstract class ModelEntity extends Entity
     /**
      * @var array $validation_rules Validation rules
      */
-    protected array $validation_rules = [];
+    protected static array $validation_rules = [];
 
     /**
      * @var array $validation_rules_to_skip Validation rules to skip when validating, if any
@@ -52,7 +52,7 @@ abstract class ModelEntity extends Entity
     /**
      * @var array $validation_error_strings Custom error strings
      */
-    protected array $validation_error_strings = [];
+    protected static array $validation_error_strings = [];
 
     /**
      * Builds the Model

@@ -111,6 +111,21 @@ class Request
         }
     }
 
+    public protected(set) bool $is_post {
+        get {
+            if (isset($this->is_post)) {
+                return $this->is_post;
+            }
+
+            $this->is_post = false;
+            if ($this->method == 'post') {
+                $this->is_post = true;
+            }
+
+            return $this->is_post;
+        }
+    }
+
     /**
      * Builds the request object
      * @param App $app The app object

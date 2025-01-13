@@ -15,23 +15,8 @@ use Mars\App\InstanceTrait;
 class Filter
 {
     use InstanceTrait;
-
-    /**
-     * @var Handlers $filters The filters object
-     */
-    public protected(set) Handlers $filters {
-        get {
-            if (isset($this->filters)) {
-                return $this->filters;
-            }
-
-            $this->filters = new Handlers($this->supported_filters, null, $this->app);
-
-            return $this->filters;
-        }
-    }
-
-    /**
+    
+   /**
      * @var array $supported_filters The list of supported filters
      */
     protected array $supported_filters = [
@@ -53,7 +38,22 @@ class Filter
     protected array $aliases = [
         'str' => 'string',
         'pos' => 'absint',
-    ];
+    ];    
+
+    /**
+     * @var Handlers $filters The filters object
+     */
+    public protected(set) Handlers $filters {
+        get {
+            if (isset($this->filters)) {
+                return $this->filters;
+            }
+
+            $this->filters = new Handlers($this->supported_filters, null, $this->app);
+
+            return $this->filters;
+        }
+    }
 
     /**
      * Filters a value

@@ -10,10 +10,10 @@ namespace Mars\Validation;
  * The Validate Trait
  * Provides validation functionality
  * Classes using this trait must set these properties:
- * public readonly Errors $errors;
- * protected array $validation_rules = [];
+ * public Errors $errors;
+ * protected static array $validation_rules = [];
+ * protected static array $validation_error_strings = [];
  * protected array $validation_rules_to_skip = [];
- * protected array $validation_error_strings = [];
  */
 trait ValidateTrait
 {
@@ -25,7 +25,7 @@ trait ValidateTrait
     /**
      * @var array $validation_rules Validation rules
      */
-    /*protected array $validation_rules = [];*/
+    /*protected static array $validation_rules = [];*/
 
     /**
      * @var array $validation_rules_to_skip Validation rules to skip when validating, if any
@@ -35,7 +35,7 @@ trait ValidateTrait
     /**
      * @var array $validation_error_strings Custom error strings
      */
-    /*protected array $validation_error_strings = [];*/
+    /*protected array static $validation_error_strings = [];*/
 
     /**
      * Returns the validation rules
@@ -43,7 +43,7 @@ trait ValidateTrait
      */
     protected function getValidationRules() : array
     {
-        return $this->validation_rules;
+        return static::$validation_rules;
     }
 
     /**
@@ -61,7 +61,7 @@ trait ValidateTrait
      */
     protected function getValidationErrorStrings() : array
     {
-        return $this->validation_error_strings;
+        return static::$validation_error_strings;
     }
 
     /**

@@ -17,16 +17,16 @@ class Options extends Tag
     /**
      * {@inheritdoc}
      */
-    protected string $tag = 'option';
+    protected static string $tag = 'option';
 
     /**
      * @see \Mars\Html\TagInterface::html()
      * {@inheritdoc}
      */
-    public function html(string $text = '', array $attributes = [], array $properties = []) : string
+    public function html(string $text = '', array $attributes = []) : string
     {
-        $options = $properties['options'] ?? [];
-        $selected = (array) ($properties['selected'] ?? []);
+        $options = $attributes['options'] ?? [];
+        $selected = (array)($attributes['selected'] ?? []);
 
         if (!$options) {
             return '';

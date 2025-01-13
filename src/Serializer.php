@@ -17,6 +17,14 @@ use Mars\Serializers\DriverInterface;
 class Serializer
 {
     use InstanceTrait;
+    
+    /**
+     * @var array $supported_drivers The supported drivers
+     */
+    protected array $supported_drivers = [
+        'php' => \Mars\Serializers\Php::class,
+        'igbinary' => \Mars\Serializers\Igbinary::class,
+    ];    
 
     /**
      * @var Drivers $drivers The drivers object
@@ -65,14 +73,6 @@ class Serializer
             return $this->php_driver;
         }
     }
-
-    /**
-     * @var array $supported_drivers The supported drivers
-     */
-    protected array $supported_drivers = [
-        'php' => \Mars\Serializers\Php::class,
-        'igbinary' => \Mars\Serializers\Igbinary::class,
-    ];
 
     /**
      * Returns the driver used to serialize/unserialize

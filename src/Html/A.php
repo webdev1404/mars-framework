@@ -15,10 +15,10 @@ class A extends \Mars\Html\Tag
     /**
      * {@inheritdoc}
      */
-    protected string $tag = 'a';
+    protected static string $tag = 'a';
 
     /**
      * {@inheritdoc}
      */
-    protected string $newline = '';
+    protected static string $newline = '';
 }

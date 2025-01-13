@@ -15,5 +15,5 @@ class Time extends Input
     /**
      * {@inheritdoc}
      */
-    protected string $type = 'time';
+    protected static string $type = 'time';
 }

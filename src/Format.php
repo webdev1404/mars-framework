@@ -16,6 +16,17 @@ use Mars\App\InstanceTrait;
 class Format
 {
     use InstanceTrait;
+    
+    /**
+     * @var array $supported_formats The list of supported formats
+     */
+    protected array $supported_formats = [
+        'percentage' => \Mars\Formats\Percentage::class,
+        'filesize' => \Mars\Formats\Filesize::class,
+        'time_interval' => \Mars\Formats\TimeInterval::class,
+        'js_array' => \Mars\Formats\JsArray::class,
+        'js_object' => \Mars\Formats\JsObject::class,
+    ];    
 
     /**
      * @var Handlers $format The format object
@@ -31,17 +42,6 @@ class Format
             return $this->format;
         }
     }
-
-    /**
-     * @var array $supported_formats The list of supported formats
-     */
-    protected array $supported_formats = [
-        'percentage' => \Mars\Formats\Percentage::class,
-        'filesize' => \Mars\Formats\Filesize::class,
-        'time_interval' => \Mars\Formats\TimeInterval::class,
-        'js_array' => \Mars\Formats\JsArray::class,
-        'js_object' => \Mars\Formats\JsObject::class,
-    ];
 
     /**
      * Converts a value to lowercase

@@ -22,6 +22,14 @@ class Response
     use GhostTrait;
 
     /**
+     * @var array $supported_$responses The supported $responses types
+     */
+    protected array $supported_responses = [
+        'ajax' => \Mars\Response\Types\Ajax::class,
+        'html' => \Mars\Response\Types\Html::class
+    ];
+
+    /**
      * @var Handlers $responses The $responses object
      */
     public protected(set) Handlers $responses {
@@ -63,14 +71,6 @@ class Response
             }
         }
     }
-
-    /**
-     * @var array $supported_$responses The supported $responses types
-     */
-    protected array $supported_responses = [
-        'ajax' => \Mars\Response\Types\Ajax::class,
-        'html' => \Mars\Response\Types\Html::class
-    ];
 
     /**
      * Builds the Response object

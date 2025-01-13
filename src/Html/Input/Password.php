@@ -15,5 +15,5 @@ class Password extends Input
     /**
      * {@inheritdoc}
      */
-    protected string $type = 'password';
+    protected static string $type = 'password';
 }

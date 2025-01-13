@@ -15,23 +15,28 @@ class Img extends Tag
     /**
      * {@inheritdoc}
      */
-    protected string $tag = 'img';
+    protected static string $tag = 'img';
 
     /**
      * {@inheritdoc}
      */
-    protected string $newline = '';
+    protected static string $newline = '';
+
+    /**
+     * {@inheritdoc}
+     */
+    protected static bool $always_close = false;
 
     /**
      * @see \Mars\Html\TagInterface::get()
      * {@inheritdoc}
      */
-    public function html(string $text = '', array $attributes = [], array $properties = []) : string
+    public function html(string $text = '', array $attributes = []) : string
     {
         if (empty($attributes['alt'])) {
             $attributes['alt'] = basename($attributes['src'] ?? '');
         }
         
-        return parent::html($text, $attributes, $properties);
+        return parent::html($text, $attributes);
     }
 }

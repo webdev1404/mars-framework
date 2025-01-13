@@ -15,5 +15,5 @@ class OL extends Listing
     /**
      * {@inheritdoc}
      */
-    protected string $tag = 'ol';
+    protected static string $tag = 'ol';
 }

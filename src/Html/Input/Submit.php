@@ -15,5 +15,5 @@ class Submit extends Input
     /**
      * {@inheritdoc}
      */
-    protected string $type = 'submit';
+    protected static string $type = 'submit';
 }

@@ -6,6 +6,8 @@
 
 namespace Mars\Html\Input;
 
+use Mars\Html\Label;
+
 /**
  * The Checkbox Class
  * Renders a checkbox
@@ -15,19 +17,24 @@ class Checkbox extends Input
     /**
      * {@inheritdoc}
      */
-    protected string $type = 'checkbox';
+    protected static string $type = 'checkbox';
+
+    /**
+     * {@inheritdoc}
+     */
+    protected static array $properties = ['label'];
 
     /**
      * @see \Mars\Html\TagInterface::html()
      * {@inheritdoc}
      */
-    public function html(string $text = '', array $attributes = [], array $properties = []) : string
+    public function html(string $text = '', array $attributes = []) : string
     {
-        $label = $properties['label'] ?? '';
+        $label = $attributes['label'] ?? '';
 
         $attributes = $this->generateIdAttribute($attributes);
 
-        $html = parent::html($text, $attributes, $properties);
+        $html = parent::html($text, $attributes);
         if ($label) {
             $html.= new Label($this->app)->html($label, ['for' => $attributes['id']]);
         }

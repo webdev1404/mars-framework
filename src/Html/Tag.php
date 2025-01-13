@@ -20,22 +20,27 @@ class Tag implements TagInterface
     /**
      * @var string $tag The tag's tag
      */
-    protected string $tag = '';
-
-    /**
-     * @var string $type The tag's attributes, if any
-     */
-    public array $attributes = [];
+    protected static string $tag = '';
 
     /**
      * @var bool $escape If true, will escape the content
      */
-    public bool $escape = true;
+    public static bool $escape = true;
 
     /**
      * @var string $newline Newline to add after the tag, if any
      */
-    protected string $newline = "\n";
+    protected static string $newline = "\n";
+
+    /**
+     * @var string $always_close If true, the tag will always be closed
+     */
+    protected static bool $always_close = true;
+
+    /**
+     * @var array $properties The tag's properties
+     */
+    protected static array $properties = [];
 
     /**
      * Opens the tag
@@ -44,9 +49,9 @@ class Tag implements TagInterface
      */
     public function open(array $attributes = []) : string
     {
-        $attributes = $this->app->html->getAttributes($attributes);
+        $attributes = $this->app->html->getAttributes($this->getAttributes($attributes));
 
-        return "<{$this->tag}{$attributes}>" . $this->newline;
+        return '<' . static::$tag . $attributes . '>' . static::$newline;
     }
 
     /**
@@ -55,24 +60,42 @@ class Tag implements TagInterface
      */
     public function close() : string
     {
-        return "</{$this->tag}>" . $this->newline;
+        return '</' . static::$tag . '>' . static::$newline;
     }
 
     /**
      * @see \Mars\Html\TagInterface::get()
      * {@inheritdoc}
      */
-    public function html(string $text = '', array $attributes = [], array $properties = []) : string
+    public function html(string $text = '', array $attributes = []) : string
     {
-        $attributes = $this->app->html->getAttributes($attributes);
+        $attributes = $this->app->html->getAttributes($this->getAttributes($attributes));
 
         if ($text) {
-            $text = $this->escape ? $this->app->escape->html($text) : $text;
+            $text = static::$escape ? $this->app->escape->html($text) : $text;
 
-            return "<{$this->tag}{$attributes}>" . $text . "</{$this->tag}>" . $this->newline;
+            return '<' . static::$tag . $attributes . '>' . $text . '</' . static::$tag . '>' . static::$newline;
         } else {
-            return "<{$this->tag}{$attributes}>" . $this->newline;
+            $html = '<' . static::$tag . $attributes . '>';
+            if (static::$always_close) {
+                $html.= '</' . static::$tag . '>';
+            }
+            $html.= static::$newline;
+
+            return $html;
         }
+    }
+
+    /**
+     * Returns the tag's attributes, with the properties removed
+     */
+    protected function getAttributes(array $attributes) : array 
+    {
+        if (!static::$properties) {
+            return $attributes;
+        }
+
+        return App::unset($attributes, static::$properties);
     }
 
     /**
@@ -82,8 +105,12 @@ class Tag implements TagInterface
      */
     public function generateIdAttribute(array $attributes) : array
     {
-        if (!isset($attributes['no-id']) && !isset($attributes['id']) && isset($attributes['name'])) {
-            $attributes['id'] ??= $this->getIdName($attributes['name']);
+        if (isset($attributes['id'])) {
+            return $attributes;
+        }
+
+        if (!empty($attributes['name'])) {
+            $attributes['id'] = $this->getIdName($attributes['name']);
         }
 
         return $attributes;
