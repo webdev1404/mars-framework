@@ -71,16 +71,12 @@ final class ValidatorTest extends Base
 
     public function testText()
     {
+        $this->assertSame($this->app->validator->validate(['field' => 'abc'], ['field' => 'text:3']), true);
+        $this->assertSame($this->app->validator->validate(['field' => 'abc'], ['field' => 'text:5']), false);
         $this->assertSame($this->app->validator->validate(['field' => 'abc'], ['field' => 'text:0:3']), true);
-        $this->assertSame($this->app->validator->validate(['field' => 'abc'], ['field' => 'text:0:5']), true);
+        $this->assertSame($this->app->validator->validate(['field' => 'abc'], ['field' => 'text:0:5']), true);        
         $this->assertSame($this->app->validator->validate(['field' => 'abcdefg'], ['field' => 'text:0:3']), false);
         $this->assertSame($this->app->validator->validate(['field' => 'abcdefg'], ['field' => 'text:2:4']), false);
-
-        $this->expectException(\Exception::class);
-        $this->app->validator->validate(['field' => 'abc'], ['field' => 'text']);
-
-        $this->expectException(\Exception::class);
-        $this->app->validator->validate(['field' => 'abc'], ['field' => 'text:5']);
     }
 
     public function testMin()
@@ -106,6 +102,8 @@ final class ValidatorTest extends Base
     public function testInt()
     {
         $this->assertSame($this->app->validator->validate(['field' => '12'], ['field' => 'int']), true);
+        $this->assertSame($this->app->validator->validate(['field' => '12'], ['field' => 'int:5']), true);
+        $this->assertSame($this->app->validator->validate(['field' => '12'], ['field' => 'int:20']), false);
         $this->assertSame($this->app->validator->validate(['field' => 12], ['field' => 'int']), true);
         $this->assertSame($this->app->validator->validate(['field' => 'xxxx'], ['field' => 'int']), false);
         $this->assertSame($this->app->validator->validate(['field' => '12.0'], ['field' => 'int']), false);
@@ -143,8 +141,10 @@ final class ValidatorTest extends Base
     }
 
     public function testFloat()
-    {
-        $this->assertSame($this->app->validator->validate(['field' => '12'], ['field' => 'float']), true);
+    {        
+        $this->assertSame($this->app->validator->validate(['field' => '12.10'], ['field' => 'float']), true);
+        $this->assertSame($this->app->validator->validate(['field' => '12.56'], ['field' => 'float:5']), true);
+        $this->assertSame($this->app->validator->validate(['field' => '12.99'], ['field' => 'float:20']), false);
         $this->assertSame($this->app->validator->validate(['field' => 12], ['field' => 'float']), true);
         $this->assertSame($this->app->validator->validate(['field' => 'xxxx'], ['field' => 'float']), false);
         $this->assertSame($this->app->validator->validate(['field' => '12.0'], ['field' => 'float']), true);

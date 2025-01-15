@@ -28,4 +28,13 @@ trait FormInputTrait
     {
         return static::$value_attribute;
     }
+
+    /**
+     * {@inheritdoc}
+     * @see \Mars\Html\Input\FormInputInterface::getAllowedValues()
+     */
+    public function isAllowedValues(string|array $value, array $attributes) : bool
+    {
+        return true;
+    }
 }

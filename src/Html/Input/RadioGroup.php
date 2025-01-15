@@ -6,41 +6,37 @@
 
 namespace Mars\Html\Input;
 
+use Mars\App;
 use \Mars\Html\Tag;
 
 /**
- * The Checkbox Class
- * Renders a checkbox
+ * The Radio Group Class
+ * Renders a group of radio buttons
  */
-class RadioGroup extends Tag
+class RadioGroup extends CheckboxGroup
 {
     /**
      * {@inheritdoc}
      */
-    protected static array $properties = ['values', 'checked'];
+    protected function getInput() : Tag
+    {
+        return new Radio($this->app);
+    }
 
     /**
-     * @see \Mars\Html\TagInterface::html()
-     * {@inheritdoc}
+     * Determines if the value is checked
+     * @param string $value The value to check
+     * @param string|array $checked The checked value
+     * @return bool
      */
-    public function html(string $text = '', array $attributes = []) : string
+    protected function isChecked(string $value, string|array $checked) : bool
     {
-        $values = $attributes['values'] ?? [];
-        $checked = $attributes['checked'] ?? '';
+        $checked = App::getString($checked);
 
-        if (!$values) {
-            return '';
+        if ($checked == $value) {
+            return true;
         }
 
-        $attributes = $this->getAttributes($attributes);
-        
-        $radio = new Radio($this->app);
-
-        $html = '';
-        foreach ($values as $value => $label) {
-            $html.= $radio->html('', ['value' => $value, 'checked' => $value == $checked, 'label' => $label] + $attributes);
-        }
-
-        return $html;
+        return false;
     }
 }

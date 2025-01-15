@@ -12,6 +12,7 @@ use Mars\Html\Tag;
 use Mars\Html\Form;
 use Mars\Html\Div;
 use Mars\Html\Input\Select;
+use Mars\Request\Input;
 
 /**
  * The HTML Class
@@ -45,6 +46,7 @@ class Html
         'button' => \Mars\Html\Input\Button::class,
         'submit' => \Mars\Html\Input\Submit::class,
         'checkbox' => \Mars\Html\Input\Checkbox::class,
+        'checkbox_group' => \Mars\Html\Input\CheckboxGroup::class,
         'radio' => \Mars\Html\Input\Radio::class,
         'radio_group' => \Mars\Html\Input\RadioGroup::class,
         'options' => \Mars\Html\Input\Options::class,
@@ -344,10 +346,19 @@ class Html
         return new Form(app: $this->app)->close();
     }
 
-    /*public function form(string $url, array $string $method = 'post') : string
+    /**
+     * Builds a form
+     * @param string $url The form's url
+     * @param array $fields The form's fields
+     * @param array $columns The form's columns
+     * @param array $attributes The form's attributes
+     * @param array $classes The form's classes for fields, columns, etc
+     * @param null|array|Input $data 
+     */
+    public function form(string $url, array $fields, array $columns, array $attributes = [], array $classes = [], null|array|Input $data = null) : string
     {
-        return $this->formOpen($url, $attributes, $method);
-    }*/
+        return new Form($url, $fields, $columns, $attributes, $classes, $data, $this->app)->html();
+    }
 
     /**
      * Builds an input field

@@ -64,4 +64,19 @@ class Select extends Tag implements FormInputInterface
 
         return $html;
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function isAllowedValues(string|array $value, array $attributes) : bool
+    {
+        $value = (array)$value;
+        $values = $attributes['options'] ?? [];       
+        
+        if (array_intersect($value, array_keys($values))) {
+            return true;
+        }
+
+        return false;
+    }
 }

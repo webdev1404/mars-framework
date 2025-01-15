@@ -104,7 +104,7 @@ class Tag implements TagInterface
      * @return array The attributes, including the id field
      */
     public function generateIdAttribute(array $attributes) : array
-    {
+    {        
         if (isset($attributes['id'])) {
             return $attributes;
         }

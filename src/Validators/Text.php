@@ -25,16 +25,20 @@ class Text extends Rule
      * @return bool
      */
     public function isValid(string $value, ?int $min = null, ?int $max = null) : bool
-    {
-        if ($min === null || $max === null) {
-            throw new \Exception("The text validator rule must have the minimum/maximum number of chars. specified. Eg: string:1:5");
-        }
-
+    {    
         $length = mb_strlen($value);
-        if ($length >= $min && $length <= $max) {
-            return true;
-        }
 
+        $min = $min ?? 0;
+        if ($max) {
+            if ($length >= $min && $length <= $max) {
+                return true;
+            }
+        } else {
+            if ($length >= $min) {
+                return true;
+            }
+        }
+        
         return false;
     }
 }

@@ -190,6 +190,20 @@ trait UtilsTrait
     }
 
     /**
+     * Returns a string from a value
+     * @param mixed $value The value
+     * @return string
+     */
+    public static function getString(mixed $value) : string
+    {
+        if (is_array($value)) {
+            return reset($value);
+        }
+
+        return (string)$value;
+    }
+
+    /**
      * Maps a value [scalar|array] to a callback
      * @param mixed $value The value
      * @param callable $callback The callback function

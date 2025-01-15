@@ -90,6 +90,8 @@ class Form extends \Mars\Html\Tag
      * @param array $fields The form's fields
      * @param array $columns The form's columns
      * @param array $attributes The form's attributes
+     * @param array $classes The form's classes for fields, columns, etc
+     * @param null|array|Input $data 
      * @param App|null $app The app
      */
     public function __construct(string $url = '', array $fields = [], array $columns = [], array $attributes = [], array $classes = [], null|array|Input $data = null, ?App $app = null)
@@ -300,11 +302,28 @@ class Form extends \Mars\Html\Tag
      */
     protected function getInputValue(FormInputInterface $obj, string $name, array $attributes) : null|string|array
     {
-        //if the value is fixed, return the value attribute
+        //if the value is fixed, like for example for hidden fields, return the value attribute iregardless of the post data
         if (!empty($obj::$value_fixed) || !empty($attributes['value_fixed'])) {
             return $attributes[$obj->getValueAttribute()] ?? null;
         }
 
+        $value = $this->getInputValueFromData($name);
+
+        //check if the value is set in on allowed values list
+        if ($obj->isAllowedValues($value, $attributes)) {
+            return $value;
+        }
+    
+        return $attributes[$obj->getValueAttribute()] ?? null;
+    }
+
+    /**
+     * Returns the value of an input field, from data
+     * @param string $name The name of the field
+     * @return string The value of the field
+     */
+    protected function getInputValueFromData(string $name) : string|array
+    {    
         if ($this->data === null) {
             //read from post
             if ( $this->app->request->is_post) {
@@ -319,8 +338,8 @@ class Form extends \Mars\Html\Tag
                 }
             }
         }
-        
-        return $attributes[$obj->getValueAttribute()] ?? null;
+
+        return '';
     }
 
     /**
@@ -328,6 +347,21 @@ class Form extends \Mars\Html\Tag
      * @return bool True if the form is valid, false otherwise
      */
     public function validate() : bool
+    {
+        if (!$this->app->validator->validate($this->getValidationData(), $this->getValidationRules)) {
+            $this->errors = $this->app->validator->errors;
+
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Returns the validation rules, based on the fields with a 'validate' attribute
+     * @return array The validation rules
+     */
+    protected function getValidationRules() : array
     {
         $rules = [];
         foreach ($this->fields as $name => $field) {
@@ -338,6 +372,15 @@ class Form extends \Mars\Html\Tag
             $rules[$name] = $field['validate'];
         }
 
+        return $rules;
+    }
+
+    /**
+     * Returns the data to validate
+     * @return array The data to validate
+     */
+    protected function getValidationData() : array
+    {
         $data = [];
         if ($this->data === null) {
             $data = $this->app->request->post->data;                
@@ -349,13 +392,6 @@ class Form extends \Mars\Html\Tag
             }
         }
 
-        if (!$this->app->validator->validate($data, $rules)) {
-            $this->errors = $this->app->validator->errors;
-
-            return false;
-        }
-
-        return true;
-
+        return $data;
     }
 }
