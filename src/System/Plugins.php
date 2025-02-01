@@ -205,7 +205,7 @@ class Plugins
      */
     protected function endTimer(string $name, string $hook)
     {
-        $time = $this->app->timer->end('plugin_run');
+        $time = $this->app->timer->stop('plugin_run');
 
         $this->total_time+= $time;
 

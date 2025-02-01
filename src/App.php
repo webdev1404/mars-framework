@@ -1035,7 +1035,7 @@ class App
 
         if ($this->config->debug) {
             $this->output_size = strlen($output);
-            $this->output_time = $this->timer->end('app_output_content');
+            $this->output_time = $this->timer->stop('app_output_content');
 
             $output.= $this->getDebugOutput();
         }

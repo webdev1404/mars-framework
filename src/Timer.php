@@ -55,7 +55,7 @@ class Timer
      * @param bool $erase If true, will erase the timer
      * @return int Returns the time difference between the start and the end of the specified timer
      */
-    public function end(string $name = 'timer', bool $erase = true) : float
+    public function stop(string $name = 'timer', bool $erase = true) : float
     {
         if (!isset($this->timers[$name])) {
             return 0;

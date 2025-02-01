@@ -229,7 +229,7 @@ abstract class Extension extends Entity
     {
         $output = ob_get_clean();
 
-        $this->exec_time = $this->app->timer->end('extension_output');
+        $this->exec_time = $this->app->timer->stop('extension_output');
 
         return $output;
     }

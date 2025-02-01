@@ -144,10 +144,13 @@ class Db
     /**
      * @var DriverInterface $read_driver The handle for the read queries
      */
-    public protected(set) DriverInterface $read_driver {
+    public protected(set) ?DriverInterface $read_driver {
         get {
             if (isset($this->read_driver)) {
                 return $this->read_driver;
+            }
+            if (!$this->read_database) {
+                return null;
             }
 
             try {
@@ -168,10 +171,13 @@ class Db
     /**
      * @var DriverInterface $write_driver The handle for the write queries
      */
-    public protected(set) DriverInterface $write_driver {
+    public protected(set) ?DriverInterface $write_driver {
         get {
             if (isset($this->write_driver)) {
                 return $this->write_driver;
+            }
+            if (!$this->write_database) {
+                return null;
             }
 
             try {
@@ -322,7 +328,7 @@ class Db
         }
 
         if ($this->debug) {
-            $exec_time = $this->app->timer->end('sql');
+            $exec_time = $this->app->timer->stop('sql');
 
             $this->queries_time+= $exec_time;
             $this->queries[] = [$this->getFullQuery($sql, $params), $exec_time];
