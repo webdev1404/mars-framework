@@ -155,7 +155,7 @@ abstract class Extension extends Entity
      */
     protected function getRootUrlStatic() : string
     {
-        return $this->app->getStaticUrl('extensions');
+        return $this->app->getStaticUrl('extensions_url');
     }
 
     /**

@@ -60,9 +60,14 @@ class Cache extends Cacheable
     protected string $extension = 'json';
 
     /**
-     * @var array $store_properties The properties which should be stored
+     * @var array $data The cached data
      */
-    protected array $store_properties = [];
+    protected array $data = [];
+
+    /**
+     * @var bool $loaded If true, the data has been loaded
+     */
+    protected bool $loaded = false;
 
     /**
      * Builds the Cache object
@@ -73,8 +78,19 @@ class Cache extends Cacheable
         $this->lazyLoad($app);
 
         parent::__construct($app);
+    }
 
-        $this->load();
+    /**
+     * Gets a cached value
+     * @param string $name The name of the value to get
+     */
+    public function get(string $name)
+    {
+        if (!$this->loaded) {
+            $this->load();
+        }
+
+        return $this->data[$name] ?? null;
     }
 
     /**
@@ -84,9 +100,7 @@ class Cache extends Cacheable
      */
     public function set(string $name, $value) : static
     {
-        $this->$name = $value;
-        
-        $this->store_properties[$name] = true;
+        $this->data[$name] = $value;
 
         $this->store();
 
@@ -99,8 +113,7 @@ class Cache extends Cacheable
      */
     public function unset(string $name) : static
     {
-        unset($this->$name);
-        unset($this->store_properties[$name]);
+        unset($this->data[$name]);
 
         $this->store();
 
@@ -112,31 +125,21 @@ class Cache extends Cacheable
      */
     protected function load()
     {
+        $this->loaded = true;
+
         $data = $this->driver->get($this->filename);
         if (!$data) {
             return;
         }
 
-        $data = json_decode($data, true);
-        foreach ($data as $name => $value) {
-            $this->$name = $value;
-        }
+        $this->data = json_decode($data, true);
     }
 
     /**
      * Stores the cached data
      */
     public function store()
-    {
-        $data = [];
-        foreach ($this->store_properties as $name => $value) {
-            $data[$name] = $this->$name;
-        }
-
-        if (!$data) {
-            return;
-        }
-
-        $this->driver->store($this->filename, json_encode($data));
+    {       
+        $this->driver->store($this->filename, json_encode($this->data));
     }
 }

@@ -150,7 +150,7 @@ class File
     }
 
     /**
-     * Returns the filename(strips the extension) of a file
+     * Returns the filename of a file
      * @param string $filename The filename for which the filename will be returned
      * @param bool $add_extension If true, will also return the extension
      * @return string The filename, without the extension

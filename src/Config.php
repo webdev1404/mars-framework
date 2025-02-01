@@ -634,8 +634,9 @@ class Config
      * @return static
      */
     public function read() : static
-    {
+    {        
         $this->readFile('config.php');
+        $this->plugins = $this->getFromFile('plugins.php');
 
         return $this;
     }
@@ -647,11 +648,19 @@ class Config
      */
     public function readFile(string $filename) : static
     {
-        $config = require($this->app->base_path . '/' . $filename);
-
-        $this->assign($config);
+        $this->assign($this->getFromFile($filename));
 
         return $this;
+    }
+
+    /**
+     * Reads the config settings from the specified $filename and returns it
+     * @param string $filename The filename
+     * @return array
+     */
+    public function getFromFile(string $filename) : array
+    {
+        return require($this->app->config_path . '/' . $filename);       
     }
 
     /**

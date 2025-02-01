@@ -22,6 +22,10 @@ class File implements DriverInterface
      */
     public function get(string $filename) : string
     {
+        if (!is_file($filename)) {
+            return '';
+        }
+
         return file_get_contents($filename);
     }
 

@@ -558,6 +558,11 @@ class App
     }
 
     /**
+     * @var string $config_path The folder where the config files are stored
+     */
+    public protected(set) string $config_path;
+
+    /**
      * @var string $log_path The folder where the log files are stored
      */
     public protected(set) string $log_path;
@@ -578,6 +583,11 @@ class App
     public protected(set) string $libraries_path;
 
     /**
+     * @var string $app_path The folder where the app files are stored
+     */
+    public protected(set) string $app_path;
+
+    /**
      * @var string $cache_url The url of the cache folder
      */
     public protected(set) string $cache_url;
@@ -591,6 +601,11 @@ class App
      * @var string $extensions_url The url of the extensions folder
      */
     public protected(set) string $extensions_url;
+
+    /**
+     * @var string $app_url The url of the app folder
+     */
+    public protected(set) string $app_url;
 
     /**
      * @var string $nonce The nonce token
@@ -678,19 +693,22 @@ class App
      * @const array DIRS The locations of the used dirs
      */
     public const array DIRS = [
+        'config_path' => 'config',
         'log_path' => 'log',
-        'tmp_path' => 'tmp',
+        'tmp_path' => 'tmp',        
         'cache_path' => 'cache',
         'libraries_path' => 'libraries',
-        'extensions_path' => 'extensions'
+        'extensions_path' => 'extensions',
+        'app_path' => 'app',
     ];
 
     /**
      * @const array URLS The locations of the used urls
      */
     public const array URLS = [
-        'extensions' => 'extensions',
-        'cache' => 'cache'
+        'extensions_url' => 'extensions',
+        'cache_url' => 'cache',
+        'app_url' => 'app',
     ];
 
     /**
@@ -741,11 +759,11 @@ class App
     protected function __construct()
     {
         $this->lazyLoad($this);
-
-        $this->setErrorReporting();
         
         $this->assignDirs(static::DIRS);
-        $this->assignUrls(static::URLS);        
+        $this->assignUrls(static::URLS);
+
+        $this->setErrorReporting();
     }
 
     /**
@@ -904,27 +922,11 @@ class App
     /**
      * Assigns the urls as app properties
      * @param array $urls The urls to assign
-     * @param string $base_url The base url
-     * @param string $prefix Prefix to place before the url
-     * @param string $suffix Suffix to append to the url, to the url, if any
      */
-    protected function assignUrls(array $urls, string $base_url = '', string $prefix = '', string $suffix = 'url')
+    protected function assignUrls(array $urls)
     {
-        if (!$base_url) {
-            $base_url = $this->base_url;
-        }
-        
-        if ($prefix) {
-            $prefix.= '_';
-        }
-        if ($suffix) {
-            $suffix = '_' . $suffix;
-        }
-
         foreach ($urls as $name => $url) {
-            $name = $prefix . $name . $suffix;
-
-            $this->$name = $base_url . '/' . rawurlencode($url);
+            $this->$name = $this->base_url . '/' . rawurlencode($url);
         }
     }
 
