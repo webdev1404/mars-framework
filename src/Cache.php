@@ -108,6 +108,46 @@ class Cache extends Cacheable
     }
 
     /**
+     * Gets the cached data from a file
+     * @param string $filename The name of the file
+     * @return mixed The cached data
+     */
+    public function getFromFile(string $filename)
+    {
+        $filename = $this->getFilename($filename);
+
+        $data = $this->driver->get($filename);
+   
+        if (!$data) {
+            return null;
+        }
+
+        return json_decode($data, true);
+    }
+
+    /**
+     * Stores data to a file
+     */
+    public function setToFile(string $filename, $data) : static
+    {
+        $filename = $this->getFilename($filename);
+
+        $this->driver->store($filename, json_encode($data));
+
+        return $this;
+    }
+
+    /**
+     * Gets the filename for a cache file
+     * @param string $filename The name of the file
+     * @return string The filename
+     */
+    protected function getFilename(string $filename) : string
+    {
+        return $this->path . '/' . $this->getFile($filename);
+    }
+
+    /**
      * Unsets a cached value
      * @param string $name The name of the value to unset
      */
@@ -129,7 +169,7 @@ class Cache extends Cacheable
 
         $data = $this->driver->get($this->filename);
         if (!$data) {
-            return;
+            return null;
         }
 
         $this->data = json_decode($data, true);

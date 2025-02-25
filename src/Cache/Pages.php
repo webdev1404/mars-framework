@@ -77,13 +77,13 @@ class Pages extends Cacheable
         $this->app = $app;
 
         if (!$this->app->is_web || !$this->app->config->cache_page_enable || defined('DISABLE_CACHE_PAGE')) {
-            //return;
+            return;
         }
         if ($this->app->config->debug || $this->app->config->development) {
-            //return;
+            return;
         }
         if ($this->app->request->method != 'get') {
-            //return;
+            return;
         }
 
         $this->can_cache = true;

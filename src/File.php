@@ -224,6 +224,16 @@ class File
     }
 
     /**
+     * Strips the extension from a filename
+     * @param string $filename The filename
+     * @return string The filename without the extension
+     */
+    public function stripExtension(string $filename) : string
+    {
+        return pathinfo($filename, PATHINFO_DIRNAME) . '/' . pathinfo($filename, PATHINFO_FILENAME);
+    }
+
+    /**
      * Builds a path from an array.
      * @param array $elements The elements from which the path will be built. Eg: $elements=array('/var','www'); it will return /var/www
      * @return string The built path

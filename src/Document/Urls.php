@@ -286,7 +286,7 @@ abstract class Urls
      */
     public function getNonce() : string
     {
-        if (!$this->app->config->headers_csp_enable || !$this->app->config->headers_csp_use_nonce) {
+        if (!$this->app->config->csp_enable || !$this->app->config->csp_use_nonce) {
             return '';
             
         }

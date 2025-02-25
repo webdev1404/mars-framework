@@ -50,7 +50,7 @@ class Plugins
             
             $modules_namespace = Module::getBaseNamespace() . '\\';
 
-            $plugins = $this->app->config->plugins ?? [];
+            $plugins = $this->app->config->plugins_list ?? [];
             foreach ($plugins as $class_name) {
                 $class_name = ltrim($class_name, '\\');
 

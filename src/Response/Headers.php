@@ -64,7 +64,7 @@ class Headers
      */
     public function output()
     {
-        if ($this->app->config->headers_csp_enable) {
+        if ($this->app->config->csp_enable) {
             $this->csp->output();
         }
 

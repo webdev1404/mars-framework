@@ -20,6 +20,24 @@ class Config
     use PropertiesTrait;
 
     /**
+     * List of files to autoload
+     */
+    protected $autoload_files = [        
+        ['cache.php', 'cache'],       
+        ['memcache.php', 'memcache'],
+        ['db.php', 'db'],        
+        ['mail.php', 'mail'],
+        ['plugins.php', 'plugins'],
+        ['accelerators.php', 'accelerators'],
+        ['csp.php', 'csp'],
+        ['early_hints.php', 'early_hints'],
+        ['headers.php'],
+        ['proxy.php'],
+        ['drivers.php'],
+        ['app.php']
+    ];
+
+    /**
      * @var int $display_errors Controls whether errors should be displayed or not
      */
     public int $display_errors = 1;
@@ -120,29 +138,29 @@ class Config
     public array $headers = [];
 
     /**
-     * @var bool $headers_early_hints_enable If true, will enable the early hints headers
+     * @var bool $early_hints_enable If true, will enable the early hints headers
      */
-    public bool $headers_early_hints_enable = false;
+    public bool $early_hints_enable = false;
 
     /**
-     * @var array $headers_early_hints Custom scripts to be sent as early hints
+     * @var array $early_hints_headers Custom scripts to be sent as early hints
      */
-    public array $headers_early_hints = [];
+    public array $early_hints_headers = [];
     
     /**
-     * @var bool $headers_csp_enable If true, will enable the Content Security Policy headers
+     * @var bool $csp_enable If true, will enable the Content Security Policy headers
      */
-    public bool $headers_csp_enable = false;
+    public bool $csp_enable = false;
 
     /**
      * @var bool $headers_csp_use_nonce If true, will use a nonce for the csp headers
      */
-    public bool $headers_csp_use_nonce = false;
+    public bool $csp_use_nonce = false;
 
     /**
-     * @var array $headers_csp_defaults The default Content Security Policy headers
+     * @var array $csp_defaults The default Content Security Policy headers
      */
-    public array $headers_csp_defaults = [
+    public array $csp_defaults = [
         'default-src' => "'self'",
 		'script-src' => "'self' 'unsafe-inline'",
         'style-src' => "'self' 'unsafe-inline'",
@@ -150,9 +168,9 @@ class Config
     ];
 
     /**
-     * @var array $headers_csp The Content Security Policy headers
+     * @var array $csp_list The Content Security Policy headers
      */
-    public array $headers_csp = [];
+    public array $csp_list = [];
 
     /**
      * @var array $preload The urls to preload
@@ -467,9 +485,9 @@ class Config
     public bool $plugins_enable = true;
 
     /**
-     * @var array $plugins List of enabled plugins
+     * @var array $plugins_list List of enabled plugins
      */
-    public array $plugins = [];
+    public array $plugins_list = [];
 
     /**
      * @var int $pagination_max_links The max number of pagination links to show
@@ -630,13 +648,19 @@ class Config
     }
 
     /**
-     * Reads the config settings from the config.php file
+     * Reads the config settings from the config.php file and the autoload files
      * @return static
      */
-    public function read() : static
-    {        
+    protected function read() : static
+    {                
         $this->readFile('config.php');
-        $this->plugins = $this->getFromFile('plugins.php');
+
+        foreach ($this->autoload_files as $file) {
+            $filename = $file[0];
+            $prefix = $file[1] ?? null;
+
+            $this->readFile($filename, $prefix);
+        }
 
         return $this;
     }
@@ -644,11 +668,12 @@ class Config
     /**
      * Reads the config settings from the specified $filename
      * @param string $filename The filename
+     * @param string $prefix The prefix to apply to the config options, if any
      * @return static
      */
-    public function readFile(string $filename) : static
+    public function readFile(string $filename, ?string $prefix = null) : static
     {
-        $this->assign($this->getFromFile($filename));
+        $this->assign($this->getFromFile($filename), $prefix);
 
         return $this;
     }
@@ -661,6 +686,25 @@ class Config
     public function getFromFile(string $filename) : array
     {
         return require($this->app->config_path . '/' . $filename);       
+    }
+
+    /**
+     * Assigns the data to the object
+     * @param array $data Array in the name=>value format
+     * @param string $prefix The prefix to apply to the config options, if any
+     * @return static
+     */
+    public function assign(array $data, ?string $prefix = null) : static
+    {
+        foreach ($data as $name => $value) {
+            if ($prefix) {
+                $name = $prefix . '_' . $name;
+            }
+
+            $this->$name = $value;
+        }
+
+        return $this;
     }
 
     /**
