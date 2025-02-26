@@ -772,7 +772,7 @@ class App
     public function boot()
     {
         //send the early hints headers as soon as possible
-        if ($this->config->early_hints_enable && $this->config->early_hints_headers) {
+        if ($this->config->early_hints_enable && $this->config->early_hints_list) {
             $this->response->headers->early_hints->output();
         }
         

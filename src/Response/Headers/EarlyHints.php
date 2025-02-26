@@ -55,8 +55,8 @@ class EarlyHints
             return;
         }
 
-        $this->preload->set($this->app->config->early_hints_headers['preload'] ?? []);
-        $this->preconnect->set($this->app->config->early_hints_headers['preconnect'] ?? []);
+        $this->preload->set($this->app->config->early_hints_list['preload'] ?? []);
+        $this->preconnect->set($this->app->config->early_hints_list['preconnect'] ?? []);
 
         if ($this->preload->count() || $this->preconnect->count()) {
             header("HTTP/1.1 103 Early Hints");

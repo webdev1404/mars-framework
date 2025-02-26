@@ -22,18 +22,8 @@ class Config
     /**
      * List of files to autoload
      */
-    protected $autoload_files = [        
-        ['cache.php', 'cache'],       
-        ['memcache.php', 'memcache'],
-        ['db.php', 'db'],        
-        ['mail.php', 'mail'],
-        ['plugins.php', 'plugins'],
-        ['accelerators.php', 'accelerators'],
-        ['csp.php', 'csp'],
-        ['early_hints.php', 'early_hints'],
-        ['headers.php'],
-        ['proxy.php'],
-        ['drivers.php'],
+    protected $autoload_files = [
+        ['plugins.php', 'plugins_list'],
         ['app.php']
     ];
 
@@ -143,9 +133,9 @@ class Config
     public bool $early_hints_enable = false;
 
     /**
-     * @var array $early_hints_headers Custom scripts to be sent as early hints
+     * @var array $early_hints_list Custom scripts to be sent as early hints
      */
-    public array $early_hints_headers = [];
+    public array $early_hints_list = [];
     
     /**
      * @var bool $csp_enable If true, will enable the Content Security Policy headers
@@ -275,12 +265,12 @@ class Config
     public ?bool $session_cookie_secure = null;
 
     /**
-     * @var bool $session_cookie_httponly If true then httponly flag will be set for the session cookie
+     * @var bool $session_cookie_httponly If true, the session cookie will be accessible only through the HTTP protocol
      */
     public ?bool $session_cookie_httponly = true;
 
     /**
-     * @var string $session_cookie_samesite The samesite value of the session_cookie
+     * @var string $session_cookie_samesite //The SameSite attribute of the session cookie. Supported options: Lax, Strict, None
      */
     public ?string $session_cookie_samesite = null;
 
@@ -305,12 +295,12 @@ class Config
     public int $cookie_expire_days = 30;
 
     /**
-     * @var string $cookie_path The path of the cookies
+     * @var string $cookie_path The path on the server in which the cookie will be available
      */
     public string $cookie_path = '/';
 
     /**
-     * @var string $cookie_domain The domain of the cookies
+     * @var string $cookie_domain The domain that the cookie is available to
      */
     public string $cookie_domain = '';
 
@@ -320,7 +310,7 @@ class Config
     public bool $cookie_secure = false;
 
     /**
-     * @var bool $cookie_httponly If true then httponly flag will be set for the cookies
+     * @var bool $cookie_httponly If true, the cookie will be accessible only through the HTTP protocol.
      */
     public bool $cookie_httponly = true;
 
@@ -657,9 +647,13 @@ class Config
 
         foreach ($this->autoload_files as $file) {
             $filename = $file[0];
-            $prefix = $file[1] ?? null;
+            $key = $file[1] ?? null;
 
-            $this->readFile($filename, $prefix);
+            if ($key) {
+                $this->$key = $this->getFromFile($filename);
+            } else {
+                $this->readFile($filename);
+            }
         }
 
         return $this;
@@ -668,12 +662,11 @@ class Config
     /**
      * Reads the config settings from the specified $filename
      * @param string $filename The filename
-     * @param string $prefix The prefix to apply to the config options, if any
      * @return static
      */
-    public function readFile(string $filename, ?string $prefix = null) : static
+    public function readFile(string $filename) : static
     {
-        $this->assign($this->getFromFile($filename), $prefix);
+        $this->assign($this->getFromFile($filename));
 
         return $this;
     }
@@ -686,25 +679,6 @@ class Config
     public function getFromFile(string $filename) : array
     {
         return require($this->app->config_path . '/' . $filename);       
-    }
-
-    /**
-     * Assigns the data to the object
-     * @param array $data Array in the name=>value format
-     * @param string $prefix The prefix to apply to the config options, if any
-     * @return static
-     */
-    public function assign(array $data, ?string $prefix = null) : static
-    {
-        foreach ($data as $name => $value) {
-            if ($prefix) {
-                $name = $prefix . '_' . $name;
-            }
-
-            $this->$name = $value;
-        }
-
-        return $this;
     }
 
     /**
