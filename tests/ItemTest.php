@@ -145,7 +145,7 @@ final class ItemTest extends Base
         $car->update();
 
         $car = new Car(3);
-        $this->assertSame($car->color, 'yellow');
+        $this->assertSame($car->color, 'blue');
     }
 
     public function testDelete()

@@ -200,7 +200,7 @@ abstract class Item extends Entity
     {
         $id_field = $this->getIdField();
 
-        return $this->$id_field;
+        return (int)($this->$id_field ?? 0);
     }
 
     /**
