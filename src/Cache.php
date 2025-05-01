@@ -112,7 +112,7 @@ class Cache extends Cacheable
      * @param string $filename The name of the file
      * @return mixed The cached data
      */
-    public function getFromFile(string $filename)
+    public function getFile(string $filename)
     {
         $filename = $this->getFilename($filename);
 
@@ -128,7 +128,7 @@ class Cache extends Cacheable
     /**
      * Stores data to a file
      */
-    public function setToFile(string $filename, $data) : static
+    public function setFile(string $filename, $data) : static
     {
         $filename = $this->getFilename($filename);
 
@@ -138,13 +138,48 @@ class Cache extends Cacheable
     }
 
     /**
+     * Gets an array from a php file
+     * @param string $filename The name of the file
+     * @return array The array
+     */
+    public function getArray(string $filename) : array
+    {
+        $filename = $this->getFilename($filename, 'php');
+
+        return include $filename;
+    }
+    
+    /**
+     * Stores an array to a php file
+     * @param string $filename The name of the file
+     * @param array $data The data to store
+     * @return static $this
+     */
+    public function setArray(string $filename, array $data) : static
+    {
+        $filename = $this->getFilename($filename, 'php');
+        
+        $content = "<?php\n\nreturn [\n";
+        foreach ($data as $key => $value) {
+            $content.= "    '{$key}' => '{$value}',\n";
+        }
+        
+        $content.= "];\n";
+        
+        file_put_contents($filename, $content);
+
+        return $this;
+    }
+
+    /**
      * Gets the filename for a cache file
      * @param string $filename The name of the file
+     * @param string|null $extension The extension of the file. If null, $this->extension will be used
      * @return string The filename
      */
-    protected function getFilename(string $filename) : string
+    protected function getFilename(string $filename, ?string $extension = null) : string
     {
-        return $this->path . '/' . $this->getFile($filename);
+        return $this->path . '/' . $this->getName($filename, $extension);
     }
 
     /**

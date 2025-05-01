@@ -81,7 +81,7 @@ abstract class Cacheable
                 return $this->filename;
             }
 
-            $this->filename = $this->path . '/' . $this->getFile($this->file);
+            $this->filename = $this->path . '/' . $this->getName($this->file);
 
             return $this->filename;
         }
@@ -100,12 +100,17 @@ abstract class Cacheable
     }
 
     /**
-     * Returns the file where the content will be cached
+     * Returns the file name where the content will be cached
      * @param string $id The id of the page
+     * @param string|null $extension The extension of the file. If null, $this->extension will be used
      * @return string
      */
-    protected function getFile(string $id) : string
+    protected function getName(string $id, ?string $extension = null) : string
     {
-        return hash($this->hash, $id . $this->app->config->key) . '.' . $this->extension;
+        if (!$extension) {
+            $extension = $this->extension;
+        }
+
+        return hash($this->hash, $id . $this->app->config->key) . '.' . $extension;
     }
 }

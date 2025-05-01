@@ -40,7 +40,8 @@ class Random
      */
     public function getString(int $max = 32) : string
     {
-        $str = bin2hex($this->randomizer->getBytes($max));
+        $bytes = ceil($max / 2);
+        $str = bin2hex($this->randomizer->getBytes($bytes));
 
         return substr($str, 0, $max);
     }

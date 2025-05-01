@@ -468,7 +468,7 @@ class App
                 return $this->url;
             }
 
-            $this->url = $this->uri->getRoot($this->base_url) . $this->uri->getPath($_SERVER["REQUEST_URI"] ?? '');
+            $this->url = $this->uri->getRoot($this->base_url) . $this->uri->getPath($_SERVER['REQUEST_URI'] ?? '');
             $this->url = filter_var($this->url, FILTER_SANITIZE_URL);
 
             return $this->url;
@@ -512,9 +512,8 @@ class App
 
                 if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
                     if (in_array($this->ip, $this->config->trusted_proxies)) {
-
-                        //HTTP_X_FORWARDED_FOR can contain multiple IPs. Use only the last one
-                        $this->ip = trim(end(explode(',', $_SERVER['HTTP_X_FORWARDED_FOR'])));                       
+                        //HTTP_X_FORWARDED_FOR can contain multiple IPs. Use only the first one
+                        $this->ip = trim(reset(explode(',', $_SERVER['HTTP_X_FORWARDED_FOR'])));                       
                     }
                 }
 
@@ -757,9 +756,9 @@ class App
      * Protected constructor
      */
     protected function __construct()
-    {
+    {        
         $this->lazyLoad($this);
-        
+ 
         $this->assignDirs(static::DIRS);
         $this->assignUrls(static::URLS);
 
