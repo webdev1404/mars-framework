@@ -33,7 +33,7 @@ class File implements DriverInterface
      * @see \Mars\Cache\Cachable\DriverInterface::store()
      * {@inheritdoc}
      */
-    public function store(string $filename, string $content) : bool
+    public function store(string $filename, string $content, string $type) : bool
     {
         return file_put_contents($filename, $content);
     }
@@ -55,12 +55,21 @@ class File implements DriverInterface
      * @see \Mars\Cache\Cachable\DriverInterface::delete()
      * {@inheritdoc}
      */
-    public function delete(string $filename) : bool
+    public function delete(string $filename, string $type) : bool
     {
         if (is_file($filename)) {
             return unlink($filename);
         }
 
         return true;
+    }
+
+    /**
+     * @see \Mars\Cache\Cachable\DriverInterface::clean()
+     * {@inheritdoc}
+     */
+    public function clean(string $dir, string $type)
+    {
+        $this->app->dir->clean($dir);
     }
 }

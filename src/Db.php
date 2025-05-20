@@ -519,7 +519,7 @@ class Db
     /**
      * Returns a key=>value pair with values from two columns
      * @param string $key_col The name of the column used as the key
-     * @param string $key_col The name of the column used as the value
+     * @param string $col The name of the column used as the value
      * @see Db::select()
      * @return array
      */

@@ -10,7 +10,7 @@ namespace Mars\Validators;
  * The Max Validator Class
  * Validates the max number of chars of a string
  */
-class Max extends Rule
+class Max extends Validator
 {
     /**
      * {@inheritdoc}

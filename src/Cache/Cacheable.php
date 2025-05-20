@@ -6,19 +6,15 @@
 
 namespace Mars\Cache;
 
-use Mars\App;
-use Mars\App\InstanceTrait;
 use Mars\Drivers;
 use Mars\Cache\Cacheable\DriverInterface;
 
 /**
-* The Cacheable Class
+ * The Cacheable Class
  * Caches content & serves it from cache
  */
-abstract class Cacheable
+abstract class Cacheable extends Base
 {
-    use InstanceTrait;
-    
     /**
      * @var array $supported_drivers The supported drivers
      */
@@ -60,31 +56,8 @@ abstract class Cacheable
     /**
      * @var string $driver The used driver
      */
-    protected string $driver_name = 'file'; 
-
-    /**
-     * @var string $path The folder where the content will be cached
-     */
-    protected string $path = '';
-
-    /**
-     * @var string $file The name of the file used to cache the content
-     */
-    protected string $file = '';
-
-    /**
-     * @var string $filename The filename of the file used to cache the content
-     */
-    protected string $filename {
-        get {
-            if (isset($this->filename)) {
-                return $this->filename;
-            }
-
-            $this->filename = $this->path . '/' . $this->getName($this->file);
-
-            return $this->filename;
-        }
+    protected string $driver_name {
+        get => $this->app->config->cache_driver;
     }
 
     /**

@@ -13,11 +13,9 @@ use Mars\Handlers;
 /**
  * The Mars Templates Engine
  *
- * The currently supported modifiers are:
- * raw,js,jscode,lower,upper,url,urlencode,urlrawencode,timestamp,date,date,cut,cut_middle,empty,strip_tags,nl2br,trim,http,https,ajax,to_url,ip,e,escape,round,count,number,path
- *
  * Syntax for including subtemplates
- * {% include template_name %}
+ * {% theme-template template_name %}
+ * {% template template_name %}
  * template_name must not include the extension
  *
  * Syntax for IF structures:
@@ -40,10 +38,10 @@ class Mars implements DriverInterface
      * @var array $supported_structures The list of supported parsers
      */
     protected array $supported_parsers = [
-        'include' => \Mars\Templates\Mars\IncludeParser::class,
-        'variable_double' => \Mars\Templates\Mars\VariableDoubleParser::class,
-        'variable_raw' => \Mars\Templates\Mars\VariableRawParser::class,
-        'variable' => \Mars\Templates\Mars\VariableParser::class,
+        'theme-templates' => \Mars\Templates\Mars\ThemeTemplatesParser::class,
+        'templates' => \Mars\Templates\Mars\TemplatesParser::class,
+        'variables_raw' => \Mars\Templates\Mars\VariablesRawParser::class,
+        'variables' => \Mars\Templates\Mars\VariablesParser::class,
         'if' => \Mars\Templates\Mars\IfParser::class,
         'foreach' => \Mars\Templates\Mars\ForeachParser::class
     ];    

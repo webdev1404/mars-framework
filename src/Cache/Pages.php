@@ -8,6 +8,7 @@ namespace Mars\Cache;
 
 use Mars\App;
 use Mars\Assets\Minifier;
+use Mars\Bin\Cache;
 
 /**
  * The Page Cache Class
@@ -16,9 +17,14 @@ use Mars\Assets\Minifier;
 class Pages extends Cacheable
 {
     /**
+     * @var string $dir The dir where the page files will be cached
+     */
+    protected string $dir = 'pages';
+
+    /**
      * @var bool $can_cache True if the content can be cached
      */
-    public bool $can_cache = false;    
+    public bool $can_cache = false;
 
     /**
      * @var bool $minify True, if the output can be minified
@@ -35,13 +41,6 @@ class Pages extends Cacheable
     }
 
     /**
-     * @var string $path The folder where the content will be cached
-     */
-    protected string $path {
-        get => $this->app->cache_path . '/pages';
-    }
-
-    /**
      * @var string $file The name of the file used to cache the content
      */
     public string $file {
@@ -53,6 +52,21 @@ class Pages extends Cacheable
             $this->file = $this->app->url_full;
 
             return $this->file;
+        }
+    }
+
+    /**
+     * @var string $filename The filename of the file used to cache the content
+     */
+    protected string $filename {
+        get {
+            if (isset($this->filename)) {
+                return $this->filename;
+            }
+
+            $this->filename = $this->path . '/' . $this->getName($this->file);
+
+            return $this->filename;
         }
     }
 
@@ -76,7 +90,7 @@ class Pages extends Cacheable
     {
         $this->app = $app;
 
-        if (!$this->app->is_web || !$this->app->config->cache_page_enable || defined('DISABLE_CACHE_PAGE')) {
+        if ($this->app->is_cli || !$this->app->config->cache_page_enable || defined('DISABLE_CACHE_PAGE')) {
             return;
         }
         if ($this->app->config->debug || $this->app->config->development) {
@@ -103,7 +117,7 @@ class Pages extends Cacheable
             $content = $this->minify($content);
         }
 
-        $this->driver->store($this->filename, $content);
+        $this->driver->store($this->filename, $content, $this->dir);
 
         return $this;
     }
@@ -114,7 +128,7 @@ class Pages extends Cacheable
      */
     public function delete() : static
     {        
-        $this->driver->delete($this->filename);
+        $this->driver->delete($this->filename, $this->dir);
 
         return $this;
     }
@@ -126,22 +140,20 @@ class Pages extends Cacheable
      */
     public function deleteFile(string $file) : static
     {
-        $filename = $this->path . '/' . $this->getFile($file);
+        $filename = $this->path . '/' . $this->getName($file);
 
-        $this->driver->delete($filename);
+        $this->driver->delete($filename, $this->dir);
 
         return $this;
     }
 
     /**
-     * Clears all the cached pages
+     * Cleans the pages cache
      */
-    public function clear() : static
+    public function clean() : static
     {
-        $dir = $this->path;
-
-        $this->app->dir->clean($dir);
-
+        $this->driver->clean($this->path, $this->dir);
+        
         return $this;
     }
 

@@ -47,10 +47,10 @@ class App
     public Accelerator $accelerator;
 
     /**
-     * @var Bin $bin The bin object
+     * @var Cli $cli The cli object
      */
     #[LazyLoad]
-    public Bin $bin;
+    public Cli $cli;
 
     /**
      * @var Cache $cache The cache object
@@ -340,17 +340,17 @@ class App
     protected static App $instance;
 
     /**
-     * @var bool $is_bin True if the app is run as a bin script
+     * @var bool $is_cli True if the app is run as a cli script
      */
-    public protected(set) bool $is_bin {        
+    public protected(set) bool $is_cli {        
         get {
-            if (isset($this->is_bin)) {
-                return $this->is_bin;
+            if (isset($this->is_cli)) {
+                return $this->is_cli;
             }
 
-            $this->is_bin = php_sapi_name() == 'cli';
+            $this->is_cli = php_sapi_name() == 'cli';
 
-            return $this->is_bin;
+            return $this->is_cli;
         }
     }
 
@@ -363,7 +363,7 @@ class App
                 return $this->is_web;
             }
 
-            $this->is_web = !$this->is_bin;
+            $this->is_web = !$this->is_cli;
 
             return $this->is_web;
         }
@@ -758,11 +758,6 @@ class App
     protected function __construct()
     {        
         $this->lazyLoad($this);
- 
-        $this->assignDirs(static::DIRS);
-        $this->assignUrls(static::URLS);
-
-        $this->setErrorReporting();
     }
 
     /**
@@ -770,6 +765,11 @@ class App
      */
     public function boot()
     {
+        $this->assignDirs(static::DIRS);
+        $this->assignUrls(static::URLS);
+
+        $this->setErrorReporting();
+
         //send the early hints headers as soon as possible
         if ($this->config->early_hints_enable && $this->config->early_hints_list) {
             $this->response->headers->early_hints->output();

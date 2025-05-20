@@ -10,7 +10,7 @@ namespace Mars\Validators;
  * The Text Validator Class
  * Validates the number of chars of a string
  */
-class Text extends Rule
+class Text extends Validator
 {
     /**
      * {@inheritdoc}

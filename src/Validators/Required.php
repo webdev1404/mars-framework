@@ -9,7 +9,7 @@ namespace Mars\Validators;
 /**
  * The Required Validator Class
  */
-class Required extends Rule
+class Required extends Validator
 {
     /**
      * {@inheritdoc}

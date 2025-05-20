@@ -21,18 +21,16 @@ class IfParser
      */
     public function parse(string $content, array $params = []) : string
     {
-        $content = preg_replace_callback('/\{\%\s*if(.*)\s*\%\}/iU', function (array $match) {
-            $condition = $this->getCondition($match);
-            
-            return '<?php if(' . $this->getCondition($match) . '){ ?>';
+        $content = preg_replace_callback('/\{%\s*if(.*)\s*%\}/iU', function (array $match) {
+            return '<?php if(' . $this->getCondition($match[1]) . '){ ?>';
         }, $content);
 
-        $content = preg_replace_callback('/\{\%\s*elseif(.*)\s*\%\}/isU', function (array $match) {
-            return '<?php } elseif(' . $this->getCondition($match) . '){ ?>';
+        $content = preg_replace_callback('/\{%\s*elseif(.*)\s*%\}/isU', function (array $match) {
+            return '<?php } elseif(' . $this->getCondition($match[1]) . '){ ?>';
         }, $content);
 
-        $content = preg_replace('/\{\%\s*else\s*\%\}/iU', '<?php } else { ?>', $content);
-        $content = preg_replace('/\{\%\s*endif\s*\%\}/iU', '<?php } ?>', $content);
+        $content = preg_replace('/\{%\s*else\s*%\}/iU', '<?php } else { ?>', $content);
+        $content = preg_replace('/\{%\s*endif\s*%\}/iU', '<?php } ?>', $content);
 
         return $content;
     }
@@ -42,33 +40,15 @@ class IfParser
      * @param array $match Callback match
      * @return string
      */
-    protected function getCondition(array $match) : string
+    protected function getCondition(string $value) : string
     {
-        $condition = $this->trimParentheses($match[1]);
-        
-        return new VariableParser($this->app)->replaceVariables($condition);
-    }
+        $value = trim($value);
 
-    /**
-     * Trims the parentheses of string, if any
-     * @param string $str The string
-     * @return string
-     */
-    protected function trimParentheses(string $str) : string
-    {
-        $str = trim($str);
-
-        if ($str[0] == '(') {
-            $str = substr($str, 1);
-            $len = strlen($str);
-
-            if ($str[$len - 1] == ')') {
-                $str = substr($str, 0, $len - 1);
-            }
-
-            $str = trim($str);
+        //remove the start/end brackets
+        if (str_starts_with($value, '(') && str_ends_with($value, ')')) {
+            $value = substr($value, 1, -1);
         }
 
-        return $str;
+        return new VariablesParser($this->app)->replaceVariables($value);
     }
 }

@@ -9,7 +9,7 @@ namespace Mars\Validators;
 /**
  * The Pattern Validator Class
  */
-class Pattern extends Rule
+class Pattern extends Validator
 {
     /**
      * {@inheritdoc}

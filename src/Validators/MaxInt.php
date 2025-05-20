@@ -10,7 +10,7 @@ namespace Mars\Validators;
  * The MaxInt Validator Class
  * Validates the max value of an integer
  */
-class MaxInt extends Rule
+class MaxInt extends Validator
 {
     /**
      * {@inheritdoc}

@@ -6,31 +6,16 @@
 
 namespace Mars\Cache;
 
-use Mars\App;
-use Mars\App\InstanceTrait;
-
 /**
  * The Templates Cache Class
  * Class which handles the caching of templates
  */
-class Templates
+class Templates extends Base
 {
-    use InstanceTrait;
-
     /**
-     * @var string $path The folder where the templates will be cached
+     * @var string $dir The dir where the templates will be cached
      */
-    protected string $path {
-        get {
-            if (isset($this->path)) {
-                return $this->path;
-            }
-
-            $this->path = $this->app->cache_path . '/templates';
-
-            return $this->path;
-        }
-    }
+    protected string $dir = 'templates';
 
     /**
      * Returns the filename of the cached template
@@ -84,13 +69,5 @@ class Templates
         if ($res === false) {
             throw new \Exception("Error writing to cache file: {$filename}");
         }
-    }
-    
-    /**
-     * Clears all the cached templates
-     */
-    public function clear()
-    {
-        $this->app->dir->clean($this->path);
-    }
+    }        
 }

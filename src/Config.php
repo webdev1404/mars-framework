@@ -635,6 +635,8 @@ class Config
         $this->read();
 
         $this->normalize();
+
+        $this->check();
     }
 
     /**
@@ -684,7 +686,7 @@ class Config
     /**
      * Normalizes the config options
      */
-    public function normalize()
+    protected function normalize()
     {
         if ($this->development) {
             $this->css_version = time();
@@ -699,6 +701,16 @@ class Config
 
         if ($this->debug) {
             $this->db_debug = true;
+        }
+    }
+
+    /**
+     * Checks if the proper config options are set
+     */
+    protected function check()
+    {
+        if (!$this->key) {
+            throw new \Exception("The key config option must be set");
         }
     }
 }

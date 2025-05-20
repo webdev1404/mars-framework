@@ -10,7 +10,7 @@ namespace Mars\Alerts;
  * The Errors Class
  * Errors container
  */
-class Errors extends Alerts
+class Errors extends Alert
 {
     /**
      * Returns true if no errors have been generated

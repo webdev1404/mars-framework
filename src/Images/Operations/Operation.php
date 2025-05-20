@@ -14,7 +14,7 @@ use Mars\Images\Image;
 /**
  * The Base Image Operations Class
  */
-abstract class Base
+abstract class Operation
 {
     use InstanceTrait;
 

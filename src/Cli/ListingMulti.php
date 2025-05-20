@@ -1,13 +1,13 @@
 <?php
 /**
-* The Multi List Bin Handler
+* The Multi List Cli Handler
 * @package Mars
 */
 
-namespace Mars\Bin;
+namespace Mars\Cli;
 
 /**
- * The Multi List Bin Handler
+ * The Multi List Cli Handler
  * Displays a list with multiple sections
  */
 class ListingMulti extends Listing
@@ -24,16 +24,16 @@ class ListingMulti extends Listing
         $max = $this->getMaxLength($data, $paddings_right);
 
         foreach ($data as $header => $list) {
-            $this->app->bin->header($header);
+            $this->app->cli->header($header);
             foreach ($list as $text) {
                 $this->printMulti($text, $colors, $paddings_left, $max);
             }
-            $this->app->bin->printNewline();
+            $this->app->cli->printNewline();
         }
     }
 
     /**
-     * @see \Mars\Bin\Base::getMaxLength()
+     * @see \Mars\Cli\Base::getMaxLength()
      * {@inheritdoc}
      */
     protected function getMaxLength(array $data, array $paddings_right = []) : array

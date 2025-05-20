@@ -1,6 +1,6 @@
 <?php
 /**
-* The Content Class
+* The Base Content Class
 * @package Mars
 */
 
@@ -10,7 +10,7 @@ use Mars\App;
 use Mars\App\InstanceTrait;
 
 /**
- * The Content Class
+ * The Base Content Class
  * Base class for content classes
  */
 abstract class Content

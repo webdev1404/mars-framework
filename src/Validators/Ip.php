@@ -9,7 +9,7 @@ namespace Mars\Validators;
 /**
  * The Ip Validator Class
  */
-class Ip extends Rule
+class Ip extends Validator
 {
     /**
      * {@inheritdoc}

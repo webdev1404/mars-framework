@@ -22,9 +22,10 @@ interface DriverInterface
      * Stores the content of an asset
      * @param string $filename The filename
      * @param string $content The content to store
+     * @param string $type The type of the asset
      * @return bool True on success, false on failure
      */
-    public function store(string $filename, string $content) : bool;
+    public function store(string $filename, string $content, string $type) : bool;
 
     /**
      * Returns the timestamp when the asset was last modified
@@ -36,7 +37,15 @@ interface DriverInterface
     /**
      * Deletes an asset
      * @param string $filename The filename
+     * @param string $type The type of the asset
      * @return bool True on success, false on failure
      */
-    public function delete(string $filename) : bool;
+    public function delete(string $filename, string $type) : bool;
+
+    /**
+     * Deletes all keys from the cache
+     * @param string $dir The directory to clean
+     * @param string $type The type of the keys
+     */
+    public function clean(string $dir, string $type);
 }

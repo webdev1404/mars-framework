@@ -1,6 +1,6 @@
 <?php
 /**
-* The Alerts Class
+* The Base Alerts Class
 * @package Mars
 */
 
@@ -11,11 +11,10 @@ use Mars\App\InstanceTrait;
 use Mars\Lists\ListSimpleTrait;
 
 /**
- * The Alerts Class
+ * The Base Alerts Class
  * Container for alerts
- *
  */
-abstract class Alerts implements \Countable, \IteratorAggregate
+abstract class Alert implements \Countable, \IteratorAggregate
 {
     use InstanceTrait;
     use ListSimpleTrait {

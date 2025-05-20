@@ -12,7 +12,7 @@ use Mars\App\InstanceTrait;
 /**
  * The Base Validator Class
  */
-abstract class Rule
+abstract class Validator
 {
     use InstanceTrait;
 

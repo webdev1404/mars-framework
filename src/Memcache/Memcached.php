@@ -70,6 +70,9 @@ class Memcached implements DriverInterface
     public function get(string $key)
     {
         $value = $this->handle->get($key);
+        if (!$value) {
+            return null;
+        }
 
         return unserialize($value);
     }

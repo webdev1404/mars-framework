@@ -10,7 +10,7 @@ namespace Mars\Validators;
  * The MinInt Validator Class
  * Validates the min value of an integer
  */
-class MinInt extends Rule
+class MinInt extends Validator
 {
     /**
      * {@inheritdoc}

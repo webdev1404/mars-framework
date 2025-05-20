@@ -150,7 +150,7 @@ class Memcache
     public function get(string $key, bool $unserialize = false)
     {
         if (!$this->enabled) {
-            return false;
+            return null;
         }
 
         $value = $this->driver->get($key . '-' . $this->key);
@@ -202,6 +202,79 @@ class Memcache
         }
 
         $this->driver->deleteAll();
+
+        return $this;
+    }
+
+    /**
+     * Gets all keys of a certain type
+     * @param string $type The type of the keys
+     * @return array The keys
+     */
+    public function getKeys(string $type) : array
+    {
+        $keys = $this->get("{$type}-all-keys") ?? [];
+        print_r($keys);
+        if ($keys) {
+            $keys = (array)json_decode($keys);
+        }
+
+        return $keys;
+    }
+
+    /**
+     * Stores the key in the cache, so we know which keys are used
+     * @param string $key The key to store
+     */
+    public function storeKey(string $key, string $type) : static
+    {        
+        $keys = $this->getKeys($type);
+        if (!in_array($key, $keys)) {
+            $keys[] = $key;
+        }
+
+        $this->set("{$type}-all-keys", json_encode($keys));
+
+        return $this;
+    }
+
+    /**
+     * Deletes a key from the list of keys
+     * @param string $key The key to delete
+     * @param string $type The type of the key
+     * @return static
+     */
+    public function deleteKey(string $key, string $type) : static
+    {
+        $keys = $this->getKeys($type);
+        $key_index = array_search($key, $keys);
+        if ($key_index !== false) {
+            unset($keys[$key_index]);
+        }
+
+        $this->set("{$type}-all-keys", json_encode($keys));
+
+        return $this;
+    }
+
+    /**
+     * Deletes the key entry itself
+     * @param string $type The type of the keys
+     * @return static
+     */
+    public function deleteKeyEntry(string $type) : static
+    {
+        $this->delete("{$type}-all-keys");
+
+        return $this;
+    }
+
+    public function deleteData(string $type) : static
+    {
+        $keys = $this->getKeys($type);
+        foreach ($keys as $key) {
+            $this->delete($key);
+        }
 
         return $this;
     }

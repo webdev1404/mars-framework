@@ -10,7 +10,7 @@ namespace Mars\Validators;
  * The MaxFloat Validator Class
  * Validates the max value of a float
  */
-class MaxFloat extends Rule
+class MaxFloat extends Validator
 {
     /**
      * {@inheritdoc}

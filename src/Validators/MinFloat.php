@@ -10,7 +10,7 @@ namespace Mars\Validators;
  * The MinFloat Validator Class
  * Validates the min value of a float
  */
-class MinFloat extends Rule
+class MinFloat extends Validator
 {
     /**
      * {@inheritdoc}

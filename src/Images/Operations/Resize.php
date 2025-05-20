@@ -9,7 +9,7 @@ namespace Mars\Images\Operations;
 /**
  * The Resize Image Class
  */
-class Resize extends Base
+class Resize extends Operation
 {
     /**
      * Resizes the image

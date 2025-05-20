@@ -1,6 +1,6 @@
 <?php
 /**
-* The Image Base Class
+* The Base Image Class
 * @package Mars
 */
 
@@ -11,7 +11,7 @@ use Mars\App;
 use Mars\App\InstanceTrait;
 
 /**
- * The Image Base Class
+ * The Base Image Class
  */
 abstract class Image
 {

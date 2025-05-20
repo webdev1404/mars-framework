@@ -42,7 +42,7 @@ class Device
             }
 
             $this->device = 'desktop';
-            if ($this->app->is_bin) {
+            if ($this->app->is_cli) {
                 return $this->device;
             }
             if ($this->app->config->development_device) {

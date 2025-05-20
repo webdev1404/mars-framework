@@ -9,7 +9,7 @@ namespace Mars\Extensions;
 use Mars\App;
 use Mars\LazyLoad;
 use Mars\LazyLoad\GhostTrait;
-use Mars\Templates;
+use Mars\Template;
 use Mars\Document;
 use Mars\Document\Css;
 use Mars\Document\Javascript;
@@ -59,6 +59,12 @@ class Theme extends Extension
     }
 
     /**
+     * @var Templat template The engine used to parse the template
+     */
+    #[LazyLoad]
+    public protected(set) Template $template;
+
+    /**
      * @var string $header_template The template which will be used to render the header
      */
     public string $header_template = 'header';
@@ -71,22 +77,7 @@ class Theme extends Extension
     /**
      * @var string $content_template The template which will be used to render the content
      */
-    public string $content_template = 'content';
-
-    /**
-     * @var string $templates_path The path for the theme's templates folder
-     */
-    protected string $templates_path {
-        get {
-            if (isset($this->templates_path)) {
-                return $this->templates_path;
-            }
-
-            $this->templates_path = $this->path . '/' . App::EXTENSIONS_DIRS['templates'];
-
-            return $this->templates_path;
-        }
-    }
+    public string $content_template = 'content';    
 
     /**
      * @var string $images_path The path for the theme's images folder
@@ -134,12 +125,6 @@ class Theme extends Extension
     protected string $content = '';
 
     /**
-     * @var Template templates The engine used to parse the template
-     */
-    #[LazyLoad]
-    protected Templates $templates;
-
-    /**
      * @internal
      */
     protected static string $type = 'theme';
@@ -164,33 +149,6 @@ class Theme extends Extension
         $this->lazyLoad($app);
 
         parent::__construct($name, $app);
-
-        $this->prepareVars();
-    }
-
-    /**
-     * Prepare the vars
-     */
-    protected function prepareVars()
-    {       
-        $this->vars = [
-            'app' => $this->app,
-            'this' => $this,
-            'theme' => $this,
-            'config' => $this->app->config,
-
-            'html' => $this->app->html,
-            'ui' => $this->app->ui,
-            'uri' => $this->app->uri,
-            'escape' => $this->app->escape,
-            'format' => $this->app->format,
-
-            'plugins' => $this->app->plugins,
-
-            'request' => $this->app->request,
-            'get' => $this->app->request->get,
-            'post' => $this->app->request->post,
-        ];
     }
 
     /**
@@ -278,142 +236,50 @@ class Theme extends Extension
      */
     public function render(string $template, array $vars = [])
     {
-        echo $this->getTemplate($template, $vars);
+        echo $this->template->render($template, $vars);
     }
 
     /**
      * Renders/Outputs a template, by filename
      * @param string $filename The filename of the template
-     * @param strint $type The template's type, if any
      * @param array $vars Vars to pass to the template, if any
      */
-    public function renderFilename(string $filename, array $vars = [], string $type = 'template')
+    public function renderFilename(string $filename, array $vars = [])
     {
-        echo $this->getTemplateFromFilename($filename, $vars, $type);
+        echo $this->template->renderFilename($filename, $vars);
     }
 
     /**
      * Loads a template and returns it's content
      * @param string $template The name of the template
      * @param array $vars Vars to pass to the template, if any
-     * @param strint $type The template's type, if any
      * @return string The template content
      */
-    public function getTemplate(string $template, array $vars = [], string $type = '') : string
+    public function getTemplate(string $template, array $vars = []) : string
     {
         if ($this->app->config->debug) {
             $this->templates_loaded[] = $template;
         }
 
-        $filename = $this->getTemplateFilename($template);
-        $cache_name = $this->app->cache->templates->getName($filename, $type);
-
-        $content = $this->getTemplateContent($filename, $cache_name, $vars, ['template' => $template]);
-
-        return $this->app->plugins->filter('theme_get_template', $content, $template, $vars, $type, $this);
+        return $this->template->get($template, $vars);
     }
 
     /**
      * Loads a template and returns it's content
      * @param string $filename The filename of the template
      * @param array $vars Vars to pass to the template, if any
-     * @param strint $type The template's type, if any
+     * @param string $type The template's type, if any
+     * @param array $params The template's params, if any
+     * @param bool $development If true, the template will be parsed in development mode
      * @return string The template content
      */
-    public function getTemplateFromFilename(string $filename, array $vars = [], string $type = 'template', bool $development = false) : string
+    public function getTemplateFromFilename(string $filename, array $vars = [], string $type = 'template', array $params = [], bool $development = false) : string
     {
         if ($this->app->config->debug) {
             $this->templates_loaded[] = $filename;
         }
 
-        $cache_file = $this->app->cache->templates->getName($filename, $type);
-
-        return $this->getTemplateContent($filename, $cache_file, $vars, [], $development);
-    }
-
-    /**
-     * Returns the contents of a template
-     * @param string $filename The filename from where the template will be loaded
-     * @param string $cache_file The name used to cache the template
-     * @param array $vars Vars to pass to the template, if any
-     * @param array $params Params to pass to the parser
-     * @param bool $development If true, won't cache the template
-     * @return string The template content
-     */
-    protected function getTemplateContent(string $filename, string $cache_name, array $vars, array $params = [], bool $development = false) : string
-    {
-        if ($vars) {
-            $this->addVars($vars);
-        }
-
-        if ($this->development || $development || !$this->app->cache->templates->exists($cache_name)) {
-            $this->writeTemplate($filename, $cache_name, ['filename' => $filename] + $params);
-        }
-
-        $content = $this->includeTemplate($cache_name);
-
-        $content = $this->app->plugins->filter('theme_get_template_content', $content, $filename, $cache_name, $vars, $this);
-
-        return $content;
-    }
-
-    /**
-     * Returns the filename corresponding to $template
-     * @param string $template The name of the template
-     * @return string The filename
-     */
-    public function getTemplateFilename(string $template) : string
-    {
-        return $this->templates_path . '/' . $template . '.' . App::FILE_EXTENSIONS['templates'];
-    }
-
-    /**
-     * Loads $filename, parses it and then writes it in the cache folder
-     * @param string $filename The filename from where the template will be loaded
-     * @param string $cache_filename The filename used to cache the template
-     * @param array $params Params to pass to the parser
-     * @throws \Exception If the file can't be read or written to the cache
-     */
-    protected function writeTemplate(string $filename, string $cache_filename, array $params)
-    {
-        $content = file_get_contents($filename);
-
-        if ($content === false) {
-            throw new \Exception("Error reading template file: {$filename}");
-        }
-
-        $content = $this->parseTemplate($content, $params);
-
-        return $this->app->cache->templates->write($cache_filename, $content);
-    }
-
-    /**
-     * Parses the template content
-     * @param string $content The content to parse
-     * @param array $params Params to pass to the parser
-     * @return string The parsed content
-     */
-    protected function parseTemplate(string $content, array $params) : string
-    {
-        return $this->templates->parse($content, $params);
-    }
-
-    /**
-     * Includes a template and returns it's content
-     * @param string $cache_name The name of the cached template
-     * @return string The template's content
-     */
-    protected function includeTemplate(string $cache_name) : string
-    {
-        $app = $this->app;
-        $strings = $this->app->lang->strings;
-        $vars = $this->vars;
-
-        ob_start();
-
-        include($this->app->cache->templates->getFilename($cache_name));
-
-        return ob_get_clean();
+        return $this->template->getFromFilename($filename, $vars, $type, $params, $development);
     }
 
     /**************** RENDER METHODS *************************************/
@@ -481,6 +347,8 @@ class Theme extends Extension
     public function outputContent()
     {
         echo $this->content;
+
+        $this->app->plugins->run('theme_output_content', $this);
     }
 
     /**

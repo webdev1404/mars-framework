@@ -11,7 +11,7 @@ use Mars\App;
 /**
  * The Datetime Validator Class
  */
-class Datetime extends Rule
+class Datetime extends Validator
 {
     /**
      * {@inheritdoc}

@@ -34,6 +34,6 @@ trait TemplatesTrait
     {
         $filename = $this->path . '/' . App::EXTENSIONS_DIRS['templates'] . '/' . $template . '.' . App::FILE_EXTENSIONS['templates'];
 
-        return $this->app->theme->getTemplateFromFilename($filename, $vars, static::$type, $this->development);
+        return $this->app->theme->getTemplateFromFilename($filename, $vars, static::$type, ['module' => $this->module_name ?? ''], $this->development);
     }
 }

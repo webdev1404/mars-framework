@@ -1,13 +1,13 @@
 <?php
 /**
-* The Table Bin Handler
+* The Table Cli Handler
 * @package Mars
 */
 
-namespace Mars\Bin;
+namespace Mars\Cli;
 
 /**
- * The Table Bin Handler
+ * The Table Cli Handler
  * Displays a table
  */
 class Table extends Base
@@ -57,13 +57,13 @@ class Table extends Base
         $max = $this->getMaxLength($all_data, $paddings_right, $paddings_left);
 
         $chars = array_sum($max) + 2 + count($headers) - 1;
-        $this->app->bin->printRepeat('-', $chars);
+        $this->app->cli->printRepeat('-', $chars);
         $this->printHeader($headers, $colors, $align, $paddings_left, $paddings_right, $max);
-        $this->app->bin->printRepeat('-', $chars);
+        $this->app->cli->printRepeat('-', $chars);
 
         $this->printData($data, $colors, $align, $paddings_left, $paddings_right, $max);
 
-        $this->app->bin->printRepeat('-', $chars);
+        $this->app->cli->printRepeat('-', $chars);
     }
 
     /**
@@ -77,11 +77,11 @@ class Table extends Base
             $padding_left = $paddings_left[$i] ?? $this->padding_left;
             $padding_right = $paddings_right[$i] ?? $this->padding_right;
 
-            $this->app->bin->print($this->getText($text, $alignment, $padding_left, $padding_right, $max_value), $color, false);
+            $this->app->cli->print($this->getText($text, $alignment, $padding_left, $padding_right, $max_value), $color, false);
             echo "|";
         }
 
-        $this->app->bin->printNewline();
+        $this->app->cli->printNewline();
     }
 
     /**
@@ -114,7 +114,7 @@ class Table extends Base
      * @param string $alignment The alignment [left,center,right]
      * @param int $padding_left The left padding
      * @param int $padding_right The right padding
-     * @return stirng The text
+     * @return string The text
      */
     protected function getText(string $text, string $alignment, int $padding_left, int $padding_right, int $max_value) : string
     {
@@ -143,7 +143,7 @@ class Table extends Base
     }
 
     /**
-     * @see \Mars\Bin\Base::getMaxLength()
+     * @see \Mars\Cli\Base::getMaxLength()
      * {@inheritdoc}
      */
     protected function getMaxLength(array $data, array $paddings_right = [], array $paddings_left = []) : array

@@ -10,7 +10,7 @@ namespace Mars\Validators;
  * The MinChars Validator Class
  * Validates the min number of chars of a string
  */
-class Min extends Rule
+class Min extends Validator
 {
     /**
      * {@inheritdoc}

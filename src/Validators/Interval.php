@@ -10,7 +10,7 @@ namespace Mars\Validators;
  * The Interval Validator Class
  * Validates a numeric interval
  */
-class Interval extends Rule
+class Interval extends Validator
 {
     /**
      * {@inheritdoc}

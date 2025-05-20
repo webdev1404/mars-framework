@@ -1,6 +1,6 @@
 <?php
 /**
-* The Extension Class
+* The Base Extension Class
 * @package Mars
 */
 
@@ -8,13 +8,12 @@ namespace Mars\Extensions;
 
 use Mars\App;
 use Mars\App\InstanceTrait;
-use Mars\Entity;
 
 /**
- * The Extension Class
+ * The Base Extension Class
  * Base class for all basic extensions
  */
-abstract class Extension extends Entity
+abstract class Extension
 {
     use InstanceTrait;
 

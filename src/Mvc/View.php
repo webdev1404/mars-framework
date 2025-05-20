@@ -16,7 +16,6 @@ use Mars\Html;
 use Mars\Text;
 use Mars\Ui;
 use Mars\Uri;
-
 use Mars\System\Plugins;
 use Mars\Extensions\Extension;
 
@@ -253,24 +252,21 @@ abstract class View
             return;
         }
 
-        $template = $this->getTemplateName($method);
-
-        echo $this->getTemplate($template, $vars);
+        $this->renderTemplate($this->getTemplateName($method), $vars);
     }
 
     /**
-     * Returns the contents of a template
+     * Renders a template
      * @param string $template The name of the template to load
      * @param array $vars Vars to pass to the template, if any
-     * @return string The contents of the template
      */
-    protected function getTemplate(string $template, array $vars = []) : string
+    protected function renderTemplate(string $template, array $vars = [])
     {
         //add the view's public properties as theme vars
         $this->app->theme->addVars(get_object_vars($this));
         $this->app->theme->addVar('view', $this);
 
-        return $this->parent->getTemplate($template, $vars);
+        $this->parent->render($template, $vars);
     }
 
     /**
@@ -279,13 +275,13 @@ abstract class View
      * @param array $vars Vars to pass to the template, if any
      * @return string The contents of the template
      */
-    protected function getModuleTemplate(string $template, array $vars = []) : string
+    /*protected function renderModuleTemplate(string $template, array $vars = [])
     {
         $this->app->theme->addVars(get_object_vars($this));
         $this->app->theme->addVar('view', $this);
 
         return $this->parent->getModuleTemplate($template, $vars);
-    }
+    }*/
 
     /**
      * Returns the name of a template to load

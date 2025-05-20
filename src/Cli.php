@@ -1,17 +1,20 @@
 <?php
 /**
-* The Bin Class
+* The Cli Class
 * @package Mars
 */
 
 namespace Mars;
 
 use Mars\App\InstanceTrait;
+use Mars\Cli\Listing;
+use Mars\Cli\ListingMulti;
+use Mars\Cli\Table;
 
 /**
- * The Bin Class
+ * The Cli Class
  */
-class Bin
+class Cli
 {
     use InstanceTrait;
 
@@ -19,9 +22,9 @@ class Bin
      * @var array $supported_printers The list of supported printers
      */
     public array $supported_printers = [
-        'list' => Mars\Bin\Listing::class,
-        'list_multi' => \Mars\Bin\ListingMulti::class,
-        'table' => \Mars\Bin\Table::class
+        'list' => \Mars\Cli\Listing::class,
+        'list_multi' => \Mars\Cli\ListingMulti::class,
+        'table' => \Mars\Cli\Table::class
     ];   
         
     /**
@@ -183,21 +186,21 @@ class Bin
                 return $this->newline;
             }
 
-            $this->newline = $this->app->is_bin ? "\n" : '<br>';
+            $this->newline = $this->app->is_cli ? "\n" : '<br>';
 
             return $this->newline;
         }
     }
 
     /**
-     * Builds the Bin object
+     * Builds the Cli object
      * @param App $app The app object
      */
     public function __construct(App $app)
     {
         $this->app = $app;
 
-        $this->app->plugins->run('boot_bin', $this);
+        $this->app->plugins->run('boot_cli', $this);
     }
 
     /**
@@ -262,10 +265,11 @@ class Bin
 
     /**
      * Outputs a newline
+     * @param int $times The number of newlines to print
      */
-    public function printNewline()
+    public function printNewline(int $times = 1)
     {
-        echo $this->newline;
+        echo str_repeat($this->newline, $times);
     }
 
     /**
@@ -298,7 +302,7 @@ class Bin
     public function print(string $text, string $color = '', bool $newline = true) : static
     {
         //don't show colors if not in a terminal
-        if (!$this->app->is_bin) {
+        if (!$this->app->is_cli) {
             $color = '';
         }
 

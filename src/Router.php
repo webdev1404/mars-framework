@@ -35,9 +35,26 @@ class Router
      */
     public function add(string $type, string $route, $action) : static
     {
+        $route = $this->cleanRouteName($route);
+
         $this->routes_list[$type][$route] = $action;
 
         return $this;
+    }
+
+    /**
+     * Cleans the route name
+     * @param string $route The route to clean
+     * @return string The cleaned route name
+     */
+    protected function cleanRouteName(string $route) : string
+    {
+        //strip the leading slash, for all the routes except the root
+        if ($route != '/') {
+            $route = ltrim($route, '/');
+        }
+
+        return $route;
     }
 
     /**
@@ -71,9 +88,9 @@ class Router
             }
 
             $this->outputFromClass($class_name, $method, $params);
-        } elseif ($route instanceof \Closure) {
+        } elseif (is_callable($route)) {
             $this->outputFromClosure($route);
-        } elseif (is_object($route)) {
+        } elseif (is_object($route) || is_array($route)) {
             $this->outputFromObject($route);
         }
     }
@@ -92,12 +109,15 @@ class Router
             $controller->dispatch($method, $params);
         } else {
             if ($method) {
-                call_user_func_array([$controller, $method], $params);
+                ob_start();
+                $value = call_user_func_array([$controller, $method], $params);
+                $content = ob_get_clean();
+
+                $this->outputContent($value, $content);
             } else {
                 throw new \Exception('No controller method to handle the route');
             }
         }
-
     }
 
     /**
@@ -110,25 +130,35 @@ class Router
         $value = call_user_func_array($route, [$this->app]);
         $content = ob_get_clean();
 
-        //if nothing was returned, output the content
-        if (!$value) {
-            $value = $content;
+        $this->outputContent($value, $content);
+    }
+
+    /**
+     * Outputs the returned value and the content 
+     * @param string|array|object $value The value to output
+     * @param string $content The content to output
+     */
+    protected function outputContent(string|array|object $value, string $content)
+    {
+        //if nothing was returned, output the content. Otherwise, append the content to the returned value
+        if (!$value || is_string($value)) {
+            $value = $value ? $content . $value : $content;
         }
 
         if (is_string($value)) {
             echo $value;
         } elseif (is_array($value)) {
             $this->app->output($value, 'ajax');
-        } elseif (is_object($value)) {           
+        } elseif (is_object($value)) {
             $this->outputFromObject($value);
         }
     }
 
     /**
      * Outputs the content from an object
-     * @param object $object The object to output
+     * @param array|object $object The object to output
      */
-    protected function outputFromObject(object $object)
+    protected function outputFromObject(array|object $object)
     {
         if ($object instanceof ContentInterface) {
             $object->output();
@@ -164,7 +194,7 @@ class Router
                 return '(.*)';
             }, $route_path);
 
-            if (preg_match("|^{$route_path}$|is", $path, $matches)) {
+            if (preg_match("|^{$route_path}\/?$|is", $path, $matches)) {
                 foreach ($matches as $key => $val) {
                     if (!$key) {
                         continue;

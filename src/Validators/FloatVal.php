@@ -10,7 +10,7 @@ namespace Mars\Validators;
  * The Integer Validator Class
  * Validates that value is a float
  */
-class FloatVal extends Rule
+class FloatVal extends Validator
 {
     /**
      * {@inheritdoc}

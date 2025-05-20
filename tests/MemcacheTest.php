@@ -49,7 +49,7 @@ final class MemcacheTest extends Base
         $this->assertEquals($memcache->get($key), 'abcdef');
         $this->assertTrue($memcache->delete($key));
         $this->assertFalse($memcache->exists($key));
-        $this->assertFalse($memcache->get($key));
+        $this->assertNull($memcache->get($key));
     }
 
     public function testMemcacheConnection()

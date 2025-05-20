@@ -9,7 +9,7 @@ namespace Mars\Validators;
 /**
  * The Url Validator Class
  */
-class Url extends Rule
+class Url extends Validator
 {
     /**
      * {@inheritdoc}

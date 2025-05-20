@@ -11,7 +11,7 @@ use Mars\Images\Image;
 /**
  * The Watermark Operation Image Class
  */
-class Watermark extends Base
+class Watermark extends Operation
 {
     /**
      * Cuts a section from an image

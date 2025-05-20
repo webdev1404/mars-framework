@@ -110,7 +110,7 @@ class Mail
      * @param array $options The options of the mail, if any
      * @param array $attachments The attachments, if any, to the mail
      * @param string|array $bcc Bcc recipients, if any
-     *                          * @throws \Exception If the mail couldn't be sent
+     * @throws \Exception If the mail couldn't be sent
      */
     public function sendTemplate(string|array $to, string $subject, string $template, array $vars = [], array $options = [], array $attachments = [], string|array $bcc = [])
     {

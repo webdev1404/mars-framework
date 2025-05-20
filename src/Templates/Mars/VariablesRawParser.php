@@ -1,6 +1,6 @@
 <?php
 /**
-* The Raw Variable Hander
+* The Raw Variables Parser
 * @package Mars
 */
 
@@ -9,9 +9,9 @@ namespace Mars\Templates\Mars;
 use Mars\App;
 
 /**
- * The Raw Variable Hander
+ * The Raw Variables Parser
  */
-class VariableRawParser extends VariableParser
+class VariablesRawParser extends VariablesParser
 {
     /**
      * @see \Mars\Templates\DriverInterface::parse()
@@ -19,8 +19,8 @@ class VariableRawParser extends VariableParser
      */
     public function parse(string $content, array $params = []) : string
     {
-        return preg_replace_callback('/\{\{!(.*)!\}\}/U', function (array $match) {
-            return $this->parseVariable($match);
+        return preg_replace_callback('/\{!(.*)!\}/U', function (array $match) {
+            return $this->parseVariable($match[1]);
         }, $content);
     }
 

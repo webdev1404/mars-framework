@@ -1,15 +1,16 @@
 <?php
 /**
-* The Variable Hander
+* The Variables Parser Class
 * @package Mars
 */
 
 namespace Mars\Templates\Mars;
 
 /**
- * The Variable Hander
+ * The Variables Parser Class
+ * Parses the variables in the templates and applies the modifiers
  */
-class VariableParser
+class VariablesParser
 {
     /**
      * @internal
@@ -29,13 +30,14 @@ class VariableParser
 
         //base modifiers
         'nl2br' => ['nl2br', 100],
+        'length' => ['strlen', 10],
         'lower' => ['strtolower', 10],
         'upper' => ['strtoupper', 10],
-        'urlencode' => ['urlencode', 10],
-        'urlrawencode' => ['urlrawencode', 10],
-        'count' => ['count', 10],
+        'ucfirst' => ['ucfirst', 10],
+        'ucwords' => ['ucwords', 10],
         'trim' => ['trim', 10],
         'strip_tags' => ['strip_tags', 10],
+        'count' => ['count', 10],
 
         //format modifiers
         'datetime' => ['$this->app->format->datetime', 10],
@@ -47,12 +49,7 @@ class VariableParser
 
         //text modifiers
         'cut' => ['$this->app->text->cut', 10],
-        'cut_middle' => ['$this->app->text->cutMiddle', 10],
-
-        //url modifiers
-        'http' => ['$this->app->uri->toHttp', 10],
-        'https' => ['$this->app->uri->toHttps', 10],
-        'ajax' => ['$this->app->uri->addAjax', 10],
+        'cut_middle' => ['$this->app->text->cutMiddle', 10]
     ];
 
     /**
@@ -88,35 +85,22 @@ class VariableParser
      */
     public function parse(string $content, array $params = []) : string
     {
-        return preg_replace_callback('/\{\{(.*)\}\}/U', function (array $match) {
-            return $this->parseVariable($match);
+        return preg_replace_callback('/\{\{(.*)\}\}/U', function (array $match) use ($params) {
+            return $this->parseVariable($match[1], $params);
         }, $content);
     }
 
     /**
      * Parses a variable
-
+     * @param string $var The variable to parse
+     * @param array $params The params to pass to the parser
+     * @return string The parsed variable 
      */
-    protected function parseVariable(array $match) : string
+    protected function parseVariable(string $var, array $params = []) : string
     {
-        [$value, $modifiers] = $this->breakVariable($match[1]);
+        [$value, $modifiers] = $this->breakVariable($var);
 
-        $start_pos = strpos($value, '(');
-        $end_pos = strrpos($value, ')');
-
-        //is the 'variable' a function?
-        if ($start_pos !== false && $end_pos !== false) {
-            $value = preg_replace_callback('/([^\(]*)\((.*)\)/s', function (array $match) {
-                $var = $this->buildVariable($match[1], false);
-                $params = $this->replaceVariables($match[2]);
-
-                return $var . '(' . $params . ')';
-            }, $value);
-
-            return $this->applyModifiers($value, $modifiers);
-        } else {
-            return $this->applyModifiers($this->buildVariable($value), $modifiers);
-        }
+        return $this->applyModifiers($this->buildVariable($value, $params), $modifiers);
     }
 
     /**
@@ -140,53 +124,68 @@ class VariableParser
     }
 
     /**
-     * Builds a variable from $value. Returns $vars['item'] if $value=item
+     * Builds a variable from $value. Returns $item if $value=item
      * @param string $value The value
-     * @param bool $parse_lang If true, and $value isn't a variable, will return the language string
+     * @param array $params The params to pass to the parser
      * @return string The variable
      */
-    protected function buildVariable(string $value, bool $parse_lang = true) : string
-    {
-        //if we don't have a $ as the first char, this is a language string
-        if ($value[0] != '$') {
-            if ($parse_lang) {
-                return "\$strings['{$value}']";
-            } else {
-                return $value;
-            }
+    protected function buildVariable(string $value, array $params = [], bool $parse_lang = true) : string
+    {        
+        if (str_starts_with($value, '$')) {
+            return $this->formatVariable($value);
         }
 
-        $value = ltrim($value, '$');
+        //do we have a function?
+        if (str_contains($value, '(') && str_contains($value, ')')) {
+            return $this->formatVariable($value);
+        }
 
+        //we have a language string
+        if ($parse_lang) {
+            return $this->getLanguageVariable($value, $params);
+        }
+
+        throw new \Exception('Invalid template variable: ' . $value);
+    }
+
+    /**
+     * Formats a variable
+     * @param string $value The value
+     * @return string The formatted variable
+     */
+    protected function formatVariable(string $value) : string
+    {
         //replace . with ->, if not inside quotes
         if (str_contains($value, '.')) {
             $value = preg_replace('/["\'][^"\']*["\'](*SKIP)(*FAIL)|\./i', '->', $value);
         }
-        //replace # arrays with [] arrays. Eg: item#prop => item['prop']
-        if (str_contains($value, '#')) {
-            $value = preg_replace('/#([^\-\[#]*)/s', "['$1']", $value);
+
+        //replace @ arrays with [] arrays. Eg: item@prop => item['prop']
+        if (str_contains($value, '@')) {
+            $value = preg_replace('/@([^\-\[@]*)/s', "['$1']", $value);
         }
 
-        $o_pos = strpos($value, '->');
-        $a_pos = strpos($value, '[');
-        if ($o_pos === false && $a_pos === false) {
-            //scalar value
-            return '$vars[\'' . $value . '\']';
+        return $value;
+    }
+
+    /**
+     * Builds a language variable from $value
+     * @param string $value The value
+     * @param array $params The params to pass to the parser
+     * @return string The lang string variable
+     */
+    protected function getLanguageVariable(string $value, array $params) : string
+    {
+        $value = str_replace("'", "\\'", $value);
+        
+        if (empty($params['module'])) {
+            return "\$strings['{$value}'] ?? '{$value}'";
         } else {
-            $pos = $o_pos;
-            if ($a_pos && $o_pos === false) {
-                $pos = $a_pos;
-            } elseif ($o_pos && $a_pos === false) {
-                $pos = $o_pos;
-            } else {
-                if ($a_pos < $o_pos) {
-                    $pos = $a_pos;
-                }
-            }
+            //if we have a module, we need to check if the string exists with the module prefix
+            //if it doesn't exist, we return the string without the module prefix
+            $module_value =  $params['module'] . '.' . $value;
 
-            $var_name = substr($value, 0, $pos);
-
-            return '$vars[\'' . $var_name . '\']' . substr($value, $pos);
+            return "isset(\$strings['{$module_value}']) ? \$strings['{$module_value}'] : (\$strings['{$value}'] ?? '{$value}')";
         }
     }
 
@@ -198,9 +197,9 @@ class VariableParser
     public function replaceVariables(string $str) : string
     {
         $str = trim($str);
-
+        
         $str = preg_replace_callback($this->variable_preg, function (array $match) {
-            return $this->buildVariable($match[1], false);
+            return $this->buildVariable($match[1], [], false);
         }, $str);
 
         return $str;
@@ -223,7 +222,7 @@ class VariableParser
 
         $list = $this->getModifiersList($modifiers);
 
-        return '<?php echo ' . $this->buildModifiers($value, $list) . ';?>';
+        return '<?= ' . $this->buildModifiers($value, $list) . ' ?>';
     }
 
     /**

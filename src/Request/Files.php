@@ -17,7 +17,7 @@ class Files extends Input
     /**
      * @var array $disallowed_extensions The extensions of the files which are disallowed at upload
      */
-    protected array $disallowed_extensions = ['php', 'cgi', 'pl', 'py', 'exe', 'com', 'bat', 'sh', 'bin', 'svg'];
+    protected array $disallowed_extensions = ['php', 'inc', 'cgi', 'pl', 'py', 'exe', 'com', 'bat', 'dll', 'sh', 'bin', 'svg'];
 
     /**
      * Builds the Files Request object

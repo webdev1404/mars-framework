@@ -26,8 +26,8 @@ class Log
             }
 
             $ext = 'log';
-            if ($this->app->is_bin) {
-                $ext = 'bin.log';
+            if ($this->app->is_cli) {
+                $ext = 'cli.log';
             }
 
             $this->suffix = date($this->app->config->log_suffix) . '.' . $ext;
@@ -116,7 +116,7 @@ class Log
                 $text.= $trace . "\n";
             }
 
-            if (!$this->app->is_bin) {
+            if (!$this->app->is_cli) {
                 $text.= "Url: {$this->app->url_full}\n";
             }
             if ($file) {

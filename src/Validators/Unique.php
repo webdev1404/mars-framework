@@ -9,7 +9,7 @@ namespace Mars\Validators;
 /**
  * The Unique Validator Class
  */
-class Unique extends Rule
+class Unique extends Validator
 {
     /**
      * {@inheritdoc}

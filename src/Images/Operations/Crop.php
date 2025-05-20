@@ -9,7 +9,7 @@ namespace Mars\Images\Operations;
 /**
  * The Crop Operation Image Class
  */
-class Crop extends Base
+class Crop extends Operation
 {
     /**
      * Crops the image

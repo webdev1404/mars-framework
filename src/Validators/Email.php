@@ -9,7 +9,7 @@ namespace Mars\Validators;
 /**
  * The Email Validator Class
  */
-class Email extends Rule
+class Email extends Validator
 {
     /**
      * {@inheritdoc}

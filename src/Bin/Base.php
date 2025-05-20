@@ -1,6 +1,6 @@
 <?php
 /**
-* The Base Bin Handler
+* The Bin Base Class
 * @package Mars
 */
 
@@ -9,41 +9,85 @@ namespace Mars\Bin;
 use Mars\App\InstanceTrait;
 
 /**
- * The Base Bin Handler
+ * The Bin Base Class
+ * Base class for all bin classes
  */
-abstract class Base
+abstract class Base implements BinInterface
 {
     use InstanceTrait;
 
     /**
-     * @var int $padding_right The default right padding
+     * @var array $actions The actions the class is responsible for
      */
-    public int $padding_right = 5;
+    public protected(set) array $actions;
 
     /**
-     * Returns the max length of a column
-     * @param array $data The data where to look for the max length
-     * @param array $paddings_right The number of right chars to apply, if any
-     * @return array The max length
+     * @var array $commands The commands the class can handle
      */
-    protected function getMaxLength(array $data, array $paddings_right = []) : array
+    public protected(set) array $commands = [];
+
+    /**
+     * @var array $command_descriptions The command_descriptions The command descriptions
+     */
+    public protected(set) array $command_descriptions = [];
+
+    /**
+     * @var bool $show_done Whether to show the done message after executing a command
+     */
+    protected bool $show_done = true;
+
+    /**
+     * Executes the command
+    */
+    public function execute(string $command)
     {
-        $max = [];
-        foreach ($data as $list) {
-            foreach ($list as $i => $item) {
-                if (!isset($max[$i])) {
-                    $max[$i] = 0;
-                }
+        if (!isset($this->commands[$command])) {
+            $this->app->cli->error("Command {$command} not found", false);
 
-                $padding_right = $paddings_right[$i] ?? $this->padding_right;
-                $length = strlen($item) + $padding_right;
-
-                if ($length > $max[$i]) {
-                    $max[$i] = $length;
-                }
-            }
+            $help = new Help($this->app);
+            $help->showCommands($this);
+            die;
         }
 
-        return $max;
+        $method = $this->commands[$command];
+        if (!method_exists($this, $method)) {
+            throw new \Exception("Method {$method} not found in class " . get_class($this));
+        }
+
+        call_user_func([$this, $method]);
+
+        if ($this->show_done) {
+            $this->done();
+        }
+    }
+
+    /**
+     * Prints the start message
+     * @param string $message The message to print
+     * @param string $color The color of the message
+     */
+    public function doing(string $message, string $color = 'blue')
+    {
+        $this->app->cli->print($message, $color);
+    }
+
+    /**
+     * Prints the done message
+     * @param string $message The message to print
+     * @param string $color The color of the message
+     */
+    public function done(string $message = 'Done!', $color = 'green')
+    {
+        $this->app->cli->print($message, $color);
+    }
+
+    /**
+     * Prints a message
+     * @param string $message The message to print
+     * @param string $color The color of the message
+     */
+    public function print(string $message, string $color = '')
+    {
+        $this->app->cli->print($message, $color);
     }
 }

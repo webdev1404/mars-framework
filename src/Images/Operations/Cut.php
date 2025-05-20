@@ -9,7 +9,7 @@ namespace Mars\Images\Operations;
 /**
  * The Cut Operation Image Class
  */
-class Cut extends Base
+class Cut extends Operation
 {
     /**
      * Cuts a section from an image

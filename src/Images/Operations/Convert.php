@@ -9,7 +9,7 @@ namespace Mars\Images\Operations;
 /**
  * The Crop Operation Image Class
  */
-class Convert extends Base
+class Convert extends Operation
 {
     /**
      * Converts the image

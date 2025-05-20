@@ -1,13 +1,13 @@
 <?php
 /**
-* The List Bin Handler
+* The List Cli Handler
 * @package Mars
 */
 
-namespace Mars\Bin;
+namespace Mars\Cli;
 
 /**
- * The List Bin Handler
+ * The List Cli Handler
  * Displays a list
  */
 class Listing extends Base
@@ -50,10 +50,10 @@ class Listing extends Base
                 $text = sprintf("%-{$padding_right}s", $text);
             }
 
-            $this->app->bin->print($text, $color, false);
+            $this->app->cli->print($text, $color, false);
         }
 
-        $this->app->bin->printNewline();
+        $this->app->cli->printNewline();
 
         return $this;
     }

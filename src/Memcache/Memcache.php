@@ -69,7 +69,12 @@ class Memcache implements DriverInterface
      */
     public function get(string $key)
     {
-        return $this->handle->get($key);
+        $value = $this->handle->get($key);
+        if (!$value) {
+            return null;
+        }
+
+        return $value;
     }
 
     /**

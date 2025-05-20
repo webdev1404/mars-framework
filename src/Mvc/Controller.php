@@ -358,6 +358,9 @@ abstract class Controller extends \stdClass
             $this->call($this->default_success_method);
         } elseif ($ret === false) {
             $this->call($this->default_error_method);
+        } elseif (is_string($ret)) {
+            //output the return data as html code
+            $this->app->output($ret);
         } elseif (is_array($ret) || is_object($ret)) {
             //output the return data as json code
             $this->sendData($ret);
