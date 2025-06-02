@@ -10,12 +10,14 @@ namespace Mars\Validators;
  * The Integer Validator Class
  * Validates that value is a integer
  */
-class IntVal extends Validator
+class IntVal extends FloatVal
 {
-    /**
-     * {@inheritdoc}
-     */
-    protected string $error_string = 'validate_int_error';
+    protected array $errors = [
+        'simple' => 'validate_int_error',
+        'min' => 'validate_int_min_error',
+        'max' => 'validate_int_max_error',
+        'min_max' => 'validate_int_min_max_error',
+    ];
 
     /**
      * Validates that value is a integer
@@ -24,30 +26,8 @@ class IntVal extends Validator
      * @param int $max The maximum value, if any
      * @return bool
      */
-    public function isValid(string $value, ?int $min = null, ?int $max = null) : bool
-    {
-        if (!ctype_digit($value)) {
-            return false;
-        }
-        if (!$min && !$max) {
-            return true;
-        }
-
-        $value = (int)$value;
-        if ($min && $max) {
-            if ($value >= $min && $value <= $max) {
-                return true;
-            }
-        } elseif ($min) {
-            if ($value >= $min) {
-                return true;
-            }
-        } elseif ($max) {
-            if ($value <= $max) {
-                return true;
-            }
-        }
-
-        return false;
-    }
+    public function isValid(string $value, ?float $min = 0, ?float $max = null) : bool
+    {      
+        return $this->isValidValue($value, $min, $max, FILTER_VALIDATE_INT);
+    }    
 }

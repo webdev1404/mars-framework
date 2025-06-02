@@ -13,18 +13,25 @@ namespace Mars\App;
 trait UtilsTrait
 {
     /**
+     * Returns a language string
+     * Alias for $app->lang->get()
+     * @see \Mars\Extensions\Language::get()
+     * {@inheritdoc}
+     */
+    public static function __(string $str, array $replace = [], string $prefix = '') : string
+    {
+        return static::$instance->lang->get($str, $replace, $prefix);
+    }
+
+    /**
      * Returns a html escaped language string
      * @param string $str The string index as defined in the languages file
      * @param array $replace Array with key & values to be used for to search & replace, if any
      * @return string The language string
      */
-    public static function __(string $str, array $replace = []) : string
+    public static function __e(string $str, array $replace = []) : string
     {
-        $str = static::$instance->lang->strings[$str] ?? $str;
-
-        if ($replace) {
-            $str = str_replace(array_keys($replace), $replace, $str);
-        }
+        $str = static::__($str, $replace);
 
         return static::$instance->escape->html($str);
     }

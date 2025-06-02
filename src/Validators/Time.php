@@ -9,23 +9,26 @@ namespace Mars\Validators;
 /**
  * The Date Validator Class
  */
-class Time extends DateTime
+class Time extends Datetime
 {
     /**
      * {@inheritdoc}
      */
-    protected string $error_string = 'validate_time_error';
+    protected string $error = 'validate_time_error';
 
     /**
-     * Validates a time value
-     * @param string $value The value to validate
-     * @param string $format The time's format
-     * @return bool Returns true if the time value is valid
+     * @see \Mars\Validators\DateTime::isValid()
+     * {@inheritdoc}
      */
-    public function isValid(string $value, ?string $format = null) : bool
+    public function isValid(string $value, ?string $format = null, ?string $format_desc = null) : bool
     {
-        $format = $format ?? $this->app->lang->time_picker_format;
+        if ($format) {
+            $format_desc ??= $format;
+        } else {
+            $format = $this->app->lang->time_picker_format;
+            $format_desc = $this->app->lang->time_picker_desc;
+        }
 
-        return $this->isValidDateTime($value, $format);
+        return parent::isValid($value, $format, $format_desc);
     }
 }

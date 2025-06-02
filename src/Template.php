@@ -202,6 +202,7 @@ class Template
     protected function incorporate(string $cache_name, array $vars = []) : string
     {
         $app = $this->app;
+        $lang = $this->app->lang;
         $theme = $this->app->theme;
         $config = $this->app->config;
         $html = $this->app->html;

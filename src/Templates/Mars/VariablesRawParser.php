@@ -19,8 +19,10 @@ class VariablesRawParser extends VariablesParser
      */
     public function parse(string $content, array $params = []) : string
     {
-        return preg_replace_callback('/\{!(.*)!\}/U', function (array $match) {
-            return $this->parseVariable($match[1]);
+        return preg_replace_callback('/\{\!(.*)\!\}/U', function (array $match) {
+            $value = trim($match[1], '!');
+
+            return $this->parseVariable($value);
         }, $content);
     }
 

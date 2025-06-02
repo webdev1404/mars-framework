@@ -14,7 +14,7 @@ use Mars\Lists\ListSimpleTrait;
  * The Base Alerts Class
  * Container for alerts
  */
-abstract class Alert implements \Countable, \IteratorAggregate
+abstract class Alerts implements \Countable, \IteratorAggregate
 {
     use InstanceTrait;
     use ListSimpleTrait {

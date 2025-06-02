@@ -16,17 +16,25 @@ class Datetime extends Validator
     /**
      * {@inheritdoc}
      */
-    protected string $error_string = 'validate_datetime_error';
+    protected string $error = 'validate_datetime_error';
 
     /**
      * Validates a datetime
      * @param string $value The value to validate
      * @param string $format The datetime's format
+     * @param string $format_desc The description of the format
      * @return bool Returns true if the datetime is valid
      */
-    public function isValid(string $value, ?string $format = null) : bool
-    {
-        $format = $format ?? $this->app->lang->datetime_picker_format;
+    public function isValid(string $value, ?string $format = null, ?string $format_desc = null) : bool
+    {        
+        if ($format) {
+            $format_desc ??= $format;
+        } else {
+            $format = $this->app->lang->datetime_picker_format;
+            $format_desc = $this->app->lang->datetime_picker_desc;
+        }
+
+        $this->error_replacements = ['{FORMAT}' => $format_desc];
 
         return $this->isValidDateTime($value, $format);
     }
@@ -37,10 +45,18 @@ class Datetime extends Validator
      * @param string $format The format
      * @return bool
      */
-    protected function isValidDateTime(string $value, string $format) : bool
+    protected function isValidDateTime(string $value, ?string $format, ) : bool
     {
+        $value = trim($value);
+
         try {
-            $dt = \DateTime::createFromFormat($format, $value);
+            $dt = null;
+            if ($format) {
+                $dt = \DateTime::createFromFormat($format, $value);
+            } else {
+                $dt = new \DateTime($value);
+            }
+
             if (!$dt) {
                 return false;
             }

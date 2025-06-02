@@ -14,13 +14,18 @@ use Mars\App;
  */
 abstract class SubModuleSingleFile extends SubModule
 {
-    public function __construct(App $app)
+    /**
+     * Builds the extension
+     * @param array $params The params passed to the extension, if any
+     * @param App $app The app object
+     */
+    public function __construct(array $params = [], App $app)
     {
         $this->app = $app;
 
         [$module_name, $name] = $this->getModuleNameAndName();
 
-        parent::__construct($module_name, $name, $app);
+        parent::__construct($module_name, $name, $params, $app);
     }
 
     /**

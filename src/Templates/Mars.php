@@ -12,23 +12,6 @@ use Mars\Handlers;
 
 /**
  * The Mars Templates Engine
- *
- * Syntax for including subtemplates
- * {% theme-template template_name %}
- * {% template template_name %}
- * template_name must not include the extension
- *
- * Syntax for IF structures:
- * {% if $var %}
- * {% elseif %}
- * {% else %}
- * {% endif %}
- *
- * Syntax for FOREACH structures
- * {% foreach $foo as $bar %} OR {% foreach $foo as $i => $bar %}
- * {{ $bar.element1 }}
- * {{ $bar.element2 }}
- * {% endforeach %}
  */
 class Mars implements DriverInterface
 {
@@ -38,13 +21,13 @@ class Mars implements DriverInterface
      * @var array $supported_structures The list of supported parsers
      */
     protected array $supported_parsers = [
-        'theme-templates' => \Mars\Templates\Mars\ThemeTemplatesParser::class,
         'templates' => \Mars\Templates\Mars\TemplatesParser::class,
+        'include' => \Mars\Templates\Mars\IncludeParser::class,
         'variables_raw' => \Mars\Templates\Mars\VariablesRawParser::class,
         'variables' => \Mars\Templates\Mars\VariablesParser::class,
         'if' => \Mars\Templates\Mars\IfParser::class,
         'foreach' => \Mars\Templates\Mars\ForeachParser::class
-    ];    
+    ];
 
     /**
      * @var Handlers $handlers The parsers object

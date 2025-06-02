@@ -14,7 +14,7 @@ class Email extends Validator
     /**
      * {@inheritdoc}
      */
-    protected string $error_string = 'validate_email_error';
+    protected string $error = 'validate_email_error';
 
     /**
      * Checks if $value is a valid email address
@@ -23,6 +23,10 @@ class Email extends Validator
      */
     public function isValid(string $value) : bool
     {
+        if (!$value) {
+            return false;
+        }
+
         return filter_var($value, FILTER_VALIDATE_EMAIL);
     }
 }

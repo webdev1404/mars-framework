@@ -28,7 +28,7 @@ abstract class SubModule extends Module
                 return $this->module;
             }
 
-            $this->module = new Module($this->module_name, $this->app);
+            $this->module = new Module($this->module_name, [], $this->app);
 
             return $this->module;
         }
@@ -38,9 +38,10 @@ abstract class SubModule extends Module
      * Builds the extension
      * @param string $module_name The name of the module the extension belongs to
      * @param string $name The name of the exension
+     * @param array $params The params passed to the extension, if any
      * @param App $app The app object
      */
-    public function __construct(string $module_name, string $name = '', ?App $app = null)
+    public function __construct(string $module_name, string $name = '', array $params = [], ?App $app = null)
     {
         $this->app = $app ?? $this->getApp();
 
@@ -52,24 +53,49 @@ abstract class SubModule extends Module
         }
 
         $this->module_name = $module_name;
-        $this->name = $name;        
+        $this->name = $name;
+        $this->params = $params;
     }
 
     /**
      * {@inheritdoc}
      * @see \Mars\Extensions\Abilities::loadLanguage()
      */
-    public function loadLanguage(string $file = '', ?string $prefix = null) : static
-    {
-        if ($prefix === null) {
-            $prefix = $this->module_name . '.';
+    public function loadLanguage(string $file = '', string $prefix = '') : static
+    {        
+        return parent::loadLanguage($file, $this->getLanguagePrefix($prefix));
+    }
 
-            if ($this->name) {
-                $prefix.= $this->name . '.';
-            }
+    /**
+     * Returns the language prefix for this extension
+     * @param string $prefix The prefix to use
+     * @return string
+     */
+    protected function getLanguagePrefix(string $prefix = '') : string
+    {
+        if ($prefix) {
+            return $prefix;
         }
 
-        return parent::loadLanguage($file, $prefix);
+        $prefix = $this->module_name;
+        if ($this->name) {
+            $prefix.= '.' . $this->name;
+        }
+
+        return $prefix;
+    }
+
+    /**
+     * @see \Mars\Extensions\Extension::output()
+     * {@inheritdoc}
+     */
+    public function output()
+    {
+        $this->app->lang->savePrefix();
+
+        parent::output();
+
+        $this->app->lang->restorePrefix();
     }
 
     /**

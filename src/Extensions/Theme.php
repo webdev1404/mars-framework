@@ -148,7 +148,7 @@ class Theme extends Extension
     {   
         $this->lazyLoad($app);
 
-        parent::__construct($name, $app);
+        parent::__construct($name, [], $app);
     }
 
     /**

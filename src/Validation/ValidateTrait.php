@@ -43,7 +43,7 @@ trait ValidateTrait
      */
     protected function getValidationRules() : array
     {
-        return static::$validation_rules;
+        return static::$validation_rules ?? [];
     }
 
     /**
@@ -52,7 +52,7 @@ trait ValidateTrait
      */
     protected function getValidationRulesToSkip() : array
     {
-        return $this->validation_rules_to_skip;
+        return $this->validation_rules_to_skip ?? [];
     }
 
     /**
@@ -61,7 +61,7 @@ trait ValidateTrait
      */
     protected function getValidationErrorStrings() : array
     {
-        return static::$validation_error_strings;
+        return static::$validation_error_strings ?? [];
     }
 
     /**
@@ -107,11 +107,20 @@ trait ValidateTrait
         }
 
         if (!$this->app->validator->validate($data, $rules, $this->getValidationErrorStrings(), $this->getValidationRulesToSkip())) {
-            $this->errors->set($this->app->validator->errors->get());
+            $this->handleValidationErrors($this->app->validator->errors->get());
 
             return false;
         }
 
         return true;
+    }
+
+    /**
+     * Handles validation errors
+     * @param array $errors The errors to handle
+     */
+    public function handleValidationErrors(array $errors)
+    {
+        $this->errors->set($errors);
     }
 }

@@ -23,18 +23,14 @@ class Validator
     protected array $supported_rules = [
         'req' => \Mars\Validators\Required::class,
         'required' => \Mars\Validators\Required::class,
-        'unique' => \Mars\Validators\Unique::class,
-        'text' => \Mars\Validators\Text::class,
         'string' => \Mars\Validators\Text::class,
+        'text' => \Mars\Validators\Text::class,
+        'unique' => \Mars\Validators\Unique::class,        
         'min' => \Mars\Validators\Min::class,
         'max' => \Mars\Validators\Max::class,
         'int' => \Mars\Validators\IntVal::class,
-        'min_int' => \Mars\Validators\MinInt::class,
-        'max_int' => \Mars\Validators\MaxInt::class,
-        'float' => \Mars\Validators\FloatVal::class,     
-        'min_float' => \Mars\Validators\MinFloat::class,
-        'max_float' => \Mars\Validators\MaxFloat::class,   
-        'interval' => \Mars\Validators\Interval::class,        
+        'float' => \Mars\Validators\FloatVal::class,
+        'number' => \Mars\Validators\FloatVal::class,
         'pattern' => \Mars\Validators\Pattern::class,
         'email' => \Mars\Validators\Email::class,
         'url' => \Mars\Validators\Url::class,
@@ -82,9 +78,9 @@ class Validator
      * @param mixed $params Extra params to pass to the validator
      * @return bool Returns true if the value is valid
      */
-    public function isValid(mixed $value, string $rule, string $field = '', ...$params) : bool
+    public function isValid(mixed $value, string $rule, ...$params) : bool
     {
-        return $this->rules->get($rule)->validate($value, $field, ...$params);
+        return $this->rules->get($rule)->validate($value, ...$params);
     }
 
     /**
@@ -105,23 +101,28 @@ class Validator
                 continue;
             }
 
-            $value = App::getProperty($data, $field);
+            $value = App::getProperty($data, $field) ?? '';
 
-            $error_field = $field_rules['field'] ?? $field;
+            $error_name = $field_rules['name'] ?? $field;
             $rules_array = $field_rules['rules'] ?? $field_rules;
+            $break_on_error = $field_rules['break'] ?? true;
 
             if (is_string($rules_array)) {
                 $rules_array = explode('|', $rules_array);
             }
 
-            foreach ($rules_array as $rule) {
+            foreach ($rules_array as $rule) {   
                 $parts = explode(':', trim($rule));
-                $rule = reset($parts);
-                $params = array_slice($parts, 1);
+                $rule = reset($parts);            
+                $params = $this->getParams($parts);
 
-                if (!$this->isValid($value, $rule, $error_field, ...$params)) {
-                    $this->addError($rule, $field, $error_strings);
+                if (!$this->isValid($value, $rule, ...$params)) {
+                    $this->addError($rule, $field, $error_name, $error_strings);
                     $ok = false;
+
+                    if ($break_on_error) {
+                        break;
+                    }
                 }
             }
         }
@@ -130,10 +131,31 @@ class Validator
     }
 
     /**
+     * Returns the params for a rule
+     * @param array $parts The parts of the rule, split by ':'
+     * @return array The params for the rule
+     */
+    protected function getParams(array $parts) : array
+    {
+        $params = array_slice($parts, 1);
+
+        if ($params) {
+            //convert 'null' to null
+            array_walk($params, function (&$param) {
+                if ($param == 'null' || $param == '') {
+                    $param = null;
+                }            
+            });
+        }
+
+        return $params;
+    }
+
+    /**
      * Adds an error for a field & rule
      * @param string $rule The validation rule name
      */
-    protected function addError(string $rule, string $field, array $error_strings)
+    protected function addError(string $rule, string $field, string $error_name, array $error_strings)
     {
         //do we have in the $error_strings array a custom error for this rule & $field?
         if ($error_strings && isset($error_strings[$field][$rule])) {
@@ -143,7 +165,7 @@ class Validator
         }
 
         //use the rule's error
-        $this->errors->add(App::__($this->rules->get($rule)->getError()));
+        $this->errors->add($this->rules->get($rule)->getError($field, $error_name));
     }
 
     /**
@@ -152,7 +174,7 @@ class Validator
      * @param string $format The datetime's format
      * @return bool Returns true if the datetime is valid
      */
-    public function isDatetime(string $value, string $format = null) : bool
+    public function isDatetime(string $value, ?string $format = null) : bool
     {
         return $this->rules->get('datetime')->isValid($value, $format);
     }
@@ -163,7 +185,7 @@ class Validator
      * @param string $format The date's format
      * @return bool Returns true if the date is valid
      */
-    public function isDate(string $value, string $format = null) : bool
+    public function isDate(string $value, ?string $format = null) : bool
     {
         return $this->rules->get('date')->isValid($value, $format);
     }
@@ -174,7 +196,7 @@ class Validator
      * @param string $format The time's format
      * @return bool Returns true if the time value is valid
      */
-    public function isTime(string $value, string $format = null) : bool
+    public function isTime(string $value, ?string $format = null) : bool
     {
         return $this->rules->get('time')->isValid($value, $format);
     }

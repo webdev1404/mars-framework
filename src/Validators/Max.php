@@ -1,6 +1,6 @@
 <?php
 /**
-* The Min Validator Class
+* The Max Validator Class
 * @package Mars
 */
 
@@ -8,28 +8,35 @@ namespace Mars\Validators;
 
 /**
  * The Max Validator Class
- * Validates the max number of chars of a string
+ * Validates the max value of a number
  */
 class Max extends Validator
 {
     /**
      * {@inheritdoc}
      */
-    protected string $error_string = 'validate_max_error';
+    protected string $error = 'validate_float_max_error';
 
     /**
-     * Validates the number of chars of a string
+     * Validates the max value of a number
      * @param string $value The value
-     * @param int $length The minimum length of the string
+     * @param int $max The maximum value
      * @return bool
      */
-    public function isValid(string $value, ?int $length = null) : bool
+    public function isValid(string $value, ?int $max = null) : bool
     {
-        if ($length === null) {
-            throw new \Exception("The max validator rule must have the max number of chars. specified. Eg: max:5");
+        if ($max === null) {
+            throw new \Exception("The max validator rule must have the maximum number specified. Eg: max:5");
         }
 
-        if (mb_strlen($value) <= $length) {
+        $this->error_replacements = ['{MAX}' => $max];
+
+        if (!is_numeric($value)) {
+            return false;
+        }
+
+        $value = (float)$value;
+        if ($value <= $max) {
             return true;
         }
 

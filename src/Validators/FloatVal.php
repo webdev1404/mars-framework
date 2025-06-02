@@ -15,7 +15,14 @@ class FloatVal extends Validator
     /**
      * {@inheritdoc}
      */
-    protected string $error_string = 'validate_float_error';
+    protected string $error = '';
+
+    protected array $errors = [
+        'simple' => 'validate_float_error',
+        'min' => 'validate_float_min_error',
+        'max' => 'validate_float_max_error',
+        'min_max' => 'validate_float_min_max_error',
+    ];
 
     /**
      * Validates that value is a integer
@@ -24,26 +31,62 @@ class FloatVal extends Validator
      * @param float $max The maximum value, if any
      * @return bool
      */
-    public function isValid(string $value, ?float $min = null, ?float $max = null) : bool
+    public function isValid(string $value, ?float $min = 0, ?float $max = null) : bool
     {
-        if (!is_numeric($value)) {
-            return false;
-        }
+        return $this->isValidValue($value, $min, $max, FILTER_VALIDATE_FLOAT);
+    }
 
-        if (!$min && !$max) {
+    /**
+     * Validates the value
+     * @return bool Returns true if the value is valid
+     */
+    protected function isValidValue(mixed $value, ?float $min, ?float $max, int $type) : bool
+    {
+        $this->error = $this->errors['simple'];
+
+        if (!trim($value) && !$min && $max === null) {
+            // If no value and no min/max, consider it valid
             return true;
         }
 
+        if (!filter_var($value, $type)) {
+            return false;
+        }
+
+        return $this->isValidMinMax((float)$value, $min, $max);
+    }
+
+    /**
+     * Validates the minimum and maximum values
+     * @param float $value The value to validate
+     * @param float $min The minimum value, if any
+     * @param float $max The maximum value, if any
+     * @return bool Returns true if the value is within the min and max range
+     */
+    protected function isValidMinMax($value, ?float $min = null, ?float $max = null) : bool
+    {
+        if ($min === null && $max === null) {
+            return true;
+        }
+
+        $this->error_replacements = ['{MIN}' => $min, '{MAX}' => $max];
+
         $value = (float)$value;
         if ($min && $max) {
+            $this->error = $this->errors['min_max'];
+
             if ($value >= $min && $value <= $max) {
                 return true;
             }
-        } elseif ($min) {
+        } elseif ($min !== null) {
+            $this->error = $this->errors['min'];
+
             if ($value >= $min) {
                 return true;
             }
-        } elseif ($max) {
+        } elseif ($max !== null) {
+            $this->error = $this->errors['max'];
+
             if ($value <= $max) {
                 return true;
             }

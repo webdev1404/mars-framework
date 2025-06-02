@@ -43,11 +43,12 @@ abstract class Plugin extends SubModuleSingleFile
 
     /**
      * Builds the plugin
+     * @param array $params The params passed to the plugin, if any
      * @param App $app The app object
      */
-    public function __construct(App $app)
+    public function __construct(array $params = [], App $app)
     {
-        parent::__construct($app);
+        parent::__construct($params, $app);
 
         $this->app->plugins->addHooks($this, $this->hooks);
     }

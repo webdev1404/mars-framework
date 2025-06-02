@@ -17,52 +17,43 @@ abstract class Validator
     use InstanceTrait;
 
     /**
-     * @var string $error_string The error string
-     */
-    protected string $error_string = '';
-
-    /**
      * @var string $error The generated error, if any
      */
     protected string $error = '';
 
     /**
+     * @var array $error_replacements An array of replacements for the error message
+     */
+    protected array $error_replacements = [];
+
+    /**
      * Validates a value
-     * @param mixed $value The value to validate
-     * @param string $field The name of the field
+     * @param string $value The value to validate
      * @param mixed $params Params to be passed to the validator, if any
      * @return bool True if the validation passed
      */
-    public function validate(mixed $value, string $field, ...$params) : bool
+    public function validate(string $value, ...$params) : bool
     {
-        $this->error = '';
-
         if ($this->isValid($value, ...$params)) {
             return true;
         }
-
-        $this->error = $this->getErrorString($field, $params);
 
         return false;
     }
 
     /**
-     * Returns the validation error string
-     * @param string $field The name of the field
-     * @param mixed $params Params to be passed to the validator, if any
-     * @return string
+     * Returns the error message for a field
+     * @param string $field The field name
+     * @param string $error_name The error name
+     * @return string The error message
      */
-    protected function getErrorString(string $field, ...$params) : string
+    public function getError(string $field, string $error_name) : string
     {
-        return App::__($this->error_string, ['{FIELD}' => App::__($field)]);
-    }
+        $field_key = ($error_name) ? $error_name : $field;
+        $field_val = $this->app->lang->get($field_key);
 
-    /**
-     * Returns the generated error, if any
-     * @return string
-     */
-    public function getError() : string
-    {
-        return $this->error;
+        $replacements = ['{FIELD}' => $field_val] + $this->error_replacements;
+
+        return $this->app->lang->get($this->error, $replacements);
     }
 }

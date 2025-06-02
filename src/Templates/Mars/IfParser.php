@@ -21,16 +21,17 @@ class IfParser
      */
     public function parse(string $content, array $params = []) : string
     {
-        $content = preg_replace_callback('/\{%\s*if(.*)\s*%\}/iU', function (array $match) {
+        //$content = preg_replace_callback('/\{%\s*if(.*)\s*%\}/iU', function (array $match) {
+        $content = preg_replace_callback('/@if\s*\((.*)\)/i', function (array $match) {
             return '<?php if(' . $this->getCondition($match[1]) . '){ ?>';
         }, $content);
 
-        $content = preg_replace_callback('/\{%\s*elseif(.*)\s*%\}/isU', function (array $match) {
+        $content = preg_replace_callback('/@elseif\s*\((.*)\)/is', function (array $match) {
             return '<?php } elseif(' . $this->getCondition($match[1]) . '){ ?>';
         }, $content);
 
-        $content = preg_replace('/\{%\s*else\s*%\}/iU', '<?php } else { ?>', $content);
-        $content = preg_replace('/\{%\s*endif\s*%\}/iU', '<?php } ?>', $content);
+        $content = preg_replace('/@else/iU', '<?php } else { ?>', $content);
+        $content = preg_replace('/@endif/iU', '<?php } ?>', $content);
 
         return $content;
     }

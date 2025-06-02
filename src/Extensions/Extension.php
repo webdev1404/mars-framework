@@ -104,6 +104,11 @@ abstract class Extension
     }
 
     /**
+     * @var array $params The parames passed to the extension, if any
+     */
+    public protected(set) array $params = [];
+
+    /**
      * @var float $exec_time The time needed to run this extension
      */
     public float $exec_time = 0;
@@ -121,13 +126,15 @@ abstract class Extension
     /**
      * Builds the extension
      * @param string $name The name of the exension
+     * @param array $params The params passed to the extension, if any
      * @param App $app The app object
      */
-    public function __construct(string $name, ?App $app = null)
+    public function __construct(string $name, array $params = [], ?App $app = null)
     {
         $this->app = $app ?? $this->getApp();
 
         $this->name = $name;
+        $this->params = $params;
     }
 
     /**

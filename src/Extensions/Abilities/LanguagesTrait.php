@@ -20,13 +20,13 @@ trait LanguagesTrait
      * @param string $prefix The string's prefix, if any
      * @return static
      */
-    public function loadLanguage(string $file = '', ?string $prefix = null) : static
+    public function loadLanguage(string $file = '', string $prefix = '') : static
     {
         if (!$file) {
             $file = $this->name;
         }
-        if ($prefix === null && $this->name) {
-            $prefix = $this->name . '.';
+        if (!$prefix) {
+            $prefix = $this->name;
         }
 
         $filename = $this->path . '/' . App::EXTENSIONS_DIRS['languages'] . '/' . $this->app->lang->name . '/' . $file . '.php';

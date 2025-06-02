@@ -19,6 +19,21 @@ class Language extends Extension
     public array $strings = [];
 
     /**
+     * @var array $strings_with_prefix The language's strings which have a prefix assigned
+     */
+    public array $strings_with_prefix = [];
+
+    /**
+     * @var array  $string_prefixes The prefixes to to search strings with
+     */
+    protected array $string_prefixes = [];
+
+    /**
+     * @var array $strings_prefix_old The prefixes to to search strings with
+     */
+    protected array $string_prefixes_old = [];
+
+    /**
      * @var array $loaded_files The list of loaded files
      */
     protected array $loaded_files = [];
@@ -77,11 +92,86 @@ class Language extends Extension
         $strings = include($filename);
 
         if ($prefix) {
-            $keys = array_map(fn($key) => $prefix . $key, array_keys($strings));
-            $strings = array_combine($keys, $strings);
+            $this->addPrefix($prefix);
+
+            $this->strings_with_prefix[$prefix] = array_merge(
+                $this->strings_with_prefix[$prefix] ?? [],
+                $strings
+            );
+        } else {
+            $this->strings = array_merge($this->strings, $strings);
         }
 
-        $this->strings = array_merge($this->strings, $strings);
+        return $this;
+    }
+
+    /**
+     * Returns a language string
+     * @param string $key The string key as defined in the languages file
+     * @param array $replace Array with key & values to be used for to search & replace, if any
+     * @return string The language string
+     */
+    public function get(string $key, array $replace = [], string $prefix = '') : string
+    {        
+        $string = '';
+        $prefixes = $prefix ? [$prefix] : $this->string_prefixes;
+
+        if ($prefixes) {
+            foreach ($prefixes as $prefix) {
+                if (isset($this->strings_with_prefix[$prefix][$key])) {
+                    $string = $this->strings_with_prefix[$prefix][$key];
+                    break;
+                }
+            }
+
+            if (!$string) {
+                //fallback to the non-prefixed key, if not found
+                $string = $this->strings[$key] ?? $key;
+            }
+        } else {
+            $string = $this->strings[$key] ?? $key;
+        }
+
+        if ($replace) {
+            $string = str_replace(array_keys($replace), $replace, $string);
+        }
+
+        return $string;
+    }
+
+    /**
+     * Adds a prefix to the prefixes list
+     * @param string $prefix The prefix to add
+     * @return static
+     */
+    public function addPrefix(string $prefix) : static
+    {
+        array_unshift($this->string_prefixes, $prefix);
+
+        return $this;
+    }
+
+    /**
+     * Saves the current prefixes to the old ones
+     */
+    public function savePrefix() : static
+    {
+        $this->string_prefixes_old = $this->string_prefixes;
+
+        return $this;
+    }
+
+    /**
+     * Restores the prefixes to the previous ones
+     */
+    public function restorePrefix() : static
+    {
+        //unload the strings with the current prefixes
+        foreach ($this->string_prefixes as $prefix) {
+            unset($this->strings_with_prefix[$prefix]);
+        }
+
+        $this->string_prefixes = $this->string_prefixes_old;
 
         return $this;
     }

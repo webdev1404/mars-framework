@@ -14,7 +14,7 @@ class Pattern extends Validator
     /**
      * {@inheritdoc}
      */
-    protected string $error_string = 'validate_pattern_error';
+    protected string $error = '';
 
     /**
      * Validates that $value matches a pattern
@@ -22,16 +22,16 @@ class Pattern extends Validator
      * @param int $max The maximum value
      * @return bool
      */
-    public function isValid(string $value, ...$params) : bool
+    public function isValid(string $value, ?string $pattern = null, ?string $error = null) : bool
     {
-        if (empty($params[0])) {
+        if ($pattern == null) {
             throw new \Exception("The Validator Pattern rule must have the pattern specified. Eg: pattern:/[a-Z0-9]*/");
         }
 
-        if (count($params) == 1) {
-            $pattern = $params[0];
-        } else {
-            $pattern = implode(':', $params);
+        $this->error = $error ?? 'validate_pattern_error';
+
+        if (!$value) {
+            return false;
         }
 
         return preg_match($pattern, $value, $m);

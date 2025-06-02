@@ -278,11 +278,12 @@ class Router
      * @param string $route The route to handle
      * @param string $module_name The module the block belongs to
      * @param string $name The block's name
+     * @param array $params The params to pass to the block, if any
      * @return static
      */
-    public function block(string $route, string $module_name, string $name = '') : static
+    public function block(string $route, string $module_name, string $name = '', array $params = []) : static
     {
-        $block = new Block($module_name, $name, $this->app);
+        $block = new Block($module_name, $name, $params, $this->app);
 
         return $this->setRouteObject($route, $block);
     }

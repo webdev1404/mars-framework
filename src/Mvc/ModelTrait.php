@@ -7,6 +7,7 @@
 namespace Mars\Mvc;
 
 use Mars\App;
+use Mars\Hidden;
 use Mars\System\Plugins;
 
 /**

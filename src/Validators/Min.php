@@ -1,35 +1,42 @@
 <?php
 /**
-* The Min Chars Validator Class
+* The Min Validator Class
 * @package Mars
 */
 
 namespace Mars\Validators;
 
 /**
- * The MinChars Validator Class
- * Validates the min number of chars of a string
+ * The Min Validator Class
+ * Validates the min value of a number
  */
 class Min extends Validator
 {
     /**
      * {@inheritdoc}
      */
-    protected string $error_string = 'validate_min_error';
+    protected string $error = 'validate_float_min_error';
 
     /**
-     * Validates the number of chars of a string
+     * Validates the min value of a number
      * @param string $value The value
-     * @param int $length The minimum length of the string
+     * @param int $min The minimum value
      * @return bool
      */
-    public function isValid(string $value, ?int $length = null) : bool
+    public function isValid(string $value, ?int $min = null) : bool
     {
-        if ($length === null) {
-            throw new \Exception("The min validator rule must have the minimum number of chars. specified. Eg: min:5");
+        if ($min === null) {
+            throw new \Exception("The min validator rule must have the minimum number specified. Eg: min:5");
         }
 
-        if (mb_strlen($value) >= $length) {
+        $this->error_replacements = ['{MIN}' => $min];
+
+        if (!is_numeric($value)) {
+            return false;
+        }
+
+        $value = (float)$value;
+        if ($value >= $min) {
             return true;
         }
 

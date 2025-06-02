@@ -14,7 +14,7 @@ class Url extends Validator
     /**
      * {@inheritdoc}
      */
-    protected string $error_string = 'validate_url_error';
+    protected string $error = 'validate_url_error';
 
     /**
      * Checks if $value is a valid url

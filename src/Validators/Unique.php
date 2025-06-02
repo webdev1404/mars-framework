@@ -14,7 +14,7 @@ class Unique extends Validator
     /**
      * {@inheritdoc}
      */
-    protected string $error_string = 'validate_unique_error';
+    protected string $error = '';
 
     /**
      * Validates that a value is unique in a table
@@ -23,12 +23,19 @@ class Unique extends Validator
      * @param string $column The name of the column
      * @return bool
      */
-    public function isValid(string $value, ?string $table = null, string $column = 'id') : bool
+    public function isValid(string $value, ?string $table = null, ?string $column = 'id', ?string $error = null) : bool
     {
         if (!$table) {
             throw new \Exception("The Validator Unique rule must have the name of the table and (optionally) column specified. Eg: unique:users or unique:users:id");
         }
 
-        return $this->app->db->exists($table, [$column => $value], $column);
+        $this->error = $error ?? 'validate_unique_error';
+
+        $exists = $this->app->db->exists($table, [$column => $value], $column);
+        if (!$exists) {
+            return true;
+        }
+
+        return false;
     }
 }

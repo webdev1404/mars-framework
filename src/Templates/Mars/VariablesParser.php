@@ -160,9 +160,9 @@ class VariablesParser
             $value = preg_replace('/["\'][^"\']*["\'](*SKIP)(*FAIL)|\./i', '->', $value);
         }
 
-        //replace @ arrays with [] arrays. Eg: item@prop => item['prop']
-        if (str_contains($value, '@')) {
-            $value = preg_replace('/@([^\-\[@]*)/s', "['$1']", $value);
+        //replace # arrays with [] arrays. Eg: item#prop => item['prop']
+        if (str_contains($value, '#')) {
+            $value = preg_replace('/#([^\-\[#]*)/s', "['$1']", $value);
         }
 
         return $value;
@@ -177,16 +177,8 @@ class VariablesParser
     protected function getLanguageVariable(string $value, array $params) : string
     {
         $value = str_replace("'", "\\'", $value);
-        
-        if (empty($params['module'])) {
-            return "\$strings['{$value}'] ?? '{$value}'";
-        } else {
-            //if we have a module, we need to check if the string exists with the module prefix
-            //if it doesn't exist, we return the string without the module prefix
-            $module_value =  $params['module'] . '.' . $value;
 
-            return "isset(\$strings['{$module_value}']) ? \$strings['{$module_value}'] : (\$strings['{$value}'] ?? '{$value}')";
-        }
+        return "\$lang->get('{$value}')";
     }
 
     /**

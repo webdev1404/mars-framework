@@ -99,11 +99,6 @@ abstract class Item extends Entity
     protected array $validation_rules_to_skip = [];
 
     /**
-     * @var array $validation_error_strings Custom error strings
-     */
-    protected static array $validation_error_strings = [];
-
-    /**
      * @var array $frozen_fields Fields which cannot be changed by set()
      */
     protected static array $frozen_fields = ['fields', 'original', 'validation_rules_to_skip'];

@@ -10,6 +10,6 @@ namespace Mars\Alerts;
  * The Messages Class
  * Messages container
  */
-class Messages extends Alert
+class Messages extends Alerts
 {
 }

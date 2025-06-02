@@ -21,7 +21,7 @@ class ForeachParser
      */
     public function parse(string $content, array $params = []) : string
     {
-        $content = preg_replace_callback('/\{%\s*foreach(.*) as (.*)%\}/isU', function (array $match) {
+        $content = preg_replace_callback('/@foreach\s*\((.*) as (.*)\)/isU', function (array $match) {
             $variable = new VariablesParser($this->app)->replaceVariables($match[1]);
             $expression = trim($match[2]);
 
@@ -32,7 +32,7 @@ class ForeachParser
             return $code;
         }, $content);
 
-        $content = preg_replace('/\{\%\s*endforeach\s*\%\}/U', '<?php }} ?>', $content);
+        $content = preg_replace('/@endforeach/U', '<?php }} ?>', $content);
 
         return $content;
     }

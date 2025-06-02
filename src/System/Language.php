@@ -44,14 +44,29 @@ class Language extends \Mars\Extensions\Language
     public string $datetime_picker_format = 'm-d-Y H:i:s';
 
     /**
+     * @var string datetime_picker_desc The description of the datetime picker
+     */
+    public string $datetime_picker_desc = 'mm-dd-yyyy hh:mm:ss';
+
+    /**
      * @var string date_picker_format The format of the date picker
      */
     public string $date_picker_format = 'm-d-Y';
 
     /**
+     * @var string date_picker_desc The description of the date picker
+     */
+    public string $date_picker_desc = 'mm-dd-yyyy';
+
+    /**
      * @var string time_picker_format The format of the time picker
      */
     public string $time_picker_format = 'H:i:s';
+
+    /**
+     * @var string time_picker_desc The description of the time picker
+     */
+    public string $time_picker_desc = 'hh:mm:ss';
 
     /**
      * @var string $decimal_separator The language's decimal_separator
@@ -73,7 +88,7 @@ class Language extends \Mars\Extensions\Language
             return;
         }
 
-        parent::__construct($app->config->language, $app);
+        parent::__construct($app->config->language, [], $app);
 
         include($this->path . '/init.php');
 

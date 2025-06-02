@@ -12,6 +12,7 @@ use Mars\Document;
 use Mars\Escape;
 use Mars\Filter;
 use Mars\Format;
+use Mars\Hidden;
 use Mars\Html;
 use Mars\Text;
 use Mars\Ui;
@@ -108,6 +109,7 @@ abstract class View
     /**
      * @var Extension $parent The parent extension
      */
+    #[Hidden]
     protected ?Extension $parent {
         get => $this->controller->parent;
     }
@@ -115,11 +117,13 @@ abstract class View
     /**
      * @var Controller $controller The controller
      */
+    #[Hidden]
     public protected(set) Controller $controller;
 
     /**
      * @var object $model The model
      */
+    #[Hidden]
     protected  object $model {
         get => $this->controller->model;
     }
@@ -214,6 +218,14 @@ abstract class View
      */
     protected function init()
     {
+    }
+
+    /**
+     * Alias for $this->app->lang->get()
+     */
+    protected function __(string $str, array $replace = [], string $prefix = '') : string
+    {
+        return $this->app->lang->get($str, $replace, $prefix);
     }
 
     /**

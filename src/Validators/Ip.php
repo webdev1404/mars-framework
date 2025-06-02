@@ -14,7 +14,7 @@ class Ip extends Validator
     /**
      * {@inheritdoc}
      */
-    protected string $error_string = 'validate_ip_error';
+    protected string $error = 'validate_ip_error';
 
     /**
      * Checks if $ip is a valid IP address
