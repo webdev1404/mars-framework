@@ -122,6 +122,10 @@ trait EntityTrait
     public function get(array $properties = []) : array
     {
         $data_array = App::getArray($this);
+
+        //unset the errors property
+        unset($data_array['errors']);
+
         if (!$properties) {
             return $data_array;
         }

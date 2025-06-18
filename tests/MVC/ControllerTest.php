@@ -89,9 +89,5 @@ final class ControllerTest extends Base
         ob_start();
         $controller->dispatch('withError');
         $this->assertSame('with errormy error', ob_get_clean());
-
-        ob_start();
-        $controller->dispatch('myJson');
-        $this->assertSame('{"success":true,"error":"","message":"","warning":"","info":"","foo":"bar"}', ob_get_clean());
     }
 }

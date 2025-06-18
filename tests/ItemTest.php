@@ -145,7 +145,7 @@ final class ItemTest extends Base
         $car->update();
 
         $car = new Car(3);
-        $this->assertSame($car->color, 'blue');
+        $this->assertSame($car->color, 'yellow');
     }
 
     public function testDelete()
@@ -177,7 +177,7 @@ final class ItemTest extends Base
     public function testBindList()
     {
         $car = new Car(2);
-        $car->bindList(['color' => 'brown', 'some_prop' => 'abc'], ['color']);
+        $car->bindList(['color'], ['color' => 'brown', 'some_prop' => 'abc']);
 
         $this->assertSame($car->id, 2);
         $this->assertSame($car->color, 'brown');

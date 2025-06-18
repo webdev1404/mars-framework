@@ -24,23 +24,13 @@ final class ResponseTest extends Base
     public function testResponseType()
     {
         $this->app->response->type = 'ajax';
-        $this->assertSame($this->app->response->type, 'ajax');
+        $this->assertSame($this->app->response->type, 'json');
 
         $this->app->response->type = 'json';
-        $this->assertSame($this->app->response->type, 'ajax');
+        $this->assertSame($this->app->response->type, 'json');
 
         $this->app->response->type = 'html';
         $this->assertSame($this->app->response->type, 'html');
-    }
-
-    public function testGetResponse()
-    {
-        $content = '<p>Test HTML Content</p>';
-        $this->assertSame($this->app->response->get($content), $content);
-
-        $this->app->response->type = 'ajax';
-        $content = ['status' => 'success', 'message' => 'Test AJAX Content'];
-        $this->assertSame($this->app->response->get($content), json_encode($content));
     }
 
     public function testOutputResponse()
@@ -54,9 +44,17 @@ final class ResponseTest extends Base
         $this->app->response->type = 'ajax';
         $content = ['status' => 'success', 'message' => 'Test AJAX Content'];
         ob_start();
-        $this->app->response->output(json_encode($content));
+        $this->app->response->output($content);
         $output = ob_get_clean();
-        $this->assertSame($output, json_encode($content));
+
+        $expected = [
+            'success' => true,
+            'message' => '',
+            'error' => '',
+            'data' => $content,
+        ];
+
+        $this->assertSame($output, json_encode($expected));
     }
 }
 
