@@ -14,7 +14,6 @@ use Mars\Alerts\Messages;
 use Mars\Assets\Minifier;
 use Mars\LazyLoad\GhostTrait;
 use Mars\LazyLoad\ProxyTrait;
-use Mars\Mvc\Controller;
 use Mars\Time\DateTime;
 use Mars\Time\Date;
 use Mars\Time\Time;
@@ -679,14 +678,15 @@ class App
     protected static array $objects_map = [];
 
     /**
-     * @var int $output_size The size of the output. Set if debug is on
+     * Stats set if debug is on
+     * @var array $stats The stats array
      */
-    public protected(set) int $output_size = 0;
-
-    /**
-     * @var int $output_time The time it took to generate the output. Set if debug is on
-     */
-    public protected(set) float $output_time = 0;
+    public protected(set) array $stats = [
+        'content_size' => 0,
+        'content_time' => 0,
+        'output_size' => 0,
+        'output_time' => 0
+    ];  
 
     /**
      * @const array DIRS The locations of the used dirs
@@ -953,18 +953,6 @@ class App
     }
 
     /**
-     * Outputs the content
-     * @param mixed $content The content
-     * @param string $type The content's type: html/ajax
-     */
-    public function output($content, string $type = '')
-    {
-        $this->response->type = $type;
-
-        echo $this->response->get($content);
-    }
-
-    /**
      * Outputs the content if the page is cached
      */
     protected function outputIfCached()
@@ -975,6 +963,29 @@ class App
     }
 
     /**
+     * Sends a json response
+     * @param mixed $content The content to send
+     */
+    public function send($content)
+    {
+        $this->response->type = 'json';
+
+        $this->response->output($content);
+        die;
+    }
+
+     /**
+     * Outputs the content
+     * @param string $content The content
+     */
+    public function output(string $content)
+    {
+        $this->response->type = 'html';
+
+        echo $content;
+    }
+
+    /**
      * Starts the output buffering.
      */
     public function start()
@@ -982,64 +993,65 @@ class App
         $this->plugins->run('app_start', $this);
 
         if ($this->config->debug) {
-            $this->timer->start('app_output_content');
+            $this->timer->start('app_content_time');
         }
 
         ob_start();
     }
 
     /**
-     * Ends the output and sets $this-content
+     * Generates the output and sends it to the browser.
      */
     public function end()
     {
         $content = ob_get_clean();
-
+        
         $content = $this->plugins->filter('app_filter_content', $content, $this);
 
-        $output = $this->getOutput($content);
+        if ($this->config->debug) {
+            $this->stats['content_size'] = strlen($content);
+            $this->stats['content_time'] = $this->timer->stop('app_content_time');
 
-        $this->plugins->run('app_end', $output);
+            $this->timer->start('app_output_time');
+        }
 
-        //cache the output, if required
+        $output = $this->buildOutput($content);
+
+        $output = $this->plugins->filter('app_filter_output', $output, $this);
+
         if ($this->config->cache_page_enable) {
+            //cache the page output, if caching is enabled
             $this->cache->pages->store($output);
         }
-        
-        $output = $this->response->output($output);
-    }
-
-    /**
-     * Builds the output from the content
-     * @param string $content The content
-     * @return string The output
-     */
-    protected function getOutput(string $content) : string
-    {
-        if ($this->response->type != 'html') {
-            return $content;
-        }
-
-        if ($this->config->theme) {
-            ob_start();
-            $this->theme->renderHeader();
-            $this->theme->renderContent($content);
-            $this->theme->renderFooter();
-            $output = ob_get_clean();
-        } else {
-            $output = $content;
-        }
-
-        $output = $this->plugins->filter('app_filter_output', $output, $this);        
 
         if ($this->config->debug) {
-            $this->output_size = strlen($output);
-            $this->output_time = $this->timer->stop('app_output_content');
+            $this->stats['output_size'] = strlen($output);
+            $this->stats['output_time'] = $this->timer->stop('app_output_time');
 
             $output.= $this->getDebugOutput();
         }
 
-        return $output;
+        $this->response->output($output);
+
+        $this->plugins->run('app_end', $this);
+    }
+
+    /**
+     * Builds the output
+     * @param string $content The content to build the output for
+     * @return string The output
+     */
+    protected function buildOutput(string $content) : string
+    {
+        if (!$this->config->theme) {
+            return $content;
+        }
+
+        ob_start();
+        $this->theme->renderHeader();
+        $this->theme->renderContent($content);
+        $this->theme->renderFooter();
+        return ob_get_clean();
     }
 
     /**
@@ -1051,48 +1063,6 @@ class App
         ob_start();
         $this->debug->output();
         return ob_get_clean();
-    }
-
-    /**
-     * Outputs debug information.
-     * @param string $output The generated output
-     * @return void
-     */
-    public function outputDebug(string $output = '')
-    {
-        echo $this->getDebugOutput($output);
-    }
-
-    /**
-     * Renders/Outputs a template
-     * @param string $template The name of the template
-     * @param array $vars Vars to pass to the template, if any
-     */
-    public function render(string $template, array $vars = [])
-    {
-        $this->start();
-
-        $this->theme->render($template, $vars);
-
-        $this->end();
-    }
-
-    /**
-     * Renders a controller
-     * @param Controller $controller The controller
-     * @param string $action The action to perform. If null, it will be read from the request data
-     */
-    public function renderController(Controller $controller, ?string $action = null)
-    {
-        if ($action === null) {
-            $action = $this->request->getAction();
-        }
-
-        $this->start();
-
-        $controller->dispatch($action);
-
-        $this->end();
     }
 
     /**********************SCREENS FUNCTIONS***************************************/

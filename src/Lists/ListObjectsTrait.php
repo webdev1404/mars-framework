@@ -9,7 +9,7 @@ namespace Mars\Lists;
 use Mars\App;
 
 /**
-* The List Objects Trait
+ * The List Objects Trait
  * Encapsulates a list of objects
  */
 trait ListObjectsTrait
@@ -32,9 +32,9 @@ trait ListObjectsTrait
     /**
      * Adds an object to the list
      * @param string $name The name of the object
-     * @param string|array|callable|object $class The class of the object, or a callable
+     * @param mixed $class The class of the object, or a callable
      */
-    public function add(string $name, string|array|callable|object $class) : static
+    public function add(string $name, mixed $class) : static
     {
         if ($this->store && isset($this->objects[$name])) {
             unset($this->objects[$name]);

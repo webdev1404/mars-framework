@@ -7,6 +7,7 @@
 namespace Mars;
 
 use Mars\App\InstanceTrait;
+use Mars\Lists\ListTrait;
 
 /**
  * The Json Class
@@ -15,6 +16,18 @@ use Mars\App\InstanceTrait;
 class Json
 {
     use InstanceTrait;
+    use ListTrait;
+
+    /**
+     * Json data to be outputted, if the request is a json request
+     * @var array
+     */
+    public array $data = [];
+
+    /**
+     * @internal
+     */
+    static protected string $property = 'data';
 
     /**
      * Encodes data

@@ -40,10 +40,10 @@ trait ListTrait
     /**
      * Adds an element
      * @param string $name The name of the element
-     * @param string $value The value
+     * @param mixed $value The value
      * @return static
      */
-    public function add(string $name, string $value) : static
+    public function add(string $name, mixed $value) : static
     {
         $this->{static::$property}[$name] = $value;
 

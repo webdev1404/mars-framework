@@ -17,19 +17,10 @@ class Html implements DriverInterface
     use InstanceTrait;
 
     /**
-     * @see \Mars\Response\DriverInterface::get()
-     * {@inheritdoc}
-     */
-    public function get($content) : string
-    {
-        return $content;
-    }
-
-    /**
      * @see \Mars\Response\DriverInterface::output()
      * {@inheritdoc}
      */
-    public function output(string $content)
+    public function output($content)
     {
         echo $content;
     }

@@ -65,7 +65,7 @@ final class UriTest extends Base
 
     public function testGetPath()
     {
-        $this->assertEquals($this->app->uri->getPath('https://www.google.com/'), '');
+        $this->assertEquals($this->app->uri->getPath('https://www.google.com/'), '/');
         $this->assertEquals($this->app->uri->getPath('https://www.google.com'), '');
         $this->assertEquals($this->app->uri->getPath('https://www.google.com/mypath/script.php'), '/mypath/script.php');
         $this->assertEquals($this->app->uri->getPath('https://www.google.com/mypath/script.php?var=1&var2=2'), '/mypath/script.php');

@@ -7,6 +7,9 @@
 namespace Mars\Data;
 
 use Mars\App;
+use Mars\App\InstanceTrait;
+use Mars\Alerts\Errors;
+use Mars\Validation\ValidateTrait;
 
 /**
  * The Entity Trait
@@ -14,12 +17,32 @@ use Mars\App;
  */
 trait EntityTrait
 {
+    use InstanceTrait;
+    use ValidateTrait;
+
+    /**
+     * @var Errors $errors The generated errors, if any
+     */
+    public protected(set) Errors $errors {
+        get {
+            if (isset($this->errors)) {
+                return $this->errors;
+            }
+
+            $this->errors = new Errors($this->app);
+
+            return $this->errors;
+        }
+    }
+
     /**
      * Builds an object
      * @param array|object $data The entity's data
      */
-    public function __construct(array|object $data = [])
+    public function __construct(array|object $data = [], ?App $app = null)
     {
+        $this->app = $app ?? $this->getApp();
+
         $this->set($data);
     }
 
@@ -111,5 +134,107 @@ trait EntityTrait
         }
 
         return $data;
+    }
+
+    /**
+     * Binds the data from $data to the entity's properties
+     * @param array $data The data to bind. If empty, the $_POST data is used
+     * @param array $ignore_properties Array listing the properties from $data which shouldn't be included in the returned result
+     * @param string $ignore_value If $ignore_value is not null, any values which equals $ignore_value won't be included in the returned result
+     * @return $this
+     */
+    public function bind(array $data = [], ?array $ignore_properties = null, ?string $ignore_value = null) : static
+    {
+        $data = $this->getBindData($data);
+
+        foreach ($data as $key => $value) {
+            if (!isset($this->$key)) {
+                continue;
+            }
+
+            if ($ignore_properties) {
+                if (in_array($key, $ignore_properties)) {
+                    continue;
+                }
+            }
+
+            if ($ignore_value) {
+                if ($value === $ignore_value) {
+                    continue;
+                }
+            }
+
+            $this->$key = $value;
+        }
+
+        return $this;
+    }
+
+    /**
+     * Binds the data from $data to the object's properties     
+     * @param array $allowed_properties Array listing the properties which should be bound
+     * @param array $data The data to bind
+     * @param string $ignore_value If $ignore_value is not null, any values which equals $ignore_value won't be included in the returned result
+     * @return $this
+     */
+    public function bindList(array $allowed_properties, array $data = [], ?string $ignore_value = null) : static
+    {
+        foreach ($allowed_properties as $key) {
+            if (!isset($data[$key])) {
+                continue;
+            }
+            if (!isset($this->$key)) {
+                continue;
+            }
+
+            $value = $data[$key];
+
+            if ($ignore_value) {
+                if ($value === $ignore_value) {
+                    continue;
+                }
+            }
+
+            $this->$key = $value;
+        }
+
+        return $this;
+    }
+
+    /**
+     * Returns the data to bind to the entity's properties
+     * @param array $data The data to bind. If empty, the $_POST data is used
+     * @return array The data to bind
+     */
+    protected function getBindData(array $data) : array
+    {
+        if ($data) {
+            return $data;
+        }
+
+        return $this->app->request->post->getAll();
+    }
+
+    /**
+     * Clears the entity's properties
+     * @return static
+     */
+    public function reset() : static
+    {
+        $properties = App::getObjectProperties($this);
+
+        foreach ($properties as $name => $value) {
+            if (is_string($value)) {
+                $this->$name = '';
+            } elseif (is_int($value) || is_float($value)) {
+                $this->$name = 0;
+            } elseif (is_bool($value)) {
+                $this->$name = false;
+            } elseif (is_array($value)) {
+                $this->$name = [];
+            }
+        }
+
+        return $this;
     }
 }

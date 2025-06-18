@@ -98,7 +98,7 @@ trait ValidateTrait
     public function validate(array|object $data = []) : bool
     {
         if (!$data) {
-            $data = $this->app->request->post->getAll();
+            $data = $this;
         }
 
         $rules = $this->getValidationRules();
@@ -107,12 +107,21 @@ trait ValidateTrait
         }
 
         if (!$this->app->validator->validate($data, $rules, $this->getValidationErrorStrings(), $this->getValidationRulesToSkip())) {
-            $this->handleValidationErrors($this->app->validator->errors->get());
+            $this->handleValidationErrors($this->app->validator->getErrors(false));
 
             return false;
         }
 
         return true;
+    }
+
+    /**
+     * Returns the validation errors
+     * @return array The validation errors
+     */
+    public function getValidationErrors() : array
+    {
+        return $this->app->validator->getErrors();
     }
 
     /**
@@ -122,5 +131,9 @@ trait ValidateTrait
     public function handleValidationErrors(array $errors)
     {
         $this->errors->set($errors);
+
+        if ($this->app->request->is_json) {
+            $this->app->json->add('validation_errors', $this->app->validator->getErrors());
+        }
     }
 }

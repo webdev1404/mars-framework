@@ -56,19 +56,9 @@ class Validator
     }
 
     /**
-     * @var Errors $errors The generated errors, if any
+     * @var array $errors The generated errors, if any, grouped by field
      */
-    public protected(set) Errors $errors {
-        get {
-            if (isset($this->errors)) {
-                return $this->errors;
-            }
-
-            $this->errors = new Errors($this->app);
-
-            return $this->errors;
-        }
-    }
+    public protected(set) array $errors = [];
 
     /**
      * Checks a value agains a validator
@@ -94,7 +84,7 @@ class Validator
     public function validate(array|object $data, array $rules, array $error_strings = [], array $skip_array = []) : bool
     {
         $ok = true;
-        $this->errors->reset();
+        $this->errors = [];
 
         foreach ($rules as $field => $field_rules) {
             if (in_array($field, $skip_array)) {
@@ -157,15 +147,40 @@ class Validator
      */
     protected function addError(string $rule, string $field, string $error_name, array $error_strings)
     {
+        $this->errors[$field] = $this->errors[$field] ?? [];
+
         //do we have in the $error_strings array a custom error for this rule & $field?
         if ($error_strings && isset($error_strings[$field][$rule])) {
-            $this->errors->add(App::__($error_strings[$field][$rule]));
+            $this->errors[$field][] = $error_strings[$field][$rule];
 
             return;
         }
 
         //use the rule's error
-        $this->errors->add($this->rules->get($rule)->getError($field, $error_name));
+        $this->errors[$field][] = $this->rules->get($rule)->getError($field, $error_name);
+    }
+
+    /**
+     * Returns the errors
+     * @param bool $flat If true, merges the errors into a single error, with $separator between them
+     * @param string $separator The separator to use between errors if $flat is true
+     * @return array The errors
+     */
+    public function getErrors(bool $flat = true, string $separator = '<br>') : array
+    {
+        $errors = [];
+        foreach ($this->errors as $field => $field_errors) {
+
+            if ($flat) {
+                $errors[$field] = implode($separator, $field_errors);
+            } else {
+                foreach ($field_errors as $error) {
+                    $errors[] = $error;
+                }
+            }
+        }
+
+        return $errors;
     }
 
     /**

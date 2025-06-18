@@ -25,7 +25,7 @@ class Response
      * @var array $supported_$responses The supported $responses types
      */
     protected array $supported_responses = [
-        'ajax' => \Mars\Response\Types\Ajax::class,
+        'json' => \Mars\Response\Types\Json::class,
         'html' => \Mars\Response\Types\Html::class
     ];
 
@@ -62,9 +62,9 @@ class Response
     public string $type = 'html' {
         set(string $type) {
             switch ($type) {
-                case 'ajax':
                 case 'json':
-                    $this->type = 'ajax';
+                case 'ajax':
+                    $this->type = 'json';
                     break;
                 default:
                     $this->type = 'html';
@@ -84,20 +84,10 @@ class Response
     }
 
     /**
-     * Returns the converted content to $type
-     * @param mixed $content The content
-     * @return mixed
-     */
-    public function get($content)
-    {
-        return $this->responses->get($this->type)->get($content);
-    }
-
-    /**
      * Outputs the $content
-     * @param string string The content to output
+     * @param mixed $content The content to output
      */
-    public function output(string $content)
+    public function output($content)
     {
         $this->headers->output();
 

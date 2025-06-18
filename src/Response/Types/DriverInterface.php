@@ -12,15 +12,8 @@ namespace Mars\Response\Types;
 interface DriverInterface
 {
     /**
-     * Returns the content as a string
-     * @param mixed $content The content
-     * @return string
-     */
-    public function get($content) : string;
-
-    /**
      * Outputs $content
-     * @param string $content The content to output
+     * @param $content The content to output
      */
-    public function output(string $content);
+    public function output($content);
 }

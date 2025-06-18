@@ -92,7 +92,7 @@ class Pages extends Cacheable
 
         if ($this->app->is_cli || !$this->app->config->cache_page_enable || defined('DISABLE_CACHE_PAGE')) {
             return;
-        }
+        }        
         if ($this->app->config->debug || $this->app->config->development) {
             return;
         }

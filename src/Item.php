@@ -8,9 +8,6 @@ namespace Mars;
 
 use Mars\Data\ItemTrait;
 
-
-use Mars\Validation\ValidateTrait;
-
 /**
  * The Item Class
  * The classes extending Item must set these properties:
@@ -87,16 +84,6 @@ abstract class Item extends Entity
      * @var string $default_char The default value for string properties
      */
     protected static string $default_char = '';
-
-    /**
-     * @var array $validation_rules Validation rules
-     */
-    protected static array $validation_rules = [];
-
-    /**
-     * @var array $validation_rules_to_skip Validation rules to skip when validating, if any
-     */
-    protected array $validation_rules_to_skip = [];
 
     /**
      * @var array $frozen_fields Fields which cannot be changed by set()

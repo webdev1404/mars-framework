@@ -4,11 +4,12 @@
 * @package Mars
 */
 
-namespace Mars\Mvc;
+namespace Mars\MVC;
 
 use Mars\App;
 use Mars\App\InstanceTrait;
 use Mars\Debug\InfoTrait;
+use Mars\Config;
 use Mars\Hidden;
 use Mars\Escape;
 use Mars\Filter;
@@ -21,7 +22,6 @@ use Mars\Alerts\Messages;
 use Mars\Alerts\Info;
 use Mars\Alerts\Warnings;
 use Mars\Extensions\Extension;
-use Mars\Validation\ValidateTrait;
 
 /**
  * The Controller Class
@@ -31,9 +31,6 @@ abstract class Controller extends \stdClass
 {
     use InstanceTrait;
     use InfoTrait;
-    use ValidateTrait {
-        validate as protected validateData;
-    }
 
     /**
      * @var string $default_method Default method to be executed on dispatch/route or if the requested method doesn't exist or is not public
@@ -163,6 +160,19 @@ abstract class Controller extends \stdClass
     }
 
     /**
+     * @var bool $accept_json Whether the controller can return json data
+     */
+    protected bool $accept_json = false;
+
+    /**
+     * @var Config $config The config object. Alias for $this->app->config
+     */
+    #[Hidden]
+    protected Config $config {
+        get => $this->app->config;
+    }
+
+    /**
      * @var Filter $filter The filter object. Alias for $this->app->filter
      */
     #[Hidden]
@@ -274,6 +284,14 @@ abstract class Controller extends \stdClass
     }
 
     /**
+     * Alias for $this->app->lang->get()
+     */
+    protected function __(string $str, array $replace = [], string $prefix = '') : string
+    {
+        return $this->app->lang->get($str, $replace, $prefix);
+    }
+
+    /**
      * Sets the default_success_method and default_error_method to the same method
      * @param string $method The name of the method
      * @return static
@@ -293,7 +311,7 @@ abstract class Controller extends \stdClass
      */
     public function getModel(string $model = '') : object
     {
-        return $this->parent->getModel($model);
+        return $this->parent->getModel($model, $this);
     }
 
     /**
@@ -352,6 +370,18 @@ abstract class Controller extends \stdClass
     protected function route(string $method, array $params = [])
     {
         $ret = $this->call($method, $params);
+        $is_json = ($this->accept_json && $this->app->request->is_json) ? true : false;
+
+        //if the request is json, send the return data as json, if it is not a boolean or null
+        if ($is_json) {
+            $data = [];
+            if (!is_bool($ret) && !is_null($ret)) {
+                $data['content'] = $ret;
+            }
+
+            $this->app->send($data);
+            return;
+        }
 
         //call the success/error methods if the first call returns true or false
         if ($ret === true) {
@@ -363,7 +393,7 @@ abstract class Controller extends \stdClass
             $this->app->output($ret);
         } elseif (is_array($ret) || is_object($ret)) {
             //output the return data as json code
-            $this->sendData($ret);
+            $this->app->send($ret);
         }
     }
 
@@ -419,93 +449,13 @@ abstract class Controller extends \stdClass
     }
 
     /**
-     * Sends $content as ajax content
-     * @param array | object $data The data to output
-     */
-    protected function sendData(array | object $data)
-    {
-        $this->app->output($this->getData($data), 'ajax');
-    }
-
-    /**
-     * Returns a response array
-     * @param array | object $data The data to output
-     * @return array
-     */
-    protected function getData(array | object $data) : array
-    {
-        $data_array = ['success'=> true, 'error' => $this->app->errors->getFirst(), 'message' => $this->app->messages->getFirst(), 'warning' => $this->app->warnings->getFirst(), 'info' => $this->app->info->getFirst()];
-
-        if ($this->app->success()) {
-            $data_array = $data_array + App::getArray($data);
-        } else {
-            $data_array['success'] = false;
-        }
-
-        return $data_array;
-    }
-
-    /**
-     * Returns a basic response array, not populated with any values
-     * @return array
-     */
-    protected function getDataArray() : array
-    {
-        $data = ['success'=> true, 'error' => '', 'message' => '', 'warning' => '', 'info' => '', 'html' => ''];
-
-        return $data;
-    }
-
-    /**
      * Sends an error as ajax content
      * @param string $error The response error to send
      */
     protected function sendError(string $error)
     {
-        $data = $this->getDataArray();
-        $data['success'] = false;
-        $data['error'] = $error;
+        $this->app->errors->add($error);
 
-        $this->app->output($data, 'ajax');
-    }
-
-    /**
-     * Sends an alert
-     * @param string $message The response message to send
-     * @param string $alert The alert's type
-     */
-    protected function sendAlert(string $message, string $alert)
-    {
-        $data = $this->getDataArray();
-        $data[$alert] = $message;
-
-        $this->app->output($data, 'ajax');
-    }
-
-    /**
-     * Sends a message as ajax content
-     * @param string $message The response message to send
-     */
-    protected function sendMessage(string $message)
-    {
-        $this->sendAlert($message, 'message');
-    }
-
-    /**
-     * Sends a warning as ajax content
-     * @param string $message The response message to send
-     */
-    protected function sendWarning(string $message)
-    {
-        $this->sendAlert($message, 'warning');
-    }
-
-    /**
-     * Sends an info as ajax content
-     * @param string $message The response message to send
-     */
-    protected function sendInfo(string $message)
-    {
-        $this->sendAlert($message, 'info');
+        $this->app->send([]);
     }
 }

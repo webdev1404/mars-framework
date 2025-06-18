@@ -7,15 +7,15 @@
 namespace Mars\Extensions\Abilities;
 
 use Mars\App;
-use Mars\Mvc\Controller;
-use Mars\Mvc\Model;
-use Mars\Mvc\View;
+use Mars\MVC\Controller;
+use Mars\MVC\Model;
+use Mars\MVC\View;
 
 /**
  * The Extension's MVC Trait
  * Trait implementing the MVC patter for extensions
  */
-trait MvcTrait
+trait MVCTrait
 {
     /**
      * @var Controller $controller The currently loaded controller of this extension
@@ -28,7 +28,7 @@ trait MvcTrait
      * @param string $class_name The class name
      * @return string The class name
      */
-    protected function getMvcClass(string $dir, string $class_name) : string
+    protected function getMVCClass(string $dir, string $class_name) : string
     {
         $namespace_path = str_replace("/", "\\", ucfirst($dir) . '/');
 
@@ -53,7 +53,7 @@ trait MvcTrait
             $controller = $this->name;
         }
 
-        $controller_class = $this->getMvcClass(App::EXTENSIONS_DIRS['controllers'], $controller);
+        $controller_class = $this->getMVCClass(App::EXTENSIONS_DIRS['controllers'], $controller);
 
         $class_name = $this->namespace . '\\' . $controller_class;
 
@@ -65,24 +65,26 @@ trait MvcTrait
     /**
      * Loads the model and returns the instance
      * @param string $model The name of the model
+     * @param Controller|null $controller The controller the model belongs to, if any
      * @return object The model
      */
-    public function getModel(string $model = '') : object
+    public function getModel(string $model = '', ?Controller $controller = null) : object
     {
         if (!$model) {
             $model = $this->name;
         }
 
-        $model_class = $this->getMvcClass(App::EXTENSIONS_DIRS['models'], $model);
+        $model_class = $this->getMVCClass(App::EXTENSIONS_DIRS['models'], $model);
 
         $class_name = $this->namespace . '\\' . $model_class;
 
-        return new $class_name($this->app);
+        return new $class_name($this->app, $controller);
     }
 
     /**
      * Loads the view and returns the instance
      * @param string $view The name of the view
+     * @param Controller|null $controller The controller the view belongs to, if any
      * @return View The view
      */
     public function getView(string $view = '', ?Controller $controller = null) : View
@@ -91,11 +93,11 @@ trait MvcTrait
             $view = $this->name;
         }
 
-        $view_class = $this->getMvcClass(App::EXTENSIONS_DIRS['views'], $view);
+        $view_class = $this->getMVCClass(App::EXTENSIONS_DIRS['views'], $view);
 
         $class_name = $this->getRootNamespace() . App::getClass($this->name) . "\\" . $view_class;
         $class_name = $this->namespace . '\\' . $view_class;
 
-        return new $class_name($controller, $this->app);
+        return new $class_name($this->app, $controller);
     }
 }

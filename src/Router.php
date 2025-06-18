@@ -7,7 +7,7 @@
 namespace Mars;
 
 use Mars\App\InstanceTrait;
-use Mars\Mvc\Controller;
+use Mars\MMC\Controller;
 use Mars\Extensions\Block;
 use Mars\Content\ContentInterface;
 use Mars\Content\Page;
@@ -15,7 +15,7 @@ use Mars\Content\Template;
 
 /**
  * The Route Class
- * Implements the View functionality of the MVC pattern
+ * Route handling class
  */
 class Router
 {
@@ -135,10 +135,10 @@ class Router
 
     /**
      * Outputs the returned value and the content 
-     * @param string|array|object $value The value to output
+     * @param string|array|object|null $value The value to output
      * @param string $content The content to output
      */
-    protected function outputContent(string|array|object $value, string $content)
+    protected function outputContent(string|array|object|null $value, string $content)
     {
         //if nothing was returned, output the content. Otherwise, append the content to the returned value
         if (!$value || is_string($value)) {
@@ -146,9 +146,9 @@ class Router
         }
 
         if (is_string($value)) {
-            echo $value;
+            $this->app->output($value);
         } elseif (is_array($value)) {
-            $this->app->output($value, 'ajax');
+            $this->app->send($value);
         } elseif (is_object($value)) {
             $this->outputFromObject($value);
         }
@@ -164,7 +164,7 @@ class Router
             $object->output();
         }
         else {
-            $this->app->output($object, 'ajax'); 
+            $this->app->send($object);
         }
     }
 

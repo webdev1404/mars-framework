@@ -4,10 +4,11 @@
 * @package Mars
 */
 
-namespace Mars\Mvc;
+namespace Mars\MVC;
 
 use Mars\App;
 use Mars\App\InstanceTrait;
+use Mars\Config;
 use Mars\Document;
 use Mars\Escape;
 use Mars\Filter;
@@ -111,14 +112,14 @@ abstract class View
      */
     #[Hidden]
     protected ?Extension $parent {
-        get => $this->controller->parent;
+        get => $this->controller->parent ?? null;
     }
 
     /**
-     * @var Controller $controller The controller
+     * @var Controller $controller The controller the view belongs to
      */
     #[Hidden]
-    public protected(set) Controller $controller;
+    protected Controller $controller;
 
     /**
      * @var object $model The model
@@ -134,6 +135,14 @@ abstract class View
     #[Hidden]
     protected Document $document {
         get => $this->app->document;
+    }
+
+    /**
+     * @var Config $config The config object. Alias for $this->app->config
+     */
+    #[Hidden]
+    protected Config $config {
+        get => $this->app->config;
     }
 
     /**
@@ -205,7 +214,7 @@ abstract class View
      * @param Controller $controller The controller the view belongs to
      * @param App $app the app object
      */
-    public function __construct(Controller $controller, ?App $app = null)
+    public function __construct(App $app, ?Controller $controller = null)
     {
         $this->app = $app ?? $this->getApp();
         $this->controller = $controller;
@@ -246,6 +255,22 @@ abstract class View
      */
     public function render(array $vars = [])
     {
+        $template = $this->get(vars: $vars);
+        if ($template === null) {
+            return;
+        }
+
+        echo $template;
+    }
+
+    /**
+     * Returns the contents of a template.
+     * @param string $template The name of the template to load. If not set, the method's name will be used
+     * @param array $vars Vars to pass to the template, if any
+     * @return string The contents of the template
+     */
+    public function get(string $template = '', array $vars = []) : ?string
+    {
         $method = $this->controller->current_method;
         if (!$method) {
             $method = $this->default_method;
@@ -255,30 +280,24 @@ abstract class View
             $ret = $this->$method();
 
             if ($ret === false) {
-                return;
+                return null;
             } elseif (is_string($ret)) {
                 echo $ret;
-                return;
+                return null;
             }
         } else {
-            return;
+            return null;
         }
 
-        $this->renderTemplate($this->getTemplateName($method), $vars);
-    }
+        if (!$template) {
+            $template = $this->getTemplateName($method);
+        }
 
-    /**
-     * Renders a template
-     * @param string $template The name of the template to load
-     * @param array $vars Vars to pass to the template, if any
-     */
-    protected function renderTemplate(string $template, array $vars = [])
-    {
-        //add the view's public properties as theme vars
+         //add the view's public properties as theme vars
         $this->app->theme->addVars(get_object_vars($this));
         $this->app->theme->addVar('view', $this);
 
-        $this->parent->render($template, $vars);
+        return $this->parent->getTemplate($template, $vars);
     }
 
     /**

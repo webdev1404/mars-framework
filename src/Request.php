@@ -111,6 +111,9 @@ class Request
         }
     }
 
+    /**
+     * @var bool $is_post Whether the request is a post request
+     */
     public protected(set) bool $is_post {
         get {
             if (isset($this->is_post)) {
@@ -123,6 +126,26 @@ class Request
             }
 
             return $this->is_post;
+        }
+    }
+
+    /**
+     * @var bool $is_json Whether the request is a json request
+     */
+    public protected(set) bool $is_json {
+        get {
+            if (isset($this->is_json)) {
+                return $this->is_json;
+            }
+
+            $this->is_json = false;
+            if (isset($_SERVER['HTTP_ACCEPT'])) {
+                if (strpos($_SERVER['HTTP_ACCEPT'], 'application/json') !== false) {
+                    $this->is_json = true;
+                }
+            }
+
+            return $this->is_json;
         }
     }
 

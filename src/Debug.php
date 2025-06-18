@@ -26,11 +26,11 @@ class Debug
         $this->app->plugins->run('debug_output_step1', $this);
 
         $this->outputInfo();
-        $this->outputExecutionTime();    
+        $this->outputExecutionTime();
 
         $this->app->plugins->run('debug_output_step2', $this);
         
-        $this->outputPlugins();        
+        $this->outputPlugins();
         $this->outputDbQueries();
 
         $this->app->plugins->run('debug_output_step3', $this);
@@ -52,7 +52,8 @@ class Debug
         echo '<table class="grid debug-grid">';
         echo '<tr><th colspan="3">Debug Info</th></tr>';
         echo '<tr><td><strong>Execution Time</strong></td><td>' . $this->app->timer->getExecutionTime() . 's</td></tr>';
-        echo '<tr><td><strong>Output Size</strong></td><td>' . $this->app->format->filesize($this->app->output_size) . '</td></tr>';
+        echo '<tr><td><strong>Content Size</strong></td><td>' . $this->app->format->filesize($this->app->stats['content_size']) . '</td></tr>';
+        echo '<tr><td><strong>Output Size</strong></td><td>' . $this->app->format->filesize($this->app->stats['output_size']) . '</td></tr>';
         echo '<tr><td><strong>Memory Usage</strong></td><td>' . $this->app->format->filesize(\memory_get_usage(true)) . '</td></tr>';
         echo '<tr><td><strong>Memory Peak Usage</strong></td><td>' . $this->app->format->filesize(\memory_get_peak_usage(true)) . '</td></tr>';
         echo '<tr><td><strong>DB Queries</strong></td><td>' . count($this->app->db->queries) . '</td></tr>';
@@ -73,7 +74,8 @@ class Debug
         echo '<tr><td><strong>Execution Time</strong></td><td>' . $execution_time . 's</td><td></td></tr>';
         echo "<tr><td><strong>DB Queries</strong></td><td>{$this->app->db->queries_time}s</td><td>" . $this->app->format->percentage($this->app->db->queries_time, $execution_time) . '%</td></tr>';
         echo "<tr><td><strong>Plugins</strong></td><td>{$this->app->plugins->total_time}s</td><td>" . $this->app->format->percentage($this->app->plugins->total_time, $execution_time) . '%</td></tr>';
-        echo "<tr><td><strong>Generate Output</strong></td><td>{$this->app->output_time}s</td><td>" . $this->app->format->percentage($this->app->output_time, $execution_time) . '%</td></tr>';
+        echo "<tr><td><strong>Content Output</strong></td><td>{$this->app->stats['content_time']}s</td><td>" . $this->app->format->percentage($this->app->stats['content_time'], $execution_time) . '%</td></tr>';
+        echo "<tr><td><strong>Generate Output</strong></td><td>{$this->app->stats['output_time']}s</td><td>" . $this->app->format->percentage($this->app->stats['output_time'], $execution_time) . '%</td></tr>';
         echo '</table><br><br>';
     }
 

@@ -7,11 +7,8 @@
 namespace Mars\Data;
 
 use Mars\App;
-use Mars\App\InstanceTrait;
-use Mars\Alerts\Errors;
 use Mars\Db;
 use Mars\Sql;
-use Mars\Validation\ValidateTrait;
 use Mars\Hidden;
 
 /**
@@ -23,11 +20,6 @@ use Mars\Hidden;
  */
 trait ItemTrait
 {
-    use InstanceTrait;
-    use ValidateTrait {
-        validate as protected validateData;
-    }
-
     /**
      * @var array $original Array containing the original properties
      */
@@ -40,21 +32,6 @@ trait ItemTrait
     #[Hidden]
     protected Db $db {
         get => $this->app->db;
-    }
-
-    /**
-     * @var Errors $errors The generated errors, if any
-     */
-    public protected(set) Errors $errors {
-        get {
-            if (isset($this->errors)) {
-                return $this->errors;
-            }
-
-            $this->errors = new Errors($this->app);
-
-            return $this->errors;
-        }
     }
 
     /**
@@ -255,15 +232,6 @@ trait ItemTrait
     }
 
     /**
-     * Child classes can implement this method to validate the object when it's inserted/updated
-     * @return bool True if the validation passed all tests, false otherwise
-     */
-    protected function validate() : bool
-    {
-        return $this->validateData($this);
-    }
-
-    /**
      * Child classes can implement this method to process the object when it's loaded
      */
     protected function prepare()
@@ -385,12 +353,12 @@ trait ItemTrait
 
     /**
      * Binds the data from $data to the object's properties
-     * @param array $data The data to bind
+     * @param array $data The data to bind. If empty, the $_POST data is used
      * @param array $ignore_columns Array listing the columns from $table which shouldn't be included in the returned result
      * @param string $ignore_value If $ignore_value is not null, any values which equals $ignore_value won't be included in the returned result
      * @return $this
      */
-    public function bind(array $data, ?array $ignore_columns = null, ?string $ignore_value = null)
+    public function bind(array $data = [], ?array $ignore_columns = null, ?string $ignore_value = null) : static
     {
         $id_field = $this->getIdField();
 
@@ -399,21 +367,21 @@ trait ItemTrait
             $ignore_columns = [$id_field];
         }
 
-        $data = $this->db->bind($this->getTable(), $data, $ignore_columns, $ignore_value);
+        $data = $this->db->bind($this->getTable(), $this->getBindData($data), $ignore_columns, $ignore_value);
 
         return $this->set($data);
     }
 
     /**
      * Binds the data from $data to the object's properties
+     * @param array $allowed_columns Array with the columns from $data which should be used
      * @param array $data The data to bind
-     * @param array $columns_array Array with the columns from $data which should be used
      * @param string $ignore_value If $ignore_value is not null, any values which equals $ignore_value won't be included in the returned result
      * @return $this
      */
-    public function bindList(array $data, array $allowed_columns, ?string $ignore_value = null)
+    public function bindList(array $allowed_columns, array $data = [], ?string $ignore_value = null) : static
     {
-        $data = $this->db->bindList($this->getTable(), $data, $allowed_columns, $ignore_value);
+        $data = $this->db->bindList($this->getTable(), $this->getBindData($data), $allowed_columns, $ignore_value);
 
         return $this->set($data);
     }
@@ -431,6 +399,7 @@ trait ItemTrait
     /**
      * Returns the original data
      * @param string $property If specified, only this property will be returned
+     * @return mixed The original value 
      */
     public function getOriginal(string $property = '')
     {
