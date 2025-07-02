@@ -6,8 +6,8 @@
 
 namespace Mars;
 
-use Mars\App\InstanceTrait;
-use Mars\Data\PropertiesTrait;
+use Mars\App\Kernel;
+use Mars\Data\AccessorTrait;
 
 /**
  * The Config Class
@@ -16,16 +16,13 @@ use Mars\Data\PropertiesTrait;
 #[\AllowDynamicProperties]
 class Config
 {
-    use InstanceTrait;
-    use PropertiesTrait;
+    use Kernel;
+    use AccessorTrait;
 
     /**
-     * List of files to autoload
+     * List of files to load at startup
      */
-    protected $autoload_files = [
-        ['plugins.php', 'plugins_list'],
-        ['app.php']
-    ];
+    protected $load_files = ['config.php', 'app.php'];
 
     /**
      * @var int $display_errors Controls whether errors should be displayed or not
@@ -35,7 +32,7 @@ class Config
     /**
      * @var int $error_reporting The error reporting level
      */
-    public int $error_reporting = E_ALL & ~E_NOTICE & ~E_STRICT & ~E_DEPRECATED;
+    public int $error_reporting = E_ALL & ~E_NOTICE & ~E_DEPRECATED;
 
     /**
      * @var bool $log_errors If true, will log all errors to the log files
@@ -58,19 +55,34 @@ class Config
     public string $log_date_format = 'm-d-Y H:i:s';
 
     /**
+     * @var string $public_path The public path of the site
+     */
+    public string $public_path = '';
+
+    /**
      * @var string $url The url of the site
      */
     public string $url = '';
 
     /**
-     * @var string $url_static The base url from where the static resources will be served
+     * @var string $url_cdn The url of the CDN, to use for the static assets
      */
-    public string $url_static = '';
+    public string $url_cdn = '';
 
     /**
      * @var string $key The secret key of the site
      */
     public string $key = '';
+
+    /**
+     * @var string $site_name The name of the site
+     */
+    public string $site_name = '';
+
+    /**
+     * @var string $site_slogan The slogan of the site
+     */
+    public string $site_slogan = '';
 
     /**
      * @var string $open_basedir If specified, will limit the files which are accessible to the specified folder. If the value is true the installation dir is used
@@ -106,6 +118,16 @@ class Config
      * @var bool $development Set to true to enable development mode
      */
     public bool $development = false;
+
+    /**
+     * @var array $development_extensions Runs only the specified extensions in development mode, even if the development mode is not enabled.
+     */
+    public array $development_extensions = [
+        'languages' => false,
+        'themes' => false,
+        'plugins' => false,
+        'modules' => false,
+    ];
 
     /**
      * @var int $development_display_errors Controls whether errors should be displayed or not, when development is enabled
@@ -325,6 +347,16 @@ class Config
     public string $language = 'english';
 
     /**
+     * @var string $language_fallback The fallback language for modules
+     */
+    public string $language_fallback = 'english';
+
+    /**
+     * @var bool $languages_multi Set to true to enable the multi-language functionality
+     */
+    public bool $languages_multi = false;
+
+    /**
      * @var string $lang The default theme
      */
     public string $theme = 'default';
@@ -472,12 +504,6 @@ class Config
     /**
      * @var bool $plugins_enable True, if plugins are enabled
      */
-    public bool $plugins_enable = true;
-
-    /**
-     * @var array $plugins_list List of enabled plugins
-     */
-    public array $plugins_list = [];
 
     /**
      * @var int $pagination_max_links The max number of pagination links to show
@@ -632,7 +658,7 @@ class Config
     {        
         $this->app = $app;
 
-        $this->read();
+        $this->init();
 
         $this->normalize();
 
@@ -643,32 +669,11 @@ class Config
      * Reads the config settings from the config.php file and the autoload files
      * @return static
      */
-    protected function read() : static
-    {                
-        $this->readFile('config.php');
-
-        foreach ($this->autoload_files as $file) {
-            $filename = $file[0];
-            $key = $file[1] ?? null;
-
-            if ($key) {
-                $this->$key = $this->getFromFile($filename);
-            } else {
-                $this->readFile($filename);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * Reads the config settings from the specified $filename
-     * @param string $filename The filename
-     * @return static
-     */
-    public function readFile(string $filename) : static
+    protected function init() : static
     {
-        $this->assign($this->getFromFile($filename));
+        foreach ($this->load_files as $file) {
+            $this->load($file);
+        }
 
         return $this;
     }
@@ -678,9 +683,23 @@ class Config
      * @param string $filename The filename
      * @return array
      */
-    public function getFromFile(string $filename) : array
+    public function read(string $filename) : array
     {
-        return require($this->app->config_path . '/' . $filename);       
+        $app = $this->app;
+
+        return require($this->app->config_path . '/' . $filename);
+    }
+
+    /**
+     * Reads the config settings from the specified $filename and loads it
+     * @param string $filename The filename
+     * @return static
+     */
+    public function load(string $filename) : static
+    {
+        $this->assign($this->read($filename));
+
+        return $this;
     }
 
     /**

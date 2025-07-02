@@ -7,6 +7,7 @@
 namespace Mars\Html\Input;
 
 use Mars\Html\Tag;
+use Mars\Html\TagInterface;
 
 /**
  * The Input Class
@@ -44,7 +45,7 @@ class Input extends Tag implements FormInputInterface
     protected static string $value_attribute = 'value';    
 
     /**
-     * @see \Mars\Html\TagInterface::html()
+     * @see TagInterface::html()
      * {@inheritdoc}
      */
     public function html(string $text = '', array $attributes = []) : string

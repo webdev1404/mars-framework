@@ -7,7 +7,7 @@
 namespace Mars\Html\Input;
 
 use Mars\App;
-use \Mars\Html\Tag;
+use Mars\Html\Tag;
 
 /**
  * The Radio Group Class

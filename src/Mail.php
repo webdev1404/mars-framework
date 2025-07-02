@@ -6,8 +6,10 @@
 
 namespace Mars;
 
-use Mars\App\InstanceTrait;
-use Mars\Mail\DriverInterface;
+use Mars\App;
+use Mars\App\Kernel;
+use Mars\App\Drivers;
+use Mars\Mail\MailInterface;
 
 /**
  * The Mail Class
@@ -15,12 +17,12 @@ use Mars\Mail\DriverInterface;
  */
 class Mail
 {
-    use InstanceTrait;
+    use Kernel;
 
     /**
      * @var array $supported_drivers The supported drivers
      */
-    protected array $supported_drivers = [
+    public protected(set) array $supported_drivers = [
         'phpmailer' => \Mars\Mail\PhpMailer::class
     ];
 
@@ -33,16 +35,16 @@ class Mail
                 return $this->drivers;
             }
 
-            $this->drivers = new Drivers($this->supported_drivers, DriverInterface::class, 'mail', $this->app);
+            $this->drivers = new Drivers($this->supported_drivers, MailInterface::class, 'mail', $this->app);
 
             return $this->drivers;
         }
     }
 
     /**
-     * @var DriverInterface $driver The driver object
+     * @var MailInterface $driver The driver object
      */
-    public protected(set) DriverInterface $driver {
+    public protected(set) MailInterface $driver {
         get {
             if (isset($this->driver)) {
                 return $this->driver;

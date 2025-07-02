@@ -7,6 +7,7 @@
 namespace Mars\Html\Input;
 
 use \Mars\Html\Tag;
+use \Mars\Html\TagInterface;
 
 /**
  * The Select Class
@@ -50,7 +51,7 @@ class Select extends Tag implements FormInputInterface
     }
 
     /**
-     * @see \Mars\Html\TagInterface::html()
+     * @see TagInterface::html()
      * {@inheritdoc}
      */
     public function html(string $text = '', array $attributes = []) : string
@@ -71,7 +72,7 @@ class Select extends Tag implements FormInputInterface
     public function isAllowedValues(string|array $value, array $attributes) : bool
     {
         $value = (array)$value;
-        $values = $attributes['options'] ?? [];       
+        $values = $attributes['options'] ?? [];
         
         if (array_intersect($value, array_keys($values))) {
             return true;

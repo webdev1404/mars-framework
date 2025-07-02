@@ -6,13 +6,13 @@
 
 namespace Mars\Images;
 
-use Mars\App;
 use GdImage;
+use Mars\App;
 
 /**
  * The Jpeg Image Class
  */
-class Jpg extends Image implements DriverInterface
+class Jpg extends Image implements ImageInterface
 {
     /**
      * @var string $mime_type The image's mime type
@@ -20,7 +20,7 @@ class Jpg extends Image implements DriverInterface
     protected $mime_type = 'image/jpeg';
 
     /**
-     * @see \Mars\Images\DriverInterface::__construct()
+     * @see ImageInterface::__construct()
      * {@inheritdoc}
      */
     public function __construct(string $filename, App $app)
@@ -32,7 +32,7 @@ class Jpg extends Image implements DriverInterface
     }
 
     /**
-     * @see \Mars\Images\DriverInterface::optimize()
+     * @see ImageInterface::optimize()
      * {@inheritdoc}
      */
     public function optimize() : bool
@@ -46,7 +46,7 @@ class Jpg extends Image implements DriverInterface
     }
 
     /**
-     * @see \Mars\Images\DriverInterface::open()
+     * @see ImageInterface::open()
      * {@inheritdoc}
      */
     public function open() : GdImage
@@ -60,7 +60,7 @@ class Jpg extends Image implements DriverInterface
     }
 
     /**
-     * @see \Mars\Images\DriverInterface::save()
+     * @see ImageInterface::save()
      * {@inheritdoc}
      */
     public function save(GdImage $img)

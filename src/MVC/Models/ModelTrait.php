@@ -8,7 +8,7 @@ namespace Mars\MVC\Models;
 
 use Mars\App;
 use Mars\Config;
-use Mars\Hidden;
+use Mars\HiddenProperty;
 use Mars\MVC\Controller;
 use Mars\System\Plugins;
 use Mars\Extensions\Extension;
@@ -22,7 +22,7 @@ trait ModelTrait
     /**
      * @var Extension $parent The parent extension, if any
      */
-    #[Hidden]
+    #[HiddenProperty]
     protected ?Extension $parent {
         get => $this->controller->parent ?? null;
     }
@@ -30,13 +30,13 @@ trait ModelTrait
     /**
      * @var Controller $controller The controller the model belongs to, if any
      */
-    #[Hidden]
+    #[HiddenProperty]
     protected ?Controller $controller;
 
     /**
      * @var Config $config The config object. Alias for $this->app->config
      */
-    #[Hidden]
+    #[HiddenProperty]
     protected Config $config {
         get => $this->app->config;
     }
@@ -44,7 +44,7 @@ trait ModelTrait
     /**
      * @var Plugins $plugins Alias for $this->app->plugins
      */
-    #[Hidden]
+    #[HiddenProperty]
     protected Plugins $plugins {
         get => $this->app->plugins;
     }

@@ -6,10 +6,10 @@
 
 namespace Mars\Time;
 
-use Mars\App;
-use Mars\App\InstanceTrait;
 use DateTime;
 use DateInterval;
+use Mars\App;
+use Mars\App\Kernel;
 
 /**
  * The Time Base Class
@@ -17,7 +17,7 @@ use DateInterval;
  */
 abstract class Base
 {
-    use InstanceTrait;
+    use Kernel;
     
     /**
      * @var string $format The format string used for time representation.

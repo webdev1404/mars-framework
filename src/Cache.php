@@ -6,51 +6,50 @@
 
 namespace Mars;
 
+use Mars\App\LazyLoad;
 use Mars\Cache\Css;
 use Mars\Cache\Javascript;
 use Mars\Cache\Data;
 use Mars\Cache\Pages;
 use Mars\Cache\Templates;
-use Mars\Lazyload\GhostTrait;
 
 /**
  * The Cache Class
- * Stores the system's cached values & contains the functionality for interacting with the system's cached data
- * Not to be confused with Cachable or Caching
+ * Handles the caching of system values and provides functionality for interacting with cached data.
  */
 #[\AllowDynamicProperties]
 class Cache
 {
-    use GhostTrait;
+    use LazyLoad;
 
     /**
      * @var Css $css The Css Cache object
      */
-    #[LazyLoad]
+    #[LazyLoadProperty]
     public protected(set) Css $css;
 
     /**
      * @var Javascript $javascript The Javascript Cache object
      */
-    #[LazyLoad]
+    #[LazyLoadProperty]
     public protected(set) Javascript $javascript;
 
     /**
      * @var Page Data $data The Data Cache object
      */
-    #[LazyLoad]
+    #[LazyLoadProperty]
     public protected(set) Data $data;
 
     /**
      * @var Page $page The Page Cache object
      */
-    #[LazyLoad]
+    #[LazyLoadProperty]
     public protected(set) Pages $pages;
 
     /**
      * @var Templates $templates The Templates Cache object
      */
-    #[LazyLoad]
+    #[LazyLoadProperty]
     public protected(set) Templates $templates;
 
     /**
@@ -97,9 +96,9 @@ class Cache
     /**
      * Gets an array from a php file
      * @param string $filename The name of the file
-     * @return array The array
+     * @return array The array or null if the file does not exist
      */
-    public function getArray(string $filename) : array
+    public function getArray(string $filename) : ?array
     {
         return $this->data->getArray($filename);
     }

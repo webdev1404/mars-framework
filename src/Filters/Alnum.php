@@ -9,10 +9,10 @@ namespace Mars\Filters;
 /**
  * The Alphanumeric Filter Class
  */
-class Alnum
+class Alnum extends Filter
 {
     /**
-     * @see \Mars\Filter::alnum()
+     * @see \Mars\Filters\Filter::alnum()
      */
     public function filter(string $value, bool $space = false) : string
     {

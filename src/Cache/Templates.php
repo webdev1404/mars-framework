@@ -10,7 +10,7 @@ namespace Mars\Cache;
  * The Templates Cache Class
  * Class which handles the caching of templates
  */
-class Templates extends Base
+class Templates extends Cache
 {
     /**
      * @var string $dir The dir where the templates will be cached

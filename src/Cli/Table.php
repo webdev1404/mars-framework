@@ -1,16 +1,16 @@
 <?php
 /**
-* The Table Cli Handler
+* The CLI Table Printer
 * @package Mars
 */
 
 namespace Mars\Cli;
 
 /**
- * The Table Cli Handler
+ * The CLI Table Printer
  * Displays a table
  */
-class Table extends Base
+class Table extends Printer
 {
     /**
      * @var string $header_color The default header color

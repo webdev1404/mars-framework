@@ -6,8 +6,9 @@
 
 namespace Mars;
 
-use Mars\App\InstanceTrait;
-use Mars\Serializers\DriverInterface;
+use Mars\App\Kernel;
+use Mars\App\Drivers;
+use Mars\Serializers\SerializerInterface;
 
 /**
  * The Serializer Class
@@ -16,7 +17,7 @@ use Mars\Serializers\DriverInterface;
  */
 class Serializer
 {
-    use InstanceTrait;
+    use Kernel;
     
     /**
      * @var array $supported_drivers The supported drivers
@@ -24,7 +25,7 @@ class Serializer
     protected array $supported_drivers = [
         'php' => \Mars\Serializers\Php::class,
         'igbinary' => \Mars\Serializers\Igbinary::class,
-    ];    
+    ];
 
     /**
      * @var Drivers $drivers The drivers object
@@ -35,16 +36,16 @@ class Serializer
                 return $this->drivers;
             }
 
-            $this->drivers = new Drivers($this->supported_drivers, DriverInterface::class, 'serializer', $this->app);
+            $this->drivers = new Drivers($this->supported_drivers, SerializerInterface::class, 'serializer', $this->app);
 
             return $this->drivers;
         }
     }
 
     /**
-     * @var DriverInterface $driver The driver object
+     * @var SerializerInterface $driver The driver object
      */
-    public protected(set) DriverInterface $driver {
+    public protected(set) SerializerInterface $driver {
         get {
             if (isset($this->driver)) {
                 return $this->driver;
@@ -57,9 +58,9 @@ class Serializer
     }
 
     /**
-     * protected DriverInterface $php_driver The php driver
+     * protected SerializerInterface $php_driver The php driver
      */
-    public protected(set) DriverInterface $php_driver {
+    public protected(set) SerializerInterface $php_driver {
         get {
             if (isset($this->php_driver)) {
                 return $this->php_driver;
@@ -77,9 +78,9 @@ class Serializer
     /**
      * Returns the driver used to serialize/unserialize
      * @param bool $use_php_driver If true, will always serialize using the php driver
-     * @return DriverInterface The driver
+     * @return SerializerInterface The driver
      */
-    protected function getDriver(bool $use_php_driver) : DriverInterface
+    protected function getDriver(bool $use_php_driver) : SerializerInterface
     {
         if ($use_php_driver) {
             return $this->php_driver;

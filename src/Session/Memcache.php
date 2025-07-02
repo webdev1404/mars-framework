@@ -7,15 +7,15 @@
 namespace Mars\Session;
 
 use Mars\App;
-use Mars\App\InstanceTrait;
+use Mars\App\Kernel;
 
 /**
  * The Memcache Session Class
  * Session driver which uses the memcache
  */
-class Memcache implements DriverInterface, \SessionHandlerInterface, \SessionUpdateTimestampHandlerInterface
+class Memcache implements SessionInterface, \SessionHandlerInterface, \SessionUpdateTimestampHandlerInterface
 {
-    use InstanceTrait;
+    use Kernel;
 
     /**
      * @var int $lifetime The session's lifetime
@@ -44,7 +44,7 @@ class Memcache implements DriverInterface, \SessionHandlerInterface, \SessionUpd
      * @see \SessionHandler::open()
      * @param string $save_path The save path
      * @param string $session_name The session name
-     @return bool
+     * @return bool
      */
     public function open(string $save_path, string $session_name) : bool
     {

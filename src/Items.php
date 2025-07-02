@@ -6,7 +6,7 @@
 
 namespace Mars;
 
-use Mars\Data\ItemsTrait;
+use Mars\Objects\ItemsTrait;
 
 /**
  * The Items Class

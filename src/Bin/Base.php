@@ -6,7 +6,7 @@
 
 namespace Mars\Bin;
 
-use Mars\App\InstanceTrait;
+use Mars\App\Kernel;
 
 /**
  * The Bin Base Class
@@ -14,7 +14,7 @@ use Mars\App\InstanceTrait;
  */
 abstract class Base implements BinInterface
 {
-    use InstanceTrait;
+    use Kernel;
 
     /**
      * @var array $actions The actions the class is responsible for

@@ -6,8 +6,6 @@
 
 namespace Mars\Cache;
 
-use Mars\Bin\Cache;
-
 /**
  * The Data Cache Class
  * Class which handles the caching of data
@@ -70,13 +68,13 @@ class Data extends Cacheable
     /**
      * Gets an array from a php file
      * @param string $filename The name of the file
-     * @return array The array
+     * @return array The array or null if the file does not exist
      */
-    public function getArray(string $filename) : array
+    public function getArray(string $filename) : ?array
     {
         $filename = $this->getFilename($filename, 'php');
         if (!is_file($filename)) {
-            return [];
+            return null;
         }
 
         return include $filename;
@@ -90,11 +88,17 @@ class Data extends Cacheable
      */
     public function setArray(string $filename, array $data) : static
     {
+        $is_list = array_is_list($data);
+
         $filename = $this->getFilename($filename, 'php');
         
         $content = "<?php\n\nreturn [\n";
         foreach ($data as $key => $value) {
-            $content.= "    '{$key}' => '{$value}',\n";
+            if ($is_list) {
+                $content.= "    '{$value}',\n";
+            } else {
+                $content.= "    '{$key}' => '{$value}',\n";
+            }
         }
         
         $content.= "];\n";

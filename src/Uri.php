@@ -6,7 +6,7 @@
 
 namespace Mars;
 
-use Mars\App\InstanceTrait;
+use Mars\App\Kernel;
 
 /**
  * The Uri Class
@@ -14,7 +14,7 @@ use Mars\App\InstanceTrait;
  */
 class Uri
 {
-    use InstanceTrait;
+    use Kernel;
 
     /**
      * Determines if $url is a valid url

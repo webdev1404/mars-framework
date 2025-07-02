@@ -14,6 +14,14 @@ use Mars\App;
 class Language extends Extension
 {
     /**
+     * @internal
+     */
+    public const array DIRS = [
+        'assets' => 'assets',
+        'files' => 'files',
+    ];
+
+    /**
      * @var array $strings The language's strings
      */
     public array $strings = [];
@@ -41,6 +49,11 @@ class Language extends Extension
     /**
      * @internal
      */
+    protected static ?array $list = null;
+
+    /**
+     * @internal
+     */
     protected static string $type = 'language';
 
     /**
@@ -51,16 +64,12 @@ class Language extends Extension
      /**
      * @internal
      */
-    protected static string $base_namespace = "Languages";
+    protected static string $base_namespace = "\\Languages";
 
     /**
-     * {@inheritdoc}
-     * @see \Mars\Extensions\ExtensionTrait::getRootNamespace()
+     * @internal
      */
-    protected function getRootNamespace() : string
-    {
-        return '';
-    }
+    protected static string $setup_class = \Mars\Extensions\Setup\Language::class;
 
     /**
      * Loads the specified $file from the languages folder
@@ -76,7 +85,7 @@ class Language extends Extension
 
         $this->loaded_files[$file] = true;
 
-        $this->loadFilename($this->path . '/' . $file . '.' . App::FILE_EXTENSIONS['languages'], $prefix);
+        $this->loadFilename($this->path . '/'. static::DIRS['files'] . '/' . $file . '.php', $prefix);
 
         return $this;
     }

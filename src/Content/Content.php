@@ -7,7 +7,7 @@
 namespace Mars\Content;
 
 use Mars\App;
-use Mars\App\InstanceTrait;
+use Mars\App\Kernel;
 
 /**
  * The Base Content Class
@@ -15,7 +15,7 @@ use Mars\App\InstanceTrait;
  */
 abstract class Content
 {
-    use InstanceTrait;
+    use Kernel;
     
     /**
      * @var string $name The template's name
@@ -41,10 +41,10 @@ abstract class Content
      */
     public function __construct(string $name, string $title = '', array $meta = [], ?App $app = null)
     {
-        $this->app = $app ?? $this->getApp();
+        $this->app = $app ?? App::obj();
         $this->name = $name;
         $this->title = $title;
-        $this->meta = $meta;        
+        $this->meta = $meta;
     }
     
     /**
@@ -58,7 +58,7 @@ abstract class Content
         
         if ($this->meta) {
             foreach ($this->meta as $name => $val) {
-                $this->app->document->meta->set($name, $val);
+                $this->app->document->meta->add($name, $val);
             }
         }        
     }

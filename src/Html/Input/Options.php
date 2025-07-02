@@ -6,7 +6,8 @@
 
 namespace Mars\Html\Input;
 
-use Mars\Html\Tag;
+use \Mars\Html\Tag;
+use \Mars\Html\TagInterface;
 
 /**
  * The Options Class
@@ -20,7 +21,7 @@ class Options extends Tag
     protected static string $tag = 'option';
 
     /**
-     * @see \Mars\Html\TagInterface::html()
+     * @see TagInterface::html()
      * {@inheritdoc}
      */
     public function html(string $text = '', array $attributes = []) : string

@@ -8,7 +8,6 @@ namespace Mars\Cache;
 
 use Mars\App;
 use Mars\Assets\Minifier;
-use Mars\Bin\Cache;
 
 /**
  * The Page Cache Class

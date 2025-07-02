@@ -6,8 +6,9 @@
 
 namespace Mars;
 
-use Mars\App\InstanceTrait;
-use Mars\Device\DriverInterface;
+use Mars\App\Kernel;
+use Mars\App\Drivers;
+use Mars\Devices\DeviceInterface;
 
 /**
  * The Device Class
@@ -15,7 +16,19 @@ use Mars\Device\DriverInterface;
  */
 class Device
 {
-    use InstanceTrait;
+    use Kernel;
+
+    /**
+     * @var array $supported_drivers The supported drivers
+     */
+    public protected(set) array $supported_drivers = [
+        'mobile_detect' => \Mars\Devices\MobileDetect::class
+    ];
+
+    /**
+     * @var array $devices Array listing the supported devices
+     */
+    public protected(set) array $devices = ['desktop', 'tablet', 'smartphone'];
 
     /**
      * @var Drivers $drivers The drivers object
@@ -26,7 +39,7 @@ class Device
                 return $this->drivers;
             }
 
-            $this->drivers = new Drivers($this->supported_drivers, DriverInterface::class, 'device', $this->app);
+            $this->drivers = new Drivers($this->supported_drivers, DeviceInterface::class, 'device', $this->app);
 
             return $this->drivers;
         }
@@ -53,6 +66,7 @@ class Device
             $device = $this->app->session->get('device');
             if ($device !== null) {
                 $this->device = $device;
+
                 return $this->device;
             }
 
@@ -75,75 +89,62 @@ class Device
     }
 
     /**
-     * @var string $devices Array listing the supported devices
+     * @var bool $is_desktop If true, the user is using a desktop
      */
-    public protected(set) array $devices = ['desktop', 'tablet', 'smartphone'];
+    public protected(set) bool $is_desktop {
+        get {
+            if (isset($this->is_desktop)) {
+                return $this->is_desktop;
+            }
 
-    /**
-     * @var array $supported_drivers The supported drivers
-     */
-    protected array $supported_drivers = [
-        'mobile_detect' => \Mars\Device\MobileDetect::class
-    ];
+            $this->is_desktop = $this->device == 'desktop';
 
-    /**
-     * Returns the current device
-     * @return string The device
-     */
-    public function get() : string
-    {
-        return $this->device;
+            return $this->is_desktop;
+        }
     }
 
     /**
-     * Returns true if the user is using a desktop
-     * @return bool
+     * @var bool $is_mobile If true, the user is using a mobile device
      */
-    public function isDesktop() : bool
-    {
-        if (!$this->device || $this->device == 'desktop') {
-            return true;
-        }
+    public protected(set) bool $is_mobile {
+        get {
+            if (isset($this->is_mobile)) {
+                return $this->is_mobile;
+            }
 
-        return false;
+            $this->is_mobile = $this->device == 'tablet' || $this->device == 'smartphone';
+
+            return $this->is_mobile;
+        }
     }
 
     /**
-     * Returns true if the user is using a tablet/smartphone
-     * @return bool
+     * @var bool $is_tablet If true, the user is using a tablet
      */
-    public function isMobile() : bool
-    {
-        if ($this->device == 'tablet' || $this->device == 'smartphone') {
-            return true;
-        }
+    public protected(set) bool $is_tablet {
+        get {
+            if (isset($this->is_tablet)) {
+                return $this->is_tablet;
+            }
 
-        return false;
+            $this->is_tablet = $this->device == 'tablet';
+
+            return $this->is_tablet;
+        }
     }
 
     /**
-     * Returns true if the user is using a tablet
-     * @return bool
+     * @var bool $is_smartphone If true, the user is using a smartphone
      */
-    public function isTablet() : bool
-    {
-        if ($this->device == 'tablet') {
-            return true;
+    public protected(set) bool $is_smartphone {
+        get {
+            if (isset($this->is_smartphone)) {
+                return $this->is_smartphone;
+            }
+
+            $this->is_smartphone = $this->device == 'smartphone';
+
+            return $this->is_smartphone;
         }
-
-        return false;
-    }
-
-    /**
-     * Returns true if the user is using a smartphone
-     * @return bool
-     */
-    public function isSmartphone() : bool
-    {
-        if ($this->device == 'smartphone') {
-            return true;
-        }
-
-        return false;
     }
 }

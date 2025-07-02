@@ -1,7 +1,6 @@
 <?php
 /**
 * The Memcache Memcache Class
-* @see \Mars\Memcache\DriverInterface
 * @package Mars
 */
 
@@ -11,7 +10,7 @@ namespace Mars\Memcache;
  * The Memcache Memcache Class
  * Memcache driver which uses memcache
  */
-class Memcache implements DriverInterface
+class Memcache implements MemcacheInterface
 {
     /**
      * @var object $handle The driver's handle
@@ -19,7 +18,7 @@ class Memcache implements DriverInterface
     protected object $handle;
 
     /**
-     * @see \Mars\Memcache\DriverInterface::connect()
+     * @see MemcacheInterface::connect()
      * {@inheritdoc}
      */
     public function connect(string $host, string $port)
@@ -35,7 +34,7 @@ class Memcache implements DriverInterface
     }
 
     /**
-     * @see \Mars\Memcache\DriverInterface::disconnect()
+     * @see MemcacheInterface::disconnect()
      * {@inheritdoc}
      */
     public function disconnect()
@@ -46,7 +45,7 @@ class Memcache implements DriverInterface
     }
 
     /**
-     * @see \Mars\Memcache\DriverInterface::add()
+     * @see MemcacheInterface::add()
      * {@inheritdoc}
      */
     public function add(string $key, $value, int $expires = 0) : bool
@@ -55,7 +54,7 @@ class Memcache implements DriverInterface
     }
 
     /**
-     * @see \Mars\Memcache\DriverInterface::set()
+     * @see MemcacheInterface::set()
      * {@inheritdoc}
      */
     public function set(string $key, $value, int $expires = 0) : bool
@@ -64,7 +63,7 @@ class Memcache implements DriverInterface
     }
 
     /**
-     * @see \Mars\Memcache\DriverInterface::get()
+     * @see MemcacheInterface::get()
      * {@inheritdoc}
      */
     public function get(string $key)
@@ -78,7 +77,7 @@ class Memcache implements DriverInterface
     }
 
     /**
-     * @see \Mars\Memcache\DriverInterface::exists()
+     * @see MemcacheInterface::exists()
      * {@inheritdoc}
      */
     public function exists(string $key) : bool
@@ -92,7 +91,7 @@ class Memcache implements DriverInterface
     }
 
     /**
-     * @see \Mars\Memcache\DriverInterface::delete()
+     * @see MemcacheInterface::delete()
      * {@inheritdoc}
      */
     public function delete(string $key) : bool
@@ -101,7 +100,7 @@ class Memcache implements DriverInterface
     }
 
     /**
-     * @see \Mars\Memcache\DriverInterface::delete()
+     * @see MemcacheInterface::delete()
      * {@inheritdoc}
      */
     public function deleteAll() : bool

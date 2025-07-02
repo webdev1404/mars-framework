@@ -9,10 +9,10 @@ namespace Mars\Assets\Minifiers;
 /**
  * The Javascript Minifier
  */
-class Javascript implements DriverInterface
+class Javascript implements MinifierInterface
 {
     /**
-     * @see \Mars\Minifiers\DriverInterface::minify()
+     * @see MinifierInterface::minify()
      * {@inheritdoc}
      */
     public function minify(string $content) : string

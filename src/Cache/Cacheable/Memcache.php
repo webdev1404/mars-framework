@@ -1,21 +1,21 @@
 <?php
 /**
-* The Memcache Driver
+* The Cachable Memcache Driver
 * @package Mars
 */
 
 namespace Mars\Cache\Cacheable;
 
-use Mars\App;
-use Mars\App\InstanceTrait;
+use Mars\App\Kernel;
+use Mars\Cache\Cacheable\CacheableInterface;
 
 /**
- * The Memcache Driver
+ * The Cachable Memcache Driver
  * Driver which stores in memcache the cached resources
  */
-class Memcache implements DriverInterface
+class Memcache implements CacheableInterface
 {
-    use InstanceTrait;
+    use Kernel;
 
     /**
      * Checks if memcache is enabled
@@ -39,7 +39,7 @@ class Memcache implements DriverInterface
     }
 
     /**
-     * @see \Mars\Cache\Cacheable\DriverInterface::get()
+     * @see CacheableInterface::get()
      * {@inheritdoc}
      */
     public function get(string $filename) : string
@@ -50,7 +50,7 @@ class Memcache implements DriverInterface
     }
 
     /**
-     * @see \Mars\Cache\Cachable\DriverInterface::store()
+     * @see CacheableInterface::store()
      * {@inheritdoc}
      */
     public function store(string $filename, string $content, string $type) : bool
@@ -67,7 +67,7 @@ class Memcache implements DriverInterface
     }
 
     /**
-     * @see \Mars\Cache\Cachable\DriverInterface::getLastModified()
+     * @see CacheableInterface::getLastModified()
      * {@inheritdoc}
      */
     public function getLastModified(string $filename) : int
@@ -80,7 +80,7 @@ class Memcache implements DriverInterface
     }
 
     /**
-     * @see \Mars\Cache\Cachable\DriverInterface::delete()
+     * @see CacheableInterface::delete()
      * {@inheritdoc}
      */
     public function delete(string $filename, string $type) : bool
@@ -97,7 +97,7 @@ class Memcache implements DriverInterface
     }
 
     /**
-     * @see \Mars\Cache\Cachable\DriverInterface::clean()
+     * @see CacheableInterface::clean()
      * {@inheritdoc}
      */
     public function clean(string $dir, string $type)

@@ -7,6 +7,7 @@
 namespace Mars\Html\Lists;
 
 use Mars\Html\Tag;
+use Mars\Html\TagInterface;
 
 /**
  * The List Class
@@ -20,7 +21,7 @@ abstract class Listing extends Tag
     protected static array $properties = ['items'];
 
     /**
-     * @see \Mars\Html\TagInterface::html()
+     * @see TagInterface::html()
      * {@inheritdoc}
      */
     public function html(string $text = '', array $attributes = [], array $items = []) : string

@@ -6,13 +6,14 @@
 
 namespace Mars;
 
-use Mars\App\InstanceTrait;
+use Mars\App\Kernel;
+use Mars\App\Handlers;
 use Mars\Html\TagInterface;
 use Mars\Html\Tag;
 use Mars\Html\Form;
 use Mars\Html\Div;
 use Mars\Html\Input\Select;
-use Mars\Request\Input;
+use Mars\Http\Request\Input;
 
 /**
  * The HTML Class
@@ -20,18 +21,18 @@ use Mars\Request\Input;
  */
 class Html
 {
-    use InstanceTrait;
+    use Kernel;
 
     /**
      * @var array $supported_tags The list of supported tags
      */
-    protected array $supported_tags = [
-        'img' => \Mars\Html\Img::class,
-        'picture' => \Mars\Html\Picture::class,
-        'video' => \Mars\Html\Video::class,
+    public protected(set) array $supported_tags = [
         'a' => \Mars\Html\A::class,
         'div' => \Mars\Html\Div::class,
         'p' => \Mars\Html\P::class,
+        'img' => \Mars\Html\Img::class,
+        'picture' => \Mars\Html\Picture::class,
+        'video' => \Mars\Html\Video::class,
         'ul' => \Mars\Html\Lists\UL::class,
         'ol' => \Mars\Html\Lists\OL::class,
         'label' => \Mars\Html\Label::class,
@@ -54,7 +55,7 @@ class Html
         'datetime' => \Mars\Html\Input\Datetime::class,
         'date' => \Mars\Html\Input\Date::class,
         'time' => \Mars\Html\Input\Time::class
-    ];    
+    ];
 
     /**
      * @var Handlers $handlers The tags object
@@ -205,7 +206,7 @@ class Html
 
     /**
      * Alias for a()
-     * @see \Mars\Html::a()
+     * @see Html::a()
      */
     public function link(string $url, string $text = '', array $attributes = []) : string
     {
@@ -296,7 +297,7 @@ class Html
      */
     public function isHidden(bool $hidden = true) : string
     {
-        return $hidden ? ' style="display:none"' : '';
+        return $hidden ? ' hidden' : '';
     }
 
     /**
@@ -379,7 +380,7 @@ class Html
 
     /**
      * Alias for input()
-     * @see \Mars\Html::input()
+     * @see Html::input()
      */
     public function text(string $name, string $value = '', string $placeholder = '', bool $required = false, array $attributes = []) : string
     {

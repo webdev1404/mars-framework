@@ -6,14 +6,19 @@
 
 namespace Mars;
 
-use Mars\App\UtilsTrait;
+use Mars\App\Debug;
+use Mars\App\LazyLoad;
+use Mars\App\Registry;
 use Mars\Alerts\Errors;
 use Mars\Alerts\Info;
 use Mars\Alerts\Warnings;
 use Mars\Alerts\Messages;
 use Mars\Assets\Minifier;
-use Mars\LazyLoad\GhostTrait;
-use Mars\LazyLoad\ProxyTrait;
+use Mars\Db\Sql\Sql;
+use Mars\Filesystem\Dir;
+use Mars\Filesystem\File;
+use Mars\Http\Request;
+use Mars\Http\Response;
 use Mars\Time\DateTime;
 use Mars\Time\Date;
 use Mars\Time\Time;
@@ -30,308 +35,301 @@ use Mars\System\Theme;
 #[\AllowDynamicProperties]
 class App
 {
-    use UtilsTrait;
-    use GhostTrait;
-    use ProxyTrait;
+    use LazyLoad;
+    use Registry;
 
     /**
      * @var string $version The version
      */
-    public string $version = '1.0.0';
+    public protected(set) string $version = '1.0.0';
 
     /**
      * @var Accelerator $accelerator The accelerator object
      */
-    #[LazyLoad]
+    #[LazyLoadProperty]
     public Accelerator $accelerator;
 
     /**
      * @var Cli $cli The cli object
      */
-    #[LazyLoad]
+    #[LazyLoadProperty]
     public Cli $cli;
 
     /**
      * @var Cache $cache The cache object
      */
-    #[LazyLoad]
+    #[LazyLoadProperty]
     public Cache $cache;
 
     /**
      * @var Captcha $captcha The captcha object
      */
-    #[LazyLoad]
+    #[LazyLoadProperty]
     public Captcha $captcha;
 
     /**
      * @var Config $config The config object
      */
-    #[LazyLoad]
+    #[LazyLoadProperty]
     public Config $config;
 
     /**
      * @var Db $db The db object
      */
-    #[LazyLoad]
+    #[LazyLoadProperty]
     public Db $db;
 
     /**
      * @var Debug $debug The debug object
      */
-    #[LazyLoad]
+    #[LazyLoadProperty]
     public Debug $debug;
 
     /**
      * @var Device $device The device object
      */
-    #[LazyLoad]
+    #[LazyLoadProperty]
     public Device $device;
 
     /**
      * @var Dir $dir The dir object
      */
-    #[LazyLoad]
+    #[LazyLoadProperty]
     public Dir $dir;
 
     /**
      * @var Document $document The document object
      */
-    #[LazyLoad]
+    #[LazyLoadProperty]
     public Document $document;
 
     /**
      * @var Errors $errors The errors object
      */
-    #[LazyLoad]
+    #[LazyLoadProperty]
     public Errors $errors;
 
     /**
      * @var Escape $escape The escape object
      */
-    #[LazyLoad]
+    #[LazyLoadProperty]
     public Escape $escape;
 
     /**
      * @var Filter $filter The filter object
      */
-    #[LazyLoad]
+    #[LazyLoadProperty]
     public Filter $filter;
 
     /**
      * @var File $file The file object
      */
-    #[LazyLoad]
+    #[LazyLoadProperty]
     public File $file;
 
     /**
      * @var Format $format The format object
      */
-    #[LazyLoad]
+    #[LazyLoadProperty]
     public Format $format;
 
     /**
      * @var Html $html The html object
      */
-    #[LazyLoad]
+    #[LazyLoadProperty]
     public Html $html;
-
-    /**
-     * @var Http $http The http object
-     */
-    #[LazyLoad]
-    public Http $http;
 
     /**
      * @var Info $info The info object
      */
-    #[LazyLoad]
+    #[LazyLoadProperty]
     public Info $info;
 
     /**
      * @var Image $image The image object
      */
-    #[LazyLoad]
+    #[LazyLoadProperty]
     public Image $image;
 
     /**
      * @var Json $json The json object
      */
-    #[LazyLoad]
+    #[LazyLoadProperty]
     public Json $json;
 
     /**
      * @var Language $lang The language object
      */
-    #[LazyLoad]
+    #[LazyLoadProperty]
     public Language $lang;
 
     /**
      * @var Log $log The log object
      */
-    #[LazyLoad]
+    #[LazyLoadProperty]
     public Log $log;
 
     /**
      * @var Mail $mail The mail object
      */
-    #[LazyLoad]
+    #[LazyLoadProperty]
     public Mail $mail;
 
     /**
      * @var Minifier $minifier The minifier object
      */
-    #[LazyLoad]
+    #[LazyLoadProperty]
     public Minifier $minifier;
 
     /**
      * @var Memcache $memcache The memcache object
      */
-    #[LazyLoad]
+    #[LazyLoadProperty]
     public Memcache $memcache;
 
     /**
      * @var Messages $messages The messages object
      */
-    #[LazyLoad]
+    #[LazyLoadProperty]
     public Messages $messages;
 
     /**
      * @var Plugins $plugins The plugins object
      */
-    #[LazyLoad]
+    #[LazyLoadProperty]
     public Plugins $plugins;
 
     /**
      * @var Random $random The random object
      */
-    #[LazyLoad]
+    #[LazyLoadProperty]
     public Random $random;
-
-    /**
-     * @var Registry $registry The registry object
-     */
-    #[LazyLoad]
-    public Registry $registry;
 
     /**
      * @var Response $response The response object
      */
-    #[LazyLoad]
+    #[LazyLoadProperty]
     public Response $response;
 
     /**
      * @var Request $request The request object
      */
-    #[LazyLoad]
+    #[LazyLoadProperty]
     public Request $request;
 
     /**
      * @var Router $router The router object
      */
-    #[LazyLoad]
+    #[LazyLoadProperty]
     public Router $router;
 
     /**
-     * @var Screens $screens The screens object
+     * @var Screens $screen The screens object
      */
-    #[LazyLoad]
+    #[LazyLoadProperty]
     public Screens $screens;
 
     /**
      * @var Serializer $serializer The serializer object
      */
-    #[LazyLoad]
+    #[LazyLoadProperty]
     public Serializer $serializer;
 
     /**
      * @var Session $session The session object
      */
-    #[LazyLoad]
+    #[LazyLoadProperty]
     public Session $session;
 
     /**
      * @var Sql $sql The sql object
      */
-    #[LazyLoad]
+    #[LazyLoadProperty]
     public Sql $sql;
 
     /**
      * @var DateTime $datetime The datetime object
      */
-    #[LazyLoad]
+    #[LazyLoadProperty]
     public DateTime $datetime;
 
     /**
      * @var Date $date The date object
      */
-    #[LazyLoad]
+    #[LazyLoadProperty]
     public Date $date;
 
     /**
      * @var Time $time The time object
      */
-    #[LazyLoad]
+    #[LazyLoadProperty]
     public Time $time;
 
     /**
      * @var Timestamp $timestamp The timestamp object
      */
-    #[LazyLoad]
+    #[LazyLoadProperty]
     public Timestamp $timestamp;
 
     /**
      * @var Timezone $timezone The timezone object
      */
-    #[LazyLoad]
+    #[LazyLoadProperty]
     public Timezone $timezone;
 
     /**
      * @var Timer $timer The timer object
      */
-    #[LazyLoad]
+    #[LazyLoadProperty]
     public Timer $timer;
 
     /**
      * @var Text $text The text object
      */
-    #[LazyLoad]
+    #[LazyLoadProperty]
     public Text $text;
 
     /**
      * @var Theme $theme The theme object
      */
-    #[LazyLoad]
+    #[LazyLoadProperty]
     public Theme $theme;
 
     /**
      * @var Ui $ui The ui object
      */
-    #[LazyLoad]
+    #[LazyLoadProperty]
     public Ui $ui;
 
     /**
      * @var Uri $uri The uri object
      */
-    #[LazyLoad]
+    #[LazyLoadProperty]
     public Uri $uri;
 
     /**
      * @var Unescape $unescape The unescape object
      */
-    #[LazyLoad]
+    #[LazyLoadProperty]
     public Unescape $unescape;
 
     /**
      * @var Validator $validator The validator object
      */
-    #[LazyLoad]
+    #[LazyLoadProperty]
     public Validator $validator;
 
     /**
      * @var Warnings $warnings The warnings object
      */
-    #[LazyLoad]
+    #[LazyLoadProperty]
     public Warnings $warnings;
+
+    /**
+     * @var Web $web The web object
+     */
+    #[LazyLoadProperty]
+    public Web $web;
 
     /**
      * @var App $instance The app instance
@@ -341,7 +339,7 @@ class App
     /**
      * @var bool $is_cli True if the app is run as a cli script
      */
-    public protected(set) bool $is_cli {        
+    public protected(set) bool $is_cli {
         get {
             if (isset($this->is_cli)) {
                 return $this->is_cli;
@@ -356,7 +354,7 @@ class App
     /**
      * @var bool $is_web True if the app is run as a web script
      */
-    public protected(set) bool $is_web {        
+    public protected(set) bool $is_web {
         get {
             if (isset($this->is_web)) {
                 return $this->is_web;
@@ -436,25 +434,6 @@ class App
             $this->base_url = $this->config->url;
 
             return $this->base_url;
-        }
-    }
-
-    /**
-     * @var string $base_url_static The url from where static content is served
-     */
-    public protected(set) string $base_url_static {
-        get {
-            if (isset($this->base_url_static)) {
-                return $this->base_url_static;
-            }
-
-            $this->base_url_static = $this->base_url;
-            if ($this->config->url_static) {
-                $this->base_url_static = $this->config->url_static;
-            }
-            
-
-            return $this->base_url_static;
         }
     }
 
@@ -556,6 +535,19 @@ class App
     }
 
     /**
+     * @var string $public_path The folder where the public files are stored
+     */
+    public protected(set) string $public_path {
+        get {
+            if ($this->config->public_path) {
+                return $this->config->public_path;
+            }
+
+            return $this->public_path;
+        }
+    }
+
+    /**
      * @var string $config_path The folder where the config files are stored
      */
     public protected(set) string $config_path;
@@ -586,24 +578,39 @@ class App
     public protected(set) string $app_path;
 
     /**
-     * @var string $cache_url The url of the cache folder
-     */
-    public protected(set) string $cache_url;
-
-    /**
      * @var string $extensions_path The folder where the extensions are stored
      */
     public protected(set) string $extensions_path;
 
     /**
-     * @var string $extensions_url The url of the extensions folder
+     * @var string $assets_path The folder where the assets files are stored
      */
-    public protected(set) string $extensions_url;
+    public protected(set) string $assets_path = '';
 
     /**
-     * @var string $app_url The url of the app folder
+     * @var string $assets_url The url of the assets folder
      */
-    public protected(set) string $app_url;
+    public protected(set) string $assets_url {
+        get {
+            if (isset($this->assets_url)) {
+                return $this->assets_url;
+            }
+
+            $base_url = $this->base_url;
+            if ($this->config->url_cdn) {
+                $base_url = $this->config->url_cdn;
+            }
+
+            $this->assets_url = $base_url . '/' . rawurlencode(basename($this->assets_path));
+            
+            return $this->assets_url;
+        }
+    }
+
+    /**
+     * @var string $vendor_path The folder where the vendor files are stored
+     */
+    public protected(set) string $vendor_path;
 
     /**
      * @var string $nonce The nonce token
@@ -668,16 +675,6 @@ class App
     public protected(set) string $extensions_namespace = "\\App\\Extensions";
 
     /**
-     * @var array $objects The objects added to the app
-     */
-    protected static array $objects = [];
-
-    /**
-     * @var array $objects_map The map of the objects we can return with get()
-     */
-    protected static array $objects_map = [];
-
-    /**
      * Stats set if debug is on
      * @var array $stats The stats array
      */
@@ -686,72 +683,24 @@ class App
         'content_time' => 0,
         'output_size' => 0,
         'output_time' => 0
-    ];  
+    ];
 
     /**
      * @const array DIRS The locations of the used dirs
      */
     public const array DIRS = [
+        'app_path' => 'app',
         'config_path' => 'config',
-        'log_path' => 'log',
-        'tmp_path' => 'tmp',        
-        'cache_path' => 'cache',
         'libraries_path' => 'libraries',
         'extensions_path' => 'extensions',
-        'app_path' => 'app',
+        'public_path' => 'public',
+        'assets_path' => 'public/assets',
+        'vendor_path' => 'vendor',
+        'cache_path' => 'data/cache',
+        'log_path' => 'data/log',
+        'tmp_path' => 'data/tmp',
     ];
-
-    /**
-     * @const array URLS The locations of the used urls
-     */
-    public const array URLS = [
-        'extensions_url' => 'extensions',
-        'cache_url' => 'cache',
-        'app_url' => 'app',
-    ];
-
-    /**
-     * @const array EXTENSIONS_DIR The locations of the used extensions subdirs
-     */
-    public const array EXTENSIONS_DIRS = [
-        'modules' => 'modules',
-        'languages' => 'languages',
-        'templates' => 'templates',
-
-        'images' => 'images',
-        'controllers' => 'controllers',
-        'models' => 'models',
-        'views' => 'views'
-    ];
-
-    /**
-     * @const array MOBILE_DORS The locations of the used mobile subdirs
-     */
-    public const array MOBILE_DIRS = [
-        'desktop' => 'desktop',
-        'mobile' => 'mobile',
-        'tablets' => 'tablets',
-        'smartphones' => 'smartphones'
-    ];
-
-    /**
-     * @const array CACHE_DIRS The locations of the cache subdirs
-     */
-    public const array CACHE_DIRS = [
-        'data' => 'data',
-        'templates' => 'templates',
-        'css' => 'css',
-        'js' => 'js'
-    ];
-
-    /**
-     * @const array FILE_EXTENSIONS Common file extensions
-     */
-    public const array FILE_EXTENSIONS = [
-        'templates' => 'php',
-        'languages' => 'php'
-    ];
-
+    
     /**
      * Protected constructor
      */
@@ -764,9 +713,8 @@ class App
      * Boots the app
      */
     public function boot()
-    {
+    {       
         $this->assignDirs(static::DIRS);
-        $this->assignUrls(static::URLS);
 
         $this->setErrorReporting();
 
@@ -775,6 +723,7 @@ class App
             $this->response->headers->early_hints->output();
         }
         
+        //output the cached content if it exists
         $this->outputIfCached();
     }
 
@@ -787,106 +736,18 @@ class App
         if (isset(static::$instance)) {
             return static::$instance;
         }
-        
+       
         static::$instance = new static;
 
         return static::$instance;
     }
 
     /**
-     * Loads objects from the list
-     * @param array $list The list of the objects to add
-     * @return static
-     */
-    public function load(array $list) : static
-    {
-        $ghost_list = [];
-        $proxy_list = [];
-        foreach ($list as $name => $class) {
-            if (is_callable($class)) {
-                $proxy_list[$name] = $class;
-            } else {
-                $ghost_list[$name] = $class;
-            }
-        }
-
-        if ($ghost_list) {
-            $this->lazyLoadByGhost($ghost_list, $this);
-        }
-        if ($proxy_list) {
-            $this->lazyLoadByProxy($proxy_list, $this);
-        }
-
-        return $this;
-    }
-
-    /**
-     * Returns the App object or an object added to the App
-     * @param string $name The name of the object. If empty, will return the App object
+     * Returns the App object
      * @return App The App object
      */
-    public static function get(string $name = '') : static
+    public static function obj() : static
     {
-        if ($name) {
-            if (isset(static::$objects[$name])) {
-                return static::$objects[$name];
-            }
-
-            static::$objects[$name] = static::resolve($name);
-
-            return static::$objects[$name];
-            
-        }
-
-        return static::$instance;
-    }
-
-    /**
-     * Resolves an object
-     * @param string $name The name of the object
-     * @return object The object
-     * @throws \Exception If the object can't be resolved
-     */
-    protected function resolve(string $name) : object
-    {
-        if (isset(static::$objects_map[$name])) {
-            return static::getObject(static::$objects_map[$name]);
-        }
-
-        throw new \Exception("Can't resolve object. Invalid name: {$name}");
-    }
-
-    /**
-     * Adds an object to the App
-     * @param string|array $name The name of the object
-     * @param string|callable $class The class of the object of the callable which returns it
-     * @return static
-     */
-    public static function set(string|array $name, string|callable $class = '') : static
-    {
-        if (is_array($name)) {
-            foreach ($name as $name2 => $class2) {
-                static::$objects_map[$name2] = $class2;
-            }
-        } else {
-            static::$objects_map[$name] = $class;
-        }
-
-        return static::$instance;
-    }
-    
-    /**
-     * Removes an object from the App
-     * @param string $name The name of the object
-     * @return static
-     */
-    public function delete(string $name) : static
-    {
-        if (isset(static::$objects[$name])) {
-            unset(static::$objects[$name]);
-            unset(static::$objects_map[$name]);
-        }
-
         return static::$instance;
     }
 
@@ -916,27 +777,6 @@ class App
         foreach ($dirs as $name => $dir) {
             $this->$name = $this->base_path . '/' . $dir;
         }
-    }
-
-    /**
-     * Assigns the urls as app properties
-     * @param array $urls The urls to assign
-     */
-    protected function assignUrls(array $urls)
-    {
-        foreach ($urls as $name => $url) {
-            $this->$name = $this->base_url . '/' . rawurlencode($url);
-        }
-    }
-
-    /**
-     * Returns the static url of a dir
-     * @param string $url The url key as defined in App::URLS
-     * @return string The static url
-     */
-    public function getStaticUrl(string $url) : string
-    {
-        return $this->base_url_static . '/' . rawurlencode(static::URLS[$url]);
     }
 
     /**
@@ -1065,7 +905,7 @@ class App
         return ob_get_clean();
     }
 
-    /**********************SCREENS FUNCTIONS***************************************/
+    /**********************SCREENS METHODS***************************************/
 
     /**
      * Displays a fatal error screen
@@ -1119,6 +959,298 @@ class App
         }
 
         header('Location: ' . $url);
+        die;
+    }
+
+    /**********************UTILS METHODS***************************************/
+
+    /**
+     * Returns a language string
+     * Alias for $app->lang->get()
+     * @see \Mars\Extensions\Language::get()
+     * {@inheritdoc}
+     */
+    public static function __(string $str, array $replace = [], string $prefix = '') : string
+    {
+        return static::$instance->lang->get($str, $replace, $prefix);
+    }
+
+    /**
+     * Returns a html escaped language string
+     * @param string $str The string index as defined in the languages file
+     * @param array $replace Array with key & values to be used for to search & replace, if any
+     * @return string The language string
+     */
+    public static function __e(string $str, array $replace = []) : string
+    {
+        $str = static::__($str, $replace);
+
+        return static::$instance->escape->html($str);
+    }
+
+    /**
+     * Html escapes a string. Shorthand for $app->escape->html($value)
+     * @param string $value The value to escape
+     * @return string The escaped value
+     */
+    public static function e(string $value) : string
+    {
+        return static::$instance->escape->html($value);
+    }
+
+    /**
+     * Converts a string to a class name. Eg: some-action => SomeAction
+     * @param string $str The string to convert
+     * @return string The class name
+     */
+    public static function getClass(string $str) : string
+    {
+        $str = preg_replace('/[^a-z0-9\- ]/i', '', $str);
+        $str = str_replace(' ', '-', $str);
+
+        $str = ucwords($str, '-');
+        $str = str_replace('-', '', $str);
+
+        return $str;
+    }
+
+    /**
+     * Converts a string to a method name. Eg: some-action => someAction
+     * @param string $str The string to convert
+     * @return string The method name
+     */
+    public static function getMethod(string $str) : string
+    {
+        $str = preg_replace('/[^a-z0-9\-_ ]/i', '', $str);
+        $str = str_replace('_', '-', $str);
+        $str = str_replace(' ', '-', $str);
+
+        $str = ucwords($str, '-');
+        $str = lcfirst($str);
+        $str = str_replace('-', '', $str);
+
+        return $str;
+    }
+
+    /**
+     * Determines if the property exists
+     * @param array|object $data The data to return the property from
+     * @param string $name The name of the property/index
+     * @return mixed The property
+     */
+    public static function hasProperty(array|object $data, string $name) : bool
+    {
+        if (is_array($data)) {
+            return isset($data[$name]);
+        } else {
+            return isset($data->$name);
+        }
+    }
+
+    /**
+     * Returns a property of an object or an array value
+     * @param array|object $data The data to return the property from
+     * @param string $name The name of the property/index
+     * @return mixed The property
+     */
+    public static function getProperty(array|object $data, string $name)
+    {
+        if (is_array($data)) {
+            return $data[$name] ?? null;
+        } else {
+            return $data->$name ?? null;
+        }
+    }
+
+    /**
+     * Returns a list of properties of an object or an array value
+     * @param array|object $data The data to return the property from
+     * @param array $properties The name of the properties to return
+     * @return array The properties
+     */
+    public static function getProperties(array|object $data, array $properties = []) : array
+    {
+        $properties_array = [];
+        if ($properties) {
+            foreach ($properties as $name) {
+                if (static::hasProperty($data, $name)) {
+                    $properties_array[$name] = static::getProperty($data, $name);
+                }
+            }
+        } else {
+            $properties_array = (array)$data;
+        }
+
+        return $properties_array;
+    }
+
+    /**
+     * Removes the specified properties from the data
+     * @param array $properties The name of the properties to remove
+     * @return array The properties
+     */
+    public static function filterProperties(array|object $data, array $properties) : array
+    {
+        return static::unset((array)$data, $properties);
+    }
+
+    /**
+     * Returns the properties of an object
+     * @param object $object The object
+     * @return array The properties
+     */
+    public static function getObjectProperties(object $object) : array
+    {
+        return get_object_vars($object);
+    }
+
+    /**
+     * Returns an object from an class/callable...
+     * @param mixed $class The class/callable etc..
+     * @param mixed $args The arguments to pass to the constructor
+     * @return object
+     */
+    public static function getObject(mixed $class, ...$args) : object
+    {
+        $args[] = static::$instance;
+
+        $object = null;
+        if (is_string($class)) {
+            $object = new $class(...$args);
+        } elseif(is_callable($class)) {
+            $object = $class($args);
+        } else {
+            $object = (object)$class;
+        }
+
+        return $object;
+    }
+
+    /**
+     * Returns an array from an array/object/iterator
+     * @param mixed $array The array
+     * @return array
+     */
+    public static function getArray(mixed $array) : array
+    {
+        if (!$array) {
+            return [];
+        }
+
+        if (is_array($array)) {
+            return $array;
+        } elseif (is_iterable($array)) {
+            return iterator_to_array($array);
+        } elseif (is_object($array)) {
+            return get_object_vars($array);
+        } else {
+            return (array)$array;
+        }
+    }
+
+    /**
+     * Returns a string from a value
+     * @param mixed $value The value
+     * @return string
+     */
+    public static function getString(mixed $value) : string
+    {
+        if (is_array($value)) {
+            return reset($value);
+        }
+
+        return (string)$value;
+    }
+
+    /**
+     * Maps a value [scalar|array] to a callback
+     * @param mixed $value The value
+     * @param callable $callback The callback function
+     */
+    public static function map($value, callable $callback)
+    {
+        if (is_array($value)) {
+            return array_map($callback, $value);
+        }
+
+        return $callback($value);
+    }
+
+    /**
+     * Unsets from $array the specified keys
+     * @param array $array The array
+     * @param string|array The keys to unset
+     * @return array The array
+     */
+    public static function unset(array $array, string|array $keys) : array
+    {
+        $keys = (array)$keys;
+
+        foreach ($keys as $key) {
+            if (isset($array[$key])) {
+                unset($array[$key]);
+            }
+        }
+
+        return $array;
+    }
+
+    /**
+     * Removes the specified values from the array
+     * @param array $array The array
+     * @param string|array The values to remove
+     * @return array The array
+     */
+    public static function remove(array $array, string|array $values) : array
+    {
+        $values = (array)$values;
+
+        foreach ($values as $value) {
+            $key = array_search($value, $array);
+            if ($key !== false) {
+                unset($array[$key]);
+            }
+        }
+
+        return $array;
+    }
+
+    /********************** DEBUG FUNCTIONS ***************************************/
+
+    /**
+     * Does a print_r on $var and outputs <pre> tags
+     * @param mixed $var The variable
+     * @param bool $die If true, will call die after
+     */
+    public static function pp($var, bool $die = true)
+    {
+        echo '<pre>';
+        \print_r($var);
+        echo '</pre>';
+
+        if ($die) {
+            die;
+        }
+    }
+
+    /**
+     * Alias for dd
+     * @see App::pp()
+     */
+    public static function dd($var, bool $die = true)
+    {
+        static::pp($var, $die);
+    }
+
+    /**
+     * Prints the debug backtrace
+     */
+    public static function backtrace()
+    {
+        echo '<pre>';
+        debug_print_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
+        echo '</pre>';
+
         die;
     }
 }

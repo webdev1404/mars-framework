@@ -9,10 +9,10 @@ namespace Mars\Filters;
 /**
  * The Interval Filter Class
  */
-class Interval
+class Interval extends Filter
 {
     /**
-     * @see \Mars\Filter::interval()
+     * @see \Mars\Filters\Filter::interval()
      */
     public function filter(int|float $value, int|float $min, int|float $max, int|float $default_value) : int|float
     {

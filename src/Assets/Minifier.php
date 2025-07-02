@@ -7,9 +7,9 @@
 namespace Mars\Assets;
 
 use Mars\App;
-use Mars\App\InstanceTrait;
-use Mars\Handlers;
-use Mars\Assets\Minifiers\DriverInterface;
+use Mars\App\Kernel;
+use Mars\App\Handlers;
+use Mars\Assets\Minifiers\MinifierInterface;
 
 /**
  * The Asset Minifier Class
@@ -17,7 +17,16 @@ use Mars\Assets\Minifiers\DriverInterface;
  */
 class Minifier
 {
-    use InstanceTrait;
+    use Kernel;
+
+    /**
+     * @var array $minifiers_list The list of supported minifiers
+     */
+    public protected(set) array $minifiers_list = [
+        'html' => \Mars\Assets\Minifiers\Html::class,
+        'css' => \Mars\Assets\Minifiers\Css::class,
+        'js' => \Mars\Assets\Minifiers\Javascript::class
+    ];
 
     /**
      * @var Handlers $minifiers The screens handlers
@@ -28,20 +37,11 @@ class Minifier
                 return $this->minifiers;
             }
 
-            $this->minifiers = new Handlers($this->minifiers_list, DriverInterface::class, $this->app);
+            $this->minifiers = new Handlers($this->minifiers_list, MinifierInterface::class, $this->app);
 
             return $this->minifiers;
         }
     }
-
-    /**
-     * @var array $minifiers_list The list of supported minifiers
-     */
-    protected array $minifiers_list = [
-        'html' => \Mars\Assets\Minifiers\Html::class,
-        'css' => \Mars\AssetsMinifiers\Css::class,
-        'js' => \Mars\AssetsMinifiers\Javascript::class            
-    ];
 
     /**
      * Minifies html code

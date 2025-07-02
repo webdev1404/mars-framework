@@ -6,9 +6,9 @@
 
 namespace Mars\Time;
 
-use Mars\App;
-use Mars\App\InstanceTrait;
 use DateTimeZone;
+use Mars\App;
+use Mars\App\Kernel;
 
 /**
  * The Timezone Class
@@ -16,7 +16,7 @@ use DateTimeZone;
  */
 class Timezone
 {
-    use InstanceTrait;
+    use Kernel;
 
     /**
      * @var \DateTimeZone $timezone The timezone applied to the datetime computations

@@ -9,18 +9,9 @@ include_once(dirname(__DIR__) . '/Base.php');
  */
 final class LanguageTest extends Base
 {
-    public function testConstruct()
-    {
-        $language = new Language($this->app);
-
-        $this->assertSame($language->path, $this->app->base_path . '/extensions/languages/' . $this->app->config->language);
-        $this->assertSame($language->url, $this->app->base_url . '/extensions/languages/' . $this->app->config->language);
-        $this->assertSame($language->url_static, $this->app->base_url_static . '/extensions/languages/' . $this->app->config->language);
-    }
-
     public function testLoadFilename()
     {
-        $filename = dirname(__DIR__) . '/data/strings.php';
+        $filename = __DIR__ . '/data/strings.php';
 
         $language = new Language($this->app);
         $language->strings = [];

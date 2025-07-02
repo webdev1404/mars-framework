@@ -7,21 +7,43 @@
 namespace Mars\Extensions;
 
 use Mars\App;
-use Mars\LazyLoad;
-use Mars\LazyLoad\GhostTrait;
-use Mars\Template;
+use Mars\App\LazyLoad;
+use Mars\LazyLoadProperty;
+use Mars\HiddenProperty;
 use Mars\Document;
-use Mars\Document\Css;
-use Mars\Document\Javascript;
-use Mars\Document\Fonts;
-use Mars\Document\Images;
+use Mars\Extensions\Themes\Links\Css;
+use Mars\Extensions\Themes\Links\Javascript;
+use Mars\Extensions\Themes\Links\Fonts;
+use Mars\Extensions\Themes\Links\Images;
+use Mars\Themes\Template;
 
 /**
  * The Theme Class
  */
 class Theme extends Extension
 {
-    use GhostTrait;
+    use LazyLoad;
+
+    /**
+     * @internal
+     */
+    public const array DIRS = [
+        'assets' => 'assets',
+        'images' => 'images',
+        'css' => 'css',
+        'js' => 'js',
+        'fonts' => 'fonts',
+        'templates' => 'templates',
+    ];
+
+    /**
+     * @const array MOBILE_DORS The locations of the used mobile subdirs
+     */
+    public const array MOBILE_DIRS = [
+        'mobile' => 'mobile',
+        'tablets' => 'tablets',
+        'smartphones' => 'smartphones'
+    ];
 
     /**
      * @var Document $document The document object
@@ -33,35 +55,32 @@ class Theme extends Extension
     /**
      * @var Css $css The css object
      */
-    public Css $css {
-        get => $this->app->document->css;
-    }
+    #[LazyLoadProperty]
+    public Css $css;
 
     /**
      * @var Javascript $javascript The javascript object
      */
-    public Javascript $javascript {
-        get => $this->app->document->javascript;
-    }
-
+    #[LazyLoadProperty]
+    public Javascript $javascript;
+    
     /**
      * @var Fonts $fonts The fonts object
      */
-    public Fonts $fonts {
-        get => $this->app->document->fonts;
-    }
+    #[LazyLoadProperty]
+    public Fonts $fonts;
 
     /**
      * @var Images $images The images object
      */
-    public Images $images {
-        get => $this->app->document->images;
-    }
+    #[LazyLoadProperty]
+    public Images $images;
 
     /**
-     * @var Templat template The engine used to parse the template
+     * @var Template $template The engine used to parse the template
      */
-    #[LazyLoad]
+    #[LazyLoadProperty]
+    #[HiddenProperty]
     public protected(set) Template $template;
 
     /**
@@ -77,18 +96,18 @@ class Theme extends Extension
     /**
      * @var string $content_template The template which will be used to render the content
      */
-    public string $content_template = 'content';    
+    public string $content_template = 'content';
 
     /**
      * @var string $images_path The path for the theme's images folder
      */
-    protected string $images_path {
+    public protected(set) string $images_path {
         get {
             if (isset($this->images_path)) {
                 return $this->images_path;
             }
 
-            $this->images_path = $this->path . '/' . App::EXTENSIONS_DIRS['images'];
+            $this->images_path = $this->assets_path . '/' . static::DIRS['images'];
 
             return $this->images_path;
         }
@@ -97,15 +116,89 @@ class Theme extends Extension
     /**
      * @var string $images_url The url of the theme's images folder
      */
-    protected string $images_url {
+    public protected(set) string $images_url {
         get {
             if (isset($this->images_url)) {
                 return $this->images_url;
             }
 
-            $this->images_url = $this->url . '/' . rawurlencode(App::EXTENSIONS_DIRS['images']);
+            $this->images_url = $this->assets_url . '/' . rawurlencode(static::DIRS['images']);
 
             return $this->images_url;
+        }
+    }
+
+    /**
+     * @var string $css_path The path for the theme's css folder
+     */
+    public protected(set) string $css_path {
+        get {
+            if (isset($this->css_path)) {
+                return $this->css_path;
+            }
+
+            $this->css_path = $this->assets_path . '/' . static::DIRS['css'];
+
+            return $this->css_path;
+        }
+    }
+    /**
+     * @var string $css_url The url of the theme's css folder
+     */
+    public protected(set) string $css_url {
+        get {
+            if (isset($this->css_url)) {
+                return $this->css_url;
+            }
+
+            $this->css_url = $this->assets_url . '/' . rawurlencode(static::DIRS['css']);
+
+            return $this->css_url;
+        }
+    }
+
+    /**
+     * @var string $js_path The path for the theme's js folder
+     */
+    public protected(set) string $js_path {
+        get {
+            if (isset($this->js_path)) {
+                return $this->js_path;
+            }
+
+            $this->js_path = $this->assets_path . '/' . static::DIRS['js'];
+
+            return $this->js_path;
+        }
+    }
+
+    /**
+     * @var string $js_url The url of the theme's js folder
+     */
+    public protected(set) string $js_url {
+        get {
+            if (isset($this->js_url)) {
+                return $this->js_url;
+            }
+
+            $this->js_url = $this->assets_url . '/' . rawurlencode(static::DIRS['js']);
+
+            return $this->js_url;
+        }
+    }
+
+    /**
+     * @var string $templates_path The path for the theme's templates folder
+     */
+    public protected(set) string $templates_path {
+        get {
+            if (isset($this->templates_path)) {
+                return $this->templates_path;
+            }
+
+            $this->templates_path = $this->path . '/' . static::DIRS['templates'];
+
+            return $this->templates_path;
         }
     }
 
@@ -113,6 +206,52 @@ class Theme extends Extension
      * @var array $vars The theme's vars are stored here
      */
     public array $vars = [];
+
+    /**
+     * @var array $templates Array with the list of available templates
+     */
+    public protected(set) array $templates {
+        get {
+            if (isset($this->templates)) {
+                return $this->templates;
+            }
+
+            $filename = "theme-{$this->name}-templates";
+
+            $templates = $this->app->cache->getArray($filename);
+
+            // Force files scan if we are in development mode
+            if ($this->development) {
+                $templates = null; 
+            }
+
+            if ($templates === null) {
+                $templates = $this->app->dir->get($this->templates_path, true, false);
+                $templates = array_combine($templates, array_fill(0, count($templates), true));
+
+                $this->app->cache->setArray($filename, $templates);
+            }
+
+            $this->templates = $templates;
+
+            return $this->templates;
+        }
+    }
+
+    /**
+     * @var bool $has_mobile_templates If true, the theme has mobile templates
+     */
+    public protected(set) bool $has_mobile_templates {
+        get {
+            if (isset($this->has_mobile_templates)) {
+                return $this->has_mobile_templates;
+            }
+
+            $this->has_mobile_templates = isset($this->templates[static::MOBILE_DIRS['mobile']]);
+
+            return $this->has_mobile_templates;
+        }
+    }
 
     /**
      * @var array Array with the list of loaded templates
@@ -127,6 +266,11 @@ class Theme extends Extension
     /**
      * @internal
      */
+    protected static ?array $list = null;
+
+    /**
+     * @internal
+     */
     protected static string $type = 'theme';
 
     /**
@@ -137,27 +281,24 @@ class Theme extends Extension
     /**
      * @internal
      */
-    protected static string $base_namespace = "Themes";
+    protected static string $base_namespace = "\\Themes";
+
+    /**
+     * @internal
+     */
+    protected static string $setup_class = \Mars\Extensions\Setup\Theme::class;
 
     /**
      * Builds the theme
      * @param string $name The name of the exension
+     * @param array $params The params passed to the theme, if any
      * @param App $app The app object
      */
-    public function __construct(string $name, ?App $app = null)
+    public function __construct(string $name, array $params = [], ?App $app = null)
     {   
         $this->lazyLoad($app);
 
-        parent::__construct($name, [], $app);
-    }
-
-    /**
-     * {@inheritdoc}
-     * @see \Mars\Extensions\ExtensionTrait::getRootNamespace()
-     */
-    protected function getRootNamespace() : string
-    {
-        return '';
+        parent::__construct($name, $params, $app);
     }
 
     /***************** VARS METHODS *********************************/
@@ -228,6 +369,41 @@ class Theme extends Extension
     }
 
     /************** TEMPLATES METHODS **************************/
+
+    /**
+     * Returns the template filename. It will check if the template exists in the mobile templates, if the device is mobile.
+     * If the device is a smartphone, it will check for the smartphone template first, then the tablet template, and finally the generic mobile template.
+     * @param string $template The name of the template
+     * @return string The template filename
+     */
+    public function getTemplateFilename(string $template) : string
+    {
+        $template = $template . '.php';
+
+        if (!$this->has_mobile_templates || !$this->app->device->is_mobile) {
+            return $template;
+        }
+
+        if ($this->app->device->is_smartphone) {
+            $filename = static::MOBILE_DIRS['mobile'] . '/' . static::MOBILE_DIRS['smartphones'] . '/' . $template;
+            
+            if (isset($this->templates[$filename])) {
+                return $filename;
+            }
+        } elseif ($this->app->device->is_tablet) {
+            $filename = static::MOBILE_DIRS['mobile'] . '/' . static::MOBILE_DIRS['tablets'] . '/' . $template;
+            if (isset($this->templates[$filename])) {
+                return $filename;
+            }
+        }
+
+        $filename = static::MOBILE_DIRS['mobile'] . '/' . $template;
+        if (isset($this->templates[$filename])) {
+            return $filename;
+        }
+
+        return $template;
+    }
 
     /**
      * Renders/Outputs a template

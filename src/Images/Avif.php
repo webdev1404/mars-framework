@@ -6,13 +6,13 @@
 
 namespace Mars\Images;
 
-use Mars\App;
 use GdImage;
+use Mars\App;
 
 /**
  * The Avif Image Class
  */
-class Avif extends Image implements DriverInterface
+class Avif extends Image implements ImageInterface
 {
     /**
      * @var string $mime_type The image's mime type
@@ -20,7 +20,7 @@ class Avif extends Image implements DriverInterface
     protected $mime_type = 'image/avif';
 
     /**
-     * @see \Mars\Images\DriverInterface::__construct()
+     * @see ImageInterface::__construct()
      * {@inheritdoc}
      */
     public function __construct(string $filename, App $app)
@@ -31,7 +31,7 @@ class Avif extends Image implements DriverInterface
     }
 
     /**
-     * @see \Mars\Images\DriverInterface::open()
+     * @see ImageInterface::open()
      * {@inheritdoc}
      */
     public function open() : GdImage
@@ -45,7 +45,7 @@ class Avif extends Image implements DriverInterface
     }
 
     /**
-     * @see \Mars\Images\DriverInterface::save()
+     * @see ImageInterface::save()
      * {@inheritdoc}
      */
     public function save(GdImage $img)

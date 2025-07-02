@@ -8,14 +8,15 @@ namespace Mars\Html;
 
 use Mars\App;
 use Mars\Alerts\Errors;
-use Mars\Request\Input;
+use Mars\Html\TagInterface;
 use Mars\Html\Input\FormInputInterface;
+use Mars\Http\Request\Input;
 
 /**
  * The Form Class
  * Renders a form
  */
-class Form extends \Mars\Html\Tag
+class Form extends Tag
 {
     /**
      * {@inheritdoc}
@@ -96,7 +97,7 @@ class Form extends \Mars\Html\Tag
      */
     public function __construct(string $url = '', array $fields = [], array $columns = [], array $attributes = [], array $classes = [], null|array|Input $data = null, ?App $app = null)
     {
-        $this->app = $app ?? App::get();
+        $this->app = $app ?? App::obj();
         $this->url = $url;
         $this->fields = $fields;
         $this->columns = $columns;
@@ -106,7 +107,7 @@ class Form extends \Mars\Html\Tag
     }
 
     /**
-     * @see \Mars\Html\TagInterface::get()
+     * @see TagInterface::get()
      * {@inheritdoc}
      */
     public function html(string $url = '', array $attributes = []) : string
@@ -348,8 +349,8 @@ class Form extends \Mars\Html\Tag
      */
     public function validate() : bool
     {
-        if (!$this->app->validator->validate($this->getValidationData(), $this->getValidationRules)) {
-            $this->errors = $this->app->validator->errors;
+        if (!$this->app->validator->validate($this->getValidationData(), $this->getValidationRules())) {
+            $this->errors->add($this->app->validator->getErrors());
 
             return false;
         }
@@ -383,7 +384,7 @@ class Form extends \Mars\Html\Tag
     {
         $data = [];
         if ($this->data === null) {
-            $data = $this->app->request->post->data;                
+            $data = $this->app->request->post->data;
         } else {
             if ($this->data instanceof Input) {
                 $data = $this->data->data;  

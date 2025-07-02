@@ -6,8 +6,9 @@
 
 namespace Mars;
 
-use Mars\App\InstanceTrait;
-use Mars\Session\DriverInterface;
+use Mars\App\Kernel;
+use Mars\App\Drivers;
+use Mars\Session\SessionInterface;
 
 /**
  * The Session Class
@@ -15,7 +16,7 @@ use Mars\Session\DriverInterface;
  */
 class Session
 {
-    use InstanceTrait;
+    use Kernel;
 
     /**
      * @var array $supported_drivers The supported drivers
@@ -35,16 +36,16 @@ class Session
                 return $this->drivers;
             }
 
-            $this->drivers = new Drivers($this->supported_drivers, DriverInterface::class, 'session', $this->app);
+            $this->drivers = new Drivers($this->supported_drivers, SessionInterface::class, 'session', $this->app);
 
             return $this->drivers;
         }
     }
 
     /**
-     * @var DriverInterface $driver The driver object
+     * @var SessionInterface $driver The driver object
      */
-    public protected(set) DriverInterface $driver;
+    public protected(set) SessionInterface $driver;
 
     /**
      * @var string $prefix Prefix to apply to all session keys

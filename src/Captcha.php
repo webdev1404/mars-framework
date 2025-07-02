@@ -6,8 +6,9 @@
 
 namespace Mars;
 
-use Mars\App\InstanceTrait;
-use Mars\Captcha\DriverInterface;
+use Mars\App\Kernel;
+use Mars\App\Drivers;
+use Mars\Captcha\CaptchaInterface;
 
 /**
  * The Captcha Class
@@ -15,12 +16,12 @@ use Mars\Captcha\DriverInterface;
  */
 class Captcha
 {
-    use InstanceTrait;
+    use Kernel;
     
     /**
      * @var array $supported_drivers The supported drivers
      */
-    protected array $supported_drivers = [
+    public protected(set) array $supported_drivers = [
         'recaptcha2' => \Mars\Captcha\Recaptcha2::class
     ];    
 
@@ -40,16 +41,16 @@ class Captcha
                 return $this->drivers;
             }
 
-            $this->drivers = new Drivers($this->supported_drivers, DriverInterface::class, 'captcha', $this->app);
+            $this->drivers = new Drivers($this->supported_drivers, CaptchaInterface::class, 'captcha', $this->app);
 
             return $this->drivers;
         }
     }
 
     /**
-     * @var DriverInterface $driver The driver object
+     * @var CaptchaInterface $driver The driver object
      */
-    public protected(set) ?DriverInterface $driver {
+    public protected(set) ?CaptchaInterface $driver {
         get {
             if (!$this->enabled) {
                 return null;

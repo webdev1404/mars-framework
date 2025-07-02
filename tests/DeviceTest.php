@@ -1,6 +1,6 @@
 <?php
 
-use Mars\Device\MobileDetect;
+use Mars\Devices\MobileDetect;
 
 include_once(__DIR__ . '/Base.php');
 

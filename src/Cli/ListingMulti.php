@@ -1,13 +1,13 @@
 <?php
 /**
-* The Multi List Cli Handler
+* The CLI Multi List Printer
 * @package Mars
 */
 
 namespace Mars\Cli;
 
 /**
- * The Multi List Cli Handler
+ * The CLI Multi List Printer
  * Displays a list with multiple sections
  */
 class ListingMulti extends Listing

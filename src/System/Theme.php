@@ -7,7 +7,6 @@
 namespace Mars\System;
 
 use Mars\App;
-use Mars\Templates;
 
 /**
  * The System's Theme Class
@@ -30,8 +29,8 @@ class Theme extends \Mars\Extensions\Theme
         if (!$app->config->theme) {
             return;
         }
-        
-        parent::__construct($app->config->theme, $app);
+
+        parent::__construct($app->config->theme, [], $app);
 
         include($this->path . '/init.php');
     }

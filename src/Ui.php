@@ -6,14 +6,15 @@
 
 namespace Mars;
 
-use Mars\App\InstanceTrait;
+use Mars\App\Kernel;
+use Mars\App\Handlers;
 
 /**
  * The User Interface (UI) Class
  */
 class Ui
 {
-    use InstanceTrait;
+    use Kernel;
 
     /**
      * @var array $supported_rules The list of supported rules
@@ -45,9 +46,9 @@ class Ui
      * @param int $max_links The max number of links to show
      * @return string The html code of the pagination
      */
-    public function buildPagination(string $base_url, int $total_items, int $items_per_page = null, int $max_links = null) : string
+    public function buildPagination(string $base_url, int $total_items, ?int $items_per_page = null, ?int $max_links = null) : string
     {
-        $items_per_page = $items_per_page?? $this->app->config->pagination_items_per_page;
+        $items_per_page = $items_per_page ?? $this->app->config->pagination_items_per_page;
         $max_links = $max_links ?? $this->app->config->pagination_max_links;
 
         $pag = $this->uis->get('pagination', $base_url, $items_per_page, $total_items, $max_links);

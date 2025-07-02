@@ -9,10 +9,10 @@ namespace Mars\Filters;
 /**
  * The Email Filter Class
  */
-class Email
+class Email extends Filter
 {
     /**
-     * @see \Mars\Filter::email()
+     * @see \Mars\Filters\Filter::email()
      */
     public function filter(string $email) : string
     {

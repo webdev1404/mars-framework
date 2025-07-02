@@ -7,7 +7,8 @@
 namespace Mars\Extensions;
 
 use Mars\App;
-use Mars\App\InstanceTrait;
+use Mars\App\Kernel;
+use Mars\Extensions\List\Reader;
 
 /**
  * The Base Extension Class
@@ -15,7 +16,15 @@ use Mars\App\InstanceTrait;
  */
 abstract class Extension
 {
-    use InstanceTrait;
+    use Kernel;
+    
+    /**
+     * @const array DIR The locations of the used extensions subdirs
+     */
+    public const array DIRS = [
+        'assets' => 'assets',
+        'setup' => 'setup',
+    ];
 
     /**
      * @var string $name The name of the extension
@@ -30,59 +39,68 @@ abstract class Extension
             if (isset($this->path)) {
                 return $this->path;
             }
-
-            $this->path = $this->getRootPath() . '/' . static::$base_dir;
-            if ($this->name) {
-                $this->path.= '/' . $this->name;
-            }
+            
+            $this->path = static::$list[$this->name];
 
             return $this->path;
         }
     }
 
     /**
-     * @var string $path_url The url pointing to the folder where the extension is located
+     * @var string $assets_path The folder where the assets files are stored
      */
-    public protected(set) string $url {
+    public protected(set) string $assets_path {
         get {
-            if (isset($this->url)) {
-                return $this->url;
-            }
+            if (isset($this->assets_path)) {
+                return $this->assets_path;
+            }            
 
-            $this->url = $this->getRootUrl() . '/' . rawurlencode(static::$base_dir);
-            if ($this->name) {
-                $this->url.= '/' . rawurlencode($this->name);
-            }
+            $this->assets_path = $this->path . '/' . static::DIRS['assets'];
 
-            return $this->url;
+            return $this->assets_path;
         }
     }
 
     /**
-     * @var string $url_static The static url pointing to the folder where the extension is located
+     * @var string $assets_url The url pointing to the folder where the assets for the extension are located
      */
-    public protected(set) string $url_static {
+    public protected(set) string $assets_url {
         get {
-            if (isset($this->url_static)) {
-                return $this->url_static;
+            if (isset($this->assets_url)) {
+                return $this->assets_url;
             }
 
-            $this->url_static = $this->getRootUrlStatic() . '/' . rawurlencode(static::$base_dir);
-            if ($this->name) {
-                $this->url_static.= '/' . rawurlencode($this->name);
-            }
+            $this->assets_url = $this->app->assets_url . '/' . rawurlencode(static::$base_dir) . '/' . rawurlencode($this->name);
 
-            return $this->url_static;
+            return $this->assets_url;
         }
     }
 
+    /**
+     * @var string $assets_target The path of the assets folder, in the public directory, where the assets for this extension are located.
+     */
+    public protected(set) string $assets_target {
+        get {
+            if (isset($this->assets_target)) {
+                return $this->assets_target;
+            }
+
+            $this->assets_target = $this->app->assets_path . '/' . static::$base_dir . '/' . $this->name;
+
+            return $this->assets_target;
+        }
+    }
+
+    /**
+     * @var string $namespace The namespace of the extension
+     */
     public protected(set) string $namespace {
         get {
             if (isset($this->namespace)) {
                 return $this->namespace;
             }
 
-            $this->namespace = $this->getRootNamespace() . '\\' . static::$base_namespace . '\\' . App::getClass($this->name);
+            $this->namespace =  $this->getBaseNamespace() . '\\' . App::getClass($this->name);
 
             return $this->namespace;
         }
@@ -97,7 +115,7 @@ abstract class Extension
                 return $this->development;
             }
 
-            $this->development = $this->app->development;
+            $this->development = $this->app->development ? true : $this->app->config->development_extensions[static::$base_dir] ?? false;
 
             return $this->development;
         }
@@ -114,6 +132,11 @@ abstract class Extension
     public float $exec_time = 0;
 
     /**
+     * @var array|null $list The list of loaded available extensions of this type
+     */
+    protected static ?array $list = null;
+
+    /**
      * @var string $type The type of the extension
      */
     //protected static string $type = '';
@@ -125,52 +148,86 @@ abstract class Extension
 
     /**
      * Builds the extension
-     * @param string $name The name of the exension
+     * @param string $name The name of the extension
      * @param array $params The params passed to the extension, if any
      * @param App $app The app object
      */
     public function __construct(string $name, array $params = [], ?App $app = null)
-    {
-        $this->app = $app ?? $this->getApp();
-
+    {   
+        $this->app = $app ?? App::obj();
         $this->name = $name;
         $this->params = $params;
+
+        static::$list = static::getList();
+
+        if (!isset(static::$list[$this->name])) {
+            throw new \Exception($this->getError());
+        }
     }
 
     /**
-     * Returns the root path of the extension
-     * @return string
+     * Returns the error message when the extension is not found
+     * @return string The error message
      */
-    protected function getRootPath() : string
+    protected function getError() : string
     {
-        return $this->app->extensions_path;
+        return "Extension '{$this->name}' of type '" . static::$type . "' not found.";
     }
 
     /**
-     * Returns the root url of the extension
-     * @return string
+     * Returns the list of available extensions of this type
+     * @return array The list of available extensions
      */
-    protected function getRootUrl() : string
+    public static function getList() : array
     {
-        return $this->app->extensions_url;
+        $app = static::getApp();
+
+        $filename = static::getListFilename();
+
+        $list = $app->cache->getArray($filename);
+        if ($list !== null) {
+            return $list;
+        }
+        
+        // If the list is not cached, read it from the filesystem, then cache it
+        $list = static::getListReader($app)->get(static::$base_dir);
+
+        $app->cache->setArray($filename, $list);
+
+        return $list;
     }
 
     /**
-     * Returns the static root url of the extension
-     * @return string
+     * Returns the reader object used to read the list of available extensions
+     * @param App $app The app object
+     * @return object The reader object
      */
-    protected function getRootUrlStatic() : string
+    public static function getListReader($app) : object
     {
-        return $this->app->getStaticUrl('extensions_url');
+        return new Reader($app);
     }
 
     /**
-     * Returns the root namespace of the extension
-     * @return string
+     * Returns the filename used to cache the list of available extensions
+     * @return string The filename
      */
-    protected function getRootNamespace() : string
+    public static function getListFilename() : string
     {
-        return $this->app->extensions_namespace;
+        return static::$base_dir . '-extensions-list';
+    }
+
+    /**
+     * Returns the path of the extension
+     * @param string $name The name of the extension
+     * @return string|null The path of the extension, or null if not found
+     */
+    public static function getPath(string $name) : ?string
+    {
+        if (static::$list === null) {
+            static::$list = static::getList();
+        }
+
+        return static::$list[$name] ?? null;
     }
 
     /**
@@ -191,10 +248,23 @@ abstract class Extension
         return static::$base_dir;
     }
 
-    public static function getBaseNamespace() : string
+    /**
+     * Returns the base namespace for this type of extension
+     * @return string The base namespace
+     */
+    public function getBaseNamespace() : string
     {
         return static::$base_namespace;
     }
+
+    /**
+     * Returns the setup class for this type of extension
+     * @return string The setup class
+     */
+    /*public static function getSetupClass() : string
+    {
+        return static::$setup_class;
+    }*/
 
     /**
      * Runs the extension and outputs the generated content

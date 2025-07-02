@@ -6,7 +6,8 @@
 
 namespace Mars;
 
-use Mars\App\InstanceTrait;
+use Mars\App\Kernel;
+use Mars\App\Handlers;
 use Mars\Alerts\Errors;
 
 /**
@@ -15,29 +16,29 @@ use Mars\Alerts\Errors;
  */
 class Validator
 {
-    use InstanceTrait;
+    use Kernel;
 
     /**
      * @var array $supported_rules The list of supported validation rules
      */
-    protected array $supported_rules = [
-        'req' => \Mars\Validators\Required::class,
-        'required' => \Mars\Validators\Required::class,
-        'string' => \Mars\Validators\Text::class,
-        'text' => \Mars\Validators\Text::class,
-        'unique' => \Mars\Validators\Unique::class,        
-        'min' => \Mars\Validators\Min::class,
-        'max' => \Mars\Validators\Max::class,
-        'int' => \Mars\Validators\IntVal::class,
-        'float' => \Mars\Validators\FloatVal::class,
-        'number' => \Mars\Validators\FloatVal::class,
-        'pattern' => \Mars\Validators\Pattern::class,
-        'email' => \Mars\Validators\Email::class,
-        'url' => \Mars\Validators\Url::class,
-        'ip' => \Mars\Validators\Ip::class,
-        'time' => \Mars\Validators\Time::class,
-        'date' => \Mars\Validators\Date::class,
-        'datetime' => \Mars\Validators\Datetime::class,
+    public protected(set) array $supported_rules = [
+        'req' => \Mars\Validation\Required::class,
+        'required' => \Mars\Validation\Required::class,
+        'string' => \Mars\Validation\Text::class,
+        'text' => \Mars\Validation\Text::class,
+        'unique' => \Mars\Validation\Unique::class,
+        'min' => \Mars\Validation\Min::class,
+        'max' => \Mars\Validation\Max::class,
+        'int' => \Mars\Validation\IntVal::class,
+        'float' => \Mars\Validation\FloatVal::class,
+        'number' => \Mars\Validation\FloatVal::class,
+        'pattern' => \Mars\Validation\Pattern::class,
+        'email' => \Mars\Validation\Email::class,
+        'url' => \Mars\Validation\Url::class,
+        'ip' => \Mars\Validation\Ip::class,
+        'time' => \Mars\Validation\Time::class,
+        'date' => \Mars\Validation\Date::class,
+        'datetime' => \Mars\Validation\Datetime::class,
     ];
 
     /**

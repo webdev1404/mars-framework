@@ -7,6 +7,7 @@
 namespace Mars\Html\Input;
 
 use \Mars\Html\Tag;
+use \Mars\Html\TagInterface;
 
 /**
  * The Datetime Class
@@ -15,7 +16,7 @@ use \Mars\Html\Tag;
 class Datetime extends Tag
 {
     /**
-     * @see \Mars\Html\TagInterface::html()
+     * @see TagInterface::html()
      * {@inheritdoc}
      */
     public function html(string $text = '', array $attributes = []) : string

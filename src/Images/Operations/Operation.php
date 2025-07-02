@@ -8,33 +8,33 @@ namespace Mars\Images\Operations;
 
 use GdImage;
 use Mars\App;
-use Mars\App\InstanceTrait;
-use Mars\Images\Image;
+use Mars\App\Kernel;
+use Mars\Images\ImageInterface;
 
 /**
  * The Base Image Operations Class
  */
 abstract class Operation
 {
-    use InstanceTrait;
+    use Kernel;
 
     /**
-     * @var Image $source The source image
+     * @var ImageInterface $source The source image
      */
-    protected Image $source;
+    protected ImageInterface $source;
 
     /**
-     * @var Image $destination The destination image
+     * @var ImageInterface $destination The destination image
      */
-    protected Image $destination;
+    protected ImageInterface $destination;
 
     /**
      * Builds the Image Operations object
-     * @param Image $source The source image
-     * @param Image $destination The destination image
+     * @param ImageInterface $source The source image
+     * @param ImageInterface $destination The destination image
      * @param App $app The app object
      */
-    public function __construct(Image $source, Image $destination, App $app)
+    public function __construct(ImageInterface $source, ImageInterface $destination, App $app)
     {
         $this->app = $app;
         $this->source = $source;

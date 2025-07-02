@@ -6,18 +6,13 @@
 
 namespace Mars\Filters;
 
-use Mars\App;
-use Mars\App\InstanceTrait;
-
 /**
  * The Html Filter Class
  */
-class Html
+class Html extends Filter
 {
-    use InstanceTrait;
-
     /**
-     * @see \Mars\Filter::html()
+     * @see \Mars\Filters\Filter::html()
      */
     public function filter(string $html, ?string $allowed_elements = null, ?string $allowed_attributes = null, string $encoding = 'UTF-8') : string
     {

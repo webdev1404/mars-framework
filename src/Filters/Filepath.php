@@ -6,17 +6,13 @@
 
 namespace Mars\Filters;
 
-use Mars\App\InstanceTrait;
-
 /**
  * The Filepath Filter Class
  */
 class Filepath extends Filename
 {
-    use InstanceTrait;
-    
     /**
-     * @see \Mars\Filter::filepath()
+     * @see \Mars\Filters\Filter::filepath()
      */
     public function filter(string $filepath) : string
     {

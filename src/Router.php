@@ -6,9 +6,9 @@
 
 namespace Mars;
 
-use Mars\App\InstanceTrait;
-use Mars\MMC\Controller;
-use Mars\Extensions\Block;
+use Mars\App\Kernel;
+use Mars\MVC\Controller;
+use Mars\Extensions\Modules\Block;
 use Mars\Content\ContentInterface;
 use Mars\Content\Page;
 use Mars\Content\Template;
@@ -19,7 +19,7 @@ use Mars\Content\Template;
  */
 class Router
 {
-    use InstanceTrait;
+    use Kernel;
 
     /**
      * @var array $routes_list The defined routes list
@@ -173,7 +173,7 @@ class Router
      * @return mixed
      */
     protected function getRoute()
-    {
+    {        
         $method = $this->app->request->method;
         if (!isset($this->routes_list[$method])) {
             return null;
@@ -222,6 +222,8 @@ class Router
         $script_name = explode('/', trim($_SERVER['SCRIPT_NAME'], '/'));
 
         $parts = array_diff_assoc($request_uri, $script_name);
+        $parts = array_filter($parts);
+
         if (!$parts) {
             return '/';
         }
@@ -283,9 +285,9 @@ class Router
      */
     public function block(string $route, string $module_name, string $name = '', array $params = []) : static
     {
-        $block = new Block($module_name, $name, $params, $this->app);
+        $handler = fn() => new Block($module_name, $name, $params, $this->app);
 
-        return $this->setRouteObject($route, $block);
+        return $this->setRouteObject($route, $handler);
     }
     
     /**
@@ -298,9 +300,9 @@ class Router
      */
     public function template(string $route, string $template, string $title = '', array $meta = []) : static
     {
-        $template = new Template($template, $title, $meta, $this->app);
+        $handler = fn() => new Template($template, $title, $meta, $this->app);
 
-        return $this->setRouteObject($route, $template);
+        return $this->setRouteObject($route, $handler);
     }
 
     /**
@@ -313,20 +315,20 @@ class Router
      */
     public function page(string $route, string $template, string $title = '', array $meta = []) : static
     {
-        $page = new Page($template, $title, $meta, $this->app);
-        
-        return $this->setRouteObject($route, $page);
+        $handler = fn() => new Page($template, $title, $meta, $this->app);
+
+        return $this->setRouteObject($route, $handler);
     }
     
     /**
      * Sets the object which will handle the route
      * @param string $route The route to handle
-     * @param object $object The object which will handle the route
+     * @param callable $handler The handler to call when the route is matched
      */
-    protected function setRouteObject(string $route, object $obj) : static
+    protected function setRouteObject(string $route, callable $handler) : static
     {
-        $this->add('get', $route, $obj);
-        $this->add('post', $route, $obj);
+        $this->add('get', $route, $handler);
+        $this->add('post', $route, $handler);
 
         return $this;
     }

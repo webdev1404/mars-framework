@@ -6,7 +6,8 @@
 
 namespace Mars;
 
-use Mars\App\InstanceTrait;
+use Mars\App\Kernel;
+use Mars\App\Handlers;
 
 /**
  * The Screen Class
@@ -14,12 +15,12 @@ use Mars\App\InstanceTrait;
  */
 class Screens
 {
-    use InstanceTrait;
+    use Kernel;
 
     /**
      * @var array $screens_list The list of supported screens
      */
-    protected array $screens_list = [
+    public protected(set) array $screens_list = [
         'error' => \Mars\Screens\Error::class,
         'message' => \Mars\Screens\Message::class,
         'fatal_error' => \Mars\Screens\FatalError::class,
@@ -68,7 +69,7 @@ class Screens
      * @param string $text The error's text
      * @param bool $escape_html If true will escape the error message
      */
-    public function fatalError(string $text, bool $escape_html = null)
+    public function fatalError(string $text, ?bool $escape_html = null)
     {
         $this->screens->get('fatal_error')->output($text, $escape_html);
     }

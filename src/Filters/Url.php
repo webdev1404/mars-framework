@@ -9,10 +9,10 @@ namespace Mars\Filters;
 /**
  * The Url Filter Class
  */
-class Url
+class Url extends Filter
 {
     /**
-     * @see \Mars\Filter::url()
+     * @see \Mars\Filters\Filter::url()
      */
     public function filter(string $url) : string
     {

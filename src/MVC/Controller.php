@@ -7,13 +7,13 @@
 namespace Mars\MVC;
 
 use Mars\App;
-use Mars\App\InstanceTrait;
-use Mars\Debug\InfoTrait;
+use Mars\App\Kernel;
+use Mars\HiddenProperty;
 use Mars\Config;
 use Mars\Hidden;
 use Mars\Escape;
 use Mars\Filter;
-use Mars\Request;
+use Mars\Http\Request;
 use Mars\Uri;
 use Mars\Validator;
 use Mars\System\Plugins;
@@ -29,8 +29,7 @@ use Mars\Extensions\Extension;
  */
 abstract class Controller extends \stdClass
 {
-    use InstanceTrait;
-    use InfoTrait;
+    use Kernel;
 
     /**
      * @var string $default_method Default method to be executed on dispatch/route or if the requested method doesn't exist or is not public
@@ -91,30 +90,39 @@ abstract class Controller extends \stdClass
                 return $this->path;
             }
 
-            $this->path = '';
-            if ($this->parent) {
-                $this->path = $this->parent->path;
-            }
-
+            $this->path = $this->parent ? $this->parent->path : '';
+            
             return $this->path;
         }
     }
 
     /**
-     * @var string $url The controller's parent's url. Alias for $this->parent->url
+     * @var string $assets_path The folder where the assets files are stored
      */
-    public protected(set) string $url {
+    public protected(set) string $assets_path {
         get {
-            if (isset($this->url)) {
-                return $this->url;
+            if (isset($this->assets_path)) {
+                return $this->assets_path;
+            }            
+
+            $this->assets_path = $this->parent ? $this->parent->assets_path : '';
+
+            return $this->assets_path;
+        }
+    }
+
+    /**
+     * @var string $assets_url The url pointing to the folder where the assets for the extension are located
+     */
+    public protected(set) string $assets_url {
+        get {
+            if (isset($this->assets_url)) {
+                return $this->assets_url;
             }
 
-            $this->url = '';
-            if ($this->parent) {
-                $this->url = $this->parent->url;
-            }
+            $this->assets_url = $this->parent ? $this->parent->assets_url : '';
 
-            return $this->url;
+            return $this->assets_url;
         }
     }
 
@@ -167,7 +175,7 @@ abstract class Controller extends \stdClass
     /**
      * @var Config $config The config object. Alias for $this->app->config
      */
-    #[Hidden]
+    #[HiddenProperty]
     protected Config $config {
         get => $this->app->config;
     }
@@ -175,7 +183,7 @@ abstract class Controller extends \stdClass
     /**
      * @var Filter $filter The filter object. Alias for $this->app->filter
      */
-    #[Hidden]
+    #[HiddenProperty]
     protected Filter $filter {
         get => $this->app->filter;
     }
@@ -183,7 +191,7 @@ abstract class Controller extends \stdClass
     /**
      * @var Escape $escape Alias for $this->app->escape
      */
-    #[Hidden]
+    #[HiddenProperty]
     protected Escape $escape {
         get => $this->app->escape;
     }
@@ -191,7 +199,7 @@ abstract class Controller extends \stdClass
     /**
      * @var Request $request The request object. Alias for $this->app->request
      */
-    #[Hidden]
+    #[HiddenProperty]
     protected Request $request {
         get => $this->app->request;
     }
@@ -199,7 +207,7 @@ abstract class Controller extends \stdClass
     /**
      * @var Validator $uri Alias for $this->app->uri
      */
-    #[Hidden]
+    #[HiddenProperty]
     protected Uri $uri {
         get => $this->app->uri;
     }
@@ -207,7 +215,7 @@ abstract class Controller extends \stdClass
     /**
      * @var Validator $validator Alias for $this->app->validator
      */
-    #[Hidden]
+    #[HiddenProperty]
     protected Validator $validator {
         get => $this->app->validator;
     }
@@ -215,7 +223,7 @@ abstract class Controller extends \stdClass
     /**
      * @var Plugins $plugins Alias for $this->app->plugins
      */
-    #[Hidden]
+    #[HiddenProperty]
     protected Plugins $plugins {
         get => $this->app->plugins;
     }
@@ -270,7 +278,7 @@ abstract class Controller extends \stdClass
      */
     public function __construct(?Extension $parent = null, ?App $app = null)
     {
-        $this->app = $app ?? $this->getApp();
+        $this->app = $app ?? App::obj();
         $this->parent = $parent;
 
         $this->init();

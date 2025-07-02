@@ -6,7 +6,7 @@
 
 namespace Mars\Screens;
 
-use Mars\App\InstanceTrait;
+use Mars\App\Kernel;
 
 /**
  * The Error Screen
@@ -14,7 +14,7 @@ use Mars\App\InstanceTrait;
  */
 class Error
 {
-    use InstanceTrait;
+    use Kernel;
 
     /**
      * Outputs the error screen

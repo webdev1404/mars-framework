@@ -6,7 +6,7 @@
 
 namespace Mars\Html\Input;
 
-use Mars\Html\Tag;
+use \Mars\Html\Tag;
 
 /**
  * The Optgroup Class

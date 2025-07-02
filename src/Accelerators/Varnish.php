@@ -7,45 +7,44 @@
 namespace Mars\Accelerators;
 
 use Mars\App;
-use Mars\App\InstanceTrait;
-use Mars\Http\Request;
+use Mars\App\Kernel;
 
 /**
  * The Varnish Accelerator Class
  */
-class Varnish implements DriverInterface
+class Varnish implements AcceleratorInterface
 {
-    use InstanceTrait;
+    use Kernel;
 
     /**
-     * @see \Mars\Accelerators\DriverInterface::delete()
+     * AcceleratorInterface::delete()
      * {@inheritdoc}
      */
     public function delete(string $url) : bool
     {
-        $response = $this->app->http->request->custom($this->app->base_url, 'PURGE');
+        $response = $this->app->web->request->custom($this->app->base_url, 'PURGE');
 
         return $response->ok();
     }
 
     /**
-     * @see \Mars\Accelerators\DriverInterface::deleteByPattern()
+     * AcceleratorInterface::deleteByPattern()
      * {@inheritdoc}
      */
     public function deleteByPattern(string $pattern) : bool
     {
-        $response = $this->app->http->request->custom($this->app->base_url, 'BAN', ['headers' => ['X-Ban-Pattern: ' . $pattern]]);
+        $response = $this->app->web->request->custom($this->app->base_url, 'BAN', ['headers' => ['X-Ban-Pattern: ' . $pattern]]);
 
         return $response->ok();
     }
 
     /**
-     * @see \Mars\Accelerators\DriverInterface::deleteAll()
+     * AcceleratorInterface::deleteAll()
      * {@inheritdoc}
      */
     public function deleteAll() : bool
     {
-        $response = $this->app->http->request->custom($this->app->base_url, 'FULLBAN');
+        $response = $this->app->web->request->custom($this->app->base_url, 'FULLBAN');
 
         return $response->ok();
     }

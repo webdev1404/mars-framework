@@ -7,54 +7,49 @@
 namespace Mars\Mail;
 
 use Mars\App;
-use Mars\App\InstanceTrait;
+use Mars\App\Kernel;
+use PHPMailer\PHPMailer\PHPMailer as PHPMailerHandle;
 
 /**
  * The PhpMailer Class
  * Mail driver which uses PhpMailer
  */
-class PhpMailer implements DriverInterface
+class PhpMailer implements MailInterface
 {
-    use InstanceTrait;
+    use Kernel;
 
     /**
-     * @var object $handle The driver's handle
+     * @var PHPMailerHandle $handle The driver's handle
      */
-    protected object $handle;
-
-    /**
-     * @var bool $connected Set to true, if the connection to the memcache server has been made
-     */
-    protected bool $loaded = false;
-
-    /**
-     * Builds the PhpMailer object
-     * @param App $app The app object
-     */
-    public function __construct(App $app)
-    {
-        $this->app = $app;
-
-        $this->handle = new \PHPMailer\PHPMailer\PHPMailer;
-        $this->handle->setLanguage('en', $this->app->libraries_path . '/php/vendor/phpmailer/phpmailer/language/');
-        $this->handle->CharSet = 'UTF-8';
-
-        if ($this->app->config->mail_smtp) {
-            $this->handle->isSMTP();
-            $this->handle->Host = $this->app->config->mail_smtp_host;
-            $this->handle->Port = $this->app->config->mail_smtp_port;
-            $this->handle->SMTPSecure = $this->app->config->mail_smtp_secure;
-
-            if ($this->app->config->mail_smtp_username && $this->app->config->mail_smtp_password) {
-                $this->handle->SMTPAuth = true;
-                $this->handle->Username = $this->app->config->mail_smtp_username;
-                $this->handle->Password = $this->app->config->mail_smtp_password;
+    protected PHPMailerHandle $handle {
+        get {
+            if (isset($this->handle)) {
+                return $this->handle;
             }
+
+            $this->handle = new PHPMailerHandle;
+            $this->handle->setLanguage('en', $this->app->vendor_path . '/phpmailer/phpmailer/language/');
+            $this->handle->CharSet = 'UTF-8';
+
+            if ($this->app->config->mail_smtp) {
+                $this->handle->isSMTP();
+                $this->handle->Host = $this->app->config->mail_smtp_host;
+                $this->handle->Port = $this->app->config->mail_smtp_port;
+                $this->handle->SMTPSecure = $this->app->config->mail_smtp_secure;
+
+                if ($this->app->config->mail_smtp_username && $this->app->config->mail_smtp_password) {
+                    $this->handle->SMTPAuth = true;
+                    $this->handle->Username = $this->app->config->mail_smtp_username;
+                    $this->handle->Password = $this->app->config->mail_smtp_password;
+                }
+            }
+
+            return $this->handle;
         }
     }
 
     /**
-     * @see \Mars\Mail\DriverInterface::setRecipient()
+     * @see MailInterface::setRecipient()
      * {@inheritdoc}
      */
     public function setRecipient(string|array $to)
@@ -67,7 +62,7 @@ class PhpMailer implements DriverInterface
     }
 
     /**
-     * @see \Mars\Mail\DriverInterface::setRecipientBcc()
+     * @see MailInterface::setRecipientBcc()
      * {@inheritdoc}
      */
     public function setRecipientBcc(string|array $to)
@@ -80,7 +75,7 @@ class PhpMailer implements DriverInterface
     }
 
     /**
-     * @see \Mars\Mail\DriverInterface::setSubject()
+     * @see MailInterface::setSubject()
      * {@inheritdoc}
      */
     public function setSubject(string $subject)
@@ -89,7 +84,7 @@ class PhpMailer implements DriverInterface
     }
 
     /**
-     * @see \Mars\Mail\DriverInterface::setBody()
+     * @see MailInterface::setBody()
      * {@inheritdoc}
      */
     public function setBody(string $body, bool $is_html = true)
@@ -99,7 +94,7 @@ class PhpMailer implements DriverInterface
     }
 
     /**
-     * @see \Mars\Mail\DriverInterface::setFrom()
+     * @see MailInterface::setFrom()
      * {@inheritdoc}
      */
     public function setFrom(string $from, string $from_name = '')
@@ -109,7 +104,7 @@ class PhpMailer implements DriverInterface
     }
 
     /**
-     * @see \Mars\Mail\DriverInterface::setSender()
+     * @see MailInterface::setSender()
      * {@inheritdoc}
      */
     public function setSender(string $reply_to, string $reply_to_name = '')
@@ -118,7 +113,7 @@ class PhpMailer implements DriverInterface
     }
 
     /**
-     * @see \Mars\Mail\DriverInterface::setAttachments()
+     * @see MailInterface::setAttachments()
      * {@inheritdoc}
      */
     public function setAttachments(array $attachments)
@@ -129,7 +124,7 @@ class PhpMailer implements DriverInterface
     }
 
     /**
-     * @see \Mars\Mail\DriverInterface::send()
+     * @see MailInterface::send()
      * {@inheritdoc}
      */
     public function send()

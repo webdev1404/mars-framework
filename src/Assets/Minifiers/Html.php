@@ -9,10 +9,10 @@ namespace Mars\Assets\Minifiers;
 /**
  * The Html Minifier
  */
-class Html implements DriverInterface
+class Html implements MinifierInterface
 {
     /**
-     * @see \Mars\Minifiers\DriverInterface::minify()
+     * @see MinifierInterface::minify()
      * {@inheritdoc}
      */
     public function minify(string $content) : string

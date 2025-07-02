@@ -7,7 +7,7 @@
 namespace Mars\MVC\Models;
 
 use Mars\App;
-use Mars\App\InstanceTrait;
+use Mars\App\Kernel;
 use Mars\MVC\Controller;
 
 /**
@@ -16,7 +16,7 @@ use Mars\MVC\Controller;
  */
 abstract class Entities extends \Mars\Entities
 {
-    use InstanceTrait;
+    use Kernel;
     use ModelTrait;
 
     /**

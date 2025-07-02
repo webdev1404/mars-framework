@@ -9,10 +9,10 @@ namespace Mars\Assets\Minifiers;
 /**
  * The Css Minifier
  */
-class Css implements DriverInterface
+class Css implements MinifierInterface
 {
     /**
-     * @see \Mars\Minifiers\DriverInterface::minify()
+     * @see MinifierInterface::minify()
      * {@inheritdoc}
      */
     public function minify(string $content) : string

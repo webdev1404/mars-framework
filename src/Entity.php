@@ -6,7 +6,7 @@
 
 namespace Mars;
 
-use Mars\Data\EntityTrait;
+use Mars\Objects\EntityTrait;
 
 /**
  * The Entity Class

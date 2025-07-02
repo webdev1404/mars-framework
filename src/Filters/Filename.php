@@ -6,22 +6,18 @@
 
 namespace Mars\Filters;
 
-use Mars\App\InstanceTrait;
-
 /**
  * The Filename Filter Class
  */
-class Filename
+class Filename extends Filter
 {
-    use InstanceTrait;
-
     /**
      * @var int $max_chars The maximum number of chars allowed in $filename
      */
     protected int $max_chars = 300;
 
     /**
-     * @see \Mars\Filter::filename()
+     * @see \Mars\Filters\Filter::filename()
      */
     public function filter(string $filename) : string
     {

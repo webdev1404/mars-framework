@@ -7,6 +7,7 @@
 namespace Mars\Html\Input;
 
 use \Mars\Html\Tag;
+use \Mars\Html\TagInterface;
 
 /**
  * The Checkbox Group Class
@@ -34,7 +35,7 @@ class CheckboxGroup extends Tag implements FormInputInterface
     protected static string $value_attribute = 'checked';
 
     /**
-     * @see \Mars\Html\TagInterface::html()
+     * @see TagInterface::html()
      * {@inheritdoc}
      */
     public function html(string $text = '', array $attributes = []) : string

@@ -6,8 +6,7 @@
 
 namespace Mars;
 
-use Mars\App\InstanceTrait;
-
+use Mars\App\Kernel;
 use Random\Randomizer;
 
 /**
@@ -16,7 +15,7 @@ use Random\Randomizer;
  */
 class Random
 {
-    use InstanceTrait;
+    use Kernel;
 
     /**
      * @var Randomizer $randomizer The randomizer object

@@ -6,8 +6,8 @@
 
 namespace Mars;
 
-use Mars\App\InstanceTrait;
-use Mars\Lists\ListTrait;
+use Mars\App\Kernel;
+use Mars\Data\MapTrait;
 
 /**
  * The Json Class
@@ -15,8 +15,8 @@ use Mars\Lists\ListTrait;
  */
 class Json
 {
-    use InstanceTrait;
-    use ListTrait;
+    use Kernel;
+    use MapTrait;
 
     /**
      * Json data to be outputted, if the request is a json request
@@ -58,6 +58,11 @@ class Json
         return json_decode($string, $associative, 512, JSON_THROW_ON_ERROR);
     }
 
+    /**
+     * Validates a json string
+     * @param string $string The string to validate
+     * @return bool True if the string is valid json
+     */
     public function validate(string $string) : bool
     {
         if (!$string) {

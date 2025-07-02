@@ -7,15 +7,15 @@
 namespace Mars\Captcha;
 
 use Mars\App;
-use Mars\App\InstanceTrait;
+use Mars\App\Kernel;
 
 /**
  * The Recaptcha2 Captcha Driver Class
  * Captcha driver which uses Recaptcha2
  */
-class Recaptcha2 implements DriverInterface
+class Recaptcha2 implements CaptchaInterface
 {
-    use InstanceTrait;
+    use Kernel;
 
     /**
      * Builds the recaptcha2 object
@@ -33,7 +33,7 @@ class Recaptcha2 implements DriverInterface
     }
 
     /**
-     * @see \Mars\Captcha\DriverInterface::check()
+     * @see CaptchaInterface::check()
      * {@inheritdoc}
      */
     public function check() : bool
@@ -44,7 +44,7 @@ class Recaptcha2 implements DriverInterface
             'remoteip' => $this->app->ip
         ];
 
-        $response = $this->app->http->request->post('https://www.google.com/recaptcha/api/siteverify', $post_data);
+        $response = $this->app->web->request->post('https://www.google.com/recaptcha/api/siteverify', $post_data);
 
         $data = $response->getJson();
 
@@ -52,7 +52,7 @@ class Recaptcha2 implements DriverInterface
     }
 
     /**
-     * @see \Mars\Captcha\DriverInterface::output()
+     * @see CaptchaInterface::output()
      * {@inheritdoc}
      */
     public function output()

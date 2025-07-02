@@ -12,7 +12,7 @@ use Mars\App;
 /**
  * The Gif Image Class
  */
-class Gif extends Image implements DriverInterface
+class Gif extends Image implements ImageInterface
 {
     /**
      * @var string $mime_type The image's mime type
@@ -20,7 +20,7 @@ class Gif extends Image implements DriverInterface
     protected $mime_type = 'image/gif';
 
     /**
-     * @see \Mars\Images\DriverInterface::__construct()
+     * ImageInterface::__construct()
      * {@inheritdoc}
      */
     public function __construct(string $filename, App $app)
@@ -31,7 +31,7 @@ class Gif extends Image implements DriverInterface
     }
 
     /**
-     * @see \Mars\Images\DriverInterface::open()
+     * ImageInterface::open()
      * {@inheritdoc}
      */
     public function open() : GdImage
@@ -45,7 +45,7 @@ class Gif extends Image implements DriverInterface
     }
 
     /**
-     * @see \Mars\Images\DriverInterface::create()
+     * ImageInterface::create()
      * {@inheritdoc}
      */
     public function create(int $width, int $height, GdImage $source) : GdImage
@@ -66,7 +66,7 @@ class Gif extends Image implements DriverInterface
     }
 
     /**
-     * @see \Mars\Images\DriverInterface::save()
+     * ImageInterface::save()
      * {@inheritdoc}
      */
     public function save(GdImage $img)

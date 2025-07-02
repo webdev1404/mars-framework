@@ -2,28 +2,49 @@
 namespace Mars\Autoload;
 
 use Mars\App;
+use Mars\Extensions\Theme;
+use Mars\Extensions\Language;
+use Mars\Extensions\Module;
 
 /**
  * Autoloader for the extension files
  */
 \spl_autoload_register(function ($name) {
-    $allowed_extensions = ['Modules' => 'modules', 'Themes' => 'themes', 'Languages' => 'languages'];
-
     $parts = explode('\\', $name);
-    $root = $parts[0];
-
-    if (!isset($allowed_extensions[$root])) {
+    if (count($parts) < 2) {
         return;
     }
 
-    $app = App::get();
+    $root = $parts[0];
+    $name = $parts[1];
 
-    $filename = $app->extensions_path . '/' . App::EXTENSIONS_DIRS[$allowed_extensions[$root]] . '/' . get_filename($parts);
+    $handlers = [
+        'Themes' => function($name) {
+            return Theme::getPath($name);
+        },
+        'Languages' => function($name) {
+            return Language::getPath($name);
+        },
+        'Modules' => function($name) {
+            return Module::getPath($name);
+        },
+    ];  
+
+    if (!isset($handlers[$root])) {
+        return;
+    }
+
+    $path = $handlers[$root](convert_part($name));
+    if (!$path) {
+        return;
+    }
+
+    $filename = $path . '/' . get_filename($parts);
 
     require($filename);
 });
 
-function get_filename(array $parts, int $base_parts = 1) : string
+function get_filename(array $parts, int $base_parts = 2) : string
 {
     $parts_count = count($parts);
 

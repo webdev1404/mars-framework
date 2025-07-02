@@ -13,7 +13,7 @@ abstract class Base extends TestCase
 
     public function setUp() : void
     {
-        $this->app = App::get();
+        $this->app = App::obj();
     }
 
     protected function assertArrayHasKeyAndValue($key, $val, $arr)

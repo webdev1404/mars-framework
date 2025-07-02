@@ -6,13 +6,13 @@
 
 namespace Mars\Images;
 
-use Mars\App;
 use GdImage;
+use Mars\App;
 
 /**
  * The Webp Image Class
  */
-class Webp extends Image implements DriverInterface
+class Webp extends Image implements ImageInterface
 {
     /**
      * @var string $mime_type The image's mime type
@@ -20,7 +20,7 @@ class Webp extends Image implements DriverInterface
     protected $mime_type = 'image/webp';
 
     /**
-     * @see \Mars\Images\DriverInterface::__construct()
+     * ImageInterface::__construct()
      * {@inheritdoc}
      */
     public function __construct(string $filename, App $app)
@@ -31,7 +31,7 @@ class Webp extends Image implements DriverInterface
     }
 
     /**
-     * @see \Mars\Images\DriverInterface::open()
+     * ImageInterface::open()
      * {@inheritdoc}
      */
     public function open() : GdImage
@@ -45,7 +45,7 @@ class Webp extends Image implements DriverInterface
     }
 
     /**
-     * @see \Mars\Images\DriverInterface::save()
+     * ImageInterface::save()
      * {@inheritdoc}
      */
     public function save(GdImage $img)

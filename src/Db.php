@@ -6,8 +6,11 @@
 
 namespace Mars;
 
-use Mars\App\InstanceTrait;
-use Mars\Db\DriverInterface;
+use Mars\App\Kernel;
+use Mars\App\Drivers;
+use Mars\Db\DbInterface;
+use Mars\Db\Result;
+use Mars\Db\Sql\Sql;
 
 /**
  * The Database Class
@@ -15,7 +18,14 @@ use Mars\Db\DriverInterface;
  */
 class Db
 {
-    use InstanceTrait;
+    use Kernel;
+
+    /**
+     * @var array $supported_drivers The supported drivers
+     */
+    public protected(set) array $supported_drivers = [
+        'mysql' => \Mars\Db\Mysql::class
+    ];
 
     /**
      * @var Drivers $drivers The drivers object
@@ -26,7 +36,7 @@ class Db
                 return $this->drivers;
             }
 
-            $this->drivers = new Drivers($this->supported_drivers, DriverInterface::class, 'db', $this->app);
+            $this->drivers = new Drivers($this->supported_drivers, DbInterface::class, 'db', $this->app);
 
             return $this->drivers;
         }
@@ -48,7 +58,7 @@ class Db
                 return $this->read_key;
             }
 
-            $this->read_key = 0;            
+            $this->read_key = 0;
             if ($this->use_multi) {
                 $this->read_key = mt_rand(0, count($this->app->config->db_hostname) - 1);
             }
@@ -142,9 +152,9 @@ class Db
     }
 
     /**
-     * @var DriverInterface $read_driver The handle for the read queries
+     * @var DbInterface $read_driver The handle for the read queries
      */
-    public protected(set) ?DriverInterface $read_driver {
+    public protected(set) ?DbInterface $read_driver {
         get {
             if (isset($this->read_driver)) {
                 return $this->read_driver;
@@ -169,9 +179,9 @@ class Db
     }
 
     /**
-     * @var DriverInterface $write_driver The handle for the write queries
+     * @var DbInterface $write_driver The handle for the write queries
      */
-    public protected(set) ?DriverInterface $write_driver {
+    public protected(set) ?DbInterface $write_driver {
         get {
             if (isset($this->write_driver)) {
                 return $this->write_driver;
@@ -219,13 +229,6 @@ class Db
      * @var array $last_query Contains the sql code and the params of the last executed query
      */
     protected array $last_query = ['sql' => '', 'params' => []];
-
-    /**
-     * @var array $supported_drivers The supported drivers
-     */
-    protected array $supported_drivers = [
-        'mysql' => \Mars\Db\Mysql::class
-    ];
 
     /**
      * Destroys the database object. Disconnects from the database server
@@ -280,7 +283,7 @@ class Db
      * @return object The result
      * @throws Exception If the query fails
      */
-    public function readQuery(string|Sql $sql, array $params = []) : DbResult
+    public function readQuery(string|Sql $sql, array $params = []) : Result
     {
         return $this->query($sql, $params, true);
     }
@@ -292,7 +295,7 @@ class Db
      * @return object The result
      * @throws Exception If the query fails
      */
-    public function writeQuery(string|Sql $sql, array $params = []) : DbResult
+    public function writeQuery(string|Sql $sql, array $params = []) : Result
     {
         return $this->query($sql, $params, false);
     }
@@ -305,7 +308,7 @@ class Db
      * @return object The result
      * @throws Exception If the query fails
      */
-    public function query(string|Sql $sql, array $params = [], ?bool $is_read = null) : DbResult
+    public function query(string|Sql $sql, array $params = [], ?bool $is_read = null) : Result
     {
         if ($this->debug) {
             $this->app->timer->start('sql');
@@ -334,16 +337,16 @@ class Db
             $this->queries[] = [$this->getFullQuery($sql, $params), $exec_time];
         }
 
-        return new DbResult($handle, $result);
+        return new Result($handle, $result);
     }
 
     /**
      * Returns the handle used to process the query
      * @param string $sql The sql query
      * @param bool $is_read If true, this is a read query
-     * @return DriverInterface The handle
+     * @return DbInterface The handle
      */
-    protected function getQueryHandle(string $sql, ?bool $is_read = null) : DriverInterface
+    protected function getQueryHandle(string $sql, ?bool $is_read = null) : DbInterface
     {
         if ($this->use_multi) {
             if ($is_read === null) {
@@ -433,7 +436,7 @@ class Db
      * @param int $limit The limit
      * @param int $limit_offset The limit offset, if any
      * @param string|array $cols The columns to select
-     * @return DbResult The result
+     * @return Result The result
      */
     public function select(string $table, array $where = [], string $order_by = '', string $order = '', int $limit = 0, int $limit_offset = 0, string|array $cols = '*') : array
     {

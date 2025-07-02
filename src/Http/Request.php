@@ -1,255 +1,260 @@
 <?php
 /**
-* The Http Request Class
+* The Request Class
 * @package Mars
 */
 
 namespace Mars\Http;
 
 use Mars\App;
-use Mars\App\InstanceTrait;
+use Mars\LazyLoadProperty;
+use Mars\App\Kernel;
+use Mars\App\LazyLoad;
+use Mars\Http\Request\Input;
+use Mars\Http\Request\Get;
+use Mars\Http\Request\Post;
+use Mars\Http\Request\Request as RequestObj;
+use Mars\Http\Request\Cookies;
+use Mars\Http\Request\Server;
+use Mars\Http\Request\Env;
+use Mars\Http\Request\Files;
 
 /**
- * The Http Request Class
- * Wrapper around the Curl library for http requests
+ * The Request Class
+ * Class handling the $_GET/$_POST/$_COOKIE/$_UPLOAD/$_SERVER interactions
  */
 class Request
 {
-    use InstanceTrait;
+    use Kernel;
+    use LazyLoad;
 
     /**
-     * @var int $timeout The timeout, in seconds
+     * @var RequestObj $request Alias for $request
      */
-    public int $timeout = 30;
-
-    /**
-     * @var bool $follow_location Determines the value of CURLOPT_FOLLOWLOCATION
-     */
-    public bool $follow_location = true;
-
-    /**
-     * @var bool $show_headers If true,the headers will be also returned
-     */
-    public bool $show_headers = false;
-
-    /**
-     * @var bool $verify_ssl If true, the ssl certificate will be verified
-     */
-    public bool $verify_ssl = true;
-
-    /**
-     * @var string $useragent The useragent used when making requests
-     */
-    public string $useragent {
-        get => $this->app->useragent;
+    public RequestObj $all {
+        get => $this->request;
     }
 
     /**
-     * @var array $options Array listing CURL options, if any
+     * @var RequestObj $request Object containing the request data
      */
-    public array $options {
+    #[LazyLoadProperty]
+    public RequestObj $request;
+
+    /**
+     * @var Get $get Object containing the get data
+     */
+    #[LazyLoadProperty]
+    public Get $get;
+
+    /**
+     * @var Post $post Object containing the post data
+     */
+    #[LazyLoadProperty]
+    public Post $post;
+
+    /**
+     * @var Cookies $cookies Object containing the cookie data
+     */
+    #[LazyLoadProperty]
+    public Cookies $cookies;
+
+    /**
+     * @var Server $server Object containing the server data
+     */
+    #[LazyLoadProperty]
+    public Server $server;
+
+    /**
+     * @var Env $env Object containing the env data
+     */
+    #[LazyLoadProperty]
+    public Env $env;
+
+    /**
+     * @var Files $files Object containing the files data
+     */
+    #[LazyLoadProperty]
+    public Files $files;
+
+    /**
+     * @var Input $input The default input object to use when get() is called
+     */
+    public Input $input {
         get {
-            if (isset($this->options)) {
-                return $this->options;
+            if (isset($this->input)) {
+                return $this->input;
             }
 
-            $this->options = $this->app->config->curl_options;
-
-            return $this->options;
-        }
-    }
-
-    /**
-     * Resets the options
-     */
-    public function resetOptions() : static
-    {
-        $this->options = $this->app->config->curl_options;
-
-        return $this;
-    }
-
-    /**
-     * Sets the basic curl options [header/useragent/followlocation]
-     * @param string $url The url to fetch
-     * @param array $options Curl options, if any
-     * @return resource The curl handle
-     */
-    protected function init(string $url, array $options = [])
-    {
-        $options = $options + $this->options;
-
-        $headers = $options['headers'] ?? [];
-        $referer = $options['referer'] ?? '';
-        $cookie_file = $options['cookie_file'] ?? '';
-        $follow_location = $options['follow_location'] ?? $this->follow_location;
-        $show_headers = $options['show_headers'] ?? $this->show_headers;
-        $useragent = $options['useragent'] ?? $this->useragent;
-        $timeout = $options['timeout'] ?? $this->timeout;
-        $verify_ssl = $options['verify_ssl'] ?? $this->verify_ssl;
-        $custom_request = $options['custom_request'] ?? '';
-
-        unset($options['headers'], $options['referer'], $options['cookie_file'], $options['follow_location'], $options['show_headers'], 
-              $options['useragent'], $options['timeout'], $options['custom_request'], $options['verify_ssl']);
-
-        $ch = curl_init();
-
-        $curl_options = [
-            CURLOPT_URL => $url,
-            CURLOPT_FOLLOWLOCATION => $follow_location,
-            CURLOPT_HEADER => $show_headers,
-            CURLOPT_RETURNTRANSFER => true,
-            CURLINFO_HEADER_OUT => true,
-            CURLOPT_TIMEOUT => $timeout
-        ];
-
-        if ($headers) {
-            $curl_options[CURLOPT_HTTPHEADER] = $headers;
-        }
-        if ($referer) {
-            $curl_options[CURLOPT_REFERER] = $referer;
-        }
-        if ($cookie_file) {
-            $curl_options[CURLOPT_COOKIEFILE] = $cookie_file;
-            $curl_options[CURLOPT_COOKIEJAR] = $cookie_file;
-        }
-        if ($useragent) {
-            $curl_options[CURLOPT_USERAGENT] = $useragent;
-        }
-        if ($custom_request) {
-            $curl_options[CURLOPT_CUSTOMREQUEST] = $custom_request;
-        }
-
-        if (!$verify_ssl) {
-            $curl_options[CURLOPT_SSL_VERIFYPEER] = false;
-            $curl_options[CURLOPT_SSL_VERIFYHOST] = false;
-        }
-
-        $options = $options + $curl_options;
-        curl_setopt_array($ch, $options);
-
-        return $ch;
-    }
-
-    /**
-     * Executes the curl session and returns the result
-     * @param \CurlHandle $ch The curl handler
-     * @return Response The response
-     */
-    protected function exec($ch) : Response
-    {
-        $result = curl_exec($ch);
-
-        $response = new Response($ch, $result, $this->app);
-
-        curl_close($ch);
-
-        return $response;
-    }
-
-    /**
-     * Fetches an url with a custom request
-     * @param string $url The url to fetch
-     * @param string $request The custom request
-     * @param array $options Curl options, if any
-     * @return Response The response
-     */
-    public function custom(string $url, string $request, array $options = []) : Response
-    {
-        $options['custom_request'] = $request;
-
-        $ch = $this->init($url, $options);
-
-        return $this->exec($ch);
-    }
-
-    /**
-     * Fetches an url with a GET request
-     * @param string $url The url to fetch
-     * @param array $options Curl options, if any
-     * @return Response The response
-     */
-    public function get(string $url, array $options = []) : Response
-    {
-        $ch = $this->init($url, $options);
-
-        return $this->exec($ch);
-    }
-
-    /**
-     * Fetches an url with a POST request
-     * @param string $url The url to fetch
-     * @param array $data Array with the data to post
-     * @param array $options Curl options, if any
-     * @param array $files Files to send in the name=>filename format
-     * @return Response The response
-     */
-    public function post(string $url, array $data, array $options = [], array $files = []) : Response
-    {
-        if ($files) {
-            foreach ($files as $name => $filename) {
-                $file = new \CURLFile($filename, null, basename($filename));
-                $data[$name] = $file;
+            $this->input = $this->get;
+            if ($this->method == 'post') {
+                $this->input = $this->post;
             }
+
+            return $this->input;
         }
-
-        $options[CURLOPT_POST] = true;
-        $options[CURLOPT_POSTFIELDS] = $data;
-
-        $ch = $this->init($url, $options);
-
-        return $this->exec($ch);
     }
 
     /**
-     * Downloads a file with a get request
-     * @param string $url The url to fetch
-     * @param string $filename The local filename under which the file will be stored
-     * @param array $options Curl options, if any
-     * @param bool $download_if_exists If false, the file won't be downloaded, if it already exists
-     * @return Response The response. If the file exists and $download_if_exists = false, it will return true
-     * @throws Exception if the file can't be written
+     * @var string $method The request method. get/post.
      */
-    public function getFile(string $url, string $filename, array $options = [], bool $download_if_exists = true) : bool|Response
-    {
-        if (!$download_if_exists) {
-            if (is_file($filename)) {
-                return true;
+    public protected(set) string $method {
+        get {
+            if (isset($this->method)) {
+                return $this->method;
             }
+
+            $this->method = '';
+            if ($this->app->is_web) {
+                $this->method = strtolower($_SERVER['REQUEST_METHOD']);
+            } 
+
+            return $this->method;
         }
-
-        $f = fopen($filename, 'wb');
-        if (!$f) {
-            throw new \Exception(App::__('file_error_write', ['{FILE}' => $filename]));
-        }
-
-        //CURLOPT_RETURNTRANSFER must be set before CURLOPT_FILE. php bug?
-        $options[CURLOPT_RETURNTRANSFER] = true;
-        $options[CURLOPT_FILE] = $f;
-
-        $ch = $this->init($url, $options);
-
-        $response = $this->exec($ch);
-
-        fclose($f);
-
-        return $response;
     }
 
     /**
-     * Returns the contents of the file. If the file exists, if returns it's content. If the file doesn't exist, it will download it with a get request
-     * @param string $url The url to fetch
-     * @param string $filename The local filename under which the file will be stored
-     * @param array $options Curl options, if any
-     * @return string The file's content
-     * @throws Exception if the file can't be written
+     * @var bool $is_post Whether the request is a post request
      */
-    public function getFileContent(string $url, string $filename, array $options = []) : string
+    public protected(set) bool $is_post {
+        get {
+            if (isset($this->is_post)) {
+                return $this->is_post;
+            }
+
+            $this->is_post = false;
+            if ($this->method == 'post') {
+                $this->is_post = true;
+            }
+
+            return $this->is_post;
+        }
+    }
+
+    /**
+     * @var bool $is_json Whether the request is a json request
+     */
+    public protected(set) bool $is_json {
+        get {
+            if (isset($this->is_json)) {
+                return $this->is_json;
+            }
+
+            $this->is_json = false;
+            if (isset($_SERVER['HTTP_ACCEPT'])) {
+                if (strpos($_SERVER['HTTP_ACCEPT'], 'application/json') !== false) {
+                    $this->is_json = true;
+                }
+            }
+
+            return $this->is_json;
+        }
+    }
+
+    /**
+     * Builds the request object
+     * @param App $app The app object
+     */
+    public function __construct(App $app)
     {
-        if (!is_file($filename)) {
-            $this->getFile($url, $filename, $options);
+        $this->lazyLoad($app);
+
+        $this->app = $app;
+    }
+
+    /**
+     * Returns the value of a variable from either $_GET or $_POST
+     * Shorthand for $this->request->get()
+     * @param string $filter The filter to apply to the value, if any. See class Filter for a list of filters
+     * @param mixed $default_value The default value to return if the variable is not set
+     * @param bool $is_array Whether the value should be returned as an array
+     * @return mixed The value
+     */
+    public function get(string $name, string $filter = '', mixed $default_value = '', bool $is_array = false) : mixed
+    {
+        return $this->input->get($name, $filter, $default_value, $is_array);
+    }
+    /**
+     * Returns all the request data from either $_GET or $_POST
+     * Shorthand for $this->request->getAll()
+     * @return array
+     */
+    public function getAll() : array
+    {
+        return $this->input->getAll();
+    }
+
+    /**
+     * Returns the action to be performed
+     * @param string $action_param The action param
+     * @return string The action
+     */
+    public function getAction(string $action_param = '') : string
+    {
+        $action_param = $action_param ? $action_param : $this->app->config->request_action_param;
+
+        return $this->request->get($action_param);
+    }
+
+    /**
+     * Gets the order by value
+     * @param array $valid_fields Array containing the valid values
+     * @param string $default_field The default field. It will be returned if $valid_fields are specified and none match
+     * @param string $orderby_param The name of the orderby param
+     * @return string The 'order by' value
+     */
+    public function getOrderBy(array $valid_fields = [], string $default_field = '', string $orderby_param = '') : string
+    {
+        $orderby_param = $orderby_param ? $orderby_param : $this->app->config->request_orderby_param;
+
+        $orderby = $this->request->get($orderby_param);
+
+        if ($valid_fields) {
+            if (array_is_list($valid_fields)) {
+                if (in_array($orderby, $valid_fields)) {
+                    return $orderby;
+                }
+            } else {
+                if (isset($valid_fields[$orderby])) {
+                    return $valid_fields[$orderby];
+                }
+            }
+
+            return $default_field;
         }
 
-        return file_get_contents($filename);
+        return $orderby;
+    }
+
+    /**
+     * Returns the order value
+     * @param string $order_param The name of the order param
+     * @return string The order value; asc/desc
+     */
+    public function getOrder(string $order_param = 'order') : string
+    {
+        $order_param = $order_param ?? $this->app->config->request_order_param;
+
+        $order = strtolower($this->request->get($order_param));
+
+        if ($order == 'asc') {
+            return 'ASC';
+        } elseif ($order == 'desc') {
+            return 'DESC';
+        }
+
+        return '';
+    }
+
+    /**
+     * Gets the current page of the pagination system
+     * @param string $page_param The name of the page param
+     * @return int The value of the current page
+     */
+    public function getPage(string $page_param = '') : int
+    {
+        $page_param = $page_param ? $page_param : $this->app->config->request_page_param;
+
+        return $this->request->get($page_param, 'absint', 0);
     }
 }

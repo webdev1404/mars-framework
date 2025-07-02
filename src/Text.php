@@ -6,7 +6,8 @@
 
 namespace Mars;
 
-use Mars\App\InstanceTrait;
+use Mars\App\Kernel;
+use Mars\App\Handlers;
 
 /**
  * The Text Class
@@ -14,12 +15,12 @@ use Mars\App\InstanceTrait;
  */
 class Text
 {
-    use InstanceTrait;
+    use Kernel;
 
     /**
      * @var array $supported_operations The list of supported operations
      */
-    protected array $supported_operations = [
+    public protected(set) array $supported_operations = [
         'parser' => \Mars\Text\Parser::class
     ];
 

@@ -6,7 +6,7 @@
 
 namespace Mars;
 
-use Mars\App\InstanceTrait;
+use Mars\App\Kernel;
 
 /**
  * The Timer Class
@@ -14,7 +14,7 @@ use Mars\App\InstanceTrait;
  */
 class Timer
 {
-    use InstanceTrait;
+    use Kernel;
     
     /**
      * @var float $start The time when the script was started

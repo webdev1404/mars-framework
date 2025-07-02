@@ -6,20 +6,20 @@
 
 namespace Mars;
 
-use Mars\App\InstanceTrait;
-use Mars\Document\Css;
-use Mars\Document\Javascript;
-use Mars\Document\Preload;
-use Mars\Document\Prefetch;
-use Mars\Document\Preconnect;
-use Mars\Document\Fonts;
-use Mars\Document\Images;
-use Mars\Document\Meta;
-use Mars\Document\Rss;
-use Mars\Document\Encoding;
-use Mars\Document\Favicon;
-use Mars\Document\Title;
-use Mars\Lazyload\GhostTrait;
+use Mars\App\Kernel;
+use Mars\App\LazyLoad;
+use Mars\Document\Links\Css;
+use Mars\Document\Links\Javascript;
+use Mars\Document\Links\Fonts;
+use Mars\Document\Links\Images;
+use Mars\Document\Hints\Preload;
+use Mars\Document\Hints\Prefetch;
+use Mars\Document\Hints\Preconnect;
+use Mars\Document\Tags\Meta;
+use Mars\Document\Tags\Rss;
+use Mars\Document\Tags\Encoding;
+use Mars\Document\Tags\Favicon;
+use Mars\Document\Tags\Title;
 
 /**
  * The Device Class
@@ -27,79 +27,79 @@ use Mars\Lazyload\GhostTrait;
  */
 class Document
 {
-    use InstanceTrait;
-    use GhostTrait;
+    use Kernel;
+    use LazyLoad;
 
     /**
      * @var Css $css The css object
      */
-    #[LazyLoad]
+    #[LazyLoadProperty]
     public Css $css;
 
     /**
      * @var Javascript $javascript The javascript object
      */
-    #[LazyLoad]
+    #[LazyLoadProperty]
     public Javascript $javascript;
 
     /**
      * @var Fonts $fonts The fonts object
      */
-    #[LazyLoad]
+    #[LazyLoadProperty]
     public Fonts $fonts;
 
     /**
      * @var Images $images The images object
      */
-    #[LazyLoad]
+    #[LazyLoadProperty]
     public Images $images;
 
     /**
      * @var Preload $preload The preload object
      */
-    #[LazyLoad]
+    #[LazyLoadProperty]
     public Preload $preload;
 
     /**
      * @var Prefetch $prefetch The prefetch object
      */
-    #[LazyLoad]
+    #[LazyLoadProperty]
     public Prefetch $prefetch;
 
     /**
      * @var Preconnect $preconnect The preconnect object
      */
-    #[LazyLoad]
+    #[LazyLoadProperty]
     public Preconnect $preconnect;
 
     /**
      * @var Meta $meta The meta object
      */
-    #[LazyLoad]
+    #[LazyLoadProperty]
     public Meta $meta;
 
     /**
      * @var Rss $rss The rss object
      */
-    #[LazyLoad]
+    #[LazyLoadProperty]
     public Rss $rss;
 
     /**
      * @var Title $title The title object
      */
-    #[LazyLoad]
+    #[LazyLoadProperty]
     public Title $title;
 
     /**
      * @var Encoding $encoding The encoding object
      */
-    #[LazyLoad]
+    #[LazyLoadProperty]
     public Encoding $encoding;
 
     /**
      * @var Favicon $favicon The favicon object
      */
-    #[LazyLoad]
+    #[LazyLoadProperty]
     public Favicon $favicon;
 
     /**

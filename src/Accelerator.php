@@ -6,8 +6,9 @@
 
 namespace Mars;
 
-use Mars\App\InstanceTrait;
-use Mars\Accelerators\DriverInterface;
+use Mars\App\Kernel;
+use Mars\App\Drivers;
+use Mars\Accelerators\AcceleratorInterface;
 
 /**
  * The Accelerator Class
@@ -15,12 +16,12 @@ use Mars\Accelerators\DriverInterface;
  */
 class Accelerator
 {
-    use InstanceTrait;
+    use Kernel;
 
     /**
      * @var array $supported_drivers The supported drivers
      */
-    protected array $supported_drivers = [
+    public protected(set) array $supported_drivers = [
         'varnish' => \Mars\Accelerators\Varnish::class
     ];
 
@@ -40,16 +41,16 @@ class Accelerator
                 return $this->drivers;
             }
 
-            $this->drivers = new Drivers($this->supported_drivers, DriverInterface::class, 'accelerators', $this->app);
+            $this->drivers = new Drivers($this->supported_drivers, AcceleratorInterface::class, 'accelerators', $this->app);
 
             return $this->drivers;
         }
     }
 
     /**
-     * @var DriverInterface $driver The driver object
+     * @var AcceleratorInterface $driver The driver object
      */
-    public protected(set) ?DriverInterface $driver {
+    public protected(set) ?AcceleratorInterface $driver {
         get {
             if (!$this->enabled) {
                 return null;
@@ -72,7 +73,7 @@ class Accelerator
     public function delete(string $url) : bool
     {
         if (!$this->enabled) {
-            return $this;
+            return true;
         }
 
         return $this->driver->delete($url);
@@ -86,7 +87,7 @@ class Accelerator
     public function deleteByPattern(string $pattern) : bool
     {
         if (!$this->enabled) {
-            return $this;
+            return true;
         }
 
         return $this->driver->deleteByPattern($pattern);
@@ -99,7 +100,7 @@ class Accelerator
     public function deleteAll() : bool
     {
         if (!$this->enabled) {
-            return $this;
+            return true;
         }
 
         return $this->driver->deleteAll();

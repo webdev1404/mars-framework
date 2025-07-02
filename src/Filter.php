@@ -6,7 +6,8 @@
 
 namespace Mars;
 
-use Mars\App\InstanceTrait;
+use Mars\App\Kernel;
+use Mars\App\Handlers;
 
 /**
  * The Filter Class
@@ -14,22 +15,21 @@ use Mars\App\InstanceTrait;
  */
 class Filter
 {
-    use InstanceTrait;
+    use Kernel;
     
    /**
      * @var array $supported_filters The list of supported filters
      */
-    protected array $supported_filters = [
-        'html' => \Mars\Filters\Html::class,
+    public protected(set) array $supported_filters = [
         'alpha' => \Mars\Filters\Alpha::class,
         'alnum' => \Mars\Filters\Alnum::class,
+        'email' => \Mars\Filters\Email::class,
         'filename' => \Mars\Filters\Filename::class,
         'filepath' => \Mars\Filters\Filepath::class,
-        'url' => \Mars\Filters\Url::class,
-        'email' => \Mars\Filters\Email::class,
-        'slug' => \Mars\Filters\Slug::class,
+        'html' => \Mars\Filters\Html::class,
         'interval' => \Mars\Filters\Interval::class,
-        'exists' => \Mars\Filters\Exists::class,
+        'slug' => \Mars\Filters\Slug::class,
+        'url' => \Mars\Filters\Url::class,
     ];
 
     /**

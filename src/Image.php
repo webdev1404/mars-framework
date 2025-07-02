@@ -7,20 +7,22 @@
 namespace Mars;
 
 use GdImage;
-use Mars\App\InstanceTrait;
-use Mars\Images\DriverInterface;
+use Mars\App\Kernel;
+use Mars\App\Drivers;
+use Mars\App\Handlers;
+use Mars\Images\ImageInterface;
 
 /**
  * The Image Class
  */
 class Image
 {
-    use InstanceTrait;
+    use Kernel;
 
     /**
      * @var array $supported_drivers The supported drivers
      */
-    protected array $supported_drivers = [
+    public protected(set) array $supported_drivers = [
         'jpg' => \Mars\Images\Jpg::class,
         'jpeg' => \Mars\Images\Jpg::class,
         'png' => \Mars\Images\Png::class,
@@ -32,7 +34,7 @@ class Image
     /**
      * @var array $supported_operations The list of supported operations
      */
-    protected array $supported_operations = [
+    public protected(set) array $supported_operations = [
         'resize' => \Mars\Images\Operations\Resize::class,
         'crop' => \Mars\Images\Operations\Crop::class,
         'cut' => \Mars\Images\Operations\Cut::class,
@@ -49,7 +51,7 @@ class Image
                 return $this->drivers;
             }
 
-            $this->drivers = new Drivers($this->supported_drivers, DriverInterface::class, 'images', $this->app);
+            $this->drivers = new Drivers($this->supported_drivers, ImageInterface::class, 'images', $this->app);
             
             return $this->drivers;
         }
@@ -75,7 +77,7 @@ class Image
      * Returns the image
      * @param string $filename The image's filename
      */
-    protected function getImage(string $filename) : DriverInterface
+    protected function getImage(string $filename) : ImageInterface
     {
         $ext = $this->app->file->getExtension($filename);
         if (!$ext) {

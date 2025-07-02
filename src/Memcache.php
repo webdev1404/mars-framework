@@ -6,8 +6,9 @@
 
 namespace Mars;
 
-use Mars\App\InstanceTrait;
-use Mars\Memcache\DriverInterface;
+use Mars\App\Kernel;
+use Mars\App\Drivers;
+use Mars\Memcache\MemcacheInterface;
 
 /**
  * The Memcache Class
@@ -16,7 +17,7 @@ use Mars\Memcache\DriverInterface;
  */
 class Memcache
 {
-    use InstanceTrait;
+    use Kernel;
 
     /**
      * @var array $supported_drivers The supported drivers
@@ -43,16 +44,16 @@ class Memcache
                 return $this->drivers;
             }
 
-            $this->drivers = new Drivers($this->supported_drivers, DriverInterface::class, 'memcache', $this->app);
+            $this->drivers = new Drivers($this->supported_drivers, MemcacheInterface::class, 'memcache', $this->app);
 
             return $this->drivers;
         }
     }
 
     /**
-     * @var DriverInterface $driver The driver object
+     * @var MemcacheInterface $driver The driver object
      */
-    public protected(set) ?DriverInterface $driver {
+    public protected(set) ?MemcacheInterface $driver {
         get {
             if (!$this->enabled) {
                 return null;

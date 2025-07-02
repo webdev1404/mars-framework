@@ -7,8 +7,8 @@
 namespace Mars\Alerts;
 
 use Mars\App;
-use Mars\App\InstanceTrait;
-use Mars\Lists\ListSimpleTrait;
+use Mars\App\Kernel;
+use Mars\Data\ListTrait;
 
 /**
  * The Base Alerts Class
@@ -16,9 +16,9 @@ use Mars\Lists\ListSimpleTrait;
  */
 abstract class Alerts implements \Countable, \IteratorAggregate
 {
-    use InstanceTrait;
-    use ListSimpleTrait {
-        ListSimpleTrait::add as listAdd;
+    use Kernel;
+    use ListTrait {
+        ListTrait::add as listAdd;
     }
     
     /**

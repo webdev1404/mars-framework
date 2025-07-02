@@ -10,7 +10,7 @@ namespace Mars\Memcache;
  * The Redis Memcache Class
  * Memcache driver which uses Redis
  */
-class Redis implements DriverInterface
+class Redis implements MemcacheInterface
 {
     /**
      * @var object $handle The driver's handle
@@ -18,7 +18,7 @@ class Redis implements DriverInterface
     protected object $handle;
 
     /**
-     * @see \Mars\Memcache\DriverInterface::connect()
+     * @see MemcacheInterface::connect()
      * {@inheritdoc}
      */
     public function connect(string $host, string $port)
@@ -35,7 +35,7 @@ class Redis implements DriverInterface
     }
 
     /**
-     * @see \Mars\Memcache\DriverInterface::disconnect()
+     * @see MemcacheInterface::disconnect()
      * {@inheritdoc}
      */
     public function disconnect()
@@ -48,7 +48,7 @@ class Redis implements DriverInterface
     }
 
     /**
-     * @see \Mars\Memcache\DriverInterface::add()
+     * @see MemcacheInterface::add()
      * {@inheritdoc}
      */
     public function add(string $key, $value, int $expires = 0) : bool
@@ -63,7 +63,7 @@ class Redis implements DriverInterface
     }
 
     /**
-     * @see \Mars\Memcache\DriverInterface::set()
+     * @see MemcacheInterface::set()
      * {@inheritdoc}
      */
     public function set(string $key, $value, int $expires = 0) : bool
@@ -72,7 +72,7 @@ class Redis implements DriverInterface
     }
 
     /**
-     * @see \Mars\Memcache\DriverInterface::get()
+     * @see MemcacheInterface::get()
      * {@inheritdoc}
      */
     public function get(string $key)
@@ -86,7 +86,7 @@ class Redis implements DriverInterface
     }
 
     /**
-     * @see \Mars\Memcache\DriverInterface::exists()
+     * @see MemcacheInterface::exists()
      * {@inheritdoc}
      */
     public function exists(string $key) : bool
@@ -99,7 +99,7 @@ class Redis implements DriverInterface
     }
 
     /**
-     * @see \Mars\Memcache\DriverInterface::delete()
+     * @see MemcacheInterface::delete()
      * {@inheritdoc}
      */
     public function delete(string $key) : bool
@@ -108,7 +108,7 @@ class Redis implements DriverInterface
     }
 
     /**
-     * @see \Mars\Memcache\DriverInterface::deleteAll()
+     * @see MemcacheInterface::deleteAll()
      * {@inheritdoc}
      */
     public function deleteAll() : bool

@@ -7,15 +7,15 @@
 namespace Mars\Session;
 
 use Mars\App;
-use Mars\App\InstanceTrait;
+use Mars\App\Kernel;
 
 /**
  * The Php Session Class
  * Session driver which uses the default php implementation
  */
-class Php implements DriverInterface
+class Php implements SessionInterface
 {
-    use InstanceTrait;
+    use Kernel;
 
     /**
      * Builds the Php Session driver

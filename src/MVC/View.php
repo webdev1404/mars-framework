@@ -7,7 +7,8 @@
 namespace Mars\MVC;
 
 use Mars\App;
-use Mars\App\InstanceTrait;
+use Mars\App\Kernel;
+use Mars\HiddenProperty;
 use Mars\Config;
 use Mars\Document;
 use Mars\Escape;
@@ -27,7 +28,7 @@ use Mars\Extensions\Extension;
  */
 abstract class View
 {
-    use InstanceTrait;
+    use Kernel;
 
     /**
      * @var string $default_method Default method to be executed on dispatch/route or if the requested method doesn't exist or is not public
@@ -56,61 +57,28 @@ abstract class View
     /**
      * @var string $path The controller's parents's dir. Alias for $this->parent->path
      */
-    public protected(set) string $path {
-        get {
-            if (isset($this->path)) {
-                return $this->path;
-            }
-
-            $this->path = '';
-            if ($this->parent) {
-                $this->path = $this->parent->path;
-            }
-
-            return $this->path;
-        }
+    public string $path {
+        get => $this->controller->path;
     }
 
     /**
-     * @var string $url The controller's parent's url. Alias for $this->parent->url
+     * @var string $assets_path The folder where the assets files are stored
      */
-    public protected(set) string $url {
-        get {
-            if (isset($this->url)) {
-                return $this->url;
-            }
-
-            $this->url = '';
-            if ($this->parent) {
-                $this->url = $this->parent->url;
-            }
-
-            return $this->url;
-        }
+    public string $assets_path {
+        get => $this->controller->assets_path;
     }
 
     /**
-     * @var string $url_static The controller's parent's url static. Alias for $this->parent->url_static
+     * @var string $assets_url The url pointing to the folder where the assets for the extension are located
      */
-    public protected(set) string $url_static {
-        get {
-            if (isset($this->url_static)) {
-                return $this->url_static;
-            }
-
-            $this->url_static = '';
-            if ($this->parent) {
-                $this->url_static = $this->parent->url_static;
-            }
-
-            return $this->url_static;
-        }
+    public string $assets_url {
+        get => $this->controller->assets_url;
     }
-
+    
     /**
      * @var Extension $parent The parent extension
      */
-    #[Hidden]
+    #[HiddenProperty]
     protected ?Extension $parent {
         get => $this->controller->parent ?? null;
     }
@@ -118,13 +86,13 @@ abstract class View
     /**
      * @var Controller $controller The controller the view belongs to
      */
-    #[Hidden]
+    #[HiddenProperty]
     protected Controller $controller;
 
     /**
      * @var object $model The model
      */
-    #[Hidden]
+    #[HiddenProperty]
     protected  object $model {
         get => $this->controller->model;
     }
@@ -132,7 +100,7 @@ abstract class View
     /**
      * @var Document $document Alias for $this->app->document
      */
-    #[Hidden]
+    #[HiddenProperty]
     protected Document $document {
         get => $this->app->document;
     }
@@ -140,7 +108,7 @@ abstract class View
     /**
      * @var Config $config The config object. Alias for $this->app->config
      */
-    #[Hidden]
+    #[HiddenProperty]
     protected Config $config {
         get => $this->app->config;
     }
@@ -148,7 +116,7 @@ abstract class View
     /**
      * @var Html $html Alias for $this->app->html
      */
-    #[Hidden]
+    #[HiddenProperty]
     protected Html $html {
         get => $this->app->html;
     }
@@ -156,7 +124,7 @@ abstract class View
     /**
      * @var Escape $escape Alias for $this->app->escape
      */
-    #[Hidden]
+    #[HiddenProperty]
     protected Escape $escape {
         get => $this->app->escape;
     }
@@ -164,7 +132,7 @@ abstract class View
     /**
      * @var Filter $filter Alias for $this->app->filter
      */
-    #[Hidden]
+    #[HiddenProperty]
     protected Filter $filter {
         get => $this->app->filter;
     }
@@ -172,7 +140,7 @@ abstract class View
     /**
      * @var Format $format Alias for $this->app->format
      */
-    #[Hidden]
+    #[HiddenProperty]
     protected Format $format {
         get => $this->app->format;
     }
@@ -180,7 +148,7 @@ abstract class View
     /**
      * @var Uri $uri Alias for $this->app->uri
      */
-    #[Hidden]
+    #[HiddenProperty]
     public Uri $uri {
         get => $this->app->uri;
     }
@@ -188,7 +156,7 @@ abstract class View
     /**
      * @var Ui $ui Alias for $this->app->ui
      */
-    #[Hidden]
+    #[HiddenProperty]
     protected Ui $ui {
         get => $this->app->ui;
     }
@@ -196,7 +164,7 @@ abstract class View
     /**
      * @var Text $uri Alias for $this->app->text
      */
-    #[Hidden]
+    #[HiddenProperty]
     protected Text $text {
         get => $this->app->text;
     }
@@ -204,7 +172,7 @@ abstract class View
     /**
      * @var Plugins $plugins Alias for $this->app->plugins
      */
-    #[Hidden]
+    #[HiddenProperty]
     protected Plugins $plugins {
         get => $this->app->plugins;
     }
@@ -216,7 +184,7 @@ abstract class View
      */
     public function __construct(App $app, ?Controller $controller = null)
     {
-        $this->app = $app ?? $this->getApp();
+        $this->app = $app ?? App::obj();
         $this->controller = $controller;
 
         $this->init();
@@ -282,8 +250,7 @@ abstract class View
             if ($ret === false) {
                 return null;
             } elseif (is_string($ret)) {
-                echo $ret;
-                return null;
+                return $ret;
             }
         } else {
             return null;
@@ -301,18 +268,18 @@ abstract class View
     }
 
     /**
-     * Returns the contents of a template from the extension's module's dir
+     * Returns the contents of a module template
      * @param string $template The name of the template to load
      * @param array $vars Vars to pass to the template, if any
      * @return string The contents of the template
      */
-    /*protected function renderModuleTemplate(string $template, array $vars = [])
+    protected function getModuleTemplate(string $template, array $vars = []) : ?string
     {
         $this->app->theme->addVars(get_object_vars($this));
         $this->app->theme->addVar('view', $this);
 
-        return $this->parent->getModuleTemplate($template, $vars);
-    }*/
+        return $this->parent->module->getTemplate($template, $vars);
+    }
 
     /**
      * Returns the name of a template to load

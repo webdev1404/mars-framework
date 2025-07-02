@@ -6,26 +6,24 @@
 
 namespace Mars;
 
-use Mars\App\InstanceTrait;
-use Mars\Cli\Listing;
-use Mars\Cli\ListingMulti;
-use Mars\Cli\Table;
+use Mars\App\Kernel;
+use Mars\App\Handlers;
 
 /**
  * The Cli Class
  */
 class Cli
 {
-    use InstanceTrait;
+    use Kernel;
 
     /**
      * @var array $supported_printers The list of supported printers
      */
-    public array $supported_printers = [
+    public protected(set) array $supported_printers = [
         'list' => \Mars\Cli\Listing::class,
         'list_multi' => \Mars\Cli\ListingMulti::class,
         'table' => \Mars\Cli\Table::class
-    ];   
+    ];
         
     /**
      * @var array $colors Array defining the user colors

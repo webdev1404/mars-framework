@@ -9,7 +9,7 @@ namespace Mars\Db;
 /**
 * The Mysql Database Driver
  */
-class Mysql implements DriverInterface
+class Mysql implements DbInterface
 {
     /**
      * @var PDO $handle The PDO handle
@@ -22,7 +22,7 @@ class Mysql implements DriverInterface
     protected ?\PDOStatement $result;
 
     /**
-     * @see \Mars\Db\DriverInterface::connect()
+     * @see DbInterface::connect()
      * {@inheritdoc}
      */
     public function connect(string $hostname, string $port, string $username, string $password, string $database, bool $persistent, string $charset)
@@ -38,7 +38,7 @@ class Mysql implements DriverInterface
     }
 
     /**
-     * @see \Mars\Db\DriverInterface::disconnect()
+     * @see DbInterface::disconnect()
      * {@inheritdoc}
      */
     public function disconnect()
@@ -49,7 +49,7 @@ class Mysql implements DriverInterface
     }
 
     /**
-     * @see \Mars\Db\DriverInterface::getIterator()
+     * @see DbInterface::getIterator()
      * {@inheritdoc}
      */
     public function getIterator($result) : \Iterator
@@ -58,7 +58,7 @@ class Mysql implements DriverInterface
     }
 
     /**
-     * @see \Mars\Db\DriverInterface::quote()
+     * @see DbInterface::quote()
      * {@inheritdoc}
      */
     public function quote(string $string) : string
@@ -67,7 +67,7 @@ class Mysql implements DriverInterface
     }
     
     /**
-     * @see \Mars\Db\DriverInterface::beginTransaction()
+     * @see DbInterface::beginTransaction()
      * {@inheritdoc}
      */
     public function beginTransaction()
@@ -76,7 +76,7 @@ class Mysql implements DriverInterface
     }
     
     /**
-     * @see \Mars\Db\DriverInterface::commit()
+     * @see DbInterface::commit()
      * {@inheritdoc}
      */
     public function commit()
@@ -85,7 +85,7 @@ class Mysql implements DriverInterface
     }
     
     /**
-     * @see \Mars\Db\DriverInterface::rollback()
+     * @see DbInterface::rollback()
      * {@inheritdoc}
      */
     public function rollback()
@@ -94,21 +94,21 @@ class Mysql implements DriverInterface
     }
 
     /**
-     * @see \Mars\Db\DriverInterface::query()
+     * @see DbInterface::query()
      * {@inheritdoc}
      */
     public function query(string $sql, array $params = []) : ?object
     {
         try {
             if ($params) {
-                $this->result = $this->handle->prepare($sql);                
+                $this->result = $this->handle->prepare($sql);
                 $this->result->execute($this->getParams($params));
                 $this->result->setFetchMode(\PDO::FETCH_OBJ);
             } else {                
                 $this->result = $this->handle->query($sql);
                 $this->result->setFetchMode(\PDO::FETCH_OBJ);
             }
-        } catch (\PDOException $e) {            
+        } catch (\PDOException $e) {
             $this->result = null;
 
             throw new \Exception($e->getMessage());
@@ -132,7 +132,7 @@ class Mysql implements DriverInterface
     }
 
     /**
-     * @see \Mars\Db\DriverInterface::free()
+     * @see DbInterface::free()
      * {@inheritdoc}
      */
     public function free($result)
@@ -141,7 +141,7 @@ class Mysql implements DriverInterface
     }
 
     /**
-     * @see \Mars\Db\DriverInterface::lastId()
+     * @see DbInterface::lastId()
      * {@inheritdoc}
      */
     public function lastId() : int
@@ -150,7 +150,7 @@ class Mysql implements DriverInterface
     }
 
     /**
-     * @see \Mars\Db\DriverInterface::affectedRows()
+     * @see DbInterface::affectedRows()
      * {@inheritdoc}
      */
     public function affectedRows() : int
@@ -159,7 +159,7 @@ class Mysql implements DriverInterface
     }
 
     /**
-     * @see \Mars\Db\DriverInterface::numRows()
+     * @see DbInterface::numRows()
      * {@inheritdoc}
      */
     public function numRows($result) : int
@@ -168,7 +168,7 @@ class Mysql implements DriverInterface
     }
 
     /**
-     * @see \Mars\Db\DriverInterface::fetchArray()
+     * @see DbInterface::fetchArray()
      * {@inheritdoc}
      */
     public function fetchArray($result) : array
@@ -182,7 +182,7 @@ class Mysql implements DriverInterface
     }
 
     /**
-     * @see \Mars\Db\DriverInterface::fetchRow()
+     * @see DbInterface::fetchRow()
      * {@inheritdoc}
      */
     public function fetchRow($result) : array
@@ -196,7 +196,7 @@ class Mysql implements DriverInterface
     }
 
     /**
-     * @see \Mars\Db\DriverInterface::fetchObject()
+     * @see DbInterface::fetchObject()
      * {@inheritdoc}
      */
     public function fetchObject($result, string $class_name = '') : ?object
@@ -214,7 +214,7 @@ class Mysql implements DriverInterface
     }
     
     /**
-     * @see \Mars\Db\DriverInterface::fetchColumn()
+     * @see DbInterface::fetchColumn()
      * {@inheritdoc}
      */
     public function fetchColumn($result, int $column = 0) : ?string
@@ -228,7 +228,7 @@ class Mysql implements DriverInterface
     }
 
     /**
-     * @see \Mars\Db\DriverInterface::fetchAll()
+     * @see DbInterface::fetchAll()
      * {@inheritdoc}
      */
     public function fetchAll($result, bool|string $class_name = '') : array
@@ -245,7 +245,7 @@ class Mysql implements DriverInterface
     }
     
     /**
-     * @see \Mars\Db\DriverInterface::fetchAllFromColumn()
+     * @see DbInterface::fetchAllFromColumn()
      * {@inheritdoc}
      */
     public function fetchAllFromColumn($result, int $column = 0) : array

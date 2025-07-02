@@ -1,16 +1,16 @@
 <?php
 /**
-* The List Cli Handler
+* The CLI List Printer
 * @package Mars
 */
 
 namespace Mars\Cli;
 
 /**
- * The List Cli Handler
+ * The CLI List Printer
  * Displays a list
  */
-class Listing extends Base
+class Listing extends Printer
 {
     /**
      * Prints a list

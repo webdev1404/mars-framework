@@ -6,7 +6,7 @@
 
 namespace Mars;
 
-use Mars\App\InstanceTrait;
+use Mars\App\Kernel;
 
 /**
  * The Unescape Class
@@ -14,7 +14,7 @@ use Mars\App\InstanceTrait;
  */
 class Unescape
 {
-    use InstanceTrait;
+    use Kernel;
 
     /**
      * Converts html entitites back to characters

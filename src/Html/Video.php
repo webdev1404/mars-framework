@@ -32,7 +32,7 @@ class Video extends Tag
     protected static array $properties = ['urls'];
 
     /**
-     * @see \Mars\Html\TagInterface::html()
+     * @see TagInterface::html()
      * {@inheritdoc}
      */
     public function html(string $text = '', array $attributes = []) : string

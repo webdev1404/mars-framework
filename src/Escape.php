@@ -6,7 +6,7 @@
 
 namespace Mars;
 
-use Mars\App\InstanceTrait;
+use Mars\App\Kernel;
 
 /**
  * The Escapes Class
@@ -14,7 +14,7 @@ use Mars\App\InstanceTrait;
  */
 class Escape
 {
-    use InstanceTrait;
+    use Kernel;
 
     /**
      * Converts special chars. to html entitites

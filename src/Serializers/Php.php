@@ -9,10 +9,10 @@ namespace Mars\Serializers;
 /**
  * The PHP Driver Interface
  */
-class Php implements DriverInterface
+class Php implements SerializerInterface
 {
     /**
-     * @see \Mars\Serializers\DriverInterface::serialize()
+     * @see SerializerInterface::serialize()
      * {@inheritdoc}
      */
     public function serialize($data) : string
@@ -21,7 +21,7 @@ class Php implements DriverInterface
     }
 
     /**
-     * @see \Mars\Serializers\DriverInterface::unserialize()
+     * @see SerializerInterface::unserialize()
      * {@inheritdoc}
      */
     public function unserialize(string $data)

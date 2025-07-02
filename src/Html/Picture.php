@@ -23,7 +23,7 @@ class Picture extends Tag
     protected static array $properties = ['images'];
 
     /**
-     * @see \Mars\Html\TagInterface::html()
+     * @see TagInterface::html()
      * {@inheritdoc}
      */
     public function html(string $text = '', array $attributes = []) : string

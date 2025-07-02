@@ -7,9 +7,8 @@
 namespace Mars\System;
 
 use Mars\App;
-use Mars\App\InstanceTrait;
-use Mars\Extensions\Module;
-use Mars\Extensions\Plugin;
+use Mars\App\Kernel;
+use Mars\Extensions\Modules\Plugin;
 
 /**
  * The Plugins Class
@@ -17,7 +16,7 @@ use Mars\Extensions\Plugin;
  */
 class Plugins
 {
-    use InstanceTrait;
+    use Kernel;
 
     /**
      * @var bool $enabled True, if plugins are enabled
@@ -38,7 +37,7 @@ class Plugins
      * @var array $plugins Array holding the plugin objects
      */
     public protected(set) array $plugins {
-        get {                        
+        get {    
             if (isset($this->plugins)) {
                 return $this->plugins;
             }
@@ -47,18 +46,11 @@ class Plugins
             }
 
             $this->plugins = [];
-            
-            $modules_namespace = Module::getBaseNamespace() . '\\';
 
-            $plugins = $this->app->config->plugins_list ?? [];
-            foreach ($plugins as $class_name) {
-                $class_name = ltrim($class_name, '\\');
+            $plugins = Plugin::getList();
+            foreach ($plugins as $class_name => $module_name) {
+                $plugin = new $class_name($module_name, [], $this->app);
 
-                if (!str_starts_with($class_name, $modules_namespace)) {
-                    throw new \Exception("Plugin {$class_name} must belong to the {$modules_namespace} namespace");
-                }
-
-                $plugin = new $class_name($this->app);
                 if (!$plugin instanceof Plugin) {
                     throw new \Exception("Plugin {$class_name} must extend class Plugin");
                 }
@@ -95,7 +87,7 @@ class Plugins
     /**
      * @var array $total_time The total execution time. Set only if debug is enabled
      */
-    public protected(set) float $total_time = 0;    
+    public protected(set) float $total_time = 0;
 
     /**
      * Registers hooks for execution

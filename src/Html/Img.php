@@ -28,7 +28,7 @@ class Img extends Tag
     protected static bool $always_close = false;
 
     /**
-     * @see \Mars\Html\TagInterface::get()
+     * @see TagInterface::get()
      * {@inheritdoc}
      */
     public function html(string $text = '', array $attributes = []) : string

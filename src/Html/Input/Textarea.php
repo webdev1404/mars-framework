@@ -7,6 +7,7 @@
 namespace Mars\Html\Input;
 
 use \Mars\Html\Tag;
+use \Mars\Html\TagInterface;
 
 /**
  * The Textarea Class
@@ -39,7 +40,7 @@ class Textarea extends Tag implements FormInputInterface
     protected static array $properties = ['value'];
 
     /**
-     * @see \Mars\Html\TagInterface::html()
+     * @see TagInterface::html()
      * {@inheritdoc}
      */
     public function html(string $text = '', array $attributes = []) : string

@@ -12,7 +12,7 @@ use Mars\App;
 /**
  * The Png Image Class
  */
-class Png extends Image implements DriverInterface
+class Png extends Image implements ImageInterface
 {
     /**
      * @var string $mime_type The image's mime type
@@ -20,7 +20,7 @@ class Png extends Image implements DriverInterface
     protected $mime_type = 'image/png';
 
     /**
-     * @see \Mars\Images\DriverInterface::__construct()
+     * ImageInterface::__construct()
      * {@inheritdoc}
      */
     public function __construct(string $filename, App $app)
@@ -32,7 +32,7 @@ class Png extends Image implements DriverInterface
     }
 
     /**
-     * @see \Mars\Images\DriverInterface::open()
+     * ImageInterface::open()
      * {@inheritdoc}
      */
     public function open() : GdImage
@@ -49,7 +49,7 @@ class Png extends Image implements DriverInterface
     }
 
     /**
-     * @see \Mars\Images\DriverInterface::create()
+     * ImageInterface::create()
      * {@inheritdoc}
      */
     public function create(int $width, int $height, GdImage $source) : GdImage
@@ -63,7 +63,7 @@ class Png extends Image implements DriverInterface
     }
 
     /**
-     * @see \Mars\Images\DriverInterface::save()
+     * ImageInterface::save()
      * {@inheritdoc}
      */
     public function save(GdImage $img)

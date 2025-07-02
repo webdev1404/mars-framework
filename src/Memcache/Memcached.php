@@ -10,7 +10,7 @@ namespace Mars\Memcache;
  * The Memcached Memcache Class
  * Memcache driver which uses Memcached
  */
-class Memcached implements DriverInterface
+class Memcached implements MemcacheInterface
 {
     /**
      * @var object $handle The driver's handle
@@ -18,7 +18,7 @@ class Memcached implements DriverInterface
     protected object $handle;
 
     /**
-     * @see \Mars\Memcache\DriverInterface::connect()
+     * @see MemcacheInterface::connect()
      * {@inheritdoc}
      */
     public function connect(string $host, string $port)
@@ -35,7 +35,7 @@ class Memcached implements DriverInterface
     }
 
     /**
-     * @see \Mars\Memcache\DriverInterface::disconnect()
+     * @see MemcacheInterface::disconnect()
      * {@inheritdoc}
      */
     public function disconnect()
@@ -46,7 +46,7 @@ class Memcached implements DriverInterface
     }
 
     /**
-     * @see \Mars\Memcache\DriverInterface::add()
+     * @see MemcacheInterface::add()
      * {@inheritdoc}
      */
     public function add(string $key, $value, int $expires = 0) : bool
@@ -55,7 +55,7 @@ class Memcached implements DriverInterface
     }
 
     /**
-     * @see \Mars\Memcache\DriverInterface::set()
+     * @see MemcacheInterface::set()
      * {@inheritdoc}
      */
     public function set(string $key, $value, int $expires = 0) : bool
@@ -64,7 +64,7 @@ class Memcached implements DriverInterface
     }
 
     /**
-     * @see \Mars\Memcache\DriverInterface::get()
+     * @see MemcacheInterface::get()
      * {@inheritdoc}
      */
     public function get(string $key)
@@ -78,7 +78,7 @@ class Memcached implements DriverInterface
     }
 
     /**
-     * @see \Mars\Memcache\DriverInterface::exists()
+     * @see MemcacheInterface::exists()
      * {@inheritdoc}
      */
     public function exists(string $key) : bool
@@ -91,7 +91,7 @@ class Memcached implements DriverInterface
     }
 
     /**
-     * @see \Mars\Memcache\DriverInterface::delete()
+     * @see MemcacheInterface::delete()
      * {@inheritdoc}
      */
     public function delete(string $key) : bool
@@ -100,7 +100,7 @@ class Memcached implements DriverInterface
     }
 
     /**
-     * @see \Mars\Memcache\DriverInterface::deleteAll()
+     * @see MemcacheInterface::deleteAll()
      * {@inheritdoc}
      */
     public function deleteAll() : bool

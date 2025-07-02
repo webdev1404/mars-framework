@@ -6,17 +6,13 @@
 
 namespace Mars\Filters;
 
-use Mars\App\InstanceTrait;
-
 /**
  * The Slug Filter Class
  */
-class Slug
+class Slug extends Filter
 {
-    use InstanceTrait;
-
     /**
-     * @see \Mars\Filter::slug()
+     * @see \Mars\Filters\Filter::slug()
      */
     public function filter(string $value, bool $allow_slash = false) : string
     {

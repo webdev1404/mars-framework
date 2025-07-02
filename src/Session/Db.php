@@ -7,15 +7,15 @@
 namespace Mars\Session;
 
 use Mars\App;
-use Mars\App\InstanceTrait;
+use Mars\App\Kernel;
 
 /**
  * The Db Session Class
  * Session driver which uses the database
  */
-class Db implements DriverInterface, \SessionHandlerInterface, \SessionUpdateTimestampHandlerInterface
+class Db implements SessionInterface, \SessionHandlerInterface, \SessionUpdateTimestampHandlerInterface
 {
-    use InstanceTrait;
+    use Kernel;
 
     /**
      * @var string $table The table where the sessions are stored
@@ -120,7 +120,7 @@ class Db implements DriverInterface, \SessionHandlerInterface, \SessionUpdateTim
     {
         $cutoff = time() - $maxlifetime;
 
-        $this->app->writeQuery("DELETE FROM {$this->table} WHERE `timestamp` < {$cutoff}");
+        $this->app->db->writeQuery("DELETE FROM {$this->table} WHERE `timestamp` < {$cutoff}");
 
         return true;
     }

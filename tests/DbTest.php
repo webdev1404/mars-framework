@@ -20,7 +20,7 @@ final class DbTest extends Base
 
     public static function setUpBeforeClass() : void
     {
-        $app = App::get();
+        $app = App::obj();
 
         $app->db->query("DROP TABLE IF EXISTS select_test");
         $app->db->query("DROP TABLE IF EXISTS insert_test");
@@ -50,7 +50,7 @@ final class DbTest extends Base
 
     public static function tearDownAfterClass() : void
     {
-        $app = App::get();
+        $app = App::obj();
 
         $app->db->query("DROP TABLE select_test");
         $app->db->query("DROP TABLE insert_test");

@@ -35,7 +35,7 @@ final class ItemsTest extends Base
 {
     public static function setUpBeforeClass() : void
     {
-        $db = App::get()->db;
+        $db = App::obj()->db;
 
         $db->query('DROP TABLE IF EXISTS cars');
         $db->query('
@@ -53,7 +53,7 @@ final class ItemsTest extends Base
 
     public static function tearDownAfterClass() : void
     {
-        $db = App::get()->db;
+        $db = App::obj()->db;
 
         $db->query('DROP TABLE IF EXISTS cars');
     }

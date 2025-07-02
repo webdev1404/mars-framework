@@ -6,7 +6,7 @@
 
 namespace Mars\Screens;
 
-use Mars\App\InstanceTrait;
+use Mars\App\Kernel;
 
 /**
  * The Fatal Error Screen
@@ -14,7 +14,7 @@ use Mars\App\InstanceTrait;
  */
 class FatalError
 {
-    use InstanceTrait;
+    use Kernel;
 
     /**
      * Displays a fatal error screen

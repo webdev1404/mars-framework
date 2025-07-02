@@ -6,22 +6,22 @@
 
 namespace Mars\Cache;
 
-use Mars\Drivers;
-use Mars\Cache\Cacheable\DriverInterface;
+use Mars\App\Drivers;
+use Mars\Cache\Cacheable\CacheableInterface;
 
 /**
  * The Cacheable Class
  * Caches content & serves it from cache
  */
-abstract class Cacheable extends Base
+abstract class Cacheable extends Cache
 {
     /**
      * @var array $supported_drivers The supported drivers
      */
-    protected array $supported_drivers = [
+    public protected(set) array $supported_drivers = [
         'file' => \Mars\Cache\Cacheable\File::class,
         'memcache' => \Mars\Cache\Cacheable\Memcache::class,
-    ];    
+    ];
 
     /**
      * @var Drivers $drivers The drivers object
@@ -32,16 +32,16 @@ abstract class Cacheable extends Base
                 return $this->drivers;
             }
 
-            $this->drivers = new Drivers($this->supported_drivers, DriverInterface::class, 'cachable', $this->app);
+            $this->drivers = new Drivers($this->supported_drivers, CacheableInterface::class, 'cachable', $this->app);
 
             return $this->drivers;
         }
     }
 
     /**
-     * @var DriverInterface $driver The driver object
+     * @var CacheableInterface $driver The driver object
      */
-    public protected(set) DriverInterface $driver {
+    public protected(set) CacheableInterface $driver {
         get {
             if (isset($this->driver)) {
                 return $this->driver;
@@ -84,6 +84,6 @@ abstract class Cacheable extends Base
             $extension = $this->extension;
         }
 
-        return hash($this->hash, $id . $this->app->config->key) . '.' . $extension;
+        return hash($this->hash, $id) . '.' . $extension;
     }
 }

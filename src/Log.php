@@ -6,7 +6,7 @@
 
 namespace Mars;
 
-use Mars\App\InstanceTrait;
+use Mars\App\Kernel;
 
 /**
  * The Log Class
@@ -14,7 +14,7 @@ use Mars\App\InstanceTrait;
  */
 class Log
 {
-    use InstanceTrait;
+    use Kernel;
 
     /**
      * @var string $suffix The log file's suffix

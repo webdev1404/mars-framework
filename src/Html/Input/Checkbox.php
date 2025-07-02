@@ -6,6 +6,7 @@
 
 namespace Mars\Html\Input;
 
+use Mars\Html\TagInterface;
 use Mars\Html\Label;
 
 /**
@@ -25,7 +26,7 @@ class Checkbox extends Input
     protected static array $properties = ['label'];
 
     /**
-     * @see \Mars\Html\TagInterface::html()
+     * @see TagInterface::html()
      * {@inheritdoc}
      */
     public function html(string $text = '', array $attributes = []) : string

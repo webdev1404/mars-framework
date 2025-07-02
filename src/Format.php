@@ -7,7 +7,8 @@
 namespace Mars;
 
 use DateTime;
-use Mars\App\InstanceTrait;
+use Mars\App\Kernel;
+use Mars\App\Handlers;
 
 /**
  * The Format Class
@@ -15,17 +16,17 @@ use Mars\App\InstanceTrait;
  */
 class Format
 {
-    use InstanceTrait;
+    use Kernel;
     
     /**
      * @var array $supported_formats The list of supported formats
      */
-    protected array $supported_formats = [
-        'percentage' => \Mars\Formats\Percentage::class,
-        'filesize' => \Mars\Formats\Filesize::class,
-        'time_interval' => \Mars\Formats\TimeInterval::class,
-        'js_array' => \Mars\Formats\JsArray::class,
-        'js_object' => \Mars\Formats\JsObject::class,
+    public protected(set) array $supported_formats = [
+        'percentage' => \Mars\Format\Percentage::class,
+        'filesize' => \Mars\Format\Filesize::class,
+        'time_interval' => \Mars\Format\TimeInterval::class,
+        'js_array' => \Mars\Format\JsArray::class,
+        'js_object' => \Mars\Format\JsObject::class,
     ];    
 
     /**

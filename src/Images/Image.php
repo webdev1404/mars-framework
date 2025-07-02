@@ -8,14 +8,14 @@ namespace Mars\Images;
 
 use GdImage;
 use Mars\App;
-use Mars\App\InstanceTrait;
+use Mars\App\Kernel;
 
 /**
  * The Base Image Class
  */
 abstract class Image
 {
-    use InstanceTrait;
+    use Kernel;
 
     /**
      * @var string $filename The image's filename
@@ -43,7 +43,7 @@ abstract class Image
     protected string $optimize_command = '';
 
     /**
-     * @see \Mars\Images\DriverInterface::__construct()
+     * @see ImageInterface::__construct()
      * {@inheritdoc}
      */
     public function __construct(string $filename, App $app)
@@ -54,7 +54,7 @@ abstract class Image
     }
 
     /**
-     * @see \Mars\Images\DriverInterface::isValid()
+     * @see ImageInterface::isValid()
      * {@inheritdoc}
      */
     public function isValid() : bool
@@ -71,7 +71,7 @@ abstract class Image
     }
 
     /**
-     * @see \Mars\Images\DriverInterface::getSize()
+     * @see ImageInterface::getSize()
      * {@inheritdoc}
      */
     public function getSize() : array
@@ -85,7 +85,7 @@ abstract class Image
     }
 
     /**
-     * @see \Mars\Images\DriverInterface::getWidth()
+     * @see ImageInterface::getWidth()
      * {@inheritdoc}
      */
     public function getWidth(): int
@@ -99,7 +99,7 @@ abstract class Image
     }
 
     /**
-     * @see \Mars\Images\DriverInterface::getHeight()
+     * @see ImageInterface::getHeight()
      * {@inheritdoc}
      */
     public function getHeight(): int
@@ -113,7 +113,7 @@ abstract class Image
     }
 
     /**
-     * @see \Mars\Images\DriverInterface::getRatio()
+     * @see ImageInterface::getRatio()
      * {@inheritdoc}
      */
     public function getRatio() : float
@@ -124,7 +124,7 @@ abstract class Image
     }
 
     /**
-     * @see \Mars\Images\DriverInterface::create()
+     * @see ImageInterface::create()
      * {@inheritdoc}
      */
     public function create(int $width, int $height, GdImage $source) : GdImage
@@ -133,7 +133,7 @@ abstract class Image
     }
 
     /**
-     * @see \Mars\Images\DriverInterface::optimize()
+     * @see ImageInterface::optimize()
      * {@inheritdoc}
      */
     public function optimize() : bool

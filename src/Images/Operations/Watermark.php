@@ -6,7 +6,7 @@
 
 namespace Mars\Images\Operations;
 
-use Mars\Images\Image;
+use Mars\Images\ImageInterface;
 
 /**
  * The Watermark Operation Image Class
@@ -69,11 +69,11 @@ class Watermark extends Operation
 
     /**
      * Applies a watermark image
-     * @param Image $watermark_image The watermark image
+     * @param ImageInterface $watermark_image The watermark image
      * @param int $position The position of the watermark text. Matches the 1-9 keys of the numpad. 1:bottom-left; 5:middle center; 9:top-right
      * @param array $options Options, if any
      */
-    public function applyImage(Image $watermark_image, int $position = 3, array $options = [])
+    public function applyImage(ImageInterface $watermark_image, int $position = 3, array $options = [])
     {
         $has_opacity = $options['opacity'] ?? false;
 
