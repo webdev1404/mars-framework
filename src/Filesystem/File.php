@@ -18,7 +18,7 @@ class File
     use Kernel;
 
     /**
-     *@var string $open_basedir If specified, will limit that can be accessed to folder $open_basedir
+     * @var string $open_basedir If specified, will limit that can be accessed to folder $open_basedir
      */
     public string $open_basedir {
         get {
@@ -52,7 +52,7 @@ class File
         if (str_contains($filename, '../') || str_contains($filename, './')
             || str_contains($filename, '..\\') || str_contains($filename, '.\\')
             || str_starts_with($filename, strtolower('php:'))) {
-            throw new \Exception(App::__('file_error_invalid_chars', ['{FILE}' => $filename]));
+            throw new \Exception(App::__('error.file_invalid_chars', ['{FILE}' => $filename]));
         }
 
         return $this;
@@ -71,7 +71,7 @@ class File
         }
 
         if (strlen(basename($filename)) > $this->max_chars) {
-            throw new \Exception(App::__('file_error_invalid_maxchars', ['{FILE}' => $filename]));
+            throw new \Exception(App::__('error.file_invalid_maxchars', ['{FILE}' => $filename]));
         }
 
         $this->checkForInvalidChars($filename);
@@ -84,7 +84,7 @@ class File
             }
 
             if (!$this->app->dir->contains($this->open_basedir, $real_filename)) {
-                throw new \Exception(App::__('file_error_invalid_basedir', ['{FILE}' => $filename, '{BASEDIR}' => $this->open_basedir]));
+                throw new \Exception(App::__('error.file_invalid_basedir', ['{FILE}' => $filename, '{BASEDIR}' => $this->open_basedir]));
             }
         }
 
@@ -276,7 +276,7 @@ class File
      */
     public function getImageExtensions() : array
     {
-        return ['jpg', 'jpeg', 'gif', 'png', 'bmp', 'webp'];
+        return ['jpg', 'jpeg', 'gif', 'png', 'bmp', 'webp', 'avif'];
     }
 
     /**
@@ -339,7 +339,7 @@ class File
 
         $content = file_get_contents($filename);
         if ($content === false) {
-            throw new \Exception(App::__('file_error_read', ['{FILE}' => $filename]));
+            throw new \Exception(App::__('error.file_read', ['{FILE}' => $filename]));
         }
 
         return $content;
@@ -366,7 +366,7 @@ class File
 
         $bytes = file_put_contents($filename, $content, $flags);
         if ($bytes === false) {
-            throw new \Exception(App::__('file_error_write', ['{FILE}' => $filename]));
+            throw new \Exception(App::__('error.file_write', ['{FILE}' => $filename]));
         }
 
         return $bytes;
@@ -385,7 +385,7 @@ class File
         $this->checkFilename($filename);
 
         if (unlink($filename) === false) {
-            throw new \Exception(App::__('file_error_delete', ['{FILE}' => $filename]));
+            throw new \Exception(App::__('error.file_delete', ['{FILE}' => $filename]));
         }
 
         return $this;
@@ -406,7 +406,7 @@ class File
         $this->checkFilename($destination);
 
         if (copy($source, $destination) === false) {
-            throw new \Exception(App::__('file_error_copy', ['{SOURCE}' => $source, '{DESTINATION}' => $destination]));
+            throw new \Exception(App::__('error.file_copy', ['{SOURCE}' => $source, '{DESTINATION}' => $destination]));
         }
 
         return $this;
@@ -427,7 +427,7 @@ class File
         $this->checkFilename($destination);
 
         if (rename($source, $destination) === false) {
-            throw new \Exception(App::__('file_error_move', ['{SOURCE}' => $source, '{DESTINATION}' => $destination]));
+            throw new \Exception(App::__('error.file_move', ['{SOURCE}' => $source, '{DESTINATION}' => $destination]));
         }
 
         return $this;
@@ -451,9 +451,11 @@ class File
      */
     public function promptForDownload(string $filename, string $output_name = '')
     {
+        $this->app->plugins->run('file_prompt_for_download', $filename, $output_name, $this);
+
         $f = fopen($filename, 'r');
         if ($f === false) {
-            throw new \Exception(App::__('file_error_read', ['{FILE}' => $filename]));
+            throw new \Exception(App::__('error.file_read', ['{FILE}' => $filename]));
         }
 
         $size = filesize($filename);

@@ -14,7 +14,7 @@ class Email extends Rule
     /**
      * {@inheritdoc}
      */
-    protected string $error = 'validate_email_error';
+    protected string $error = 'error.validate_email';
 
     /**
      * Checks if $value is a valid email address

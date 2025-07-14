@@ -27,7 +27,7 @@ class Json
     /**
      * @internal
      */
-    static protected string $property = 'data';
+    protected static string $property = 'data';
 
     /**
      * Encodes data

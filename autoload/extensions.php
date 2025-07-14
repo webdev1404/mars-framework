@@ -19,16 +19,16 @@ use Mars\Extensions\Module;
     $name = $parts[1];
 
     $handlers = [
-        'Themes' => function($name) {
+        'Themes' => function ($name) {
             return Theme::getPath($name);
         },
-        'Languages' => function($name) {
+        'Languages' => function ($name) {
             return Language::getPath($name);
         },
-        'Modules' => function($name) {
+        'Modules' => function ($name) {
             return Module::getPath($name);
         },
-    ];  
+    ];
 
     if (!isset($handlers[$root])) {
         return;

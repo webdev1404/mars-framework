@@ -121,7 +121,7 @@ trait EntityTrait
      */
     public function get(array $properties = []) : array
     {
-        $data_array = App::getArray($this);
+        $data_array = $this->app->array->get($this);
 
         //unset the errors property
         unset($data_array['errors']);
@@ -175,7 +175,7 @@ trait EntityTrait
     }
 
     /**
-     * Binds the data from $data to the object's properties     
+     * Binds the data from $data to the object's properties
      * @param array $allowed_properties Array listing the properties which should be bound
      * @param array $data The data to bind
      * @param string $ignore_value If $ignore_value is not null, any values which equals $ignore_value won't be included in the returned result
@@ -225,7 +225,7 @@ trait EntityTrait
      */
     public function reset() : static
     {
-        $properties = App::getObjectProperties($this);
+        $properties = $this->app->object->getProperties($this);
 
         foreach ($properties as $name => $value) {
             if (is_string($value)) {

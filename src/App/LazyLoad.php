@@ -68,7 +68,7 @@ trait LazyLoad
     {
         foreach ($classes as $name => $class) {
             $reflector = new \ReflectionClass($class);
-            $this->$name = $reflector->newLazyGhost(function($ghost) use ($app){ 
+            $this->$name = $reflector->newLazyGhost(function ($ghost) use ($app) {
                 $ghost->__construct($app);
             });
         }

@@ -27,7 +27,7 @@ class Format
         'time_interval' => \Mars\Format\TimeInterval::class,
         'js_array' => \Mars\Format\JsArray::class,
         'js_object' => \Mars\Format\JsObject::class,
-    ];    
+    ];
 
     /**
      * @var Handlers $format The format object
@@ -51,7 +51,7 @@ class Format
      */
     public function lower(string|array $value) : string|array
     {
-        return App::map($value, function ($value) {
+        return $this->app->data->map($value, function ($value) {
             return strtolower($value);
         });
     }
@@ -63,7 +63,7 @@ class Format
      */
     public function upper(string|array $value) : string|array
     {
-        return App::map($value, function ($value) {
+        return $this->app->data->map($value, function ($value) {
             return strtoupper($value);
         });
     }
@@ -76,7 +76,7 @@ class Format
      */
     public function round(float|array $value, int $decimals = 2) : float|array
     {
-        return App::map($value, function ($value) use ($decimals) {
+        return $this->app->data->map($value, function ($value) use ($decimals) {
             return round($value, $decimals);
         });
     }
@@ -91,7 +91,7 @@ class Format
      */
     public function number(float|array $number, int $decimals = 2, string $decimal_separator = '.', string $thousands_separator = ',') : string|array
     {
-        return App::map($number, function ($number) use ($decimals, $decimal_separator, $thousands_separator) {
+        return $this->app->data->map($number, function ($number) use ($decimals, $decimal_separator, $thousands_separator) {
             return number_format($number, $decimals, $decimal_separator, $thousands_separator);
         });
     }
@@ -105,7 +105,7 @@ class Format
      */
     public function percentage(float|array $number, float $total, int $decimals = 4) : float|array
     {
-        return App::map($number, function ($number) use ($total, $decimals) {
+        return $this->app->data->map($number, function ($number) use ($total, $decimals) {
             return $this->format->get('percentage')->format($number, $total, $decimals);
         });
     }
@@ -118,7 +118,7 @@ class Format
      */
     public function filesize(int|float|array $bytes, int $digits = 2) : string|array
     {
-        return App::map($bytes, function ($bytes) use ($digits) {
+        return $this->app->data->map($bytes, function ($bytes) use ($digits) {
             return $this->format->get('filesize')->format($bytes, $digits);
         });
     }
@@ -130,7 +130,7 @@ class Format
      */
     public function datetime(int|string|DateTime|array $datetime = 0) : string|array
     {
-        return App::map($datetime, function ($datetime) {
+        return $this->app->data->map($datetime, function ($datetime) {
             return $this->app->datetime->get($datetime);
         });
     }
@@ -142,7 +142,7 @@ class Format
      */
     public function date(int|string|DateTime|array $date = 0) : string|array
     {
-        return App::map($date, function ($date) {
+        return $this->app->data->map($date, function ($date) {
             return $this->app->date->get($date);
         });
     }
@@ -154,7 +154,7 @@ class Format
      */
     public function time(int|string|DateTime|array $time = 0) : string|array
     {
-        return App::map($time, function ($time) {
+        return $this->app->data->map($time, function ($time) {
             return $this->app->time->get($time);
         });
     }
@@ -168,7 +168,7 @@ class Format
      */
     public function timeInterval(int|array $seconds, string $separator1 = ' ', string $separator2 = ', ') : string|array
     {
-        return App::map($seconds, function ($seconds) use ($separator1, $separator2) {
+        return $this->app->data->map($seconds, function ($seconds) use ($separator1, $separator2) {
             return $this->format->get('time_interval')->format($seconds, $separator1, $separator2);
         });
     }

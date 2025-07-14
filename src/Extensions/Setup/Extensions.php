@@ -43,7 +43,7 @@ class Extensions
      * Runs prepare on all supported handlers
      */
     public function prepare()
-    {        
+    {
         $handlers = $this->handlers->getAll();
         foreach ($handlers as $handler) {
             $handler->prepare();

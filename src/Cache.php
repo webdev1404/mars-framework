@@ -72,7 +72,7 @@ class Cache
 
     /**
      * Sets The value of a cached value
-     * @param string $name The name 
+     * @param string $name The name
      * @param mixed $value The value
      */
     public function set(string $name, $value) : static
@@ -96,22 +96,37 @@ class Cache
     /**
      * Gets an array from a php file
      * @param string $filename The name of the file
+     * @param bool $hash_filename Whether to hash the filename or not
      * @return array The array or null if the file does not exist
      */
-    public function getArray(string $filename) : ?array
+    public function getArray(string $filename, bool $hash_filename = true) : ?array
     {
-        return $this->data->getArray($filename);
+        return $this->data->getArray($filename, $hash_filename);
     }
     
     /**
      * Stores an array to a php file
      * @param string $filename The name of the file
+     * @param bool $hash_filename Whether to hash the filename or not
      * @param array $data The data to store
      * @return static $this
      */
-    public function setArray(string $filename, array $data) : static
+    public function setArray(string $filename, array $data, bool $hash_filename = true) : static
     {
-        $this->data->setArray($filename, $data);
+        $this->data->setArray($filename, $data, $hash_filename);
+
+        return $this;
+    }
+
+    /**
+     * Deletes a cached php file
+     * @param string $filename The name of the file
+     * @param bool $hash_filename Whether to hash the filename or not
+     * @return static $this
+     */
+    public function deleteArray(string $filename, bool $hash_filename = true) : static
+    {
+        $this->data->deleteArray($filename, $hash_filename);
 
         return $this;
     }

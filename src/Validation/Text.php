@@ -17,8 +17,8 @@ class Text extends Rule
     protected string $error = '';
 
     protected array $errors = [
-        'min' => 'validate_text_min_error',
-        'max' => 'validate_text_max_error',
+        'min' => 'error.validate_text_min',
+        'max' => 'error.validate_text_max',
     ];
 
     /**

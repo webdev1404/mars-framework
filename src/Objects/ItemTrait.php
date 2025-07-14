@@ -132,7 +132,7 @@ trait ItemTrait
      */
     public function set(array|object $data, bool $overwrite = true) : static
     {
-        $this->original = $this->getOriginalData(App::getArray($data));
+        $this->original = $this->getOriginalData($this->app->array->get($data));
 
         parent::set($data, $overwrite);
 
@@ -333,7 +333,7 @@ trait ItemTrait
         $bind_data = static::$bind_data ?? false;
 
         if ($ignore) {
-            $data = App::filterProperties($data, $ignore);
+            $data = $this->app->array->unset($data, $ignore);
         }
         if ($bind_data) {
             $data = $this->db->bind($this->getTable(), $data);
@@ -399,7 +399,7 @@ trait ItemTrait
     /**
      * Returns the original data
      * @param string $property If specified, only this property will be returned
-     * @return mixed The original value 
+     * @return mixed The original value
      */
     public function getOriginal(string $property = '')
     {
@@ -425,7 +425,7 @@ trait ItemTrait
         }
 
         if ($original_list) {
-            return App::getProperties($data, $original_list);
+            return $this->app->data->getProperties($data, $original_list);
         }
 
         return $data;

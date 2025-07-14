@@ -30,5 +30,3 @@ final class RandomTest extends Base
         $this->assertLessThanOrEqual(10.5, $random_float);
     }
 }
-
-

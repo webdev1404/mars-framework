@@ -1,10 +1,12 @@
 <?php
+use Mars\App\Kernel;
 use Mars\Data\SetTrait;
 
 include_once(dirname(__DIR__) . '/Base.php');
 
 class ElementsSet
 {
+    use Kernel;
     use SetTrait;
 
     protected static string $property = 'list';

@@ -11,7 +11,7 @@ use Mars\Data\ListTrait;
 
 /**
  * The Early Hints Preconnect Class
- * Contains the early hints preconnect headers 
+ * Contains the early hints preconnect headers
  */
 class Preconnect
 {

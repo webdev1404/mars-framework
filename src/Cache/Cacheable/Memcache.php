@@ -54,7 +54,7 @@ class Memcache implements CacheableInterface
      * {@inheritdoc}
      */
     public function store(string $filename, string $content, string $type) : bool
-    {        
+    {
         $this->check();
 
         $filename = $this->getFilename($filename);

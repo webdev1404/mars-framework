@@ -199,7 +199,7 @@ class Dir
         }
 
         if (!mkdir($dir)) {
-            throw new \Exception(App::__('dir_error_create', ['{DIR}' => $dir]));
+            throw new \Exception(App::__('error.dir_create', ['{DIR}' => $dir]));
         }
     }
 
@@ -244,7 +244,7 @@ class Dir
         $this->checkFilename($destination);
 
         if (!rename($source, $destination)) {
-            throw new \Exception(App::__('dir_error_move', ['{SOURCE}' => $source, '{DESTINATION}' => $destination]));
+            throw new \Exception(App::__('error.dir_move', ['{SOURCE}' => $source, '{DESTINATION}' => $destination]));
         }
     }
 
@@ -264,18 +264,18 @@ class Dir
         foreach ($iterator as $file) {
             if ($file->isDir()) {
                 if (!rmdir($file->getPathname())) {
-                    throw new \Exception(App::__('dir_error_delete', ['{DIR}' => $file->getPathname()]));
+                    throw new \Exception(App::__('error.dir_delete', ['{DIR}' => $file->getPathname()]));
                 }
             } else {
                 if (!unlink($file->getPathname())) {
-                    throw new \Exception(App::__('file_error_delete', ['{FILE}' => $file->getPathname()]));
+                    throw new \Exception(App::__('error.file_delete', ['{FILE}' => $file->getPathname()]));
                 }
             }
         }
 
         if ($delete_dir) {
             if (!rmdir($dir)) {
-                throw new \Exception(App::__('dir_error_delete', ['{DIR}' => $dir]));
+                throw new \Exception(App::__('error.dir_delete', ['{DIR}' => $dir]));
             }
         }
     }
@@ -309,7 +309,7 @@ class Dir
             if ($file->isFile()) {
                 if ($file->getCTime() <= $expires) {
                     if (!unlink($file->getPathname())) {
-                        throw new \Exception(App::__('file_error_delete', ['{FILE}' => $file->getPathname()]));
+                        throw new \Exception(App::__('error.file_delete', ['{FILE}' => $file->getPathname()]));
                     }
                 }
             }

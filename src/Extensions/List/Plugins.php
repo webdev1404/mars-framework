@@ -24,12 +24,12 @@ class Plugins
     public function get(string $type = '') : array
     {
         $list = [];
-        $modules_list = $this->app->config->read('modules.php');
+        $modules_list = Module::getList();
 
-        foreach ($modules_list as $module_name) {
-            $module = new Module($module_name, [], $this->app);
-            $plugins_dir = $module->path . '/' . Module::DIRS['plugins'];
-            
+        foreach ($modules_list as $module_path) {
+            $module_name = basename($module_path);
+            $plugins_dir = $module_path . '/' . Module::DIRS['plugins'];
+
             if (is_dir($plugins_dir)) {
                 $plugins = $this->app->dir->getFiles($plugins_dir, false, false, [], ['php']);
 
@@ -38,8 +38,8 @@ class Plugins
                 }
 
                 foreach ($plugins as $plugin) {
-                    $name = $this->app->file->getFile($plugin);
-                    $class_name = $module->getPluginNamespace($name);
+                    $plugin_name = $this->app->file->getFile($plugin);
+                    $class_name = Module::getPluginNamespace($module_name, $plugin_name);
 
                     $list[$class_name] = $module_name;
                 }

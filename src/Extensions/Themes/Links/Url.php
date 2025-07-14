@@ -162,7 +162,7 @@ abstract class Url
     {
         $urls = (array)$urls;
 
-        return array_map(function($url) {
+        return array_map(function ($url) {
             return $this->assets_url . '/' . $url;
         }, $urls);
     }

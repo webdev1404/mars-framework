@@ -194,7 +194,7 @@ class Template
         $config = $this->app->config;
         $html = $this->app->html;
         $ui = $this->app->ui;
-        $uri = $this->app->uri;
+        $url = $this->app->url;
         $format = $this->app->format;
         $plugins = $this->app->plugins;
         $request = $this->app->request;

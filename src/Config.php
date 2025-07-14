@@ -174,7 +174,7 @@ class Config
      */
     public array $csp_defaults = [
         'default-src' => "'self'",
-		'script-src' => "'self' 'unsafe-inline'",
+        'script-src' => "'self' 'unsafe-inline'",
         'style-src' => "'self' 'unsafe-inline'",
         'object-src' => "'none'"
     ];
@@ -655,7 +655,7 @@ class Config
      * @param App $app The app object
      */
     public function __construct(App $app)
-    {        
+    {
         $this->app = $app;
 
         $this->init();
@@ -728,8 +728,8 @@ class Config
      */
     protected function check()
     {
-        if (!$this->key) {
-            throw new \Exception("The key config option must be set");
+        if (!$this->url) {
+            throw new \Exception("The url config option must be set");
         }
     }
 }

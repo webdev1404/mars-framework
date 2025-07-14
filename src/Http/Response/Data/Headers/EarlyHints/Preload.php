@@ -11,7 +11,7 @@ use Mars\Data\ListTrait;
 
 /**
  * The Early Hints Preload Class
- * Contains the early hints preload headers 
+ * Contains the early hints preload headers
  */
 class Preload
 {

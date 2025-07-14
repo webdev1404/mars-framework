@@ -35,7 +35,17 @@ class Module extends Extension
     /**
      * @internal
      */
-    protected static ?array $list = null;
+    protected static ?array $enabled_list = null;
+
+    /**
+     * @internal
+     */
+    protected static string $enabled_list_config_file = 'modules.php';
+
+    /**
+     * @internal
+     */
+    protected static ?array $available_list = null;
 
     /**
      * @internal
@@ -58,37 +68,28 @@ class Module extends Extension
     protected static string $setup_class = \Mars\Extensions\Setup\Module::class;
 
     /**
-     * @see Extension::getError()
-     * {@inheritdoc}
+     * @var string $lang_key The key used to store the language strings
      */
-    protected function getError() : string
-    {
-        return "Module '{$this->name}' not found or not enabled in config/modules.php";
-    }
+    public protected(set) string $lang_key {
+        get {
+            if (isset($this->lang_key)) {
+                return $this->lang_key;
+            }
 
-    /**
-     * Returns the list of available extensions of this type
-     * @return array The list of available extensions
-     */
-    public static function getList() : array
-    {
-        $app = static::getApp();
+            $this->lang_key = 'module.' . $this->name;
 
-        $list = parent::getList();
-        
-        $enabled_list = $app->config->read('modules.php');
-        
-        //filter out the modules that are not enabled
-        return array_filter($list, fn($module) => in_array($module, $enabled_list), ARRAY_FILTER_USE_KEY);
+            return $this->lang_key;
+        }
     }
 
     /**
      * Returns the namespace for the specified plugin name
+     * @param string $module_name The name of the module the plugin belongs to
      * @param string $plugin_name The name of the plugin
      * @return string The namespace for the plugin
      */
-    public function getPluginNamespace(string $plugin_name) : string
+    public static function getPluginNamespace(string $module_name, string $plugin_name) : string
     {
-        return $this->namespace . '\\' . App::getClass(static::DIRS['plugins']) . '\\' . App::getClass($plugin_name);
+        return static::$base_namespace . '\\' . App::getClass($module_name) . '\\' . App::getClass(static::DIRS['plugins']) . '\\' . App::getClass($plugin_name);
     }
 }

@@ -92,7 +92,7 @@ class Form extends Tag
      * @param array $columns The form's columns
      * @param array $attributes The form's attributes
      * @param array $classes The form's classes for fields, columns, etc
-     * @param null|array|Input $data 
+     * @param null|array|Input $data
      * @param App|null $app The app
      */
     public function __construct(string $url = '', array $fields = [], array $columns = [], array $attributes = [], array $classes = [], null|array|Input $data = null, ?App $app = null)
@@ -103,7 +103,7 @@ class Form extends Tag
         $this->columns = $columns;
         $this->attributes = $attributes;
         $this->classes = $classes;
-        $this->data = $data;        
+        $this->data = $data;
     }
 
     /**
@@ -235,7 +235,7 @@ class Form extends Tag
             $input_attributes = [];
 
             $name_attr = $obj->getNameAttribute();
-            $val_attr = $obj->getValueAttribute();        
+            $val_attr = $obj->getValueAttribute();
             if ($name_attr) {
                 $input_attributes[$name_attr] = $name;
             }
@@ -324,10 +324,10 @@ class Form extends Tag
      * @return string The value of the field
      */
     protected function getInputValueFromData(string $name) : string|array
-    {    
+    {
         if ($this->data === null) {
             //read from post
-            if ( $this->app->request->is_post) {
+            if ($this->app->request->is_post) {
                 return $this->app->request->post->get($name);
             }
         } else {
@@ -387,7 +387,7 @@ class Form extends Tag
             $data = $this->app->request->post->data;
         } else {
             if ($this->data instanceof Input) {
-                $data = $this->data->data;  
+                $data = $this->data->data;
             } else {
                 $data = $this->data;
             }

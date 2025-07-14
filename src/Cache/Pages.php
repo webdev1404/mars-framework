@@ -48,7 +48,7 @@ class Pages extends Cacheable
                 return $this->file;
             }
 
-            $this->file = $this->app->url_full;
+            $this->file = $this->app->url->full;
 
             return $this->file;
         }
@@ -91,7 +91,7 @@ class Pages extends Cacheable
 
         if ($this->app->is_cli || !$this->app->config->cache_page_enable || defined('DISABLE_CACHE_PAGE')) {
             return;
-        }        
+        }
         if ($this->app->config->debug || $this->app->config->development) {
             return;
         }
@@ -126,7 +126,7 @@ class Pages extends Cacheable
      * @return static
      */
     public function delete() : static
-    {        
+    {
         $this->driver->delete($this->filename, $this->dir);
 
         return $this;
@@ -160,7 +160,7 @@ class Pages extends Cacheable
      * Outputs the content, if it's cached
      */
     public function output()
-    {      
+    {
         if (!$this->can_cache) {
             return;
         }

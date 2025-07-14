@@ -7,7 +7,7 @@
 namespace Mars\Document\Tags;
 
 /**
-* The Favicon Class
+ * The Favicon Class
  * Stores the favicon of the document
  */
 class Favicon extends Tag

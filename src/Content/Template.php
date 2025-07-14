@@ -11,7 +11,7 @@ namespace Mars\Content;
  * Outputs the content of a template
  */
 class Template extends Content implements ContentInterface
-{        
+{
     public function output()
     {
         $this->outputTitleAndMeta();

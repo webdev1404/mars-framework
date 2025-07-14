@@ -60,6 +60,6 @@ abstract class Content
             foreach ($this->meta as $name => $val) {
                 $this->app->document->meta->add($name, $val);
             }
-        }        
+        }
     }
 }

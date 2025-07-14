@@ -50,7 +50,7 @@ abstract class Component extends Extension
         get {
             if (isset($this->assets_path)) {
                 return $this->assets_path;
-            }            
+            }
 
             $this->assets_path = $this->module->assets_path . '/' . static::$base_dir . '/' . $this->name;
 
@@ -77,7 +77,7 @@ abstract class Component extends Extension
      * @var string $assets_target The path of the assets folder, in the public directory, where the assets for this extension are located.
      */
     public protected(set) string $assets_target {
-        get {            
+        get {
             if (isset($this->assets_target)) {
                 return $this->assets_target;
             }
@@ -105,6 +105,24 @@ abstract class Component extends Extension
     }
 
     /**
+     * @var string $lang_key The key used to store the language strings
+     */
+    public protected(set) string $lang_key {
+        get {
+            if (isset($this->lang_key)) {
+                return $this->lang_key;
+            }
+
+            $this->lang_key = $this->module->lang_key;
+            if ($this->name) {
+                $this->lang_key .= '.' . $this->name;
+            }
+
+            return $this->lang_key;
+        }
+    }
+
+    /**
      * Builds the extension
      * @param string $module_name The name of the module the extension belongs to
      * @param string $name The name of the exension
@@ -117,35 +135,7 @@ abstract class Component extends Extension
 
         $this->name = $name;
         $this->params = $params;
-        $this->module = new Module($module_name, [], $this->app); 
-    }
-
-    /**     
-     * @see Abilities\LanguagesTrait::loadLanguage()
-     * {@inheritdoc}
-     */
-    public function loadLanguage(string $file = '', string $prefix = '') : static
-    {        
-        return $this->loadLanguageFromTrait($file, $this->getLanguagePrefix($prefix));
-    }
-
-    /**
-     * Returns the language prefix for this extension
-     * @param string $prefix The prefix to use
-     * @return string
-     */
-    protected function getLanguagePrefix(string $prefix = '') : string
-    {
-        if ($prefix) {
-            return $prefix;
-        }
-
-        $prefix = $this->module->name;
-        if ($this->name) {
-            $prefix.= '.' . $this->name;
-        }
-
-        return $prefix;
+        $this->module = new Module($module_name, [], $this->app);
     }
 
     /**
@@ -154,10 +144,10 @@ abstract class Component extends Extension
      */
     public function output()
     {
-        $this->app->lang->savePrefix();
+        $this->app->lang->saveSearchKeys();
 
         parent::output();
 
-        $this->app->lang->restorePrefix();
+        $this->app->lang->restoreSearchKeys();
     }
 }

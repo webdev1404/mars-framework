@@ -19,6 +19,9 @@ use Mars\Filesystem\Dir;
 use Mars\Filesystem\File;
 use Mars\Http\Request;
 use Mars\Http\Response;
+use Mars\Data\Types\ArrayType;
+use Mars\Data\Types\ObjectType;
+use Mars\Data\Types\StringType;
 use Mars\Time\DateTime;
 use Mars\Time\Date;
 use Mars\Time\Time;
@@ -50,6 +53,12 @@ class App
     public Accelerator $accelerator;
 
     /**
+     * @var ArrayType $array The array object
+     */
+    #[LazyLoadProperty]
+    public ArrayType $array;
+
+    /**
      * @var Cli $cli The cli object
      */
     #[LazyLoadProperty]
@@ -72,6 +81,12 @@ class App
      */
     #[LazyLoadProperty]
     public Config $config;
+
+    /**
+     * @var Data $data The data object
+     */
+    #[LazyLoadProperty]
+    public Data $data;
 
     /**
      * @var Db $db The db object
@@ -194,6 +209,12 @@ class App
     public Messages $messages;
 
     /**
+     * @var ObjectType $object The object object
+     */
+    #[LazyLoadProperty]
+    public ObjectType $object;
+
+    /**
      * @var Plugins $plugins The plugins object
      */
     #[LazyLoadProperty]
@@ -240,6 +261,12 @@ class App
      */
     #[LazyLoadProperty]
     public Session $session;
+
+    /**
+     * @var StringType $string The string object
+     */
+    #[LazyLoadProperty]
+    public StringType $string;
 
     /**
      * @var Sql $sql The sql object
@@ -302,10 +329,10 @@ class App
     public Ui $ui;
 
     /**
-     * @var Uri $uri The uri object
+     * @var Url $url The url object
      */
     #[LazyLoadProperty]
-    public Uri $uri;
+    public Url $url;
 
     /**
      * @var Unescape $unescape The unescape object
@@ -378,7 +405,7 @@ class App
             $this->is_https = false;
             if ($this->is_web) {
                 if (isset($_SERVER['HTTPS'])) {
-                	$this->is_https = true;
+                    $this->is_https = true;
                 }
             }
 
@@ -425,53 +452,18 @@ class App
     /**
      * @var string $base_url The url. Eg: http://mydomain.com/mars
      */
-    public protected(set) string $base_url {
+    public string $base_url {
         get {
-            if (isset($this->base_url)) {
-                return $this->base_url;
-            }
-
-            $this->base_url = $this->config->url;
-
-            return $this->base_url;
+            return $this->url->base;
         }
     }
 
     /**
-     * @var string $url The current url. Does not include the query string
+     * @var string $root_url The url. Includes the language code, if languages_multi is enabled. Eg: http://mydomain.com/mars/en
      */
-    public protected(set) string $url {
+    public string $root_url {
         get {
-            if (isset($this->url)) {
-                return $this->url;
-            }
-
-            $this->url = $this->uri->getRoot($this->base_url) . $this->uri->getPath($_SERVER['REQUEST_URI'] ?? '');
-            $this->url = filter_var($this->url, FILTER_SANITIZE_URL);
-
-            return $this->url;
-        }
-    }
-
-    /**
-     * @var string $url_full The full url. Includes the query string
-     */
-    public protected(set) string $url_full {
-        get {
-            if (isset($this->url_full)) {
-                return $this->url_full;
-            }
-
-            $query_string = $_SERVER['QUERY_STRING'] ?? '';
-            if ($query_string) {
-                $this->url_full = $this->url . '?' . $query_string;
-            } else {
-                $this->url_full = $this->url;
-            }
-
-            $this->url_full = filter_var($this->url_full, FILTER_SANITIZE_URL);
-
-            return $this->url_full;
+            return $this->url->root;
         }
     }
 
@@ -491,7 +483,7 @@ class App
                 if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
                     if (in_array($this->ip, $this->config->trusted_proxies)) {
                         //HTTP_X_FORWARDED_FOR can contain multiple IPs. Use only the first one
-                        $this->ip = trim(reset(explode(',', $_SERVER['HTTP_X_FORWARDED_FOR'])));                       
+                        $this->ip = trim(reset(explode(',', $_SERVER['HTTP_X_FORWARDED_FOR'])));
                     }
                 }
 
@@ -643,7 +635,7 @@ class App
                 } elseif ($this->url == $this->base_url . '/index.php') {
                     $this->is_homepage = true;
                 }
-            }            
+            }
 
             return $this->is_homepage;
         }
@@ -705,7 +697,7 @@ class App
      * Protected constructor
      */
     protected function __construct()
-    {        
+    {
         $this->lazyLoad($this);
     }
 
@@ -713,7 +705,7 @@ class App
      * Boots the app
      */
     public function boot()
-    {       
+    {
         $this->assignDirs(static::DIRS);
 
         $this->setErrorReporting();
@@ -814,7 +806,7 @@ class App
         die;
     }
 
-     /**
+    /**
      * Outputs the content
      * @param string $content The content
      */
@@ -970,20 +962,21 @@ class App
      * @see \Mars\Extensions\Language::get()
      * {@inheritdoc}
      */
-    public static function __(string $str, array $replace = [], string $prefix = '') : string
+    public static function __(string $str, array $replace = [], string $key = '') : string
     {
-        return static::$instance->lang->get($str, $replace, $prefix);
+        return static::$instance->lang->get($str, $replace, $key);
     }
 
     /**
      * Returns a html escaped language string
      * @param string $str The string index as defined in the languages file
      * @param array $replace Array with key & values to be used for to search & replace, if any
+     * @param string $key The key where the string is defined, if any
      * @return string The language string
      */
-    public static function __e(string $str, array $replace = []) : string
+    public static function __e(string $str, array $replace = [], string $key = '') : string
     {
-        $str = static::__($str, $replace);
+        $str = static::__($str, $replace, $key);
 
         return static::$instance->escape->html($str);
     }
@@ -1031,190 +1024,7 @@ class App
 
         return $str;
     }
-
-    /**
-     * Determines if the property exists
-     * @param array|object $data The data to return the property from
-     * @param string $name The name of the property/index
-     * @return mixed The property
-     */
-    public static function hasProperty(array|object $data, string $name) : bool
-    {
-        if (is_array($data)) {
-            return isset($data[$name]);
-        } else {
-            return isset($data->$name);
-        }
-    }
-
-    /**
-     * Returns a property of an object or an array value
-     * @param array|object $data The data to return the property from
-     * @param string $name The name of the property/index
-     * @return mixed The property
-     */
-    public static function getProperty(array|object $data, string $name)
-    {
-        if (is_array($data)) {
-            return $data[$name] ?? null;
-        } else {
-            return $data->$name ?? null;
-        }
-    }
-
-    /**
-     * Returns a list of properties of an object or an array value
-     * @param array|object $data The data to return the property from
-     * @param array $properties The name of the properties to return
-     * @return array The properties
-     */
-    public static function getProperties(array|object $data, array $properties = []) : array
-    {
-        $properties_array = [];
-        if ($properties) {
-            foreach ($properties as $name) {
-                if (static::hasProperty($data, $name)) {
-                    $properties_array[$name] = static::getProperty($data, $name);
-                }
-            }
-        } else {
-            $properties_array = (array)$data;
-        }
-
-        return $properties_array;
-    }
-
-    /**
-     * Removes the specified properties from the data
-     * @param array $properties The name of the properties to remove
-     * @return array The properties
-     */
-    public static function filterProperties(array|object $data, array $properties) : array
-    {
-        return static::unset((array)$data, $properties);
-    }
-
-    /**
-     * Returns the properties of an object
-     * @param object $object The object
-     * @return array The properties
-     */
-    public static function getObjectProperties(object $object) : array
-    {
-        return get_object_vars($object);
-    }
-
-    /**
-     * Returns an object from an class/callable...
-     * @param mixed $class The class/callable etc..
-     * @param mixed $args The arguments to pass to the constructor
-     * @return object
-     */
-    public static function getObject(mixed $class, ...$args) : object
-    {
-        $args[] = static::$instance;
-
-        $object = null;
-        if (is_string($class)) {
-            $object = new $class(...$args);
-        } elseif(is_callable($class)) {
-            $object = $class($args);
-        } else {
-            $object = (object)$class;
-        }
-
-        return $object;
-    }
-
-    /**
-     * Returns an array from an array/object/iterator
-     * @param mixed $array The array
-     * @return array
-     */
-    public static function getArray(mixed $array) : array
-    {
-        if (!$array) {
-            return [];
-        }
-
-        if (is_array($array)) {
-            return $array;
-        } elseif (is_iterable($array)) {
-            return iterator_to_array($array);
-        } elseif (is_object($array)) {
-            return get_object_vars($array);
-        } else {
-            return (array)$array;
-        }
-    }
-
-    /**
-     * Returns a string from a value
-     * @param mixed $value The value
-     * @return string
-     */
-    public static function getString(mixed $value) : string
-    {
-        if (is_array($value)) {
-            return reset($value);
-        }
-
-        return (string)$value;
-    }
-
-    /**
-     * Maps a value [scalar|array] to a callback
-     * @param mixed $value The value
-     * @param callable $callback The callback function
-     */
-    public static function map($value, callable $callback)
-    {
-        if (is_array($value)) {
-            return array_map($callback, $value);
-        }
-
-        return $callback($value);
-    }
-
-    /**
-     * Unsets from $array the specified keys
-     * @param array $array The array
-     * @param string|array The keys to unset
-     * @return array The array
-     */
-    public static function unset(array $array, string|array $keys) : array
-    {
-        $keys = (array)$keys;
-
-        foreach ($keys as $key) {
-            if (isset($array[$key])) {
-                unset($array[$key]);
-            }
-        }
-
-        return $array;
-    }
-
-    /**
-     * Removes the specified values from the array
-     * @param array $array The array
-     * @param string|array The values to remove
-     * @return array The array
-     */
-    public static function remove(array $array, string|array $values) : array
-    {
-        $values = (array)$values;
-
-        foreach ($values as $value) {
-            $key = array_search($value, $array);
-            if ($key !== false) {
-                unset($array[$key]);
-            }
-        }
-
-        return $array;
-    }
-
+    
     /********************** DEBUG FUNCTIONS ***************************************/
 
     /**

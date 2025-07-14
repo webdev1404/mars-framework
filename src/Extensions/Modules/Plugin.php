@@ -7,9 +7,9 @@
 namespace Mars\Extensions\Modules;
 
 use Mars\App;
+use Mars\Extensions\Extension;
 use Mars\Extensions\Abilities\LanguagesTrait;
 use Mars\Extensions\Abilities\TemplatesTrait;
-use Mars\Extensions\Extension;
 use Mars\Extensions\List\Plugins as Reader;
 
 /**
@@ -65,11 +65,6 @@ abstract class Plugin extends Component
 
         $this->app->plugins->addHooks($this, $this->hooks);
     }
-
-    /*public static function getList() : array
-    {
-        return Extension::getList();
-    }*/
 
     /**
      * Returns the reader object used to read the list of available extensions

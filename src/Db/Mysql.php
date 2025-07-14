@@ -7,7 +7,7 @@
 namespace Mars\Db;
 
 /**
-* The Mysql Database Driver
+ * The Mysql Database Driver
  */
 class Mysql implements DbInterface
 {
@@ -104,7 +104,7 @@ class Mysql implements DbInterface
                 $this->result = $this->handle->prepare($sql);
                 $this->result->execute($this->getParams($params));
                 $this->result->setFetchMode(\PDO::FETCH_OBJ);
-            } else {                
+            } else {
                 $this->result = $this->handle->query($sql);
                 $this->result->setFetchMode(\PDO::FETCH_OBJ);
             }

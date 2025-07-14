@@ -13,7 +13,7 @@ use Mars\Document\Links\Urls;
  * The Preload Urls Class
  * Class containing the preload functionality used by a document
  */
-class Preload 
+class Preload
 {
     use Kernel;
 
@@ -107,6 +107,6 @@ class Preload
     {
         $crossorigin = $item->crossorigin ? ' crossorigin="' . $item->crossorigin . '"' : '';
 
-        echo '<link rel="'. $this->rel .'" href="' . $this->app->escape->html($url) . '" as="'. $item->type .'"'. $crossorigin .' />' . "\n";
+        echo '<link rel="' . $this->rel . '" href="' . $this->app->escape->html($url) . '" as="' . $item->type . '"' . $crossorigin . ' />' . "\n";
     }
 }

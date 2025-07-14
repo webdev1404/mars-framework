@@ -171,7 +171,7 @@ class Html
         return $this->getTag('picture', '', $attributes);
     }
 
-     /**
+    /**
      * Creates a video tag
      * @param string|array $url The video's source url(s)
      * @param int $width The video's width
@@ -354,7 +354,7 @@ class Html
      * @param array $columns The form's columns
      * @param array $attributes The form's attributes
      * @param array $classes The form's classes for fields, columns, etc
-     * @param null|array|Input $data 
+     * @param null|array|Input $data
      */
     public function form(string $url, array $fields, array $columns, array $attributes = [], array $classes = [], null|array|Input $data = null) : string
     {

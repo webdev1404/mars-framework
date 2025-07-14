@@ -6,7 +6,6 @@
 
 namespace Mars\Html;
 
-use Mars\App;
 use Mars\App\Kernel;
 
 /**
@@ -89,13 +88,13 @@ class Tag implements TagInterface
     /**
      * Returns the tag's attributes, with the properties removed
      */
-    protected function getAttributes(array $attributes) : array 
+    protected function getAttributes(array $attributes) : array
     {
         if (!static::$properties) {
             return $attributes;
         }
 
-        return App::unset($attributes, static::$properties);
+        return $this->app->array->unset($attributes, static::$properties);
     }
 
     /**
@@ -104,7 +103,7 @@ class Tag implements TagInterface
      * @return array The attributes, including the id field
      */
     public function generateIdAttribute(array $attributes) : array
-    {        
+    {
         if (isset($attributes['id'])) {
             return $attributes;
         }

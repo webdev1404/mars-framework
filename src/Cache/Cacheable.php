@@ -76,14 +76,20 @@ abstract class Cacheable extends Cache
      * Returns the file name where the content will be cached
      * @param string $id The id of the page
      * @param string|null $extension The extension of the file. If null, $this->extension will be used
+     * @param bool $hash_filename Whether to hash the filename or not
      * @return string
      */
-    protected function getName(string $id, ?string $extension = null) : string
+    protected function getName(string $id, ?string $extension = null, bool $hash_filename = true) : string
     {
         if (!$extension) {
             $extension = $this->extension;
         }
 
-        return hash($this->hash, $id) . '.' . $extension;
+        $name = $id;
+        if ($hash_filename) {
+            $name = hash($this->hash, $id);
+        }
+
+        return $name . '.' . $extension;
     }
 }

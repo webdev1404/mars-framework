@@ -117,7 +117,7 @@ class Document
      * Outputs the required head tags
      */
     public function outputHead()
-    {        
+    {
         $this->title->output();
         $this->encoding->output();
         $this->favicon->output();

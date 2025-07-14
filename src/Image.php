@@ -40,7 +40,7 @@ class Image
         'cut' => \Mars\Images\Operations\Cut::class,
         'convert' => \Mars\Images\Operations\Convert::class,
         'watermark' => \Mars\Images\Operations\Watermark::class
-    ];    
+    ];
 
     /**
      * @var Drivers $drivers The drivers object

@@ -52,7 +52,7 @@ class Cli
         'light_blue' => '1;34',
         'magenta' => '0;35',
         'cyan' => '1;36',
-    ]; 
+    ];
 
     /**
      * @var Handlers $handlers The printers object

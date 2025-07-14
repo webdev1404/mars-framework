@@ -57,7 +57,7 @@ class Memcache
         get {
             if (!$this->enabled) {
                 return null;
-            }            
+            }
             if (isset($this->driver)) {
                 return $this->driver;
             }
@@ -228,7 +228,7 @@ class Memcache
      * @param string $key The key to store
      */
     public function storeKey(string $key, string $type) : static
-    {        
+    {
         $keys = $this->getKeys($type);
         if (!in_array($key, $keys)) {
             $keys[] = $key;

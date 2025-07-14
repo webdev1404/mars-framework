@@ -4,10 +4,10 @@
 * @package Mars
 */
 
-namespace Mars\MVC\Models;
+namespace Mars\Mvc\Models;
 
 use Mars\App;
-use Mars\MVC\Controller;
+use Mars\Mvc\Controller;
 
 /**
  * The Items Model Class

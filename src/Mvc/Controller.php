@@ -4,7 +4,7 @@
 * @package Mars
 */
 
-namespace Mars\MVC;
+namespace Mars\Mvc;
 
 use Mars\App;
 use Mars\App\Kernel;
@@ -14,7 +14,7 @@ use Mars\Hidden;
 use Mars\Escape;
 use Mars\Filter;
 use Mars\Http\Request;
-use Mars\Uri;
+use Mars\Url;
 use Mars\Validator;
 use Mars\System\Plugins;
 use Mars\Alerts\Errors;
@@ -103,7 +103,7 @@ abstract class Controller extends \stdClass
         get {
             if (isset($this->assets_path)) {
                 return $this->assets_path;
-            }            
+            }
 
             $this->assets_path = $this->parent ? $this->parent->assets_path : '';
 
@@ -205,11 +205,11 @@ abstract class Controller extends \stdClass
     }
 
     /**
-     * @var Validator $uri Alias for $this->app->uri
+     * @var Validator $url Alias for $this->app->url
      */
     #[HiddenProperty]
-    protected Uri $uri {
-        get => $this->app->uri;
+    protected Url $url {
+        get => $this->app->url;
     }
 
     /**
@@ -252,7 +252,7 @@ abstract class Controller extends \stdClass
     /**
      * @var Warnings $warnings The warnings object. Alias for $this->app->warnings
      */
-    protected Warnings $warnings    {
+    protected Warnings $warnings {
         get => $this->app->warnings;
     }
 

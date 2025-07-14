@@ -56,5 +56,3 @@ final class LogTest extends Base
         $this->assertStringContainsString('some exception', file_get_contents($filename));
     }
 }
-
-

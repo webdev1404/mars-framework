@@ -6,8 +6,8 @@
 
 namespace Mars\Html\Input;
 
-use \Mars\Html\Tag;
-use \Mars\Html\TagInterface;
+use Mars\Html\Tag;
+use Mars\Html\TagInterface;
 
 /**
  * The Textarea Class
@@ -32,7 +32,7 @@ class Textarea extends Tag implements FormInputInterface
      * The name of the value attribute
      * @var string
      */
-    protected static string $value_attribute = 'value'; 
+    protected static string $value_attribute = 'value';
 
     /**
      * {@inheritdoc}

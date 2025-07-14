@@ -31,7 +31,7 @@ class Memcached implements MemcacheInterface
 
         if (!$this->handle->addServer($host, $port) || !$this->handle->getStats()) {
             throw new \Exception('Error connecting to the memcached server');
-        }        
+        }
     }
 
     /**

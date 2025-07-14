@@ -105,11 +105,11 @@ class Files extends Input
             $filename = $this->getFilename($name, $upload_dir, $append_suffix, $append_suffix_if_file_exists);
 
             if (move_uploaded_file($tmp_filename, $filename)) {
-                $this->app->plugins->run('request_files_upload_success', $filename, $this);
+                $this->app->plugins->run('http_request_files_upload_success', $filename, $this);
 
                 $uploaded_files[$name] = $filename;
             } else {
-                $this->app->plugins->run('request_files_upload_error', $filename, $tmp_filename, $upload_dir, $this);
+                $this->app->plugins->run('http_request_files_upload_error', $filename, $tmp_filename, $upload_dir, $this);
 
                 throw new \Exception($this->getUploadError($errors_array[$i], $name));
             }
@@ -129,12 +129,12 @@ class Files extends Input
         $extension = $this->app->file->getExtension($filename);
 
         if (in_array($extension, $this->disallowed_extensions)) {
-            throw new \Exception(App::__('upload_error_invalid_type', ['{FILE}' => $filename]));
+            throw new \Exception(App::__('error.upload_invalid_type', ['{FILE}' => $filename]));
         }
 
         if ($allowed_extensions && $allowed_extensions != '*') {
             if (!in_array($extension, (array)$allowed_extensions)) {
-                throw new \Exception(App::__('upload_error_invalid_type', ['{FILE}' => $filename]));
+                throw new \Exception(App::__('error.upload_invalid_type', ['{FILE}' => $filename]));
             }
         }
     }
@@ -175,16 +175,16 @@ class Files extends Input
     {
         switch ($code) {
             case UPLOAD_ERR_INI_SIZE:
-                return App::__('upload_error_size', ['{SIZE}' => ini_get('upload_max_filesize')]);
+                return App::__('error.upload_size', ['{SIZE}' => ini_get('upload_max_filesize')]);
                 break;
             case UPLOAD_ERR_PARTIAL:
-                return App::__('upload_error_partial');
+                return App::__('error.upload_partial');
             case UPLOAD_ERR_NO_FILE:
-                return App::__('upload_error_nofile');
+                return App::__('error.upload_nofile');
             case UPLOAD_ERR_NO_TMP_DIR:
-                return App::__('upload_error_tmp');
+                return App::__('error.upload_tmp');
         }
 
-        return App::__('upload_error_generic', ['{FILE}' => $file]);
+        return App::__('error.upload_generic', ['{FILE}' => $file]);
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-use Mars\MVC\Controller;
+use Mars\Mvc\Controller;
 
 include_once(dirname(__DIR__) . '/Base.php');
 

@@ -4,7 +4,7 @@
 * @package Mars
 */
 
-namespace Mars\MVC;
+namespace Mars\Mvc;
 
 use Mars\MVC\Models\Items;
 

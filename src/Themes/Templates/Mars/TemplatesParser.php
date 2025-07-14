@@ -36,7 +36,7 @@ class TemplatesParser
      * @return string The template name
      * @throws \Exception
      */
-    protected function getTemplate(string $value) : string 
+    protected function getTemplate(string $value) : string
     {
         $template = trim($value, ' \'"');
         if (!$template) {

@@ -4,12 +4,12 @@
 * @package Mars
 */
 
-namespace Mars\MVC\Models;
+namespace Mars\Mvc\Models;
 
 use Mars\App;
 use Mars\Config;
 use Mars\HiddenProperty;
-use Mars\MVC\Controller;
+use Mars\Mvc\Controller;
 use Mars\System\Plugins;
 use Mars\Extensions\Extension;
 
@@ -56,7 +56,7 @@ trait ModelTrait
     {
     }
 
-    /**     
+    /**
      * {@inheritdoc}
      * @see \Mars\Validation\ValidateTrait::validate()
      */

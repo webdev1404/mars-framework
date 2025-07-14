@@ -26,7 +26,7 @@
         },
         "files": [
             "autoload/extensions.php",
-            "boot.php"            
+            "boot.php"
         ]
     }
 }

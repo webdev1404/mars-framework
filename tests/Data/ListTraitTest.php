@@ -1,10 +1,12 @@
 <?php
+use Mars\App\Kernel;
 use Mars\Data\ListTrait;
 
 include_once(dirname(__DIR__) . '/Base.php');
 
 class ElementsSimple
 {
+    use Kernel;
     use ListTrait;
 
     protected static string $property = 'list';
@@ -136,5 +138,3 @@ final class ListTraitTest extends Base
         $this->assertSame(iterator_to_array($iterator), ['test123', 'test345', 'test678']);
     }
 }
-
-

@@ -6,8 +6,8 @@
 
 namespace Mars\Html\Input;
 
-use \Mars\Html\Tag;
-use \Mars\Html\TagInterface;
+use Mars\Html\Tag;
+use Mars\Html\TagInterface;
 
 /**
  * The Checkbox Group Class
@@ -22,7 +22,7 @@ class CheckboxGroup extends Tag implements FormInputInterface
      */
     protected static array $properties = ['values', 'checked'];
 
-     /**
+    /**
      * The name of the name attribute
      * @var string
      */
@@ -57,7 +57,7 @@ class CheckboxGroup extends Tag implements FormInputInterface
 
             //unset the id attribute if the value is not checked, so it can be generated automatically
             if (!$is_checked) {
-                unset($input_attributes['id']); 
+                unset($input_attributes['id']);
             }
 
             $html.= $input->html('', ['value' => $value, 'checked' => $is_checked, 'label' => $label] + $this->getAttributes($input_attributes));

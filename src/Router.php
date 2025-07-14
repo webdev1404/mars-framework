@@ -7,7 +7,7 @@
 namespace Mars;
 
 use Mars\App\Kernel;
-use Mars\MVC\Controller;
+use Mars\Mvc\Controller;
 use Mars\Extensions\Modules\Block;
 use Mars\Content\ContentInterface;
 use Mars\Content\Page;
@@ -24,20 +24,49 @@ class Router
     /**
      * @var array $routes_list The defined routes list
      */
-    protected array $routes_list = [];
+    public protected(set) array $routes_list = [];
+
+    /**
+     * @var string $path The path used by the router
+     */
+    public protected(set) string $path {
+        get {
+            if (isset($this->path)) {
+                return $this->path;
+            }
+
+            $this->path = $this->app->url->path;
+            //remove the language code from the path, if multi-language is enabled
+            if ($this->app->lang->multi) {
+                $this->path = str_replace('/' . $this->app->lang->code, '', $this->path);
+            }
+
+            //remove the leading slash, for all the routes except the root
+            if ($this->path) {
+                $this->path = ltrim($this->path, '/');
+            } else {
+                $this->path = '/';
+            }
+
+            return $this->path;
+        }
+    }
     
     /**
      * Adds a route
      * @param string $type The type: get/post/put/delete
      * @param string $route The route to handle
      * @param mixed The action. Can be a closure, a string or a controller
+     * @param string|null $language The language to use for the route, if any
      * @return static
      */
-    public function add(string $type, string $route, $action) : static
+    public function add(string $type, string $route, $action, ?string $language = null) : static
     {
+        $language ??= $this->app->lang->default_code;
+
         $route = $this->cleanRouteName($route);
 
-        $this->routes_list[$type][$route] = $action;
+        $this->routes_list[$type][$route][$language] = $action;
 
         return $this;
     }
@@ -101,7 +130,7 @@ class Router
      * @param string $method The method to call
      * @param array $params The params to pass to the method
      */
-    protected function outputFromClass(string $class_name, string $method, array $params) 
+    protected function outputFromClass(string $class_name, string $method, array $params)
     {
         $controller = new $class_name;
 
@@ -134,7 +163,7 @@ class Router
     }
 
     /**
-     * Outputs the returned value and the content 
+     * Outputs the returned value and the content
      * @param string|array|object|null $value The value to output
      * @param string $content The content to output
      */
@@ -162,8 +191,7 @@ class Router
     {
         if ($object instanceof ContentInterface) {
             $object->output();
-        }
-        else {
+        } else {
             $this->app->send($object);
         }
     }
@@ -173,16 +201,14 @@ class Router
      * @return mixed
      */
     protected function getRoute()
-    {        
+    {
         $method = $this->app->request->method;
         if (!isset($this->routes_list[$method])) {
             return null;
         }
 
         $routes = $this->routes_list[$method];
-        $path = $this->getPath();
-
-        foreach ($routes as $route_path => $route) {
+        foreach ($routes as $route_path => $routes_array) {
             //get the route params
             $params = [];
             $params_keys = [];
@@ -194,7 +220,7 @@ class Router
                 return '(.*)';
             }, $route_path);
 
-            if (preg_match("|^{$route_path}\/?$|is", $path, $matches)) {
+            if (preg_match("|^{$route_path}\/?$|is", $this->path, $matches)) {
                 foreach ($matches as $key => $val) {
                     if (!$key) {
                         continue;
@@ -205,7 +231,11 @@ class Router
                     $params[$param_key] = $val;
                 }
 
-                return [$route, $params];
+                $route = $routes_array[$this->app->lang->code] ?? ($routes_array[$this->app->lang->default_code] ?? null);
+
+                if ($route) {
+                    return [$route, $params];
+                }
             }
         }
 
@@ -213,66 +243,51 @@ class Router
     }
 
     /**
-     * Returns the current path
-     * @return string The current path
-     */
-    protected function getPath() : string
-    {
-        $request_uri = explode('/', trim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), '/'));
-        $script_name = explode('/', trim($_SERVER['SCRIPT_NAME'], '/'));
-
-        $parts = array_diff_assoc($request_uri, $script_name);
-        $parts = array_filter($parts);
-
-        if (!$parts) {
-            return '/';
-        }
-
-        return implode('/', $parts);
-    }
-
-    /**
      * Handles a get request
      * @param string $route The route to handle
      * @param mixed The action. Can be a closure, a string, a controller
+     * @param string|null $language The language to use for the route, if any
      * @return static
      */
-    public function get(string $route, $action) : static
+    public function get(string $route, $action, ?string $language = null) : static
     {
-        return $this->add('get', $route, $action);
+        return $this->add('get', $route, $action, $language);
     }
 
     /**
      * Handles a get request
      * @param string $route The route to handle
      * @param mixed The action. Can be a closure, a string, a controller
+     * @param string|null $language The language to use for the route, if any
      * @returnstatic
      */
-    public function post(string $route, $action) : static
+    public function post(string $route, $action, ?string $language = null) : static
     {
-        return $this->add('post', $route, $action);
+        return $this->add('post', $route, $action, $language);
     }
 
     /**
      * Handles a get request
      * @param string $route The route to handle
      * @param mixed The action. Can be a closure, a string, a controller
+     * @param string|null $language The language to use for the route, if any
      * @return static
      */
-    public function put(string $route, $action) : static
+    public function put(string $route, $action, ?string $language = null) : static
     {
-        return $this->add('put', $route, $action);
+        return $this->add('put', $route, $action, $language);
     }
 
     /**
      * Handles a get request
      * @param string $route The route to handle
      * @param mixed The action. Can be a closure, a string, a controller
+     * @param string|null $language The language to use for the route, if any
      * @return static
      */
-    public function delete(string $route, $action) : static
+    public function delete(string $route, $action, ?string $language = null) : static
     {
-        return $this->add('delete', $route, $action);
+        return $this->add('delete', $route, $action, $language);
     }
 
     /**
@@ -280,55 +295,59 @@ class Router
      * @param string $route The route to handle
      * @param string $module_name The module the block belongs to
      * @param string $name The block's name
+     * @param string|null $language The language to use for the route, if any
      * @param array $params The params to pass to the block, if any
      * @return static
      */
-    public function block(string $route, string $module_name, string $name = '', array $params = []) : static
+    public function block(string $route, string $module_name, string $name = '', ?string $language = null, array $params = []) : static
     {
-        $handler = fn() => new Block($module_name, $name, $params, $this->app);
+        $handler = fn () => new Block($module_name, $name, $params, $this->app);
 
-        return $this->setRouteObject($route, $handler);
+        return $this->setRouteObject($route, $handler, $language);
     }
     
     /**
      * Handles a template request
      * @param string $route The route to handle
      * @param string $template The template's name
+     * @param string|null $language The language to use for the route, if any
      * @param string $title The title tag of the page
      * @param array $meta Meta data of the page
      * @return static
      */
-    public function template(string $route, string $template, string $title = '', array $meta = []) : static
+    public function template(string $route, string $template, ?string $language = null, string $title = '', array $meta = []) : static
     {
-        $handler = fn() => new Template($template, $title, $meta, $this->app);
+        $handler = fn () => new Template($template, $title, $meta, $this->app);
 
-        return $this->setRouteObject($route, $handler);
+        return $this->setRouteObject($route, $handler, $language);
     }
 
     /**
      * Handles a page request
      * @param string $route The route to handle
      * @param string $template The page's template's name
+     * @param string|null $language The language to use for the route, if any
      * @param string $title The title tag of the page
      * @param array $meta Meta data of the page
      * @return static
      */
-    public function page(string $route, string $template, string $title = '', array $meta = []) : static
+    public function page(string $route, string $template, ?string $language = null, string $title = '', array $meta = []) : static
     {
-        $handler = fn() => new Page($template, $title, $meta, $this->app);
+        $handler = fn () => new Page($template, $title, $meta, $this->app);
 
-        return $this->setRouteObject($route, $handler);
+        return $this->setRouteObject($route, $handler, $language);
     }
     
     /**
      * Sets the object which will handle the route
      * @param string $route The route to handle
      * @param callable $handler The handler to call when the route is matched
+     * @param string|null $language The language to use for the route, if any
      */
-    protected function setRouteObject(string $route, callable $handler) : static
+    protected function setRouteObject(string $route, callable $handler, ?string $language = null) : static
     {
-        $this->add('get', $route, $handler);
-        $this->add('post', $route, $handler);
+        $this->add('get', $route, $handler, $language);
+        $this->add('post', $route, $handler, $language);
 
         return $this;
     }

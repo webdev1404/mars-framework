@@ -128,7 +128,7 @@ interface SqlInterface
 
     /**
      * Adds a WHERE clause
-     * @param array $where The where conditions. The format must be: column => value or column => [p1, p2, p3] or column => ['operator' => '>', 'value' => 10, 'function' => UNIX_TIMESTAMP]  
+     * @param array $where The where conditions. The format must be: column => value or column => [p1, p2, p3] or column => ['operator' => '>', 'value' => 10, 'function' => UNIX_TIMESTAMP]
      * @param string $delimitator The delimitator to use between the conditions
      * @return string
      */

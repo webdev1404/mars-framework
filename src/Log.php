@@ -117,7 +117,7 @@ class Log
             }
 
             if (!$this->app->is_cli) {
-                $text.= "Url: {$this->app->url_full}\n";
+                $text.= "Url: {$this->app->url->full}\n";
             }
             if ($file) {
                 $text.= "Filename: {$file}:{$line}\n";

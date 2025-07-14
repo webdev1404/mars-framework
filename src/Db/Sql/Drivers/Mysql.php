@@ -7,7 +7,7 @@
 namespace Mars\Db\Sql\Drivers;
 
 /**
-* The MySql SQL Builder Class.
+ * The MySql SQL Builder Class.
  */
 class Mysql extends Sql
 {

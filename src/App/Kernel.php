@@ -29,7 +29,7 @@ trait Kernel
      */
     public function __construct(?App $app = null)
     {
-        $this->app = $app ?? App::obj();
+        $this->app = $app ?? static::getApp();
     }
 
     /**

@@ -69,5 +69,5 @@ class Templates extends Cache
         if ($res === false) {
             throw new \Exception("Error writing to cache file: {$filename}");
         }
-    }        
+    }
 }

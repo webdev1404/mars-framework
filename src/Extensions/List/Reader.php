@@ -30,7 +30,7 @@ class Reader
      */
     public function get(string $type) : array
     {
-        $dirs = array_merge($this->getFromExtensionsDir($type), $this->getFromVendor($type));
+        $dirs = array_merge($this->getFromVendor($type), $this->getFromExtensionsDir($type));
 
         $list = [];
         foreach ($dirs as $dir) {

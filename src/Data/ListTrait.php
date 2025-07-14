@@ -6,8 +6,6 @@
 
 namespace Mars\Data;
 
-use Mars\App;
-
 /**
  * The List Trait
  * Encapsulates a simple list
@@ -27,9 +25,9 @@ trait ListTrait
      */
     public function exists(string $value) : bool
     {
-         if (array_search($value, $this->{static::$property}) === false) {
-             return false;
-         }
+        if (array_search($value, $this->{static::$property}) === false) {
+            return false;
+        }
 
         return true;
     }
@@ -42,7 +40,7 @@ trait ListTrait
         return $this->{static::$property};
     }
 
-     /**
+    /**
      * Returns the first element
      * @return string The alert
      */
@@ -55,7 +53,7 @@ trait ListTrait
         return reset($this->{static::$property});
     }
 
-     /**
+    /**
      * Returns the last element
      * @return string The alert
      */
@@ -114,7 +112,7 @@ trait ListTrait
      */
     public function remove(string|array $values) : static
     {
-        $this->{static::$property} = App::remove($this->{static::$property}, $values);
+        $this->{static::$property} = $this->app->array->remove($this->{static::$property}, $values);
 
         return $this;
     }

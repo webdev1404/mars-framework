@@ -92,7 +92,7 @@ class Validator
                 continue;
             }
 
-            $value = App::getProperty($data, $field) ?? '';
+            $value = $this->app->data->getProperty($data, $field) ?? '';
 
             $error_name = $field_rules['name'] ?? $field;
             $rules_array = $field_rules['rules'] ?? $field_rules;
@@ -102,9 +102,9 @@ class Validator
                 $rules_array = explode('|', $rules_array);
             }
 
-            foreach ($rules_array as $rule) {   
+            foreach ($rules_array as $rule) {
                 $parts = explode(':', trim($rule));
-                $rule = reset($parts);            
+                $rule = reset($parts);
                 $params = $this->getParams($parts);
 
                 if (!$this->isValid($value, $rule, ...$params)) {
@@ -135,7 +135,7 @@ class Validator
             array_walk($params, function (&$param) {
                 if ($param == 'null' || $param == '') {
                     $param = null;
-                }            
+                }
             });
         }
 

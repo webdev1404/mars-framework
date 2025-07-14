@@ -56,8 +56,8 @@ class Plugin extends Extension
      * @see Extension::getList()
      * {@inheritdoc}
      */
-    protected function getList() : array
+    /*protected function getList() : array
     {
         return $this->plugins_reader->get($this->getBaseDir());
-    }
+    }*/
 }

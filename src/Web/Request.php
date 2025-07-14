@@ -89,8 +89,8 @@ class Request
         $verify_ssl = $options['verify_ssl'] ?? $this->verify_ssl;
         $custom_request = $options['custom_request'] ?? '';
 
-        unset($options['headers'], $options['referer'], $options['cookie_file'], $options['follow_location'], $options['show_headers'], 
-              $options['useragent'], $options['timeout'], $options['custom_request'], $options['verify_ssl']);
+        unset($options['headers'], $options['referer'], $options['cookie_file'], $options['follow_location'], $options['show_headers'],
+            $options['useragent'], $options['timeout'], $options['custom_request'], $options['verify_ssl']);
 
         $ch = curl_init();
 

@@ -40,8 +40,9 @@ class Data extends Cacheable
 
     /**
      * Sets The value of a cached value
-     * @param string $name The name 
+     * @param string $name The name
      * @param mixed $value The value
+     * @return static $this
      */
     public function set(string $name, $value) : static
     {
@@ -55,6 +56,7 @@ class Data extends Cacheable
     /**
      * Deletes a cached value
      * @param string $name The name of the value to unset
+     * @return static $this
      */
     public function delete(string $name) : static
     {
@@ -68,11 +70,12 @@ class Data extends Cacheable
     /**
      * Gets an array from a php file
      * @param string $filename The name of the file
+     * @param bool $hash_filename Whether to hash the filename or not
      * @return array The array or null if the file does not exist
      */
-    public function getArray(string $filename) : ?array
+    public function getArray(string $filename, bool $hash_filename = true) : ?array
     {
-        $filename = $this->getFilename($filename, 'php');
+        $filename = $this->getFilename($filename, 'php', $hash_filename);
         if (!is_file($filename)) {
             return null;
         }
@@ -83,21 +86,22 @@ class Data extends Cacheable
     /**
      * Stores an array to a php file
      * @param string $filename The name of the file
+     * @param bool $hash_filename Whether to hash the filename or not
      * @param array $data The data to store
      * @return static $this
      */
-    public function setArray(string $filename, array $data) : static
+    public function setArray(string $filename, array $data, bool $hash_filename = true) : static
     {
         $is_list = array_is_list($data);
 
-        $filename = $this->getFilename($filename, 'php');
-        
+        $filename = $this->getFilename($filename, 'php', $hash_filename);
+
         $content = "<?php\n\nreturn [\n";
         foreach ($data as $key => $value) {
             if ($is_list) {
                 $content.= "    '{$value}',\n";
             } else {
-                $content.= "    '{$key}' => '{$value}',\n";
+                $content.= "    '{$key}' => " . var_export($value, true) . ",\n";
             }
         }
         
@@ -109,21 +113,39 @@ class Data extends Cacheable
     }
 
     /**
+     * Deletes a cached array file
+     * @param string $filename The name of the file
+     * @param bool $hash_filename Whether to hash the filename or not
+     * @return static $this
+     */
+    public function deleteArray(string $filename, bool $hash_filename = true) : static
+    {
+        $filename = $this->getFilename($filename, 'php', $hash_filename);
+
+        if (is_file($filename)) {
+            unlink($filename);
+        }
+
+        return $this;
+    }
+
+    /**
      * Gets the filename for a cache file
      * @param string $filename The name of the file
      * @param string|null $extension The extension of the file. If null, $this->extension will be used
+     * @param bool $hash_filename Whether to hash the filename or not
      * @return string The filename
      */
-    protected function getFilename(string $filename, ?string $extension = null) : string
+    protected function getFilename(string $filename, ?string $extension = null, bool $hash_filename = true) : string
     {
-        return $this->path . '/' . $this->getName($filename, $extension);
+        return $this->path . '/' . $this->getName($filename, $extension, $hash_filename);
     }
 
     /**
      * Cleans the data cache
      */
     public function clean() : static
-    {        
+    {
         $this->driver->clean($this->path, $this->dir);
 
         //clean the cache dir, if the driver is not file, to clean the files set with setArray

@@ -218,21 +218,7 @@ class Theme extends Extension
 
             $filename = "theme-{$this->name}-templates";
 
-            $templates = $this->app->cache->getArray($filename);
-
-            // Force files scan if we are in development mode
-            if ($this->development) {
-                $templates = null; 
-            }
-
-            if ($templates === null) {
-                $templates = $this->app->dir->get($this->templates_path, true, false);
-                $templates = array_combine($templates, array_fill(0, count($templates), true));
-
-                $this->app->cache->setArray($filename, $templates);
-            }
-
-            $this->templates = $templates;
+            $this->templates = $this->getExistingFiles($this->templates_path, $filename);
 
             return $this->templates;
         }
@@ -295,7 +281,7 @@ class Theme extends Extension
      * @param App $app The app object
      */
     public function __construct(string $name, array $params = [], ?App $app = null)
-    {   
+    {
         $this->lazyLoad($app);
 
         parent::__construct($name, $params, $app);
@@ -320,7 +306,7 @@ class Theme extends Extension
      * @return static
      */
     public function addVar(string $name, $value) : static
-    {        
+    {
         $this->vars[$name] = $value;
 
         return $this;
@@ -490,11 +476,11 @@ class Theme extends Extension
     /**************** OUTPUT METHODS *************************************/
 
     /**
-     * Outputs the language code
+     * Outputs the language
      */
-    public function outputLangCode()
+    public function outputLang()
     {
-        echo $this->app->escape->html($this->app->lang->code);
+        echo $this->app->escape->html($this->app->lang->lang);
     }
 
     /**
@@ -536,14 +522,14 @@ class Theme extends Extension
         $this->css->outputCode($code);
     }
 
-        /**
+    /**
      * Outputs javascript inline code
      * @param string $code The js code to output
      */
     public function outputJavascriptCode(string $code)
     {
         $this->javascript->outputCode($code);
-    }    
+    }
 
     /**
      * Outputs the execution time

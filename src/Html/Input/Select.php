@@ -6,8 +6,8 @@
 
 namespace Mars\Html\Input;
 
-use \Mars\Html\Tag;
-use \Mars\Html\TagInterface;
+use Mars\Html\Tag;
+use Mars\Html\TagInterface;
 
 /**
  * The Select Class

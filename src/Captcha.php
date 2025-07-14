@@ -23,7 +23,7 @@ class Captcha
      */
     public protected(set) array $supported_drivers = [
         'recaptcha2' => \Mars\Captcha\Recaptcha2::class
-    ];    
+    ];
 
     /**
      * @var bool $enabled Will be set to true, if captcha is enabled

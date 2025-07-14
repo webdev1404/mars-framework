@@ -105,7 +105,7 @@ abstract class Urls
         $urls = (array)$urls;
 
         foreach ($urls as $url) {
-            $is_local = $this->app->uri->isLocal($url);
+            $is_local = $this->app->url->isLocal($url);
             $full_url = $this->getUrl($url, $is_local);
 
             if ($preload) {
@@ -115,7 +115,7 @@ abstract class Urls
             $this->urls[$type][$url] = [
                 'url' => $full_url,
                 'priority' => $priority,
-                'attributes' => $attributes, 
+                'attributes' => $attributes,
                 'is_local' => $is_local,
             ];
         }
@@ -135,13 +135,13 @@ abstract class Urls
             return $url;
         }
         if ($is_local === null) {
-            $is_local = $this->app->uri->isLocal($url);
+            $is_local = $this->app->url->isLocal($url);
         }
         if (!$is_local) {
             return $url;
         }
 
-        return $this->app->uri->build($url, ['ver' => $this->version]);
+        return $this->app->url->build($url, ['ver' => $this->version]);
     }
 
     /**
@@ -153,7 +153,7 @@ abstract class Urls
     {
         $urls = (array)$urls;
 
-        return array_map(function($url) {
+        return array_map(function ($url) {
             return $this->getUrl($url);
         }, $urls);
     }
@@ -175,7 +175,7 @@ abstract class Urls
                     unset($this->urls[$type][$url]);
                 }
             }
-        }       
+        }
 
         return $this;
     }
@@ -187,7 +187,7 @@ abstract class Urls
      * @return static
      */
     public function preload(string|array $urls, bool $add_version = true) : static
-    {        
+    {
         $urls = (array)$urls;
 
         if ($add_version) {

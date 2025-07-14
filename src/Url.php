@@ -12,9 +12,130 @@ use Mars\App\Kernel;
  * The Uri Class
  * Functionality for building & handling urls
  */
-class Uri
+class Url
 {
     use Kernel;
+
+    public protected(set) array $parts {
+        get {
+            if (isset($this->parts)) {
+                return $this->parts;
+            }
+
+            $this->parts = explode('/', trim($this->getPath($_SERVER['REQUEST_URI'] ?? ''), '/'));
+
+            return $this->parts;
+        }
+    }
+
+    /**
+     * @var string $base The url. Eg: http://mydomain.com/mars
+     */
+    public protected(set) string $base {
+        get {
+            if (isset($this->base)) {
+                return $this->base;
+            }
+
+            $this->base = $this->app->config->url;
+
+            return $this->base;
+        }
+    }
+
+    /**
+     * @var string $root The root url. Includes the language code, if languages_multi is enabled. Eg: http://mydomain.com/mars/en
+     */
+    public protected(set) string $root {
+        get {
+            if (isset($this->root)) {
+                return $this->root;
+            }
+
+            $this->root = $this->base;
+            if ($this->app->config->languages_multi) {
+                // Append the language code to the base URL, if we are using multi-languages
+                $this->root .= '/' . $this->app->lang->code;
+            }
+
+            return $this->root;
+        }
+    }
+
+    /**
+     * @var string $current The current url. Does not include the query string
+     */
+    public protected(set) string $current {
+        get {
+            if (isset($this->current)) {
+                return $this->current;
+            }
+
+            $this->current = $this->app->base_url . $this->getPath($_SERVER['REQUEST_URI'] ?? '');
+            $this->current = filter_var($this->current, FILTER_SANITIZE_URL);
+
+            return $this->current;
+        }
+    }
+
+    public protected(set) string $path {
+        get {
+            if (isset($this->path)) {
+                return $this->path;
+            }
+
+            $this->path = $this->getPath($this->current);
+
+            return $this->path;
+        }
+    }
+
+    public protected(set) string $lang {
+        get {
+            if (isset($this->lang)) {
+                return $this->lang;
+            }
+
+            // If multi-language is enabled, the first part of the URL is the language code
+            $this->lang = '';
+            if ($this->app->lang->multi) {
+                $this->lang = $this->parts[0] ?? '';
+            }
+
+            return $this->lang;
+        }
+    }
+
+    /**
+     * @var string $full The full url. Includes the query string
+     */
+    public protected(set) string $full {
+        get {
+            if (isset($this->full)) {
+                return $this->full;
+            }
+
+            $query_string = $_SERVER['QUERY_STRING'] ?? '';
+            if ($query_string) {
+                $this->full = $this->current . '?' . $query_string;
+            } else {
+                $this->full = $this->current;
+            }
+
+            $this->full = filter_var($this->full, FILTER_SANITIZE_URL);
+
+            return $this->full;
+        }
+    }
+
+    /**
+     * Returns the current url
+     * @return string The current url
+     */
+    public function __toString() : string
+    {
+        return $this->current;
+    }
 
     /**
      * Determines if $url is a valid url
@@ -220,13 +341,13 @@ class Uri
      * @return string The normalized url
      */
     public function normalizeUrl(string $url, string $base_url) : string
-	{
-		if (!$this->isUrl($url)) {
-			return $base_url . '/' . ltrim($url, '/');
-		}
+    {
+        if (!$this->isUrl($url)) {
+            return $base_url . '/' . ltrim($url, '/');
+        }
 
-		return $url;
-	}
+        return $url;
+    }
 
     /**
      * Adds http:// at the beginning of $url, if it isn't already there

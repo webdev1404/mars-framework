@@ -83,8 +83,8 @@ abstract class Sql implements SqlInterface
      * @param string $alias The alias of the table, if any
      */
     protected function escapeTable(string $table, string $alias = '') : string
-    {            
-        $as = ' AS ';    
+    {
+        $as = ' AS ';
         $table = str_ireplace(' as ', ' AS ', $table);
         $parts = explode($as, $table);
         if (count($parts) == 1) {
@@ -96,7 +96,7 @@ abstract class Sql implements SqlInterface
         $table = $parts[0];
         $alias = $parts[1] ?? '';
 
-        if(str_contains($table, '.')) {
+        if (str_contains($table, '.')) {
             [$db, $table] = explode('.', $table);
         }
 
@@ -106,7 +106,7 @@ abstract class Sql implements SqlInterface
             $db.= '.';
         }
         if ($alias) {
-            $alias = $as . trim($alias);        
+            $alias = $as . trim($alias);
         }
 
         return "{$db}`{$table}`{$alias}";
@@ -286,7 +286,7 @@ abstract class Sql implements SqlInterface
             $cols = $this->getColumnsList($cols);
         }
         if ($extra) {
-            if(is_array($extra)) {
+            if (is_array($extra)) {
                 $extra = implode(' ', $extra);
             }
             $extra.= ' ';
@@ -425,7 +425,7 @@ abstract class Sql implements SqlInterface
     {
         if (!$values) {
             return $this;
-        }        
+        }
 
         return $this->getWhere() . $this->escapeColumn($column) . $this->getIn($values, true);
     }
@@ -440,9 +440,9 @@ abstract class Sql implements SqlInterface
     }
 
     /**
-    * @see SqlInterface::or()
-    * {@inheritdoc} 
-    */
+     * @see SqlInterface::or()
+     * {@inheritdoc}
+     */
     public function or() : string
     {
         return ' OR ';
@@ -491,7 +491,7 @@ abstract class Sql implements SqlInterface
             $col_esc = $escape_col ? $this->escapeColumn($col) : $col;
             $col = $generate_param ? $this->generateParam() : $col;
 
-            if (is_array($value)) {                
+            if (is_array($value)) {
                 if (array_is_list($value)) {
                     //if the value is an array, it's an IN list
                     $parts[] = $col_esc . $this->getIn($value);

@@ -54,7 +54,7 @@ class Accelerator
         get {
             if (!$this->enabled) {
                 return null;
-            }            
+            }
             if (isset($this->driver)) {
                 return $this->driver;
             }

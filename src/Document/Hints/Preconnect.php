@@ -45,6 +45,6 @@ class Preconnect extends Preload
      */
     public function outputLink(string $url)
     {
-        echo '<link rel="preconnect" href="'. $this->app->escape->html($url) .'" />' . "\n";
+        echo '<link rel="preconnect" href="' . $this->app->escape->html($url) . '" />' . "\n";
     }
 }

@@ -57,5 +57,3 @@ final class ResponseTest extends Base
         $this->assertSame($output, json_encode($expected));
     }
 }
-
-

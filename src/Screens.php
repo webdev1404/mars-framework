@@ -25,7 +25,7 @@ class Screens
         'message' => \Mars\Screens\Message::class,
         'fatal_error' => \Mars\Screens\FatalError::class,
         'permission_denied' => \Mars\Screens\PermissionDenied::class,
-    ];    
+    ];
 
     /**
      * @var Handlers $screens The screens handlers
@@ -34,7 +34,7 @@ class Screens
         get {
             if (isset($this->screens)) {
                 return $this->screens;
-            }   
+            }
 
             $this->screens = new Handlers($this->screens_list, null, $this->app);
 

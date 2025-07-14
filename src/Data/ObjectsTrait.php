@@ -6,12 +6,10 @@
 
 namespace Mars\Data;
 
-use Mars\App;
-
 /**
  * The Objects List Trait
  * Encapsulates a list of objects
- * The 'protected static string $property' property must be defined in the class using this trait to specify the property that holds the list. 
+ * The 'protected static string $property' property must be defined in the class using this trait to specify the property that holds the list.
  */
 trait ObjectsTrait
 {
@@ -61,7 +59,7 @@ trait ObjectsTrait
             throw new \Exception("Unknown object '{$name}'");
         }
   
-        $object = App::getObject($this->{static::$property}[$name], ...$args);
+        $object = $this->app->object->get($this->{static::$property}[$name], ...$args);
 
         if ($this->interface_name) {
             if (!$object instanceof $this->interface_name) {

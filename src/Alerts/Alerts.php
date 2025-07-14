@@ -55,5 +55,5 @@ abstract class Alerts implements \Countable, \IteratorAggregate
     public function set(string|array|Alerts $alert) : static
     {
         return $this->reset()->add($alert);
-    }   
+    }
 }

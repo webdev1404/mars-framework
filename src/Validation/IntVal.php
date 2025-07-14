@@ -13,10 +13,10 @@ namespace Mars\Validation;
 class IntVal extends FloatVal
 {
     protected array $errors = [
-        'simple' => 'validate_int_error',
-        'min' => 'validate_int_min_error',
-        'max' => 'validate_int_max_error',
-        'min_max' => 'validate_int_min_max_error',
+        'simple' => 'error.validate_int',
+        'min' => 'error.validate_int_min',
+        'max' => 'error.validate_int_max',
+        'min_max' => 'error.validate_int_min_max',
     ];
 
     /**
@@ -27,7 +27,7 @@ class IntVal extends FloatVal
      * @return bool
      */
     public function isValid(string $value, ?float $min = 0, ?float $max = null) : bool
-    {      
+    {
         return $this->isValidValue($value, $min, $max, FILTER_VALIDATE_INT);
-    }    
+    }
 }

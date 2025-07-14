@@ -98,5 +98,3 @@ final class EntitiesTest extends Base
         $this->assertSame($ent->getCol('foo'), ['bar']);
     }
 }
-
-

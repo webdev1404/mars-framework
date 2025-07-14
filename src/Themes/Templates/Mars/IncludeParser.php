@@ -22,8 +22,8 @@ class IncludeParser
      */
     public function parse(string $content, array $params = []) : string
     {
-        return preg_replace_callback('/@include\s*\((.*)\)/U', function (array $match) use ($params) {        
-            $template_filename = $this->getTemplate($match[1], $params['filename']); 
+        return preg_replace_callback('/@include\s*\((.*)\)/U', function (array $match) use ($params) {
+            $template_filename = $this->getTemplate($match[1], $params['filename']);
 
             return '<?= $this->getFromFilename(\'' . $template_filename . '\') ?>';
         }, $content);
@@ -36,7 +36,7 @@ class IncludeParser
      * @return string The template name
      * @throws \Exception
      */
-    protected function getTemplate(string $value, string $filename) : string 
+    protected function getTemplate(string $value, string $filename) : string
     {
         $template = trim($value, ' \'"');
         if (!$template) {

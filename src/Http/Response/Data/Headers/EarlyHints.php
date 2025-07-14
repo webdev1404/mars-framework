@@ -51,7 +51,7 @@ class EarlyHints
     public function output()
     {
         //do not send early hints if we are not using http2 or above
-        if ($this->app->protocol < 2) {            
+        if ($this->app->protocol < 2) {
             return;
         }
 

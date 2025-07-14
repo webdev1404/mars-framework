@@ -7,14 +7,14 @@
 namespace Mars\Extensions\Modules;
 
 use Mars\Content\ContentInterface;
-use Mars\Extensions\Modules\Abilities\MVCTrait;
+use Mars\Extensions\Modules\Abilities\MvcTrait;
 
 /**
  * The Block Class
  */
 class Block extends Component implements ContentInterface
 {
-    use MVCTrait;
+    use MvcTrait;
 
     /**
      * @internal

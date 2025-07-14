@@ -10,7 +10,7 @@ namespace Mars\Html\Input;
  * The Form Input Interface
  */
 interface FormInputInterface
-{    
+{
     /**
      * Returns the name attribute
      * @return string

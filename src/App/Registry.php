@@ -13,9 +13,9 @@ namespace Mars\App;
 trait Registry
 {
     /**
-     * @var array $data Array storing the data
+     * @var array $data_array Array storing the data
      */
-    protected array $data = [];
+    protected array $data_array = [];
 
     /**
      * @var array $instances Array storing the instances
@@ -30,7 +30,7 @@ trait Registry
      */
     public function set(string $key, $data)
     {
-        $this->data[$key] = $data;
+        $this->data_array[$key] = $data;
 
         return $this;
     }
@@ -43,7 +43,7 @@ trait Registry
     public function load(array $map) : static
     {
         foreach ($map as $key => $data) {
-            $this->data[$key] = $data;
+            $this->data_array[$key] = $data;
         }
 
         return $this;
@@ -56,21 +56,21 @@ trait Registry
      */
     public function get(string $key)
     {
-        if (!isset($this->data[$key])) {
+        if (!isset($this->data_array[$key])) {
             return null;
         }
 
-        if (is_callable($this->data[$key])) {
+        if (is_callable($this->data_array[$key])) {
             if (isset($this->instances[$key])) {
                 return $this->instances[$key];
             }
 
-            $this->instances[$key] = $this->data[$key](static::$instance);
+            $this->instances[$key] = $this->data_array[$key](static::$instance);
             
             return $this->instances[$key];
         }
 
-        return $this->data[$key];
+        return $this->data_array[$key];
     }
 
     /**
@@ -88,7 +88,7 @@ trait Registry
      */
     public function has(string $key): bool
     {
-        return isset($this->data[$key]);
+        return isset($this->data_array[$key]);
     }
 
     /**
@@ -98,7 +98,7 @@ trait Registry
      */
     public function delete(string $key) : static
     {
-        unset($this->data[$key]);
+        unset($this->data_array[$key]);
         unset($this->instances[$key]);
 
         return $this;

@@ -51,7 +51,7 @@ class Javascript extends Urls
      */
     public function outputCode(string $code)
     {
-        echo '<script type="text/javascript"'. $this->getNonce() .'>' . "\n";
+        echo '<script type="text/javascript"' . $this->getNonce() . '>' . "\n";
         echo $code . "\n";
         echo '</script>' . "\n";
     }

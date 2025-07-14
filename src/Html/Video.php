@@ -58,7 +58,7 @@ class Video extends Tag
                 $type = ' type="' . $type . '"';
             }
 
-            $html.= '<source src="' . $this->app->escape->html($url) . '"'. $type .'>' . "\n";
+            $html.= '<source src="' . $this->app->escape->html($url) . '"' . $type . '>' . "\n";
         }
 
         return $html;

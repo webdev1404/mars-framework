@@ -6,8 +6,6 @@
 
 namespace Mars\Data;
 
-use Mars\App;
-
 /**
  * The Set Trait
  * Encapsulates a list where elements are grouped by type.
@@ -68,14 +66,14 @@ trait SetTrait
     public function remove(string|array $values, string $type = '') : static
     {
         if ($type) {
-            $this->{static::$property}[$type] = App::remove($this->{static::$property}[$type] ?? [], $values);
+            $this->{static::$property}[$type] = $this->app->array->remove($this->{static::$property}[$type] ?? [], $values);
 
             return $this;
         }
 
 
         foreach ($this->{static::$property} as $key => $list_values) {
-            $this->{static::$property}[$key] = App::remove($list_values, $values);
+            $this->{static::$property}[$key] = $this->app->array->remove($list_values, $values);
         }
 
         return $this;

@@ -110,8 +110,8 @@ class CSP
                     continue;
                 }
 
-                $external_urls[] = $this->app->uri->getRoot($url['url']);
-            }           
+                $external_urls[] = $this->app->url->getRoot($url['url']);
+            }
         }
 
         $default = $this->defaults[$name] ?? '';

@@ -4,7 +4,7 @@
 * @package Mars
 */
 
-namespace Mars\MVC;
+namespace Mars\Mvc;
 
 use Mars\App;
 use Mars\App\Kernel;
@@ -18,7 +18,7 @@ use Mars\Hidden;
 use Mars\Html;
 use Mars\Text;
 use Mars\Ui;
-use Mars\Uri;
+use Mars\Url;
 use Mars\System\Plugins;
 use Mars\Extensions\Extension;
 
@@ -93,7 +93,7 @@ abstract class View
      * @var object $model The model
      */
     #[HiddenProperty]
-    protected  object $model {
+    protected object $model {
         get => $this->controller->model;
     }
 
@@ -146,11 +146,11 @@ abstract class View
     }
 
     /**
-     * @var Uri $uri Alias for $this->app->uri
+     * @var Url $url Alias for $this->app->url
      */
     #[HiddenProperty]
-    public Uri $uri {
-        get => $this->app->uri;
+    public Url $url {
+        get => $this->app->url;
     }
 
     /**
@@ -260,7 +260,7 @@ abstract class View
             $template = $this->getTemplateName($method);
         }
 
-         //add the view's public properties as theme vars
+        //add the view's public properties as theme vars
         $this->app->theme->addVars(get_object_vars($this));
         $this->app->theme->addVar('view', $this);
 

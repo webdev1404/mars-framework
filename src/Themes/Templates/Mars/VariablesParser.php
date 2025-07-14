@@ -94,7 +94,7 @@ class VariablesParser
      * Parses a variable
      * @param string $var The variable to parse
      * @param array $params The params to pass to the parser
-     * @return string The parsed variable 
+     * @return string The parsed variable
      */
     protected function parseVariable(string $var, array $params = []) : string
     {
@@ -130,7 +130,7 @@ class VariablesParser
      * @return string The variable
      */
     protected function buildVariable(string $value, array $params = [], bool $parse_lang = true) : string
-    {        
+    {
         if (str_starts_with($value, '$')) {
             return $this->formatVariable($value);
         }

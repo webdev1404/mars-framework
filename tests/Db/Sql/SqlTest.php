@@ -213,4 +213,3 @@ final class SqlTest extends Base
         $this->assertEquals("OFFSET {$offset} ", (string)$this->app->sql);
     }
 }
-

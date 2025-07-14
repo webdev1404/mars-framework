@@ -6,7 +6,6 @@
 
 namespace Mars\Html\Input;
 
-use Mars\App;
 use Mars\Html\Tag;
 
 /**
@@ -31,7 +30,7 @@ class RadioGroup extends CheckboxGroup
      */
     protected function isChecked(string $value, string|array $checked) : bool
     {
-        $checked = App::getString($checked);
+        $checked = $this->app->string->get($checked);
 
         if ($checked == $value) {
             return true;

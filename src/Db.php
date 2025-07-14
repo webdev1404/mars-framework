@@ -166,7 +166,7 @@ class Db
             try {
                 if ($this->use_multi) {
                     $this->read_driver = $this->drivers->get($this->app->config->db_driver);
-                    $this->read_driver->connect($this->read_hostname, $this->read_port, $this->read_username, $this->read_password, $this->read_database, $this->read_persistent, $this->charset);                
+                    $this->read_driver->connect($this->read_hostname, $this->read_port, $this->read_username, $this->read_password, $this->read_database, $this->read_persistent, $this->charset);
                 } else {
                     $this->read_driver = $this->write_driver;
                 }
@@ -221,7 +221,7 @@ class Db
     /**
      * @var bool $debug If true, the db will be run in debug mode
      */
-    public bool $debug{
+    public bool $debug {
         get => $this->app->config->debug_db;
     }
 
@@ -359,7 +359,7 @@ class Db
 
             return $this->write_driver;
         } else {
-            return $this->read_driver;            
+            return $this->read_driver;
         }
     }
 
@@ -919,7 +919,7 @@ class Db
         }
 
         if ($ignore_array) {
-            $data = App::filterProperties($data, $ignore_array);
+            $data = $this->app->array->unset($data, $ignore_array);
         }
 
         return $data;

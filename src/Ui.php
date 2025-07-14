@@ -28,13 +28,13 @@ class Ui
      */
     public protected(set) Handlers $uis {
         get {
-                if (isset($this->uis)) {
-                    return $this->uis;
-                }
-    
-                $this->uis = new Handlers($this->supported_uis, null, $this->app);
-    
+            if (isset($this->uis)) {
                 return $this->uis;
+            }
+    
+            $this->uis = new Handlers($this->supported_uis, null, $this->app);
+    
+            return $this->uis;
         }
     }
 

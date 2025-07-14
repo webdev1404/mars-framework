@@ -111,5 +111,3 @@ final class RequestTest extends Base
         $this->assertSame($this->app->request->getPage(), 20);
     }
 }
-
-

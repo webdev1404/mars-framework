@@ -27,7 +27,7 @@ abstract class Base
     /**
      * @var string $default_value The default value
      */
-    protected ?string $default_value = null;    
+    protected ?string $default_value = null;
 
     /**
      * Returns a DateTime object from a datetime

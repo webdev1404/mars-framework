@@ -16,7 +16,7 @@ class Datetime extends Rule
     /**
      * {@inheritdoc}
      */
-    protected string $error = 'validate_datetime_error';
+    protected string $error = 'error.validate_datetime';
 
     /**
      * Validates a datetime
@@ -26,7 +26,7 @@ class Datetime extends Rule
      * @return bool Returns true if the datetime is valid
      */
     public function isValid(string $value, ?string $format = null, ?string $format_desc = null) : bool
-    {        
+    {
         if ($format) {
             $format_desc ??= $format;
         } else {
@@ -45,7 +45,7 @@ class Datetime extends Rule
      * @param string $format The format
      * @return bool
      */
-    protected function isValidDateTime(string $value, ?string $format, ) : bool
+    protected function isValidDateTime(string $value, ?string $format) : bool
     {
         $value = trim($value);
 
@@ -62,7 +62,7 @@ class Datetime extends Rule
             }
 
             $errors = $dt->getLastErrors();
-            if(!$errors) {
+            if (!$errors) {
                 return true;
             }
             if ($errors['warning_count'] || $errors['error_count']) {

@@ -61,7 +61,7 @@ abstract class Extension
     }
 
     /**
-     * Sets up the extension. 
+     * Sets up the extension.
      * Caches the list of available extensions and creates symlinks to their assets folders
      */
     public function prepare()
@@ -85,7 +85,7 @@ abstract class Extension
      * @param BaseExtension $extension The extension object
      */
     protected function createAssetsSymlink(BaseExtension $extension)
-    {             
+    {
         //if the symlink already exists, we don't need to create it again
         if (is_link($extension->assets_target)) {
             return;

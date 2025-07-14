@@ -29,7 +29,7 @@ class Json implements ResponseInterface
             'success' => $this->app->success(),
             'message' => $this->app->messages->getFirst(),
             'error' => $this->app->errors->getFirst(),
-            'data' => [...$this->app->json->data, ...App::getArray($content)]
+            'data' => [...$this->app->json->data, ...$this->app->array->get($content)]
         ];
 
         echo $this->app->json->encode($data);

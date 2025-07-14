@@ -109,7 +109,7 @@ class Sql implements \Stringable
     public function start(bool $is_read = false) : static
     {
         $this->sql = '';
-        $this->is_read = $is_read;    
+        $this->is_read = $is_read;
 
         $this->driver->start();
 
@@ -177,7 +177,7 @@ class Sql implements \Stringable
      * @return static
      */
     public function values(array $values) : static
-    {       
+    {
         $this->sql.= $this->driver->values($values);
 
         return $this;
@@ -189,7 +189,7 @@ class Sql implements \Stringable
      * @return static
      */
     public function valuesMulti(array $values_list) : static
-    {        
+    {
         $this->sql.= $this->driver->valuesMulti($values_list);
 
         return $this;
@@ -241,7 +241,7 @@ class Sql implements \Stringable
      * @return static
      */
     public function from(string $table, string $alias = '') : static
-    {        
+    {
         $this->sql.= $this->driver->from($table, $alias);
 
         return $this;
@@ -255,7 +255,7 @@ class Sql implements \Stringable
      * @return static
      */
     public function join(string $table, string $using = '', string $on = '') : static
-    {        
+    {
         $this->sql.= $this->driver->join($table, $using, $on);
 
         return $this;
@@ -301,16 +301,16 @@ class Sql implements \Stringable
         $this->sql.= $this->driver->innerJoin($table, $using, $on);
 
         return $this;
-    }    
+    }
 
     /**
      * Builds a WHERE clause
-     * @param array $where The where conditions. The format must be: column => value or column => [p1, p2, p3] or column => ['operator' => '>', 'value' => 10, 'function' => UNIX_TIMESTAMP]  
+     * @param array $where The where conditions. The format must be: column => value or column => [p1, p2, p3] or column => ['operator' => '>', 'value' => 10, 'function' => UNIX_TIMESTAMP]
      * @param string $delimitator The delimitator to use between parts. By default AND is used.
      * @return static
      */
     public function where(array $where, string $delimitator = 'AND') : static
-    {    
+    {
         $this->sql.= $this->driver->where($where, $delimitator);
 
         return $this;
@@ -365,7 +365,7 @@ class Sql implements \Stringable
      * @return static
      */
     public function having(array $having, string $delimitator = 'AND') : static
-    {       
+    {
         $this->sql.= $this->driver->having($having, $delimitator);
 
         return $this;

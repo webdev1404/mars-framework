@@ -7,7 +7,7 @@
 namespace Mars\Document\Links;
 
 /**
-* The Images Urls Class
+ * The Images Urls Class
  * Class containing the images functionality used by a document
  */
 class Images extends Urls

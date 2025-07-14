@@ -1,20 +1,22 @@
 <?php
 /**
-* The Item Model Class
+* The Entities Model Class
 * @package Mars
 */
 
-namespace Mars\MVC\Models;
+namespace Mars\Mvc\Models;
 
 use Mars\App;
-use Mars\MVC\Controller;
+use Mars\App\Kernel;
+use Mars\Mvc\Controller;
 
 /**
- * The Item Model Class
- * Implements the Model functionality of the MVC pattern. Represents an item
+ * The Entities Model Class
+ * Implements the Model functionality of the MVC pattern. Represents a collection of entities
  */
-abstract class Item extends \Mars\Item
+abstract class Entities extends \Mars\Entities
 {
+    use Kernel;
     use ModelTrait;
 
     /**
@@ -24,8 +26,9 @@ abstract class Item extends \Mars\Item
      */
     public function __construct(App $app, ?Controller $controller = null)
     {
-        parent::__construct([], $app);
+        parent::__construct();
 
+        $this->app = $app;
         $this->controller = $controller;
 
         $this->init();

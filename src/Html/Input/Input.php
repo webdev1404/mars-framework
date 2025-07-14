@@ -42,7 +42,7 @@ class Input extends Tag implements FormInputInterface
      * The name of the value attribute
      * @var string
      */
-    protected static string $value_attribute = 'value';    
+    protected static string $value_attribute = 'value';
 
     /**
      * @see TagInterface::html()

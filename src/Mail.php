@@ -99,7 +99,7 @@ class Mail
         } catch (\Exception $e) {
             $this->app->plugins->run('mail_send_error', $e->getMessage(), $to, $subject, $message, $options, $attachments, $bcc, $this);
 
-            throw new \Exception(App::__('mail_error', ['{ERROR}' => $e->getMessage()]));
+            throw new \Exception(App::__('error.mail_send', ['{ERROR}' => $e->getMessage()]));
         }
     }
 

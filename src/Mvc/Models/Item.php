@@ -1,19 +1,19 @@
 <?php
 /**
-* The Entity Model Class
+* The Item Model Class
 * @package Mars
 */
 
-namespace Mars\MVC\Models;
+namespace Mars\Mvc\Models;
 
 use Mars\App;
-use Mars\MVC\Controller;
+use Mars\Mvc\Controller;
 
 /**
- * The Entity Model Class
- * Implements the Model functionality of the MVC pattern. Represents an entity
+ * The Item Model Class
+ * Implements the Model functionality of the MVC pattern. Represents an item
  */
-abstract class Entity extends \Mars\Entity
+abstract class Item extends \Mars\Item
 {
     use ModelTrait;
 

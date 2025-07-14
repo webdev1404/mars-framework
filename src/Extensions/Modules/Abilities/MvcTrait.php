@@ -7,15 +7,15 @@
 namespace Mars\Extensions\Modules\Abilities;
 
 use Mars\App;
-use Mars\MVC\Controller;
-use Mars\MVC\Model;
-use Mars\MVC\View;
+use Mars\Mvc\Controller;
+use Mars\Mvc\Model;
+use Mars\Mvc\View;
 
 /**
  * The Extension's MVC Trait
  * Trait implementing the MVC patter for extensions
  */
-trait MVCTrait
+trait MvcTrait
 {
     /**
      * @var Controller $controller The currently loaded controller of this extension
@@ -28,7 +28,7 @@ trait MVCTrait
      * @param string $class_name The class name
      * @return string The class name
      */
-    protected function getMVCClass(string $dir, string $class_name) : string
+    protected function getMvcClass(string $dir, string $class_name) : string
     {
         $namespace_path = str_replace("/", "\\", ucfirst($dir) . '/');
 
@@ -53,7 +53,7 @@ trait MVCTrait
             $controller = $this->name;
         }
 
-        $controller_class = $this->getMVCClass(static::DIRS['controllers'], $controller);
+        $controller_class = $this->getMvcClass(static::DIRS['controllers'], $controller);
 
         $class_name = $this->namespace . '\\' . $controller_class;
 
@@ -74,7 +74,7 @@ trait MVCTrait
             $model = $this->name;
         }
 
-        $model_class = $this->getMVCClass(static::DIRS['models'], $model);
+        $model_class = $this->getMvcClass(static::DIRS['models'], $model);
 
         $class_name = $this->namespace . '\\' . $model_class;
 
@@ -93,7 +93,7 @@ trait MVCTrait
             $view = $this->name;
         }
 
-        $view_class = $this->getMVCClass(static::DIRS['views'], $view);
+        $view_class = $this->getMvcClass(static::DIRS['views'], $view);
 
         $class_name = $this->namespace . '\\' . $view_class;
 

@@ -37,7 +37,7 @@ class Plugins
      * @var array $plugins Array holding the plugin objects
      */
     public protected(set) array $plugins {
-        get {    
+        get {
             if (isset($this->plugins)) {
                 return $this->plugins;
             }
@@ -47,7 +47,8 @@ class Plugins
 
             $this->plugins = [];
 
-            $plugins = Plugin::getList();
+            //$plugins = Plugin::getList();
+            $plugins = [];
             foreach ($plugins as $class_name => $module_name) {
                 $plugin = new $class_name($module_name, [], $this->app);
 
@@ -63,9 +64,9 @@ class Plugins
     }
 
     /**
-     * @var bool $debug If true, we'll collect debug data 
+     * @var bool $debug If true, we'll collect debug data
      */
-    public bool $debug{
+    public bool $debug {
         get => $this->app->config->debug_plugins;
     }
 
@@ -126,14 +127,14 @@ class Plugins
      * @return mixed The value returned by the plugin
      */
     public function run(string $hook, &...$args)
-    {    
+    {
         if (!$this->enabled || !$this->plugins || !isset($this->hooks[$hook])) {
             return $args[0] ?? null;
         }
 
         //sort the hooks by priority
         $hooks_array = $this->hooks[$hook];
-        usort($hooks_array, function($a, $b) {
+        usort($hooks_array, function ($a, $b) {
             return $a[2] <=> $b[2];
         });
 

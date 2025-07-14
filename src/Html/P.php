@@ -15,5 +15,5 @@ class P extends Tag
     /**
      * {@inheritdoc}
      */
-    protected static string $tag = 'p';    
+    protected static string $tag = 'p';
 }

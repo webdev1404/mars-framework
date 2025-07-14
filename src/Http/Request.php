@@ -107,7 +107,7 @@ class Request
             $this->method = '';
             if ($this->app->is_web) {
                 $this->method = strtolower($_SERVER['REQUEST_METHOD']);
-            } 
+            }
 
             return $this->method;
         }
