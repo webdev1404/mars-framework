@@ -165,15 +165,93 @@ class Request
     /**
      * Returns the value of a variable from either $_GET or $_POST
      * Shorthand for $this->request->get()
+     * @param string $name The name of the variable
      * @param string $filter The filter to apply to the value, if any. See class Filter for a list of filters
      * @param mixed $default_value The default value to return if the variable is not set
      * @param bool $is_array Whether the value should be returned as an array
+     * @param bool $trim Whether to trim the value
      * @return mixed The value
      */
-    public function get(string $name, string $filter = '', mixed $default_value = '', bool $is_array = false) : mixed
+    public function get(string $name, mixed $default_value = '', string $filter = '', bool $is_array = false, bool $trim = true) : mixed
     {
-        return $this->input->get($name, $filter, $default_value, $is_array);
+        return $this->input->get($name, $default_value, $filter, $is_array, $trim);
     }
+
+    /**
+     * Returns the value of a variable as an integer
+     * @param string $name The name of the variable
+     * @param int $default_value The default value to return if the variable is not set
+     * @param bool $is_array Whether the value should be returned as an array
+     * @return int|array The value
+     */
+    public function getInt(string $name, ?int $default_value = 0, bool $is_array = false) : int|array
+    {
+        return $this->input->getInt($name, $default_value, $is_array);
+    }
+
+    /**
+     * Returns the value of a variable as a float
+     * @param string $name The name of the variable
+     * @param float $default_value The default value to return if the variable is not set
+     * @param bool $is_array Whether the value should be returned as an array
+     * @return float|array The value
+     */
+    public function getFloat(string $name, ?float $default_value = 0, bool $is_array = false) : float|array
+    {
+        return $this->input->getFloat($name, $default_value, $is_array);
+    }
+
+    /**
+     * Returns the value of a variable as an array
+     * @param string $name The name of the variable
+     * @param mixed $default_value The default value to return if the variable is not set
+     * @param string $filter The filter to apply to the value, if any. See class Filter for a list of filters
+     * @param bool $trim Whether to trim the value
+     * @return array The value
+     */
+    public function getArray(string $name, mixed $default_value = '', string $filter = '', bool $trim = true) : array
+    {
+        return $this->input->getArray($name, $default_value, $filter, $trim);
+    }
+
+    /**
+     * Returns the value of a variable from an array
+     * @param string $name The name of the array
+     * @param string $key The key to retrieve
+     * @param mixed $default_value The default value to return if the key is not found
+     * @param string $filter The filter to apply to the value, if any. See class Filter for a list of filters
+     * @param bool $trim Whether to trim the value
+     * @return mixed The value
+     */
+    public function getFromArray(string $name, string $key, mixed $default_value = '', string $filter = '', bool $trim = true) : mixed
+    {
+        return $this->input->getFromArray($name, $key, $default_value, $filter, $trim);
+    }
+
+    /**
+     * Returns the value of a variable as an integer from an array
+     * @param string $name The name of the array
+     * @param string $key The key to retrieve
+     * @param int $default_value The default value to return if the key is not found
+     * @return int|null The value
+     */
+    public function getIntFromArray(string $name, string $key, ?int $default_value = 0) : null|int
+    {
+        return $this->input->getIntFromArray($name, $key, $default_value);
+    }
+
+    /**
+     * Returns the value of a variable as a float from an array
+     * @param string $name The name of the array
+     * @param string $key The key to retrieve
+     * @param float $default_value The default value to return if the key is not found
+     * @return float|null The value
+     */
+    public function getFloatFromArray(string $name, string $key, ?float $default_value = 0) : null|float
+    {
+        return $this->input->getFloatFromArray($name, $key, $default_value);
+    }
+
     /**
      * Returns all the request data from either $_GET or $_POST
      * Shorthand for $this->request->getAll()
@@ -255,6 +333,6 @@ class Request
     {
         $page_param = $page_param ? $page_param : $this->app->config->request_page_param;
 
-        return $this->request->get($page_param, 'absint', 0);
+        return $this->request->get($page_param, 0, 'absint');
     }
 }

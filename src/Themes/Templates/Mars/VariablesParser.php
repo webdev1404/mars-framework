@@ -26,6 +26,7 @@ class VariablesParser
         'htmlx2' => ['$this->app->escape->htmlx2', 60],
         'js' => ['$this->app->escape->js', 20, false],
         'jsstring' => ['$this->app->escape->jsString', 20, false],
+        'json' => ['$this->app->json->encode', 20, false],
         'path' => ['$this->app->escape->path', 10, false],
 
         //base modifiers

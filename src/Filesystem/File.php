@@ -120,7 +120,7 @@ class File
      * @param string $filename The filename for which the parent folder will be returned
      * @return string The parent folder of filename or '' if there isn't one
      */
-    public function getPath(string $filename) : string
+    public function getDir(string $filename) : string
     {
         $dir = dirname($filename);
         if ($dir == '.') {
@@ -131,32 +131,36 @@ class File
     }
 
     /**
-     * Returns the basename from $filename
-     * @param string $filename The filename for which the basename will be returned
-     * @return string The basename of filename
-     */
-    public function getBasename(string $filename) : string
-    {
-        return basename($filename);
-    }
-
-    /**
-     * Returns the file name(strips the extension) of a file
+     * Returns the name(strips the extension) of a file
      * @param string $filename The filename for which the filename will be returned
      * @return string The filename, without the extension
      */
-    public function getFile(string $filename) : string
+    public function getStem(string $filename) : string
     {
         return pathinfo($filename, PATHINFO_FILENAME);
     }
 
     /**
-     * Returns the filename of a file
-     * @param string $filename The filename for which the filename will be returned
-     * @param bool $add_extension If true, will also return the extension
-     * @return string The filename, without the extension
+     * Returns the full path of a file with the extension stripped
+     * @param string $filename The filename
+     * @return string The full path of the file without the extension
      */
-    public function getFilename(string $filename) : string
+    public function getFullStem(string $filename) : string
+    {
+        $dir = $this->getDir($filename);
+        if ($dir) {
+            $dir.= '/';
+        }
+
+        return $dir . pathinfo($filename, PATHINFO_FILENAME);
+    }
+
+    /**
+     * Returns the name of a file
+     * @param string $filename The filename for which the filename will be returned
+     * @return string The filename, including the extension
+     */
+    public function getName(string $filename) : string
     {
         return pathinfo($filename, PATHINFO_BASENAME);
     }
@@ -169,7 +173,7 @@ class File
      */
     public function appendToFilename(string $filename, string $append) : string
     {
-        return $this->slash($this->getPath($filename)) . $this->getFile($filename) . $append . $this->getExtension($filename, true);
+        return $this->getFullStem($filename) . $append . $this->getExtension($filename, true);
     }
 
     /**

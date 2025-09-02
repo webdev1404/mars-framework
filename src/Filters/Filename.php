@@ -52,7 +52,7 @@ class Filename extends Filter
     */
     protected function cutFilename(string $filename) : string
     {
-        $name = substr($this->app->file->getFile($filename), 0, $this->max_chars);
+        $name = substr($this->app->file->getStem($filename), 0, $this->max_chars);
         $ext = $this->app->file->getExtension($filename);
 
         return $this->app->file->addExtension($name, $ext);

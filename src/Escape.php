@@ -23,7 +23,7 @@ class Escape
      */
     public function html(?string $value) : string
     {
-        if (!$value) {
+        if ($value === null) {
             return '';
         }
 
@@ -38,7 +38,7 @@ class Escape
      */
     public function htmlx2(?string $value, bool $nl2br = true) : string
     {
-        if (!$value) {
+        if ($value === null) {
             return '';
         }
         

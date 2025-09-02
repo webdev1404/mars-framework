@@ -42,13 +42,18 @@ class Tag implements TagInterface
     protected static array $properties = [];
 
     /**
+     * @var array $empty_properties List with the attributes that will be added even if empty
+     */
+    protected static array $empty_attributes = [];
+
+    /**
      * Opens the tag
      * @param array $attributes The tag's attributes
      * @return string The html code
      */
     public function open(array $attributes = []) : string
     {
-        $attributes = $this->app->html->getAttributes($this->getAttributes($attributes));
+        $attributes = $this->app->html->getAttributes($this->getAttributes($attributes), static::$empty_attributes);
 
         return '<' . static::$tag . $attributes . '>' . static::$newline;
     }
@@ -68,7 +73,7 @@ class Tag implements TagInterface
      */
     public function html(string $text = '', array $attributes = []) : string
     {
-        $attributes = $this->app->html->getAttributes($this->getAttributes($attributes));
+        $attributes = $this->app->html->getAttributes($this->getAttributes($attributes), static::$empty_attributes);
 
         if ($text) {
             $text = static::$escape ? $this->app->escape->html($text) : $text;

@@ -46,12 +46,22 @@ abstract class Plugin extends Component
     /**
      * @internal
      */
-    protected static string $base_namespace = '';
+    protected static string $base_namespace = "\\Plugins";
 
     /**
-     * @var array|null $list The list of loaded available extensions of this type
+     * @internal
      */
     protected static ?array $list = null;
+
+    /**
+     * @internal
+     */
+    protected static string $list_config_file = '';
+
+    /**
+     * @internal
+     */
+    protected static bool $list_filter = false;
 
     /**
      * Builds the extension
@@ -67,12 +77,10 @@ abstract class Plugin extends Component
     }
 
     /**
-     * Returns the reader object used to read the list of available extensions
-     * @param App $app The app object
-     * @return object The reader object
+     * Reads the list of extensions of this type from the disk and returns it
      */
-    public static function getListReader($app) : object
+    protected static function getListData(App $app) : array
     {
-        return new Reader($app);
+        return new Reader($app)->get();
     }
 }

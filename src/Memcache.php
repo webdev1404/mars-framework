@@ -24,7 +24,6 @@ class Memcache
      */
     protected array $supported_drivers = [
         'redis' => \Mars\Memcache\Redis::class,
-        'memcache' => \Mars\Memcache\Memcache::class,
         'memcached' => \Mars\Memcache\Memcached::class
     ];
     

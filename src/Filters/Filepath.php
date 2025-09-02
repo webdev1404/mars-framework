@@ -16,11 +16,11 @@ class Filepath extends Filename
      */
     public function filter(string $filepath) : string
     {
-        $path = $this->app->file->getPath($filepath);
+        $dir = $this->app->file->getDir($filepath);
         $filename = basename($filepath);
 
-        if ($path) {
-            $filepath = $path . '/' . parent::filter($filename);
+        if ($dir) {
+            $filepath = $dir . '/' . parent::filter($filename);
         } else {
             $filepath = parent::filter($filename);
         }

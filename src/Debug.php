@@ -4,9 +4,9 @@
 * @package Mars
 */
 
-namespace Mars\App;
+namespace Mars;
 
-use Mars\App;
+use Mars\App\Kernel;
 
 /**
  * The Debug Class
@@ -92,15 +92,10 @@ class Debug
         echo '<table class="grid debug-grid debug-grid-plugins">';
         echo '<tr><th colspan="3">Plugins</th></tr>';
         foreach ($this->app->plugins->plugins as $name => $plugin) {
-            if (!isset($this->app->plugins->exec_time[$name])) {
-                continue;
-            }
-
             $exec_time = $this->app->plugins->exec_time[$name] ?? 0;
             echo "<tr><td>" . $this->app->escape->html($name) . "</td><td>" . $exec_time . "s</td><td>" . $this->app->format->percentage($exec_time, $execution_time) . '%</td></tr>';
         }
         echo '</table><br><br>';
-
 
         echo '<table class="grid debug-grid debug-grid-hooks" style="width:auto;">';
         echo '<tr><th colspan="3">Hooks Execution Time</th></tr>';

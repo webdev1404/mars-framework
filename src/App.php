@@ -6,7 +6,6 @@
 
 namespace Mars;
 
-use Mars\App\Debug;
 use Mars\App\LazyLoad;
 use Mars\App\Registry;
 use Mars\Alerts\Errors;
@@ -450,7 +449,7 @@ class App
     }
 
     /**
-     * @var string $base_url The url. Eg: http://mydomain.com/mars
+     * @var string $base_url The url. Eg: http://mydomain.com
      */
     public string $base_url {
         get {
@@ -459,7 +458,7 @@ class App
     }
 
     /**
-     * @var string $root_url The url. Includes the language code, if languages_multi is enabled. Eg: http://mydomain.com/mars/en
+     * @var string $root_url The url. Includes the language code, if languages_multi is enabled. Eg: http://mydomain.com/en
      */
     public string $root_url {
         get {

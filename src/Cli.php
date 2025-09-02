@@ -112,34 +112,34 @@ class Cli
     }
 
     /**
-     * @var string $command_name The name of the command
+     * @var string $command The name of the command
      */
-    public protected(set) string $command_name {
+    public protected(set) string $command {
         get {
-            if (isset($this->command_name)) {
-                return $this->command_name;
+            if (isset($this->command)) {
+                return $this->command;
             }
 
-            $this->command_name = $this->commands[0] ?? '';
-            
-            return $this->command_name;
+            $this->command = $this->commands[0] ?? '';
+
+            return $this->command;
         }
     }
 
     /**
-     * @var string $command_action The action of the command
+     * @var string $action The action of the command
      */
-    public protected(set) string $command_action {
+    public protected(set) string $action {
         get {
-            if (isset($this->command_action)) {
-                return $this->command_action;
+            if (isset($this->action)) {
+                return $this->action;
             }
 
             $slice = array_slice($this->commands, 1);
 
-            $this->command_action = implode(':', $slice);
+            $this->action = implode(':', $slice);
 
-            return $this->command_action;
+            return $this->action;
         }
     }
 
@@ -206,7 +206,7 @@ class Cli
      * @param string $name The name of the option
      * @return bool
      */
-    public function hasOption(string $name) : bool
+    public function has(string $name) : bool
     {
         return isset($this->options[$name]);
     }
@@ -214,11 +214,11 @@ class Cli
     /**
      * Returns the value of a command line option
      * @param string $name The name of the option
-     * @param string $filter The filter to apply to the option, if any. See class Filter for a list of filters
      * @param mixed $default_value The default value to return if the option is not found
+     * @param string $filter The filter to apply to the option, if any. See class Filter for a list of filters
      * @return string The option
      */
-    public function getOption(string $name, string $filter = '', mixed $default_value = '') : mixed
+    public function get(string $name, mixed $default_value = '', string $filter = '') : mixed
     {
         $option = $this->options[$name] ?? $default_value;
         if ($filter) {
@@ -226,6 +226,28 @@ class Cli
         }
 
         return $option;
+    }
+
+    /**
+     * Returns the value of a command line option as an integer
+     * @param string $name The name of the variable
+     * @param int $default_value The default value to return if the variable is not set
+     * @return int|array The option
+     */
+    public function getInt(string $name, ?int $default_value = 0) : int|array
+    {
+        return $this->get($name, $default_value, 'int');
+    }
+
+    /**
+     * Returns the value of a command line option as a float
+     * @param string $name The name of the variable
+     * @param float $default_value The default value to return if the variable is not set
+     * @return float|array The option
+     */
+    public function getFloat(string $name, ?float $default_value = 0) : float|array
+    {
+        return $this->get($name, $default_value, 'float');
     }
 
     /**

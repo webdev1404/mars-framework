@@ -47,8 +47,7 @@ class Plugins
 
             $this->plugins = [];
 
-            //$plugins = Plugin::getList();
-            $plugins = [];
+            $plugins = Plugin::getList();
             foreach ($plugins as $class_name => $module_name) {
                 $plugin = new $class_name($module_name, [], $this->app);
 
@@ -61,13 +60,6 @@ class Plugins
 
             return $this->plugins;
         }
-    }
-
-    /**
-     * @var bool $debug If true, we'll collect debug data
-     */
-    public bool $debug {
-        get => $this->app->config->debug_plugins;
     }
 
     /**
@@ -103,18 +95,17 @@ class Plugins
         }
 
         $hooks = (array)$hooks;
-        foreach ($hooks as $hook) {
+
+        foreach ($hooks as $name => $hook) {
             if (is_string($hook)) {
-                $name = $hook;
                 $method = $hook;
                 $priority = 100;
             } elseif (is_array($hook)) {
-                $name = $hook['name'];
                 $method = $hook['method'] ?? $name;
                 $priority = $hook['priority'] ?? 100;
             }
 
-            $this->hooks[$name][] = [$plugin::class, $method, $priority];
+            $this->hooks[$name][] = ['class' => $plugin::class, 'method' => $method, 'priority' => $priority];
         }
 
         return $this;
@@ -135,19 +126,19 @@ class Plugins
         //sort the hooks by priority
         $hooks_array = $this->hooks[$hook];
         usort($hooks_array, function ($a, $b) {
-            return $a[2] <=> $b[2];
+            return $a['priority'] <=> $b['priority'];
         });
 
         $return_value = null;
         
         foreach ($hooks_array as $hook_data) {
-            if ($this->debug) {
+            if ($this->app->config->debug) {
                 $this->startTimer();
             }
 
-            $class_name = $hook_data[0];
+            $class_name = $hook_data['class'];
             $plugin = $this->plugins[$class_name] ?? null;
-            $method = $hook_data[1];
+            $method = $hook_data['method'];
 
             if (!$plugin) {
                 throw new \Exception("Plugin {$class_name} not found on the list of loaded plugins");
@@ -164,7 +155,7 @@ class Plugins
                 $return_value = $plugin_return_value;
             }
 
-            if ($this->debug) {
+            if ($this->app->config->debug) {
                 $this->endTimer($class_name, $hook);
             }
         }

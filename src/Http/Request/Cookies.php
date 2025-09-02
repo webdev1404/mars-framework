@@ -33,7 +33,7 @@ class Cookies extends Input
      * @param bool $decode If true, will decode the value
      * @return mixed The value
      */
-    public function get(string $name, string $filter = '', mixed $default_value = '', bool $is_array = false, bool $decode = true) : mixed
+    public function get(string $name, mixed $default_value = '', string $filter = '', bool $is_array = false, bool $trim = true, bool $decode = true) : mixed
     {
         if ($decode) {
             $value = $this->data[$name] ?? '';
@@ -43,6 +43,6 @@ class Cookies extends Input
             }
         }
 
-        return parent::get($name, $filter, $default_value, $is_array);
+        return parent::get($name, $default_value, $filter, $is_array, $trim);
     }
 }

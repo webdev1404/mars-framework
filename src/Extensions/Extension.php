@@ -40,7 +40,7 @@ abstract class Extension
                 return $this->path;
             }
             
-            $this->path = static::$available_list[$this->name] ?? '';
+            $this->path = static::$list[$this->name] ?? '';
 
             return $this->path;
         }
@@ -134,17 +134,17 @@ abstract class Extension
     /**
      * @var array|null $list The list of enabled extensions of this type
      */
-    protected static ?array $enabled_list = null;
+    protected static ?array $list = null;
 
     /**
-     * @var string $enabled_list_config_file The config file where the enabled extensions are listed
+     * @var string $list_config_file The config file where the enabled extensions are listed
      */
-    protected static string $enabled_list_config_file = '';
+    protected static string $list_config_file = '';
 
     /**
-     * @var array|null $available_list The list of available extensions of this type
+     * @var bool $list_filter If true, the list of extensions is filtered based on the config file
      */
-    protected static ?array $available_list = null;
+    protected static bool $list_filter = true;
 
     /**
      * @var string $type The type of the extension
@@ -169,145 +169,71 @@ abstract class Extension
      */
     public function __construct(string $name, array $params = [], ?App $app = null)
     {
-        static::getAvailableList();
-        static::getEnabledList();
+        static::$list = static::getList();
 
         $this->app = $app ?? App::obj();
         $this->name = $name;
         $this->params = $params;
 
-        if (!isset(static::$enabled_list[$this->name])) {
+        if (!isset(static::$list[$this->name])) {
             throw new \Exception("Extension '{$this->name}' of type '" . static::$type . "' not found. It either does not exist or is not enabled.");
         }
-    }
-
-    /**
-     * Returns the list of available extensions of this type
-     * @return array The list of available extensions
-     */
-    public static function getAvailableList() : array
-    {
-        if (static::$available_list !== null) {
-            return static::$available_list;
-        }
-
-        $app = static::getApp();
-
-        $filename = static::getAvailableListFilename();
-
-        static::$available_list = static::getListFromCache($filename, $app);
-        if (static::$available_list !== null) {
-            return static::$available_list;
-        }
-
-        static::$available_list = static::getListReader($app)->get(static::$base_dir);
-
-        $app->cache->setArray($filename, static::$available_list, false);
-
-        return static::$available_list;
     }
 
     /**
      * Returns the list of enabled extensions of this type
      * @return array The list of enabled extensions
      */
-    public static function getEnabledList() : array
+    public static function getList() : array
     {
-        if (static::$enabled_list !== null) {
-            return static::$enabled_list;
-        }
-        if (static::$available_list === null) {
-            static::getAvailableList();
-        }
-
-        // If the we don't list the extensions in a config file, we use the available list as the enabled list
-        if (!static::$enabled_list_config_file) {
-            static::$enabled_list = static::$available_list;
-
-            return static::$enabled_list;
+        if (static::$list !== null) {
+            return static::$list;
         }
 
         $app = static::getApp();
 
-        $filename = static::getEnabledListFilename();
+        $filename = static::getListFilename();
 
-        static::$enabled_list = static::getListFromCache($filename, $app);
-        if (static::$enabled_list !== null) {
-            return static::$enabled_list;
-        }
-
-        $config_list = $app->config->read(static::$enabled_list_config_file);
-        $enabled_list = array_filter(static::$available_list, fn ($extension) => in_array($extension, $config_list), ARRAY_FILTER_USE_KEY);
-
-        static::$enabled_list = static::getListData($enabled_list, $config_list);
-
-        $app->cache->setArray($filename, static::$enabled_list, false);
-  
-        return static::$enabled_list;
-    }
-
-    /**
-     * Returns the list of available extensions from the cache, or null if not found
-     * @param string $filename The filename used to cache the list
-     * @param App $app The app object
-     * @return array|null The list of available extensions, or null if not found
-     */
-    protected static function getListFromCache(string $filename, App $app) : ?array
-    {
-        $list = $app->cache->getArray($filename, false);
+        static::$list = $app->cache->getArray($filename, false);
 
         // If we are in development mode, we always read the list from the filesystem
         $development = $app->development ? true : $app->config->development_extensions[static::$base_dir] ?? false;
         if ($development) {
-            return null;
+            static::$list = null;
         }
 
-        return $list;
+        if (static::$list !== null) {
+            return static::$list;
+        }
+
+        static::$list = static::getListData($app);
+
+        if (static::$list_config_file && static::$list_filter) {
+            $enabled_list = $app->config->read(static::$list_config_file);
+
+            static::$list = array_filter(static::$list, fn ($extension) => in_array($extension, $enabled_list), ARRAY_FILTER_USE_KEY);
+        }
+
+        $app->cache->setArray($filename, static::$list, false);
+
+        return static::$list;
     }
 
     /**
      * Returns the filename used to cache the list of available extensions
      * @return string The filename
      */
-    public static function getAvailableListFilename() : string
+    public static function getListFilename() : string
     {
-        return static::$base_dir . '-available-extensions-list';
+        return static::$base_dir . '-extensions-list';
     }
 
     /**
-     * Returns the filename used to cache the list of enabled extensions
-     * @return string The filename
+     * Reads the list of extensions of this type from the disk and returns it
      */
-    public static function getEnabledListFilename() : string
+    protected static function getListData(App $app) : array
     {
-        return static::$base_dir . '-enabled-extensions-list';
-    }
-
-    /**
-     * Returns the reader object used to read the list of available extensions
-     * @param App $app The app object
-     * @return object The reader object
-     */
-    public static function getListReader($app) : object
-    {
-        return new Reader($app);
-    }
-
-    /**
-     * Returns the data for the list of extensions
-     * @param array $enabled_list The list of enabled extensions
-     * @param array $config_list The config list of extensions
-     * @return array The data for the list of extensions
-     */
-    protected static function getListData(array $enabled_list, array $config_list) : array
-    {
-        foreach ($enabled_list as $name => $path) {
-            $enabled_list[$name] = [
-                'path' => $path
-            ];
-        }
-
-        return $enabled_list;
+        return new Reader($app)->get(static::$base_dir);
     }
 
     /**
@@ -317,11 +243,11 @@ abstract class Extension
      */
     public static function getPath(string $name) : ?string
     {
-        if (static::$enabled_list === null) {
-            static::$enabled_list = static::getEnabledList();
+        if (static::$list === null) {
+            static::getList();
         }
 
-        return static::$enabled_list[$name]['path'] ?? null;
+        return static::$list[$name] ?? null;
     }
 
     /**

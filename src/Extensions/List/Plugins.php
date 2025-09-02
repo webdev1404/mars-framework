@@ -21,7 +21,7 @@ class Plugins
      * Returns the list of enabled plugins, found in the system
      * @return array The list of enabled plugins
      */
-    public function get(string $type = '') : array
+    public function get() : array
     {
         $list = [];
         $modules_list = Module::getList();
@@ -38,8 +38,11 @@ class Plugins
                 }
 
                 foreach ($plugins as $plugin) {
-                    $plugin_name = $this->app->file->getFile($plugin);
+                    $plugin_name = $this->app->file->getStem($plugin);
                     $class_name = Module::getPluginNamespace($module_name, $plugin_name);
+
+                    //remove the starting slash from the class name
+                    $class_name = ltrim($class_name, '\\');
 
                     $list[$class_name] = $module_name;
                 }

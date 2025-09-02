@@ -36,6 +36,8 @@ class Filter
      * @var array $aliases The list of filter aliases
      */
     protected array $aliases = [
+        'i' => 'int',
+        'f' => 'float',
         'str' => 'string',
         'pos' => 'absint',
     ];

@@ -219,13 +219,6 @@ class Db
     public protected(set) float $queries_time = 0;
 
     /**
-     * @var bool $debug If true, the db will be run in debug mode
-     */
-    public bool $debug {
-        get => $this->app->config->debug_db;
-    }
-
-    /**
      * @var array $last_query Contains the sql code and the params of the last executed query
      */
     protected array $last_query = ['sql' => '', 'params' => []];
@@ -310,7 +303,7 @@ class Db
      */
     public function query(string|Sql $sql, array $params = [], ?bool $is_read = null) : Result
     {
-        if ($this->debug) {
+        if ($this->app->config->debug) {
             $this->app->timer->start('sql');
         }
 
@@ -330,7 +323,7 @@ class Db
             throw new \Exception('Query Error: ' . $this->getQueryError($e->getMessage(), $sql, $params));
         }
 
-        if ($this->debug) {
+        if ($this->app->config->debug) {
             $exec_time = $this->app->timer->stop('sql');
 
             $this->queries_time+= $exec_time;
@@ -413,6 +406,10 @@ class Db
      */
     protected function getFullQuery(string $sql, array $params) : string
     {
+        if (!$this->app->config->debug_db) {
+            return $sql;
+        }
+
         $search = [];
         $replace = [];
 

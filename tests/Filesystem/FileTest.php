@@ -59,17 +59,10 @@ final class FileTest extends Base
         $this->assertSame($this->app->file->slash(''), '');
     }
 
-    public function testGetPath()
+    public function testGetDir()
     {
-        $this->assertSame($this->app->file->getPath('/var/www/html/somefile.txt'), '/var/www/html');
-        $this->assertSame($this->app->file->getPath('.'), '');
-    }
-
-    public function testGetBasename()
-    {
-        $filename = '/path/to/test.txt';
-        $basename = $this->app->file->getBasename($filename);
-        $this->assertEquals('test.txt', $basename);
+        $this->assertSame($this->app->file->getDir('/var/www/html/somefile.txt'), '/var/www/html');
+        $this->assertSame($this->app->file->getDir('.'), '');
     }
 
     public function testGetRel()
@@ -82,24 +75,24 @@ final class FileTest extends Base
         $this->assertSame($this->app->file->getRel('/dir1/dir2/somefile.txt', '/dir1/dir2'), 'somefile.txt');
     }
 
-    public function testGetFile()
+    public function testGetStem()
     {
         $file = $this->app->file;
 
-        $this->assertSame($this->app->file->getFile('/etc/php/somefile.txt'), 'somefile');
-        $this->assertSame($this->app->file->getFile('/etc/php/../somefile.txt'), 'somefile');
-        $this->assertSame($this->app->file->getFile('somefile.txt'), 'somefile');
-        $this->assertSame($this->app->file->getFile('somefile'), 'somefile');
+        $this->assertSame($this->app->file->getStem('/etc/php/somefile.txt'), 'somefile');
+        $this->assertSame($this->app->file->getStem('/etc/php/../somefile.txt'), 'somefile');
+        $this->assertSame($this->app->file->getStem('somefile.txt'), 'somefile');
+        $this->assertSame($this->app->file->getStem('somefile'), 'somefile');
     }
 
-    public function testGetFilename()
+    public function testGetName()
     {
         $file = $this->app->file;
 
-        $this->assertSame($this->app->file->getFilename('/etc/php/somefile.txt'), 'somefile.txt');
-        $this->assertSame($this->app->file->getFilename('/etc/php/../somefile.txt'), 'somefile.txt');
-        $this->assertSame($this->app->file->getFilename('somefile.txt'), 'somefile.txt');
-        $this->assertSame($this->app->file->getFilename('somefile'), 'somefile');
+        $this->assertSame($this->app->file->getName('/etc/php/somefile.txt'), 'somefile.txt');
+        $this->assertSame($this->app->file->getName('/etc/php/../somefile.txt'), 'somefile.txt');
+        $this->assertSame($this->app->file->getName('somefile.txt'), 'somefile.txt');
+        $this->assertSame($this->app->file->getName('somefile'), 'somefile');
     }
 
     public function testAppendToFilename()

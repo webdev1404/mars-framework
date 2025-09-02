@@ -257,6 +257,16 @@ class Theme extends Extension
     /**
      * @internal
      */
+    protected static string $list_config_file = '';
+
+    /**
+     * @internal
+     */
+    protected static bool $list_filter = false;
+
+    /**
+     * @internal
+     */
     protected static string $type = 'theme';
 
     /**

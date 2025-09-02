@@ -91,16 +91,16 @@ class Html
     /**
      * Merges the attributes and returns the html code
      * @param array $attributes The attributes in the format name => value
+     * @param array $empty_attributes List of attributes which will be added even if empty
      * @return string The attribute's html code
      */
-    public function getAttributes(array $attributes) : string
+    public function getAttributes(array $attributes, array $empty_attributes = []) : string
     {
         if (!$attributes) {
             return '';
         }
 
         $attributes_array = [];
-
         foreach ($attributes as $name => $value) {
             if (is_array($value)) {
                 //don't escape if $value is an array
@@ -111,7 +111,7 @@ class Html
                 }
             }
 
-            if ($value) {
+            if ($value || in_array($name, $empty_attributes)) {
                 if (is_bool($value)) {
                     $attributes_array[] = $name;
                 } else {

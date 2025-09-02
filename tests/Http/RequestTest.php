@@ -20,7 +20,7 @@ final class RequestTest extends Base
         $_GET['myvar'] = ' some string 1234 ';
 
         $this->assertSame($this->app->request->get->get('myvar'), 'some string 1234');
-        $this->assertSame($this->app->request->get->get('myvar', 'alpha'), 'somestring');
+        $this->assertSame($this->app->request->get->get('myvar', filter: 'alpha'), 'somestring');
         $this->assertSame($this->app->request->get->get('myvar', '', '', true), ['some string 1234']);
     }
 
@@ -71,7 +71,7 @@ final class RequestTest extends Base
             'var2' => ''
         ];
 
-        $this->assertSame($this->app->request->get->fill($data), ['var1' => 'a', 'var2' => 'b']);
+        $this->assertSame($this->app->request->get->fill($data), ['var1' => 'a', 'var2' => 'b']);        
         $this->assertSame($this->app->request->get->fill($data, ['var2' => 'int']), ['var1' => 'a', 'var2' => 0]);
         $this->assertSame($this->app->request->get->fill($data, ['var2' => 'int'], [], ['var2']), ['var1' => 'a', 'var2' => '']);
     }

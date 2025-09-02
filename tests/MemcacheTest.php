@@ -52,22 +52,6 @@ final class MemcacheTest extends Base
         $this->assertNull($memcache->get($key));
     }
 
-    public function testMemcacheConnection()
-    {
-        $this->app->config->memcache_driver = 'memcache';
-
-        $memcache = new Memcache($this->app);
-        $this->assertTrue($memcache->add($this->getKey(), '12345'));
-    }
-
-    public function testMemcache()
-    {
-        $this->app->config->memcache_driver = 'memcache';
-
-        $memcache = new Memcache($this->app);
-        $this->runAssertions($memcache);
-    }
-
     public function testMemcachedConnection()
     {
         $this->app->config->memcache_driver = 'memcached';
@@ -141,7 +125,7 @@ final class MemcacheTest extends Base
 
     public function testAddWithSerialization()
     {
-        $this->app->config->memcache_driver = 'memcache';
+        $this->app->config->memcache_driver = 'memcached';
 
         $memcache = new Memcache($this->app);
         $key = $this->getKey();
@@ -153,7 +137,7 @@ final class MemcacheTest extends Base
 
     public function testSetWithSerialization()
     {
-        $this->app->config->memcache_driver = 'memcache';
+        $this->app->config->memcache_driver = 'memcached';
 
         $memcache = new Memcache($this->app);
         $key = $this->getKey();
@@ -165,7 +149,7 @@ final class MemcacheTest extends Base
 
     public function testDeleteAll()
     {
-        $this->app->config->memcache_driver = 'memcache';
+        $this->app->config->memcache_driver = 'memcached';
 
         $memcache = new Memcache($this->app);
         $key1 = $this->getKey();

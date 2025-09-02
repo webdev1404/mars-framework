@@ -35,17 +35,22 @@ class Module extends Extension
     /**
      * @internal
      */
-    protected static ?array $enabled_list = null;
+    protected static ?array $list = null;
 
     /**
      * @internal
      */
-    protected static string $enabled_list_config_file = 'modules.php';
+    protected static string $list_config_file = 'modules.php';
 
     /**
      * @internal
      */
     protected static ?array $available_list = null;
+
+    /**
+     * @internal
+     */
+    protected static bool $list_filter = true;
 
     /**
      * @internal

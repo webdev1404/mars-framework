@@ -93,10 +93,9 @@ class Language extends BaseLanguage
             //read the language name from the url, if multi-language is enabled
             if ($this->multi) {
                 $code = $this->app->url->lang;
-                
-                $name = array_find_key(static::$enabled_list, fn ($value) => $value['code'] == $code);
-                if ($name) {
-                    $this->name = $name;
+
+                if (isset($this->multi_list[$code])) {
+                    $this->name = $this->multi_list[$code];
                 }
             }
 
@@ -104,22 +103,36 @@ class Language extends BaseLanguage
                 throw new \Exception('No language set in the config file.');
             }
 
-
             return $this->name;
+        }
+    }
+
+    /**
+     * @var array $multi_list The list of available languages for multi-language support
+     */
+    public protected(set) array $multi_list {
+        get {
+            if (isset($this->multi_list)) {
+                return $this->multi_list;
+            }
+
+            $this->multi_list = $this->app->config->read(static::$list_config_file);
+
+            return $this->multi_list;
         }
     }
 
     /**
      * @var bool $multi If true, multi-language mode is enabled
      */
-    public bool $multi {
+    public protected(set) bool $multi {
         get {
             if (isset($this->multi)) {
                 return $this->multi;
             }
 
             $this->multi = false;
-            if (count(static::$enabled_list) > 1) {
+            if (count($this->multi_list) > 1) {
                 $this->multi = true;
             }
 
@@ -136,9 +149,14 @@ class Language extends BaseLanguage
                 return $this->code;
             }
 
-            $this->code = static::$enabled_list[$this->name]['code'] ?? '';
-            if (!$this->code) {
-                throw new \Exception("Language code not found for language: {$this->name}");
+            $this->code = $this->name;
+
+            if ($this->multi) {
+                $this->code = $this->getCode($this->name);
+
+                if (!$this->code) {
+                    throw new \Exception("Language code not found for language: {$this->name}");
+                }
             }
 
             return $this->code;
@@ -156,11 +174,11 @@ class Language extends BaseLanguage
 
             $this->default_code = $this->code;
             if ($this->multi) {
-                $this->default_code = static::$enabled_list[$this->app->config->language]['code'] ?? '';
-            }
+                $this->default_code = $this->getCode($this->app->config->language);
 
-            if (!$this->default_code) {
-                throw new \Exception("Default language code not found");
+                if (!$this->default_code) {
+                    throw new \Exception("Default language code not found");
+                }
             }
 
             return $this->default_code;
@@ -201,7 +219,7 @@ class Language extends BaseLanguage
 
             $this->fallback = null;
             if ($this->can_use_fallback) {
-                $this->fallback = new BaseLanguage($this->app->config->language_fallback, true, $this->app);
+                $this->fallback = new BaseLanguage($this->app->config->language_fallback, [], $this->app);
             }
 
             return $this->fallback;
@@ -222,7 +240,7 @@ class Language extends BaseLanguage
             $this->parent = null;
 
             if ($this->parent_name) {
-                $this->parent = new BaseLanguage($this->parent_name, true, $this->app);
+                $this->parent = new BaseLanguage($this->parent_name, [], $this->app);
             }
 
             return $this->parent;
@@ -235,15 +253,22 @@ class Language extends BaseLanguage
      */
     public function __construct(App $app)
     {
-        static::getAvailableList();
-        static::getEnabledList();
-
         $this->app = $app ?? App::obj();
 
-        parent::__construct($this->name, false, $this->app);
+        parent::__construct($this->name, [], $this->app);
 
         include($this->path . '/init.php');
     }
+
+    /**
+     * Returns the code for the specified language name
+     * @param string $name The language name
+     * @return string|null The code of the language, or null if not found
+     */
+    public function getCode(string $name) : ?string
+    {
+        return array_find_key($this->multi_list, fn($value) => $value === $name);
+    }    
 
     /**
      * @see \Mars\Extensions\Language::loadFile()

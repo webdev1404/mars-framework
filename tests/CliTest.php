@@ -10,8 +10,8 @@ class CliTest extends Base
         global $argv;
         $argv = ['script.php', '--testOption=value'];
 
-        $this->assertTrue($this->app->cli->hasOption('testOption'));
-        $this->assertFalse($this->app->cli->hasOption('nonExistentOption'));
+        $this->assertTrue($this->app->cli->has('testOption'));
+        $this->assertFalse($this->app->cli->has('nonExistentOption'));
     }
 
     public function testGetOption()
@@ -19,7 +19,7 @@ class CliTest extends Base
         global $argv;
         $argv = ['script.php', '--testOption=value'];
 
-        $this->assertEquals('value', $this->app->cli->getOption('testOption'));
-        $this->assertEquals('default', $this->app->cli->getOption('nonExistentOption', '', 'default'));
+        $this->assertEquals('value', $this->app->cli->get('testOption'));
+        $this->assertEquals('default', $this->app->cli->get('nonExistentOption', 'default'));
     }
 }

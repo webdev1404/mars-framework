@@ -21,6 +21,11 @@ class Options extends Tag
     protected static string $tag = 'option';
 
     /**
+     * {@inheritdoc}
+     */
+    protected static array $empty_attributes = ['value'];
+
+    /**
      * @see TagInterface::html()
      * {@inheritdoc}
      */
@@ -33,6 +38,8 @@ class Options extends Tag
             return '';
         }
 
+        $is_list = array_is_list($options);
+
         $html = '';
         foreach ($options as $value => $text) {
             if (is_array($text)) {
@@ -42,7 +49,11 @@ class Options extends Tag
                 $html.= $this->getOptions($text, $selected);
                 $html.= $optgroup->close();
             } else {
-                $html.= parent::html($text, ['value' => $value, 'selected' => in_array($value, $selected)]);
+                if ($is_list) {
+                    $value = $text;
+                }
+
+                $html.= parent::html($text, ['value' => $value, 'selected' => in_array($value, $selected)], true);
             }
         }
 
@@ -57,8 +68,14 @@ class Options extends Tag
      */
     protected function getOptions(array $options, array $selected) : string
     {
-        $html = '';
+        $is_list = array_is_list($options);
+        
+        $html = '';        
         foreach ($options as $value => $text) {
+            if ($is_list) {
+                $value = $text;
+            }
+
             $html.= parent::html($text, ['value' => $value, 'selected' => in_array($value, $selected)]);
         }
 

@@ -76,17 +76,17 @@ class Language extends Extension
     /**
      * @internal
      */
-    protected static ?array $enabled_list = null;
+    protected static ?array $list = null;
 
     /**
      * @internal
      */
-    protected static string $enabled_list_config_file = 'languages.php';
+    protected static string $list_config_file = 'languages.php';
 
     /**
      * @internal
      */
-    protected static ?array $available_list = null;
+    protected static bool $list_filter = false;
 
     /**
      * @internal
@@ -107,48 +107,6 @@ class Language extends Extension
      * @internal
      */
     protected static string $setup_class = \Mars\Extensions\Setup\Language::class;
-
-    /**
-     * Builds the language
-     * @param string $name The name of the extension
-     * @param bool $check_available If true, checks if the extension is available rather than enabled
-     * @param App $app The app object
-     */
-    public function __construct(string $name, bool $check_available = false, ?App $app = null)
-    {
-        static::getAvailableList();
-        static::getEnabledList();
-
-        $this->app = $app ?? App::obj();
-        $this->name = $name;
-
-        //for parent/fallback images we need to check if the extension is available rather than enabled
-        $found = true;
-        if ($check_available) {
-            $found = isset(static::$available_list[$this->name]);
-        } else {
-            $found = isset(static::$enabled_list[$this->name]);
-        }
-
-        if (!$found) {
-            throw new \Exception("Extension '{$this->name}' of type '" . static::$type . "' not found. It either does not exist or is not enabled.");
-        }
-    }
-
-    /**
-     * @see \Mars\Extensions\Extension::getListData()
-     * {@inheritdoc}
-     */
-    protected static function getListData(array $enabled_list, array $config_list) : array
-    {
-        $enabled_list = parent::getListData($enabled_list, $config_list);
-
-        foreach ($enabled_list as $name => $data) {
-            $enabled_list[$name]['code'] = array_find_key($config_list, fn ($value) => $value == $name) ?? '';
-        }
-
-        return $enabled_list;
-    }
 
     /**
      * Checks if the specified file exists in the language's files
@@ -279,11 +237,6 @@ class Language extends Extension
      */
     public function restoreSearchKeys() : static
     {
-        //unload the current keys
-        foreach ($this->strings_search as $key) {
-            unset($this->strings[$key]);
-        }
-
         $this->strings_search = $this->strings_search_old;
 
         return $this;

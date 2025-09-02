@@ -38,24 +38,23 @@ abstract class Input
      * @param string $filter The filter to apply to the value, if any. See class Filter for a list of filters
      * @param mixed $default_value The default value to return if the variable is not set
      * @param bool $is_array Whether the value should be returned as an array
+     * @param bool $trim Whether to trim the value
      * @return mixed The value
      */
-    public function get(string $name, string $filter = '', mixed $default_value = '', bool $is_array = false) : mixed
+    public function get(string $name, mixed $default_value = '', string $filter = '', bool $is_array = false, bool $trim = true) : mixed
     {
-        $value = $this->data[$name] ?? '';
+        $value = $this->data[$name] ?? null;
         if (!$value) {
-            if ($filter) {
-                $default_value = $this->app->filter->value($default_value, $filter);
-            }
-
-            return $default_value;
+            $value = $default_value;
         }
         
         if ($is_array) {
             $value = (array)$value;
         }
 
-        $value = $this->app->filter->trim($value);
+        if ($trim) {
+            $value = $this->app->filter->trim($value);
+        }
 
         if ($filter) {
             $value = $this->app->filter->value($value, $filter);
@@ -65,15 +64,91 @@ abstract class Input
     }
 
     /**
+     * Returns the value of a variable as an integer
+     * @param string $name The name of the variable
+     * @param int $default_value The default value to return if the variable is not set
+     * @param bool $is_array Whether the value should be returned as an array
+     * @return int|array The value
+     */
+    public function getInt(string $name, ?int $default_value = 0, bool $is_array = false) : null|int|array
+    {
+        return  $this->get($name, $default_value, 'int', $is_array);
+    }
+
+    /**
+     * Returns the value of a variable as a float
+     * @param string $name The name of the variable
+     * @param float $default_value The default value to return if the variable is not set
+     * @param bool $is_array Whether the value should be returned as an array
+     * @return float|array The value
+     */
+    public function getFloat(string $name, ?float $default_value = 0, bool $is_array = false) : null|float|array
+    {
+        return  $this->get($name, $default_value, 'float', $is_array);
+    }
+
+    /**
      * Returns the value of a variable as an array
      * @param string $name The name of the variable
-     * @param string $filter The filter to apply to the value, if any. See class Filter for a list of filters
      * @param mixed $default_value The default value to return if the variable is not set
+     * @param string $filter The filter to apply to the value, if any. See class Filter for a list of filters
+     * @param bool $trim Whether to trim the value
      * @return array The value
      */
-    public function getArray(string $name, string $filter, mixed $default_value) : array
+    public function getArray(string $name, mixed $default_value = '', string $filter = '', bool $trim = true) : array
     {
-        return $this->get($name, $filter, $default_value, true);
+        return $this->get($name, $default_value, $filter, true, $trim);
+    }
+
+    /**
+     * Returns a key from an array
+     * @param string $name The name of the array
+     * @param string $key The key to retrieve
+     * @param mixed $default_value The default value to return if the key is not found
+     * @param string $filter The filter to apply to the value, if any. See class Filter for a list of filters
+     * @param bool $trim Whether to trim the value
+     * @return mixed The value
+     */
+    public function getFromArray(string $name, string $key, mixed $default_value = '', string $filter = '', bool $trim = true) : mixed
+    {
+        $value = $this->data[$name][$key] ?? null;
+        if (!$value) {
+            $value = $default_value;
+        }
+
+        if ($trim) {
+            $value = $this->app->filter->trim($value);
+        }
+
+        if ($filter) {
+            $value = $this->app->filter->value($value, $filter);
+        }
+
+        return $value;
+    }
+
+    /**
+     * Returns the value of a variable as an integer from an array
+     * @param string $name The name of the array
+     * @param string $key The key to retrieve
+     * @param int $default_value The default value to return if the key is not found
+     * @return int|null The value
+     */
+    public function getIntFromArray(string $name, string $key, ?int $default_value = 0) : null|int
+    {
+        return $this->getFromArray($name, $key, $default_value, 'int');
+    }
+
+    /**
+     * Returns the value of a variable as a float from an array
+     * @param string $name The name of the array
+     * @param string $key The key to retrieve
+     * @param float $default_value The default value to return if the key is not found
+     * @return float|null The value
+     */
+    public function getFloatFromArray(string $name, string $key, ?float $default_value = 0) : null|float
+    {
+        return $this->getFromArray($name, $key, $default_value, 'float');
     }
 
     /**
@@ -152,7 +227,7 @@ abstract class Input
 
             $filter = $filters[$key] ?? '';
 
-            $value = $value = $this->get($index, $filter, in_array($index, $array_fields));
+            $value = $value = $this->get($index, '', $filter, in_array($index, $array_fields));
 
             if ($is_array) {
                 $fill[$key] = $value;

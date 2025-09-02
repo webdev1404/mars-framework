@@ -22,7 +22,7 @@ final class DirTest extends Base
 
     public function testGetDir()
     {
-        $this->assertEqualsCanonicalizing($this->app->dir->getDirs($this->dir_read), [$this->dir_read . 'a', $this->dir_read . 'b']);
+        $this->assertEqualsCanonicalizing($this->app->dir->getDirs($this->dir_read, false), [$this->dir_read . 'a', $this->dir_read . 'b']);
         $this->assertEqualsCanonicalizing($this->app->dir->getDirs($this->dir_read, true), [$this->dir_read . 'a', $this->dir_read . 'a/aa', $this->dir_read . 'b']);
         $this->assertEqualsCanonicalizing($this->app->dir->getDirs($this->dir_read, true, false), ['a', 'a/aa', 'b']);
         $this->assertEqualsCanonicalizing($this->app->dir->getDirs($this->dir_read, true, true, ['b']), [$this->dir_read . 'a', $this->dir_read . 'a/aa']);
@@ -30,7 +30,7 @@ final class DirTest extends Base
 
     public function testGetFiles()
     {
-        $this->assertEqualsCanonicalizing($this->app->dir->getFiles($this->dir_read), [$this->dir_read . 'file1.txt', $this->dir_read . 'file2.txt', $this->dir_read . 'file3.emp']);
+        $this->assertEqualsCanonicalizing($this->app->dir->getFiles($this->dir_read, false), [$this->dir_read . 'file1.txt', $this->dir_read . 'file2.txt', $this->dir_read . 'file3.emp']);
         $this->assertEqualsCanonicalizing($this->app->dir->getFiles($this->dir_read, true), [$this->dir_read . 'file1.txt', $this->dir_read . 'file2.txt', $this->dir_read . 'file3.emp', $this->dir_read . 'a/file3.txt', $this->dir_read . 'a/aa/file4.txt', $this->dir_read . 'b/file4.txt']);
         $this->assertEqualsCanonicalizing($this->app->dir->getFiles($this->dir_read, true, false), ['file1.txt', 'file2.txt', 'file3.emp', 'a/file3.txt', 'a/aa/file4.txt' , 'b/file4.txt']);
         $this->assertEqualsCanonicalizing($this->app->dir->getFiles($this->dir_read, false, false), ['file1.txt', 'file2.txt', 'file3.emp']);

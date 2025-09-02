@@ -53,7 +53,7 @@ class Url
             }
 
             $this->root = $this->base;
-            if ($this->app->config->languages_multi) {
+            if ($this->app->lang->multi) {
                 // Append the language code to the base URL, if we are using multi-languages
                 $this->root .= '/' . $this->app->lang->code;
             }

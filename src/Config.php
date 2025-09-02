@@ -110,11 +110,6 @@ class Config
     public bool $debug_db = false;
 
     /**
-     * @var bool $debug_plugins Set to true to enable the db debug data
-     */
-    public bool $debug_plugins = false;
-
-    /**
      * @var bool $development Set to true to enable development mode
      */
     public bool $development = false;
@@ -352,14 +347,9 @@ class Config
     public string $language_fallback = 'english';
 
     /**
-     * @var bool $languages_multi Set to true to enable the multi-language functionality
-     */
-    public bool $languages_multi = false;
-
-    /**
      * @var string $lang The default theme
      */
-    public string $theme = 'default';
+    public string $theme = 'mars';
 
     /**
      * @var bool $memcache_enable If true will enable the memory cache functionality
@@ -716,10 +706,6 @@ class Config
             if (in_array($this->app->ip, $this->debug_ips)) {
                 $this->debug = true;
             }
-        }
-
-        if ($this->debug) {
-            $this->db_debug = true;
         }
     }
 
