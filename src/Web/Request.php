@@ -135,10 +135,20 @@ class Request
      * Executes the curl session and returns the result
      * @param \CurlHandle $ch The curl handler
      * @return Response The response
+     * @throws Exception if an error occurs
      */
     protected function exec($ch) : Response
     {
         $result = curl_exec($ch);
+
+        if (!$result) {
+            $error = curl_error($ch);
+            $errno = curl_errno($ch);
+
+            curl_close($ch);
+
+            throw new \Exception("Curl error: {$error} ({$errno})");
+        }
 
         $response = new Response($ch, $result, $this->app);
 

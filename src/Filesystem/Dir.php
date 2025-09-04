@@ -360,7 +360,7 @@ class Dir
             $target_file = $destination . '/' . $file->getSubPathname();
 
             if ($file->isDir()) {
-               $this->create($target_file);
+                $this->create($target_file);
             } else {
                 $this->app->file->copy($file->getPathname(), $target_file);
             }

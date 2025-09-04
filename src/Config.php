@@ -70,11 +70,6 @@ class Config
     public string $url_cdn = '';
 
     /**
-     * @var string $key The secret key of the site
-     */
-    public string $key = '';
-
-    /**
      * @var string $site_name The name of the site
      */
     public string $site_name = '';
@@ -292,6 +287,16 @@ class Config
     public ?string $session_cookie_samesite = null;
 
     /**
+     * @var string $crypt_driver The crypt driver. Supported options: openssl, sodium
+     */
+    public string $crypt_driver = 'openssl';
+
+    /**
+     * @var array $crypt_keys The secret keys used for encryption. The key used is the last one in the list
+     */
+    public array $crypt_keys = [];
+
+    /**
      * @var string $device_driver The device detector driver. Supported options: mobile_detect
      */
     public string $device_driver = 'mobile_detect';
@@ -355,6 +360,11 @@ class Config
      * @var bool $memcache_enable If true will enable the memory cache functionality
      */
     public bool $memcache_enable = false;
+
+    /**
+     * @var string $memcache_key The memcache key
+     */
+    public string $memcache_key = '';
 
     /**
      * @var string $memcache_driver The driver used for memcache. Supported options: memcache, memcached, redis

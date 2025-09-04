@@ -22,6 +22,12 @@ trait LazyLoad
     protected static string $lazyload_attribute = 'Mars\LazyLoadProperty';
 
     /**
+     * The list of properties to be lazy loaded, with this passed as the first param to the constructor
+     * @var array $lazyload_add_this
+     */
+    //protected static array $lazyload_add_this = [];
+
+    /**
      * The method to be called to lazy load the properties marked with the #[LazyLoadProperty] attribute
      */
     protected function lazyLoad(App $app)
@@ -68,8 +74,18 @@ trait LazyLoad
     {
         foreach ($classes as $name => $class) {
             $reflector = new \ReflectionClass($class);
-            $this->$name = $reflector->newLazyGhost(function ($ghost) use ($app) {
-                $ghost->__construct($app);
+            $this->$name = $reflector->newLazyGhost(function ($ghost) use ($class, $app) {
+
+                $params = [$app];
+
+                //add this as the first param if class is listed in static::$lazyload_add_this
+                if (!empty(static::$lazyload_add_this)) {
+                    if (in_array(ltrim($class, '\\'), static::$lazyload_add_this)) {
+                        array_unshift($params, $this);
+                    }
+                }
+
+                $ghost->__construct(...$params);
             });
         }
     }

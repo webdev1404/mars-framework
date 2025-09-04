@@ -82,6 +82,12 @@ class App
     public Config $config;
 
     /**
+     * @var Crypt $crypt The crypt object
+     */
+    #[LazyLoadProperty]
+    public Crypt $crypt;
+
+    /**
      * @var Data $data The data object
      */
     #[LazyLoadProperty]

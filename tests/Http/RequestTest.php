@@ -71,7 +71,7 @@ final class RequestTest extends Base
             'var2' => ''
         ];
 
-        $this->assertSame($this->app->request->get->fill($data), ['var1' => 'a', 'var2' => 'b']);        
+        $this->assertSame($this->app->request->get->fill($data), ['var1' => 'a', 'var2' => 'b']);
         $this->assertSame($this->app->request->get->fill($data, ['var2' => 'int']), ['var1' => 'a', 'var2' => 0]);
         $this->assertSame($this->app->request->get->fill($data, ['var2' => 'int'], [], ['var2']), ['var1' => 'a', 'var2' => '']);
     }

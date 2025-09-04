@@ -86,7 +86,18 @@ class Memcache
      * @var string $key Secret key used to identify the site
      */
     protected string $key {
-        get => $this->app->config->key;
+        get {
+            if (isset($this->key)) {
+                return $this->key;
+            }
+
+            $this->key = $this->app->config->memcache_key;
+            if (!$this->key && $this->enabled) {
+                throw new \Exception('The memcache_key config option must be set if memcache is enabled');
+            }
+
+            return $this->key;
+        }
     }
 
     /**

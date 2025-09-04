@@ -9,6 +9,7 @@ namespace Mars\Extensions\Themes\Links;
 use Mars\App;
 use Mars\App\Kernel;
 use Mars\Document\Links\Urls;
+use Mars\Extensions\Theme;
 
 /**
  * The Base Class for the theme document elements
@@ -36,10 +37,26 @@ abstract class Url
                 return $this->assets_url;
             }
 
-            $this->assets_url = $this->app->theme->assets_url . '/' . rawurlencode($this->assets_dir);
+            $this->assets_url = $this->theme->assets_url . '/' . rawurlencode($this->assets_dir);
 
             return $this->assets_url;
         }
+    }
+
+    /**
+     * The theme object the class is assigned to
+     */
+    protected Theme $theme;
+
+    /**
+     * Builds the Url object
+     * @param Theme $theme The theme the url is assigned to
+     * @param App $app The app object
+     */
+    public function __construct(Theme $theme, App $app)
+    {
+        $this->app = $app;
+        $this->theme = $theme;
     }
 
     /**

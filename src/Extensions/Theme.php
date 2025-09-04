@@ -84,6 +84,17 @@ class Theme extends Extension
     public protected(set) Template $template;
 
     /**
+     * The list of properties to be lazy loaded, with this passed as the first param to the constructor
+     * @var array $lazyload_add_this
+     */
+    protected static array $lazyload_add_this = [
+       Css::class,
+       Javascript::class,
+       Fonts::class,
+       Images::class,
+    ];
+
+    /**
      * @var string $header_template The template which will be used to render the header
      */
     public string $header_template = 'header';
@@ -370,35 +381,46 @@ class Theme extends Extension
      * Returns the template filename. It will check if the template exists in the mobile templates, if the device is mobile.
      * If the device is a smartphone, it will check for the smartphone template first, then the tablet template, and finally the generic mobile template.
      * @param string $template The name of the template
-     * @return string The template filename
+     * @return ?string The template filename or null if not found
      */
-    public function getTemplateFilename(string $template) : string
+    public function getTemplateFilename(string $template) : ?string
     {
+        $template_filename = null;
         $template = $template . '.php';
 
-        if (!$this->has_mobile_templates || !$this->app->device->is_mobile) {
-            return $template;
-        }
-
-        if ($this->app->device->is_smartphone) {
-            $filename = static::MOBILE_DIRS['mobile'] . '/' . static::MOBILE_DIRS['smartphones'] . '/' . $template;
-            
-            if (isset($this->templates[$filename])) {
-                return $filename;
+        if ($this->has_mobile_templates && $this->app->device->is_mobile) {
+            if ($this->app->device->is_smartphone) {
+                $filename = static::MOBILE_DIRS['mobile'] . '/' . static::MOBILE_DIRS['smartphones'] . '/' . $template;
+                
+                if (isset($this->templates[$filename])) {
+                    $template_filename = $filename;
+                }
+            } elseif ($this->app->device->is_tablet) {
+                $filename = static::MOBILE_DIRS['mobile'] . '/' . static::MOBILE_DIRS['tablets'] . '/' . $template;
+                if (isset($this->templates[$filename])) {
+                    $template_filename = $filename;
+                }
             }
-        } elseif ($this->app->device->is_tablet) {
-            $filename = static::MOBILE_DIRS['mobile'] . '/' . static::MOBILE_DIRS['tablets'] . '/' . $template;
-            if (isset($this->templates[$filename])) {
-                return $filename;
+
+            if (!$template_filename) {
+                $filename = static::MOBILE_DIRS['mobile'] . '/' . $template;
+                if (isset($this->templates[$filename])) {
+                    $template = $filename;
+                }
             }
         }
 
-        $filename = static::MOBILE_DIRS['mobile'] . '/' . $template;
-        if (isset($this->templates[$filename])) {
-            return $filename;
+        if (!$template_filename) {
+            if (isset($this->templates[$template])) {
+                $template_filename = $template;
+            }
         }
 
-        return $template;
+        if ($template_filename) {
+            return $this->templates_path . '/' . $template_filename;
+        }
+
+        return $template_filename;
     }
 
     /**

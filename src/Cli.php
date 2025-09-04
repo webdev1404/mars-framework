@@ -290,6 +290,9 @@ class Cli
     public function printNewline(int $times = 1)
     {
         echo str_repeat($this->newline, $times);
+
+        flush();
+        ob_flush();
     }
 
     /**
@@ -337,6 +340,9 @@ class Cli
             echo $this->newline;
         }
 
+        flush();
+        ob_flush();
+
         return $this;
     }
 
@@ -373,6 +379,9 @@ class Cli
         echo "\n";
         $this->print($text, $this->colors['error']);
         echo "\n";
+
+        flush();
+        ob_flush();
 
         if ($die) {
             die;

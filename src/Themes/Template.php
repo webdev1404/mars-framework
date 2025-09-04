@@ -124,7 +124,12 @@ class Template
      */
     public function getFilename(string $template) : string
     {
-        return $this->app->theme->templates_path . '/' . $this->app->theme->getTemplateFilename($template);
+        $filename = $this->app->theme->getTemplateFilename($template);
+        if (!$filename) {
+            throw new \Exception("Template not found: {$template}");
+        }
+
+        return $filename;
     }
 
     /**

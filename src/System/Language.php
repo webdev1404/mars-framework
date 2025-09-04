@@ -231,6 +231,9 @@ class Language extends BaseLanguage
      */
     public protected(set) string $parent_name = '';
 
+    /**
+     * @var BaseLanguage $parent The parent language, if any
+     */
     public protected(set) ?BaseLanguage $parent {
         get {
             if (isset($this->parent)) {
@@ -267,8 +270,8 @@ class Language extends BaseLanguage
      */
     public function getCode(string $name) : ?string
     {
-        return array_find_key($this->multi_list, fn($value) => $value === $name);
-    }    
+        return array_find_key($this->multi_list, fn ($value) => $value === $name);
+    }
 
     /**
      * @see \Mars\Extensions\Language::loadFile()

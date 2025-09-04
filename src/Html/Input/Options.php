@@ -70,7 +70,7 @@ class Options extends Tag
     {
         $is_list = array_is_list($options);
         
-        $html = '';        
+        $html = '';
         foreach ($options as $value => $text) {
             if ($is_list) {
                 $value = $text;
