@@ -29,7 +29,7 @@ trait IsFile
      * @return bool True if the file exists, false otherwise
      */
     protected function isFile(string $filename, ?string $path = null) : bool
-    {
+    {        
         if ($this->existing_files !== null) {
             return isset($this->existing_files[$filename]);
         }
@@ -37,15 +37,13 @@ trait IsFile
         $path??= dirname($filename);
         $cache_filename = $path . '/' . $this->existing_files_file;
 
-        if (is_file($cache_filename)) {
-            $this->existing_files = require $cache_filename;
-
-            return isset($this->existing_files[$filename]);
+        if (!is_file($cache_filename)) {
+            $this->cacheIsFile($path);
         }
+        
+        $this->existing_files = require $cache_filename;
 
-        $this->cacheIsFile($path);
-
-        return is_file($filename);
+        return isset($this->existing_files[$filename]);
     }
 
     /**
@@ -55,10 +53,6 @@ trait IsFile
      */
     protected function setIsFile(string $filename, ?string $path = null)
     {
-        if ($this->isFile($filename, $path)) {
-            return;
-        }
-
         //if we're adding a new file, we need to delete the existing files cache file
         if ($this->existing_files !== null) {
             if (isset($this->existing_files[$filename])) {
@@ -66,8 +60,13 @@ trait IsFile
             }
 
             $path??= dirname($filename);
+            $cache_filename = $path . '/' . $this->existing_files_file;
 
-            unlink($path . '/' . $this->existing_files_file);
+            if (is_file($cache_filename)) {
+                unlink($cache_filename);
+            }
+
+            $this->existing_files = null;
         }
     }
 
