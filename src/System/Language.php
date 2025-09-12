@@ -186,6 +186,25 @@ class Language extends BaseLanguage
     }
 
     /**
+     * @var array $codes The list of available language codes, if multi-language is enabled
+     */
+    public protected(set) array $codes {
+        get {
+            if (isset($this->codes)) {
+                return $this->codes;
+            }
+
+            if ($this->multi) {
+                $this->codes = array_keys($this->multi_list);
+            } else {
+                $this->codes = [$this->code];
+            }
+
+            return $this->codes;
+        }
+    }
+
+    /**
      * @var bool $can_use_fallback If true, the language can use the fallback language
      */
     public protected(set) bool $can_use_fallback {

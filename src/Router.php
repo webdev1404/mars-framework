@@ -6,26 +6,16 @@
 
 namespace Mars;
 
-use Mars\App\Kernel;
-use Mars\Mvc\Controller;
-use Mars\Extensions\Modules\Block;
+use Mars\Router\Routes;
 use Mars\Content\ContentInterface;
-use Mars\Content\Page;
-use Mars\Content\Template;
+use Mars\Mvc\Controller;
 
 /**
- * The Route Class
+ * The Router Class
  * Route handling class
  */
-class Router
+class Router extends Routes
 {
-    use Kernel;
-
-    /**
-     * @var array $routes_list The defined routes list
-     */
-    public protected(set) array $routes_list = [];
-
     /**
      * @var string $path The path used by the router
      */
@@ -51,40 +41,11 @@ class Router
             return $this->path;
         }
     }
-    
-    /**
-     * Adds a route
-     * @param string $type The type: get/post/put/delete
-     * @param string $route The route to handle
-     * @param mixed The action. Can be a closure, a string or a controller
-     * @param string|null $language The language to use for the route, if any
-     * @return static
-     */
-    public function add(string $type, string $route, $action, ?string $language = null) : static
-    {
-        $language ??= $this->app->lang->default_code;
-
-        $route = $this->cleanRouteName($route);
-
-        $this->routes_list[$type][$route][$language] = $action;
-
-        return $this;
-    }
 
     /**
-     * Cleans the route name
-     * @param string $route The route to clean
-     * @return string The cleaned route name
+     * @internal
      */
-    protected function cleanRouteName(string $route) : string
-    {
-        //strip the leading slash, for all the routes except the root
-        if ($route != '/') {
-            $route = ltrim($route, '/');
-        }
-
-        return $route;
-    }
+    protected bool $load_action = true;
 
     /**
      * Outputs the content based on the matched route
@@ -100,28 +61,159 @@ class Router
     }
 
     /**
+     * Handles the 404 not found cases
+     */
+    public function notFound()
+    {
+        header('HTTP/1.0 404 Not Found', true, 404);
+        die;
+    }
+
+    /**
+     * Loads a route hash from a file
+     * @param string $hash The hash of the route
+     * @param string $filename The filename where the route is stored
+     */
+    protected function loadHash(string $hash, string $filename)
+    {
+        $this->hashes[$hash] = true;
+
+        $this->load($filename);
+    }
+
+    /**
+     * Returns the route matching the current request
+     * @return mixed
+     */
+    protected function getRoute() : array|null
+    {
+        //check if the method is allowed
+        if (!in_array($this->app->request->method, $this->allowed_methods)) {
+            return null;
+        }
+
+        $hashes = $this->app->cache->routes->getHashes($this->path);
+        $hash = $this->getHash($this->app->request->method, $this->path, $this->app->lang->code);
+
+        if (isset($hashes[$hash])) {
+            return $this->getRouteFromHash($hashes, $hash);
+        } else {
+            return $this->getRouteFromPreg($hashes);
+        }
+    }
+
+    /**
+     * Returns the route from a hash
+     * @param array $hashes The list of hashes
+     * @param string $hash The hash to look for
+     * @return array|null The route, or null if not found
+     */
+    protected function getRouteFromHash(array $hashes, string $hash) : array|null
+    {
+        $this->loadHash($hash, $hashes[$hash]['filename']);
+        if (!$this->routes_list || !isset($this->routes_list[$hash])) {
+            return null;
+        }
+
+        $action = $this->routes_list[$hash]['action'];
+
+        return [$action, []];
+    }
+
+    /**
+     * Returns the route from a preg match
+     * @param array $hashes The list of hashes
+     * @return array|null The route, or null if not found
+     */
+    protected function getRouteFromPreg(array $hashes) : array|null
+    {
+        $hashes = array_filter($hashes, fn ($route) => $route['preg']);
+        $this->hashes = array_fill_keys(array_keys($hashes), true);
+
+        $filenames = array_unique(array_column($hashes, 'filename'));
+
+        foreach ($filenames as $filename) {
+            $this->load($filename);
+        }
+
+        if (!$this->routes_list) {
+            return null;
+        }
+
+        //search for the matching preg
+        foreach ($this->routes_list as $hash => $route) {
+            $route_path = preg_replace_callback('/{([a-z0-9_]*)}/is', function ($match) {
+                return '(.*)';
+            }, $route['route']);
+
+            if (preg_match("|^{$route_path}$|is", $this->path, $matches)) {
+                $params = array_slice($matches, 1);
+                
+                return [$route['action'], $params];
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * Outputs the content of a route
      * @param array $route The route
      */
-    protected function output($route)
+    protected function output(array $route)
     {
-        [$route, $params] = $route;
+        [$action, $params] = $route;
 
-        if (is_string($route)) {
-            $parts = explode('@', $route);
+        if (is_callable($action)) {
+            $this->outputFromClosure($action, $params);
+        } elseif (is_object($action)) {
+            $this->outputFromObject($action);
+        } elseif (is_array($action)) {
+            $this->outputFromArray($action);
+        } elseif (is_string($action)) {
+            $parts = explode('@', $action);
 
-            $method = '';
             $class_name = $parts[0];
-            if (isset($parts[1])) {
-                $method = $parts[1];
-            }
+            $method = $parts[1] ?? '';
 
             $this->outputFromClass($class_name, $method, $params);
-        } elseif (is_callable($route)) {
-            $this->outputFromClosure($route);
-        } elseif (is_object($route) || is_array($route)) {
-            $this->outputFromObject($route);
         }
+    }
+
+    /**
+     * Outputs the content from a closure
+     * @param \Closure $route The closure to output
+     * @param array $params The params to pass to the closure
+     */
+    protected function outputFromClosure(\Closure $route, array $params)
+    {
+        ob_start();
+        $value = call_user_func_array($route, [...$params, $this->app]);
+        $content = ob_get_clean();
+
+        $this->outputContent($value, $content);
+    }
+
+    /**
+     * Outputs the content from an object
+     * @param object $object The object to output
+     */
+    protected function outputFromObject(object $object)
+    {
+        if ($object instanceof ContentInterface) {
+            $object->output();
+        } else {
+            $this->app->send($object);
+        }
+    }
+
+    /**
+     * Outputs the content from an array
+     * @param array $array The array to output
+     */
+    protected function outputFromArray(array $array)
+    {
+        $this->app->send($array);
     }
 
     /**
@@ -150,19 +242,6 @@ class Router
     }
 
     /**
-     * Outputs the content from a closure
-     * @param \Closure $route The closure to output
-     */
-    protected function outputFromClosure(\Closure $route)
-    {
-        ob_start();
-        $value = call_user_func_array($route, [$this->app]);
-        $content = ob_get_clean();
-
-        $this->outputContent($value, $content);
-    }
-
-    /**
      * Outputs the returned value and the content
      * @param string|array|object|null $value The value to output
      * @param string $content The content to output
@@ -181,183 +260,5 @@ class Router
         } elseif (is_object($value)) {
             $this->outputFromObject($value);
         }
-    }
-
-    /**
-     * Outputs the content from an object
-     * @param array|object $object The object to output
-     */
-    protected function outputFromObject(array|object $object)
-    {
-        if ($object instanceof ContentInterface) {
-            $object->output();
-        } else {
-            $this->app->send($object);
-        }
-    }
-
-    /**
-     * Returns the route matching the current request
-     * @return mixed
-     */
-    protected function getRoute()
-    {
-        $method = $this->app->request->method;
-        if (!isset($this->routes_list[$method])) {
-            return null;
-        }
-
-        $routes = $this->routes_list[$method];
-        foreach ($routes as $route_path => $routes_array) {
-            //get the route params
-            $params = [];
-            $params_keys = [];
-            $route_path = preg_quote($route_path, '|');
-
-            $route_path = preg_replace_callback('/\\\{([a-z0-9_]*)\\\}/is', function ($match) use (&$params_keys) {
-                $params_keys[] = $match[1];
-
-                return '(.*)';
-            }, $route_path);
-
-            if (preg_match("|^{$route_path}\/?$|is", $this->path, $matches)) {
-                foreach ($matches as $key => $val) {
-                    if (!$key) {
-                        continue;
-                    }
-
-                    $param_key = $params_keys[$key - 1];
-
-                    $params[$param_key] = $val;
-                }
-
-                $route = $routes_array[$this->app->lang->code] ?? ($routes_array[$this->app->lang->default_code] ?? null);
-
-                if ($route) {
-                    return [$route, $params];
-                }
-            }
-        }
-
-        return null;
-    }
-
-    /**
-     * Handles a get request
-     * @param string $route The route to handle
-     * @param mixed The action. Can be a closure, a string, a controller
-     * @param string|null $language The language to use for the route, if any
-     * @return static
-     */
-    public function get(string $route, $action, ?string $language = null) : static
-    {
-        return $this->add('get', $route, $action, $language);
-    }
-
-    /**
-     * Handles a get request
-     * @param string $route The route to handle
-     * @param mixed The action. Can be a closure, a string, a controller
-     * @param string|null $language The language to use for the route, if any
-     * @returnstatic
-     */
-    public function post(string $route, $action, ?string $language = null) : static
-    {
-        return $this->add('post', $route, $action, $language);
-    }
-
-    /**
-     * Handles a get request
-     * @param string $route The route to handle
-     * @param mixed The action. Can be a closure, a string, a controller
-     * @param string|null $language The language to use for the route, if any
-     * @return static
-     */
-    public function put(string $route, $action, ?string $language = null) : static
-    {
-        return $this->add('put', $route, $action, $language);
-    }
-
-    /**
-     * Handles a get request
-     * @param string $route The route to handle
-     * @param mixed The action. Can be a closure, a string, a controller
-     * @param string|null $language The language to use for the route, if any
-     * @return static
-     */
-    public function delete(string $route, $action, ?string $language = null) : static
-    {
-        return $this->add('delete', $route, $action, $language);
-    }
-
-    /**
-     * Handles a block request
-     * @param string $route The route to handle
-     * @param string $module_name The module the block belongs to
-     * @param string $name The block's name
-     * @param string|null $language The language to use for the route, if any
-     * @param array $params The params to pass to the block, if any
-     * @return static
-     */
-    public function block(string $route, string $module_name, string $name = '', ?string $language = null, array $params = []) : static
-    {
-        $handler = fn () => new Block($module_name, $name, $params, $this->app);
-
-        return $this->setRouteObject($route, $handler, $language);
-    }
-    
-    /**
-     * Handles a template request
-     * @param string $route The route to handle
-     * @param string $template The template's name
-     * @param string|null $language The language to use for the route, if any
-     * @param string $title The title tag of the page
-     * @param array $meta Meta data of the page
-     * @return static
-     */
-    public function template(string $route, string $template, ?string $language = null, string $title = '', array $meta = []) : static
-    {
-        $handler = fn () => new Template($template, $title, $meta, $this->app);
-
-        return $this->setRouteObject($route, $handler, $language);
-    }
-
-    /**
-     * Handles a page request
-     * @param string $route The route to handle
-     * @param string $template The page's template's name
-     * @param string|null $language The language to use for the route, if any
-     * @param string $title The title tag of the page
-     * @param array $meta Meta data of the page
-     * @return static
-     */
-    public function page(string $route, string $template, ?string $language = null, string $title = '', array $meta = []) : static
-    {
-        $handler = fn () => new Page($template, $title, $meta, $this->app);
-
-        return $this->setRouteObject($route, $handler, $language);
-    }
-    
-    /**
-     * Sets the object which will handle the route
-     * @param string $route The route to handle
-     * @param callable $handler The handler to call when the route is matched
-     * @param string|null $language The language to use for the route, if any
-     */
-    protected function setRouteObject(string $route, callable $handler, ?string $language = null) : static
-    {
-        $this->add('get', $route, $handler, $language);
-        $this->add('post', $route, $handler, $language);
-
-        return $this;
-    }
-
-    /**
-     * Handles the 404 not found cases
-     */
-    public function notFound()
-    {
-        header('HTTP/1.0 404 Not Found', true, 404);
-        die;
     }
 }

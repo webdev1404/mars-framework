@@ -120,9 +120,9 @@ class Config
     ];
 
     /**
-     * @var int $development_display_errors Controls whether errors should be displayed or not, when development is enabled
+     * @var bool $development_display_errors Controls whether errors should be displayed or not, when development is enabled
      */
-    public int $development_display_errors = 1;
+    public bool $development_display_errors = true;
 
     /**
      * @var int $development_error_reporting The error reporting level, when development is enabled
@@ -133,6 +133,11 @@ class Config
      * @var string $development_device Will use this value as device, if specified. Valid values: 'desktop', 'tablet', 'smartphone'
      */
     public string $development_device = '';
+
+    /**
+     * @var bool $development_routes If true, will not cache the routes, thus will always load them from the files
+     */
+    public bool $development_routes = false;
 
     /**
      * @var array $headers Custom headers to be sent
@@ -455,6 +460,11 @@ class Config
      * @var bool $cache_page_minify If true will minify the cached content
      */
     public bool $cache_page_minify = true;
+
+    /**
+     * @var int $cache_routes_prefix_length The length of the prefix used for caching routes
+     */
+    public int $cache_routes_prefix_length = 1;
 
     /**
      * @var string $templates_driver The templates driver. Supported options: mars

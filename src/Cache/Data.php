@@ -12,6 +12,8 @@ namespace Mars\Cache;
  */
 class Data extends Cacheable
 {
+    use IsFile;
+
     /**
      * @var string $dir The dir where the data will be cached
      */
@@ -76,7 +78,7 @@ class Data extends Cacheable
     public function getArray(string $filename, bool $hash_filename = true) : ?array
     {
         $filename = $this->getFilename($filename, 'php', $hash_filename);
-        if (!is_file($filename)) {
+        if (!$this->isFile($filename, $this->path)) {
             return null;
         }
 
@@ -92,22 +94,15 @@ class Data extends Cacheable
      */
     public function setArray(string $filename, array $data, bool $hash_filename = true) : static
     {
-        $is_list = array_is_list($data);
-
         $filename = $this->getFilename($filename, 'php', $hash_filename);
 
-        $content = "<?php\n\nreturn [\n";
-        foreach ($data as $key => $value) {
-            if ($is_list) {
-                $content.= "    '{$value}',\n";
-            } else {
-                $content.= "    '{$key}' => " . var_export($value, true) . ",\n";
-            }
-        }
-        
-        $content.= "];\n";
+        $content = "<?php\n\nreturn ";
+        $content.= var_export($data, true);
+        $content.= ";\n";
         
         file_put_contents($filename, $content);
+
+        $this->setIsFile($filename, $this->path);
 
         return $this;
     }
@@ -122,7 +117,7 @@ class Data extends Cacheable
     {
         $filename = $this->getFilename($filename, 'php', $hash_filename);
 
-        if (is_file($filename)) {
+        if ($this->isFile($filename, $this->path)) {
             unlink($filename);
         }
 

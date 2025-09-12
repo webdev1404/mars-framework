@@ -11,6 +11,7 @@ use Mars\Cache\Css;
 use Mars\Cache\Javascript;
 use Mars\Cache\Data;
 use Mars\Cache\Pages;
+use Mars\Cache\Routes;
 use Mars\Cache\Templates;
 
 /**
@@ -45,6 +46,12 @@ class Cache
      */
     #[LazyLoadProperty]
     public protected(set) Pages $pages;
+
+    /**
+     * @var Routes $routes The Routes Cache object
+     */
+    #[LazyLoadProperty]
+    public protected(set) Routes $routes;
 
     /**
      * @var Templates $templates The Templates Cache object

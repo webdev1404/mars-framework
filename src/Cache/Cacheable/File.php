@@ -7,6 +7,7 @@
 namespace Mars\Cache\Cacheable;
 
 use Mars\App\Kernel;
+use Mars\Cache\IsFile;
 use Mars\Cache\Cacheable\CacheableInterface;
 
 /**
@@ -16,6 +17,7 @@ use Mars\Cache\Cacheable\CacheableInterface;
 class File implements CacheableInterface
 {
     use Kernel;
+    use IsFile;
 
     /**
      * @see CacheableInterface::get()
@@ -23,7 +25,7 @@ class File implements CacheableInterface
      */
     public function get(string $filename) : string
     {
-        if (!is_file($filename)) {
+        if (!$this->isFile($filename)) {
             return '';
         }
 
@@ -36,6 +38,8 @@ class File implements CacheableInterface
      */
     public function store(string $filename, string $content, string $type) : bool
     {
+        $this->setIsFile($filename);
+
         return file_put_contents($filename, $content);
     }
 
@@ -45,7 +49,7 @@ class File implements CacheableInterface
      */
     public function getLastModified(string $filename) : int
     {
-        if (!is_file($filename)) {
+        if (!$this->isFile($filename)) {
             return 0;
         }
 
@@ -58,7 +62,7 @@ class File implements CacheableInterface
      */
     public function delete(string $filename, string $type) : bool
     {
-        if (is_file($filename)) {
+        if ($this->isFile($filename)) {
             return unlink($filename);
         }
 
