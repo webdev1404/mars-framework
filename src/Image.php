@@ -20,6 +20,11 @@ class Image
     use Kernel;
 
     /**
+     * @const array EXTENSIONS The image extensions
+     */
+    public const array EXTENSIONS = ['jpg', 'jpeg', 'gif', 'png', 'bmp', 'webp', 'avif'];
+
+    /**
      * @var array $supported_drivers The supported drivers
      */
     public protected(set) array $supported_drivers = [

@@ -1,5 +1,6 @@
 <?php
 use Mars\App;
+use Mars\Url;
 
 include_once(__DIR__ . '/Base.php');
 
@@ -8,140 +9,92 @@ include_once(__DIR__ . '/Base.php');
  */
 final class UrlTest extends Base
 {
-    public function testIsUrl()
+    public function testToString()
     {
-        $this->assertTrue($this->app->url->isUrl('http://www.google.com/'));
-        $this->assertTrue($this->app->url->isUrl('http://www.google.com/?v=1&q=test'));
-        $this->assertTrue($this->app->url->isUrl('https://www.google.com/'));
-        $this->assertTrue($this->app->url->isUrl('https://www.google.com/?v=1&q=test'));
-        $this->assertFalse($this->app->url->isUrl('://www.google.com/?v=1&q=test'));
-        $this->assertFalse($this->app->url->isUrl('www.google.com/?v=1&q=test'));
+        $url = new Url('https://example.com/test/path?foo=bar#frag');
+        $this->assertEquals('https://example.com/test/path?foo=bar#frag', (string)$url);
     }
 
-    public function testIsLocal()
+    public function testProperties()
     {
-        $this->assertTrue($this->app->url->isLocal($this->app->base_url));
-        $this->assertTrue($this->app->url->isLocal($this->app->base_url . 'page.php'));
-        $this->assertTrue($this->app->url->isLocal($this->app->base_url . 'page.php?qqq=test'));
-        $this->assertFalse($this->app->url->isLocal('https://localhost/ma'));
-        $this->assertFalse($this->app->url->isLocal('http://www.google.com/'));
+        $url = new Url('https://sub.example.com:8080/test/path?foo=bar#frag');
+        $this->assertTrue($url->is_valid);
+        $this->assertFalse($url->is_local);
+        $this->assertEquals('https://', $url->scheme);
+        $this->assertEquals('sub.example.com', $url->host);
+        $this->assertEquals('8080', $url->port);
+        $this->assertEquals('https://sub.example.com:8080', $url->root);
+        $this->assertEquals('example.com', $url->domain);
+        $this->assertEquals('sub', $url->subdomain);
+        $this->assertEquals('test/path', $url->path);
+        $this->assertEquals('https://sub.example.com:8080/test/path', $url->path_name);
+        $this->assertEquals('foo=bar', $url->query);
+        $this->assertEquals('frag', $url->fragment);
+
+        $url = new Url('https://example.com/test?foo=bar');
+        $this->assertTrue($url->is_valid);
+        $this->assertFalse($url->is_local);
+        $this->assertEquals('https://', $url->scheme);
+        $this->assertEquals('example.com', $url->host);
+        $this->assertEquals('', $url->port);
+        $this->assertEquals('https://example.com', $url->root);
+        $this->assertEquals('example.com', $url->domain);
+        $this->assertEquals('', $url->subdomain);
+        $this->assertEquals('test', $url->path);
+        $this->assertEquals('https://example.com/test', $url->path_name);
+        $this->assertEquals('foo=bar', $url->query);
+        $this->assertEquals('', $url->fragment);
+
+        // Test with no scheme (should not be valid)
+        $url = new Url('example.com/path');
+        $this->assertFalse($url->is_valid);
+        
+        // Test with only domain
+        $url = new Url('https://example.com');
+        $this->assertTrue($url->is_valid);
+        $this->assertEquals('https://', $url->scheme);
+        $this->assertEquals('example.com', $url->host);
+        $this->assertEquals('', $url->port);
+        $this->assertEquals('https://example.com', $url->root);
+        $this->assertEquals('example.com', $url->domain);
+        $this->assertEquals('', $url->subdomain);
+        $this->assertEquals('', $url->path);
+        $this->assertEquals('https://example.com/', $url->path_name);
+        $this->assertEquals('', $url->query);
+        $this->assertEquals('', $url->fragment);
     }
 
-    public function testGetFromLocalUrl()
+    public function testContains()
     {
-        $this->assertEquals($this->app->url->getFromLocalUrl('https://google/mars/'), '');
-        $this->assertEquals($this->app->url->getFromLocalUrl($this->app->base_url . 'page.php'), $this->app->base_path . '/page.php');
-        $this->assertEquals($this->app->url->getFromLocalUrl($this->app->base_url . 'dir1/dir2/page.php'), $this->app->base_path . '/dir1/dir2/page.php');
+        $url = new Url('https://example.com/path?foo=bar&baz=qux');
+        $this->assertTrue($url->contains('foo'));
+        $this->assertTrue($url->contains('baz'));
+        $this->assertFalse($url->contains('notfound'));
     }
 
-    public function testGetRoot()
+    public function testBuildAndAdd()
     {
-        $this->assertSame($this->app->url->getRoot('https://google.com/'), 'https://google.com');
-        $this->assertSame($this->app->url->getRoot('https://www.google.com/'), 'https://www.google.com');
-        $this->assertSame($this->app->url->getRoot('https://google.com/mypath/script.php'), 'https://google.com');
-        $this->assertSame($this->app->url->getRoot('google.com'), '');
-        $this->assertSame($this->app->url->getRoot('google.com/'), '');
+        $url = new Url('https://example.com/path');
+        $newUrl = $url->build(['more', 'parts']);
+        $this->assertEquals('https://example.com/path/more/parts', (string)$newUrl);
+
+        $url2 = new Url('https://example.com/path');
+        $newUrl2 = $url2->add(['foo' => 'bar', 'baz' => 'qux']);
+        $this->assertEquals('https://example.com/path?foo=bar&baz=qux', (string)$newUrl2);
+
+        $url3 = new Url('https://example.com/path?x=1');
+        $newUrl3 = $url3->add(['y' => '2']);
+        $this->assertEquals('https://example.com/path?x=1&y=2', (string)$newUrl3);
     }
 
-    public function testGetHost()
+    public function testNormalize()
     {
-        $this->assertSame($this->app->url->getHost('https://google.com/'), 'google.com');
-        $this->assertSame($this->app->url->getHost('https://www.google.com/'), 'www.google.com');
-    }
+        $url = new Url('/relative/path', false);
+        $normalized = $url->normalize('https://example.com');
+        $this->assertEquals('https://example.com/relative/path', (string)$normalized);
 
-    public function testGetDomain()
-    {
-        $this->assertSame($this->app->url->getDomain('https://google.com/'), 'google.com');
-        $this->assertSame($this->app->url->getDomain('https://www.google.com/'), 'google.com');
-        $this->assertSame($this->app->url->getDomain('https://www.something.google.com/'), 'google.com');
-    }
-
-    public function testGetSubDomain()
-    {
-        $this->assertSame($this->app->url->getSubDomain('https://google.com/'), '');
-        $this->assertSame($this->app->url->getSubDomain('https://www.google.com/'), 'www');
-        $this->assertSame($this->app->url->getSubDomain('https://www.something.google.com/'), 'www.something');
-    }
-
-    public function testGetPath()
-    {
-        $this->assertEquals($this->app->url->getPath('https://www.google.com/'), '');
-        $this->assertEquals($this->app->url->getPath('https://www.google.com'), '');
-        $this->assertEquals($this->app->url->getPath('https://www.google.com/mypath/script.php'), '/mypath/script.php');
-        $this->assertEquals($this->app->url->getPath('https://www.google.com/mypath/script.php?var=1&var2=2'), '/mypath/script.php');
-    }
-
-    public function testGetWithoutQuery()
-    {
-        $this->assertEquals($this->app->url->getWithoutQuery('https://localhost/mars/'), 'https://localhost/mars/');
-        $this->assertEquals($this->app->url->getWithoutQuery('https://localhost/mars/index.php'), 'https://localhost/mars/index.php');
-        $this->assertEquals($this->app->url->getWithoutQuery('https://localhost/mars/?query=1'), 'https://localhost/mars/');
-        $this->assertEquals($this->app->url->getWithoutQuery('https://localhost/mars/index.php?query=1'), 'https://localhost/mars/index.php');
-    }
-
-    public function testIsInQuery()
-    {
-        $this->assertFalse($this->app->url->isInQuery('https://localhost/mars/', 'test'));
-        $this->assertFalse($this->app->url->isInQuery('https://localhost/mars/?v=1&j=test', 'test'));
-        $this->assertFalse($this->app->url->isInQuery('https://localhost/mars/v=1&j=test', 'test'));
-        $this->assertTrue($this->app->url->isInQuery('https://localhost/mars/?v=1&test=test', 'test'));
-        $this->assertTrue($this->app->url->isInQuery('https://localhost/mars/?v=1&test=1', 'test'));
-    }
-
-    public function testBuild()
-    {
-        $this->assertEquals($this->app->url->build('https://www.google.com/', []), 'https://www.google.com/');
-        $this->assertEquals($this->app->url->build('https://www.google.com/', ['v' => 1, 'q' => 'test']), 'https://www.google.com/?v=1&q=test');
-        $this->assertEquals($this->app->url->build('https://www.google.com/', ['v' => 1, 'q' => 'test', 'y' => '']), 'https://www.google.com/?v=1&q=test');
-        $this->assertEquals($this->app->url->build('https://www.google.com/', ['v' => 1, 'q' => 'test', 'y' => ''], false), 'https://www.google.com/?v=1&q=test&y=');
-        $this->assertEquals($this->app->url->build('https://www.google.com/page.php?x=123', ['v' => 1, 'q' => 'test']), 'https://www.google.com/page.php?x=123&v=1&q=test');
-    }
-
-    public function testBuildPath()
-    {
-        $this->assertEquals($this->app->url->buildPath('https://localhost/mars', ['test1', 'test2']), 'https://localhost/mars/test1/test2');
-        $this->assertEquals($this->app->url->buildPath('https://localhost/mars', ['te st1', 'te?st2']), 'https://localhost/mars/te%20st1/te%3Fst2');
-    }
-
-    public function testNormalizeUrl()
-    {
-        $this->assertEquals($this->app->url->normalizeUrl('https://localhost/mars', 'https://localhost'), 'https://localhost/mars');
-        $this->assertEquals($this->app->url->normalizeUrl('http://localhost/mars', 'https://localhost'), 'http://localhost/mars');
-        $this->assertEquals($this->app->url->normalizeUrl('/mars', 'https://localhost'), 'https://localhost/mars');
-        $this->assertEquals($this->app->url->normalizeUrl('mars', 'https://localhost'), 'https://localhost/mars');
-        $this->assertEquals($this->app->url->normalizeUrl('https://localhost/mars', 'http://localhost'), 'https://localhost/mars');
-    }
-
-    public function testToHttp()
-    {
-        $this->assertEquals($this->app->url->toHttp('https://localhost/mars'), 'http://localhost/mars');
-        $this->assertEquals($this->app->url->toHttp('http://localhost/mars'), 'http://localhost/mars');
-        $this->assertEquals($this->app->url->toHttp('localhost/mars'), 'http://localhost/mars');
-    }
-
-    public function testToHtts()
-    {
-        $this->assertEquals($this->app->url->toHttps('https://localhost/mars'), 'https://localhost/mars');
-        $this->assertEquals($this->app->url->toHttps('http://localhost/mars'), 'https://localhost/mars');
-        $this->assertEquals($this->app->url->toHttps('localhost/mars'), 'https://localhost/mars');
-    }
-
-    public function testAddScheme()
-    {
-        $this->assertEquals($this->app->url->addScheme('https://localhost/mars'), 'https://localhost/mars');
-        $this->assertEquals($this->app->url->addScheme('http://localhost/mars'), 'http://localhost/mars');
-        $this->assertEquals($this->app->url->addScheme('https://localhost/mars', 'http'), 'https://localhost/mars');
-        $this->assertEquals($this->app->url->addScheme('http://localhost/mars', 'https'), 'http://localhost/mars');
-        $this->assertEquals($this->app->url->addScheme('localhost/mars', 'https'), 'https://localhost/mars');
-        $this->assertEquals($this->app->url->addScheme('localhost/mars', 'https://'), 'https://localhost/mars');
-        $this->assertEquals($this->app->url->addScheme('localhost/mars', 'http'), 'http://localhost/mars');
-        $this->assertEquals($this->app->url->addScheme('localhost/mars', 'http://'), 'http://localhost/mars');
-    }
-
-    public function testRemoveScheme()
-    {
-        $this->assertEquals($this->app->url->removeScheme('localhost/mars'), 'localhost/mars');
-        $this->assertEquals($this->app->url->removeScheme('http://localhost/mars'), 'localhost/mars');
-        $this->assertEquals($this->app->url->removeScheme('https://localhost/mars'), 'localhost/mars');
+        $url2 = new Url('https://example.com/absolute/path');
+        $normalized2 = $url2->normalize('https://base.com');
+        $this->assertEquals('https://example.com/absolute/path', (string)$normalized2);
     }
 }

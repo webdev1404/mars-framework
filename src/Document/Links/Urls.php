@@ -141,7 +141,7 @@ abstract class Urls
             return $url;
         }
 
-        return $this->app->url->build($url, ['ver' => $this->version]);
+        return $this->app->url->add($url, ['ver' => $this->version]);
     }
 
     /**

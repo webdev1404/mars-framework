@@ -29,6 +29,7 @@ use Mars\Time\Timezone;
 use Mars\System\Language;
 use Mars\System\Plugins;
 use Mars\System\Theme;
+use Mars\System\Uri;
 
 /**
  * The App Class
@@ -334,10 +335,10 @@ class App
     public Ui $ui;
 
     /**
-     * @var Url $url The url object
+     * @var Uri $url The url object
      */
     #[LazyLoadProperty]
-    public Url $url;
+    public Uri $url;
 
     /**
      * @var Unescape $unescape The unescape object
@@ -455,21 +456,17 @@ class App
     }
 
     /**
-     * @var string $base_url The url. Eg: http://mydomain.com
+     * @var Url $base_url The url. Eg: http://mydomain.com
      */
-    public string $base_url {
-        get {
-            return $this->url->base;
-        }
+    public Url $base_url {
+        get => $this->url->base;
     }
 
     /**
      * @var string $root_url The url. Includes the language code, if languages_multi is enabled. Eg: http://mydomain.com/en
      */
     public string $root_url {
-        get {
-            return $this->url->root;
-        }
+        get => $this->url->root;
     }
 
     /**

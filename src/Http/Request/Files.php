@@ -159,7 +159,7 @@ class Files extends Input
 
         if ($append_suffix) {
             $suffix = $this->app->random->getString(20);
-            $filename = $this->app->file->appendToFilename($filename, '-' . $suffix);
+            $filename = $this->app->file->append($filename, '-' . $suffix);
         }
 
         return $filename;

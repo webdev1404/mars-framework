@@ -7,8 +7,8 @@
 namespace Mars\Cache\Cacheable;
 
 use Mars\App\Kernel;
-use Mars\Cache\IsFile;
 use Mars\Cache\Cacheable\CacheableInterface;
+use Mars\Filesystem\IsFile;
 
 /**
  * The Cachable File Driver

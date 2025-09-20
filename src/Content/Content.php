@@ -41,10 +41,10 @@ abstract class Content
      */
     public function __construct(string $name, string $title = '', array $meta = [], ?App $app = null)
     {
-        $this->app = $app ?? App::obj();
         $this->name = $name;
         $this->title = $title;
         $this->meta = $meta;
+        $this->app = $app;
     }
     
     /**

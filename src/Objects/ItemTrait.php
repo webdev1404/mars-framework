@@ -41,7 +41,7 @@ trait ItemTrait
      */
     public function __construct($data = 0, ?App $app = null)
     {
-        $this->app = $app ?? App::obj();
+        $this->app = $app;
 
         $table = $this->getTable();
         $id_field = $this->getIdField();

@@ -48,10 +48,10 @@ class Drivers implements \Countable, \IteratorAggregate
      */
     public function __construct(array $list, string $interface_name, string $config_key = '', ?App $app = null)
     {
-        $this->app = $app ?? App::obj();
         $this->list = $list;
         $this->interface_name = $interface_name;
         $this->config_key = $config_key;
+        $this->app = $app;
     }
 
     /**

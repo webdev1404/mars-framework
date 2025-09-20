@@ -35,7 +35,9 @@ abstract class Image
     /**
      * @var bool $optimize If true, the images will be optimized when processed/uploaded
      */
-    protected bool $optimize = false;
+    protected bool $optimize {
+        get => $this->app->config->image_optimize;
+    }
 
     /**
      * @var string $optimize_command The optimization command
@@ -48,9 +50,8 @@ abstract class Image
      */
     public function __construct(string $filename, App $app)
     {
-        $this->app = $app;
         $this->filename = $filename;
-        $this->optimize = $this->app->config->image_optimize;
+        $this->app = $app;
     }
 
     /**

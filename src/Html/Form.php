@@ -97,13 +97,13 @@ class Form extends Tag
      */
     public function __construct(string $url = '', array $fields = [], array $columns = [], array $attributes = [], array $classes = [], null|array|Input $data = null, ?App $app = null)
     {
-        $this->app = $app ?? App::obj();
         $this->url = $url;
         $this->fields = $fields;
         $this->columns = $columns;
         $this->attributes = $attributes;
         $this->classes = $classes;
         $this->data = $data;
+        $this->app = $app;
     }
 
     /**

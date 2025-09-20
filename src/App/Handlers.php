@@ -55,9 +55,9 @@ class Handlers
      */
     public function __construct(array $list, ?string $interface_name = null, ?App $app = null)
     {
-        $this->app = $app ?? App::obj();
         $this->interface_name = $interface_name;
         $this->list = $list;
+        $this->app = $app;
     }
 
     /**

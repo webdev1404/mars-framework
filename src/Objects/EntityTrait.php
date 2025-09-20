@@ -41,7 +41,7 @@ trait EntityTrait
      */
     public function __construct(array|object $data = [], ?App $app = null)
     {
-        $this->app = $app ?? App::obj();
+        $this->app = $app;
 
         $this->set($data);
     }

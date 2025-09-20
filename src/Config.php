@@ -80,9 +80,9 @@ class Config
     public string $site_slogan = '';
 
     /**
-     * @var string $open_basedir If specified, will limit the files which are accessible to the specified folder. If the value is true the installation dir is used
+     * @var string $open_basedir If specified, will limit the files which are accessible to the specified folder. If the value is true the installation dir is used. If array, will use the specified paths. If false, no limitation is applied
      */
-    public bool|string $open_basedir = true;
+    public bool|string|array $open_basedir = true;
 
     /**
      * @var array $trusted_proxies The trusted proxies from which we'll accept the HTTP_X_FORWARDED_FOR header
@@ -639,6 +639,16 @@ class Config
      * @var array $curl_options The curl options to use when making http requests
      */
     public array $curl_options = [];
+
+    /**
+     * @var int $file_max_chars The max number of characters allowed in the name
+     */
+    public int $file_max_chars = 300;
+
+    /**
+     * @var bool $use_is_file_cache If true, will use the is_file cache functionality
+     */
+    public bool $use_is_file_cache = true;
 
     /**
      * @var string $title_prefix The prefix of the <title> tag

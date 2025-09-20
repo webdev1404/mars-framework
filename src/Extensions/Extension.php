@@ -171,9 +171,9 @@ abstract class Extension
     {
         static::$list = static::getList();
 
-        $this->app = $app ?? App::obj();
         $this->name = $name;
         $this->params = $params;
+        $this->app = $app;
 
         if (!isset(static::$list[$this->name])) {
             throw new \Exception("Extension '{$this->name}' of type '" . static::$type . "' not found. It either does not exist or is not enabled.");
@@ -190,7 +190,7 @@ abstract class Extension
             return static::$list;
         }
 
-        $app = static::getApp();
+        $app = App::obj();
 
         $filename = static::getListFilename();
 
@@ -293,7 +293,7 @@ abstract class Extension
         }
 
         if ($files === null) {
-            $files = $this->app->dir->get($dir, true, false);
+            $files = $this->app->dir->getAll($dir, true, false);
             $files = $this->app->array->flip($files);
 
             $this->app->cache->setArray($cache_filename, $files, false);

@@ -21,7 +21,17 @@ trait Kernel
      * @var App $app The app object
      */
     #[HiddenProperty]
-    protected App $app;
+    protected ?App $app {
+        get {
+            if (isset($this->app)) {
+                return $this->app;
+            }
+
+            $this->app = App::obj();
+
+            return $this->app;
+        }
+    }
 
     /**
      * Builds the object
@@ -29,21 +39,9 @@ trait Kernel
      */
     public function __construct(?App $app = null)
     {
-        $this->app = $app ?? static::getApp();
-    }
-
-    /**
-     * Returns the app object
-     * @return App The app object
-     */
-    public static function getApp(): App
-    {
-        static $app = null;
-        if ($app === null) {
-            $app = App::obj();
+        if ($app) {
+            $this->app = $app;
         }
-
-        return $app;
     }
 
     /**
@@ -63,6 +61,6 @@ trait Kernel
      */
     public function __wakeup()
     {
-        $this->app = App::obj();
+        $this->app = null;
     }
 }

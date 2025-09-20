@@ -1,14 +1,14 @@
 <?php
 /**
-* The Is File Cache Trait
+* The Is File Trait
 * @package Mars
 */
 
-namespace Mars\Cache;
+namespace Mars\Filesystem;
 
 /**
- * The Is File Cache Trait
- * Trait which caches in a single file the files existing in a folder
+ * The Is File Trait
+ * Trait which caches in a single file the files existing in a folder, to avoid multiple is_file calls
  */
 trait IsFile
 {
@@ -29,7 +29,11 @@ trait IsFile
      * @return bool True if the file exists, false otherwise
      */
     protected function isFile(string $filename, ?string $path = null) : bool
-    {        
+    {
+        if (!$this->app->config->use_is_file_cache) {
+            return is_file($filename);
+        }
+
         if ($this->existing_files !== null) {
             return isset($this->existing_files[$filename]);
         }
@@ -53,6 +57,10 @@ trait IsFile
      */
     protected function setIsFile(string $filename, ?string $path = null)
     {
+        if (!$this->app->config->use_is_file_cache) {
+            return;
+        }
+
         //if we're adding a new file, we need to delete the existing files cache file
         if ($this->existing_files !== null) {
             if (isset($this->existing_files[$filename])) {
@@ -76,6 +84,10 @@ trait IsFile
      */
     protected function cacheIsFile(string $path)
     {
+        if (!$this->app->config->use_is_file_cache) {
+            return;
+        }
+
         $cache_filename = $path . '/' . $this->existing_files_file;
         $files = $this->app->dir->getFiles($path, false, true);
         

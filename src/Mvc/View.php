@@ -18,8 +18,8 @@ use Mars\Hidden;
 use Mars\Html;
 use Mars\Text;
 use Mars\Ui;
-use Mars\Url;
 use Mars\System\Plugins;
+use Mars\System\Uri;
 use Mars\Extensions\Extension;
 
 /**
@@ -146,10 +146,10 @@ abstract class View
     }
 
     /**
-     * @var Url $url Alias for $this->app->url
+     * @var Uri $url Alias for $this->app->url
      */
     #[HiddenProperty]
-    public Url $url {
+    public Uri $url {
         get => $this->app->url;
     }
 
@@ -184,7 +184,7 @@ abstract class View
      */
     public function __construct(App $app, ?Controller $controller = null)
     {
-        $this->app = $app ?? App::obj();
+        $this->app = $app;
         $this->controller = $controller;
 
         $this->init();

@@ -131,11 +131,10 @@ abstract class Component extends Extension
      */
     public function __construct(string $module_name, string $name, array $params = [], ?App $app = null)
     {
-        $this->app = $app ?? App::obj();
-
         $this->name = $name;
         $this->params = $params;
         $this->module = new Module($module_name, [], $this->app);
+        $this->app = $app ;
     }
 
     /**

@@ -6,6 +6,8 @@
 
 namespace Mars\Cache;
 
+use Mars\Filesystem\IsFile;
+
 /**
  * The Data Cache Class
  * Class which handles the caching of data

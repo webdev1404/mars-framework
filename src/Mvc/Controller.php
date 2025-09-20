@@ -14,9 +14,9 @@ use Mars\Hidden;
 use Mars\Escape;
 use Mars\Filter;
 use Mars\Http\Request;
-use Mars\Url;
 use Mars\Validator;
 use Mars\System\Plugins;
+use Mars\System\Uri;
 use Mars\Alerts\Errors;
 use Mars\Alerts\Messages;
 use Mars\Alerts\Info;
@@ -205,10 +205,10 @@ abstract class Controller extends \stdClass
     }
 
     /**
-     * @var Validator $url Alias for $this->app->url
+     * @var Uri $url Alias for $this->app->url
      */
     #[HiddenProperty]
-    protected Url $url {
+    protected Uri $url {
         get => $this->app->url;
     }
 
@@ -278,8 +278,8 @@ abstract class Controller extends \stdClass
      */
     public function __construct(?Extension $parent = null, ?App $app = null)
     {
-        $this->app = $app ?? App::obj();
         $this->parent = $parent;
+        $this->app = $app;
 
         $this->init();
     }

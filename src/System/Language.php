@@ -275,7 +275,7 @@ class Language extends BaseLanguage
      */
     public function __construct(App $app)
     {
-        $this->app = $app ?? App::obj();
+        $this->app = $app;
 
         parent::__construct($this->name, [], $this->app);
 

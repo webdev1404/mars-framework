@@ -39,7 +39,7 @@ trait ItemsTrait
      */
     public function __construct(bool $load = false, ?App $app = null)
     {
-        $this->app = $app ?? App::obj();
+        $this->app = $app;
 
         if ($load) {
             $this->loadAll();

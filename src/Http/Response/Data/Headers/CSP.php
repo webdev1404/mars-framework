@@ -7,6 +7,7 @@
 namespace Mars\Http\Response\Data\Headers;
 
 use Mars\App;
+use Mars\Url;
 use Mars\App\Kernel;
 
 /**
@@ -98,7 +99,7 @@ class CSP
     protected function getFromDocument(string $name, string $source) : string
     {
         //return from config if we have it set
-        if (isset($this->app->config->csp_list[$name])) {
+        if (!empty($this->app->config->csp_list[$name])) {
             return $this->app->config->csp_list[$name];
         }
 

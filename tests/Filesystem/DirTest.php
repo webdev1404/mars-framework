@@ -1,5 +1,7 @@
 <?php
 
+use Mars\Dir;
+
 include_once(dirname(__DIR__) . '/Base.php');
 
 /**
@@ -11,101 +13,129 @@ final class DirTest extends Base
     protected $dir_read = __DIR__ . '/data/dir-test-read/';
     protected $dir_write = __DIR__ . '/data/dir-test-write/';
 
-    public function testContains()
+    public function testDirCreateAndExists()
     {
-        $this->assertSame($this->app->dir->contains('/var/www', '/var/www/myfilename.jpg'), true);
-        $this->assertSame($this->app->dir->contains('/var/www/', '/var/www/myfilename.jpg'), true);
-        $this->assertSame($this->app->dir->contains('/var/www/', '/var/www/qqq/myfilename.jpg'), true);
-        $this->assertSame($this->app->dir->contains('/var/www/', '/var/temp/myfilename.jpg'), false);
-        $this->assertSame($this->app->dir->contains('/var/temp/', '/var/www/myfilename.jpg'), false);
+        $dirPath = $this->dir_write . 'create-test';
+        $dir = new Dir($dirPath);
+
+        // Directory should not exist initially
+        if (is_dir($dirPath)) {
+            rmdir($dirPath);
+        }
+        $this->assertFalse($dir->exists);
+
+        // Create directory
+        $dir->create();
+        $this->assertTrue($dir->exists);
+        $this->assertSame($dirPath, (string)$dir);
+
+        // Clean up
+        rmdir($dirPath);
     }
 
-    public function testGetDir()
+    public function testDirCopy()
     {
-        $this->assertEqualsCanonicalizing($this->app->dir->getDirs($this->dir_read, false), [$this->dir_read . 'a', $this->dir_read . 'b']);
-        $this->assertEqualsCanonicalizing($this->app->dir->getDirs($this->dir_read, true), [$this->dir_read . 'a', $this->dir_read . 'a/aa', $this->dir_read . 'b']);
-        $this->assertEqualsCanonicalizing($this->app->dir->getDirs($this->dir_read, true, false), ['a', 'a/aa', 'b']);
-        $this->assertEqualsCanonicalizing($this->app->dir->getDirs($this->dir_read, true, true, ['b']), [$this->dir_read . 'a', $this->dir_read . 'a/aa']);
+        $source = $this->dir_cnt;
+        $dest = $this->dir_write . 'copy-test';
+
+        // Ensure destination does not exist
+        if (is_dir($dest)) {
+            (new Dir($dest))->delete();
+        }
+
+        $dir = new Dir($source);
+        $copied = $dir->copy($dest);
+
+        $this->assertTrue(is_dir($dest));
+        $this->assertInstanceOf(Dir::class, $copied);
+
+        // Clean up
+        new Dir($dest)->delete();
     }
 
-    public function testGetFiles()
+    public function testDirMove()
     {
-        $this->assertEqualsCanonicalizing($this->app->dir->getFiles($this->dir_read, false), [$this->dir_read . 'file1.txt', $this->dir_read . 'file2.txt', $this->dir_read . 'file3.emp']);
-        $this->assertEqualsCanonicalizing($this->app->dir->getFiles($this->dir_read, true), [$this->dir_read . 'file1.txt', $this->dir_read . 'file2.txt', $this->dir_read . 'file3.emp', $this->dir_read . 'a/file3.txt', $this->dir_read . 'a/aa/file4.txt', $this->dir_read . 'b/file4.txt']);
-        $this->assertEqualsCanonicalizing($this->app->dir->getFiles($this->dir_read, true, false), ['file1.txt', 'file2.txt', 'file3.emp', 'a/file3.txt', 'a/aa/file4.txt' , 'b/file4.txt']);
-        $this->assertEqualsCanonicalizing($this->app->dir->getFiles($this->dir_read, false, false), ['file1.txt', 'file2.txt', 'file3.emp']);
+        $source = $this->dir_write . 'move-test';
+        $dest = $this->dir_write . 'move-test-dest';
+
+        mkdir($source);
+
+        $dir = new Dir($source);
+        $moved = $dir->move($dest);
+
+        $this->assertFalse(is_dir($source));
+        $this->assertTrue(is_dir($dest));
+        $this->assertInstanceOf(Dir::class, $moved);
+
+        // Clean up
+        rmdir($dest);
     }
 
-    public function testCreate()
+    public function testDirDelete()
     {
-        $this->app->dir->create($this->dir_write . 'test');
-        $this->assertSame(is_dir($this->dir_write . 'test'), true);
-        rmdir($this->dir_write . 'test');
+        $dirPath = $this->dir_write . 'delete-test';
+        mkdir($dirPath);
+
+        $dir = new Dir($dirPath);
+        $result = $dir->delete();
+
+        $this->assertNull($result);
+        $this->assertFalse(is_dir($dirPath));
     }
 
-    public function testCopy()
+    public function testDirClean()
     {
-        $dir = $this->app->dir;
+        $dirPath = $this->dir_write . 'clean-test';
+        mkdir($dirPath);
+        file_put_contents($dirPath . '/file.txt', 'test');
 
-        $source_dir = $this->dir_cnt;
-        $dest_dir = $this->dir_write . 'test/';
+        $dir = new Dir($dirPath);
+        $dir->clean();
 
-        $this->app->dir->copy($source_dir, $dest_dir);
-        $this->assertSame(is_dir($dest_dir . 'a'), true);
-        $this->assertSame(is_file($dest_dir . 'file1.txt'), true);
-        $this->assertSame(is_file($dest_dir . 'a/file2.txt'), true);
+        $this->assertTrue(is_dir($dirPath));
+        $this->assertFalse(is_file($dirPath . '/file.txt'));
 
-        unlink($dest_dir . 'file1.txt');
-        unlink($dest_dir . 'a/file2.txt');
-
-        rmdir($dest_dir . 'a');
-        rmdir($dest_dir);
+        // Clean up
+        rmdir($dirPath);
     }
 
-    public function testMove()
+    public function testDirContains()
     {
-        $dir = $this->app->dir;
-
-        $source_dir = $this->dir_write . 'test/';
-        $dest_dir = $this->dir_write . 'test1/';
-
-        mkdir($source_dir);
-
-        $this->app->dir->move($source_dir, $dest_dir);
-
-        $this->assertSame(is_dir($source_dir), false);
-        $this->assertSame(is_dir($dest_dir), true);
-
-        rmdir($dest_dir);
+        $dir = new Dir('/var/www');
+        $this->assertFalse($dir->contains('/var/www'));
+        $this->assertTrue($dir->contains('/var/www/myfilename.jpg'));
+        $this->assertTrue($dir->contains('/var/www/qqq/myfilename.jpg'));
+        $this->assertFalse($dir->contains('/var/temp/myfilename.jpg'));
     }
 
-    public function testDelete()
+    public function testGetDirsAndFiles()
     {
-        $dir = $this->app->dir;
+        $dir = new Dir($this->dir_read);
 
-        $source_dir = $this->dir_cnt;
-        $dest_dir = $this->dir_write . 'test/';
+        $dirs = $dir->getDirs(false, true);
+        $this->assertContains($this->dir_read . 'a', $dirs);
+        $this->assertContains($this->dir_read . 'b', $dirs);
 
-        $this->app->dir->copy($source_dir, $dest_dir);
-        $this->app->dir->delete($dest_dir);
-
-        $this->assertSame(is_dir($dest_dir), false);
+        $files = $dir->getFiles(false, true);
+        $this->assertContains($this->dir_read . 'file1.txt', $files);
+        $this->assertContains($this->dir_read . 'file2.txt', $files);
     }
 
-    public function testClean()
+    public function testGetFilesTree()
     {
-        $dir = $this->app->dir;
+        $dir = new Dir($this->dir_read);
+        $tree = $dir->getFilesTree(true, true);
 
-        $source_dir = $this->dir_cnt;
-        $dest_dir = $this->dir_write . 'test/';
+        $this->assertIsArray($tree);
+        $this->assertNotEmpty($tree);
+    }
 
-        $this->app->dir->copy($source_dir, $dest_dir);
-        $this->app->dir->clean($dest_dir);
+    public function testGetDirsTree()
+    {
+        $dir = new Dir($this->dir_read);
+        $tree = $dir->getDirsTree(true, true);
 
-        $this->assertSame(is_dir($dest_dir), true);
-        $this->assertSame(is_dir($dest_dir . 'a'), false);
-        $this->assertSame(is_file($dest_dir . 'file1.txt'), false);
-
-        rmdir($dest_dir);
+        $this->assertIsArray($tree);
+        $this->assertNotEmpty($tree);
     }
 }
