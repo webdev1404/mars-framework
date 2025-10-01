@@ -14,7 +14,7 @@ use Mars\Data\MapTrait;
  * The Handlers Class
  * Encapsulates a list of suported handlers
  */
-class Handlers
+class Handlers implements \IteratorAggregate
 {
     use Kernel;
     use MapTrait {
@@ -90,7 +90,7 @@ class Handlers
         if (!isset($this->{static::$property}[$name])) {
             throw new \Exception("Unknown object '{$name}'");
         }
-  
+
         $object = $this->app->object->get($this->{static::$property}[$name], ...$args);
 
         if ($this->interface_name) {
@@ -134,5 +134,14 @@ class Handlers
         }
 
         return $this->removeFromMap($name);
+    }
+
+    /**
+     * Returns an iterator for the objects
+     * @return \Traversable The iterator
+     */
+    public function getIterator() : \Traversable
+    {
+        return new \ArrayIterator($this->getAll());
     }
 }

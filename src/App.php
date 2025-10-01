@@ -233,6 +233,12 @@ class App
     public Random $random;
 
     /**
+     * @var Reflection $reflection The reflection object
+     */
+    #[LazyLoadProperty]
+    public Reflection $reflection;
+
+    /**
      * @var Response $response The response object
      */
     #[LazyLoadProperty]

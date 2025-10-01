@@ -462,9 +462,14 @@ class Config
     public bool $cache_page_minify = true;
 
     /**
-     * @var int $cache_routes_prefix_length The length of the prefix used for caching routes
+     * @var int $routes_prefix_length The length of the prefix used for routing
      */
-    public int $cache_routes_prefix_length = 1;
+    public int $routes_prefix_length = 1;
+
+    /**
+     * @var bool $routes_pages_autoload If true, will automatically load all the pages from the app/pages folders as routes
+     */
+    public bool $routes_pages_autoload = true;
 
     /**
      * @var string $templates_driver The templates driver. Supported options: mars

@@ -6,7 +6,10 @@
 
 namespace Mars;
 
+use Mars\App\LazyLoad;
+use Mars\Router\Base;
 use Mars\Router\Routes;
+use Mars\Router\Loader;
 use Mars\Content\ContentInterface;
 use Mars\Mvc\Controller;
 
@@ -14,8 +17,10 @@ use Mars\Mvc\Controller;
  * The Router Class
  * Route handling class
  */
-class Router extends Routes
+class Router extends Base
 {
+    use LazyLoad;
+
     /**
      * @var string $path The path used by the router
      */
@@ -43,9 +48,27 @@ class Router extends Routes
     }
 
     /**
-     * @internal
+     * @var Routes $routes The routes list container
      */
-    protected bool $load_action = true;
+    #[LazyLoadProperty]
+    public protected(set) Routes $routes;
+
+    /**
+     * @var Loader $loader The routes loader container
+     */
+    #[LazyLoadProperty]
+    public protected(set) Loader $loader;
+
+    /**
+     * The constructor
+     * @param App|null $app The app object
+     */
+    public function __construct(?App $app = null)
+    {
+        parent::__construct($app);
+
+        $this->lazyLoad($this->app);
+    }
 
     /**
      * Outputs the content based on the matched route
@@ -70,90 +93,24 @@ class Router extends Routes
     }
 
     /**
-     * Loads a route hash from a file
-     * @param string $hash The hash of the route
-     * @param string $filename The filename where the route is stored
-     */
-    protected function loadHash(string $hash, string $filename)
-    {
-        $this->hashes[$hash] = true;
-
-        $this->load($filename);
-    }
-
-    /**
      * Returns the route matching the current request
      * @return mixed
      */
     protected function getRoute() : array|null
     {
         //check if the method is allowed
-        if (!in_array($this->app->request->method, $this->allowed_methods)) {
+        if (!in_array($this->app->request->method, static::ALLOWED_METHODS)) {
             return null;
         }
 
-        $hashes = $this->app->cache->routes->getHashes($this->path);
-        $hash = $this->getHash($this->app->request->method, $this->path, $this->app->lang->code);
+        $hashes = $this->app->cache->routes->getHashes($this->getPrefix($this->path));
+        $hash = $this->getHash($this->path, $this->app->lang->code, $this->app->request->method);
 
         if (isset($hashes[$hash])) {
-            return $this->getRouteFromHash($hashes, $hash);
+            return $this->loader->getByHash($hash, $hashes[$hash]);
         } else {
-            return $this->getRouteFromPreg($hashes);
+            return $this->loader->getByPreg($hashes);
         }
-    }
-
-    /**
-     * Returns the route from a hash
-     * @param array $hashes The list of hashes
-     * @param string $hash The hash to look for
-     * @return array|null The route, or null if not found
-     */
-    protected function getRouteFromHash(array $hashes, string $hash) : array|null
-    {
-        $this->loadHash($hash, $hashes[$hash]['filename']);
-        if (!$this->routes_list || !isset($this->routes_list[$hash])) {
-            return null;
-        }
-
-        $action = $this->routes_list[$hash]['action'];
-
-        return [$action, []];
-    }
-
-    /**
-     * Returns the route from a preg match
-     * @param array $hashes The list of hashes
-     * @return array|null The route, or null if not found
-     */
-    protected function getRouteFromPreg(array $hashes) : array|null
-    {
-        $hashes = array_filter($hashes, fn ($route) => $route['preg']);
-        $this->hashes = array_fill_keys(array_keys($hashes), true);
-
-        $filenames = array_unique(array_column($hashes, 'filename'));
-
-        foreach ($filenames as $filename) {
-            $this->load($filename);
-        }
-
-        if (!$this->routes_list) {
-            return null;
-        }
-
-        //search for the matching preg
-        foreach ($this->routes_list as $hash => $route) {
-            $route_path = preg_replace_callback('/{([a-z0-9_]*)}/is', function ($match) {
-                return '(.*)';
-            }, $route['route']);
-
-            if (preg_match("|^{$route_path}$|is", $this->path, $matches)) {
-                $params = array_slice($matches, 1);
-                
-                return [$route['action'], $params];
-            }
-        }
-
-        return null;
     }
 
     /**
@@ -168,8 +125,6 @@ class Router extends Routes
             $this->outputFromClosure($action, $params);
         } elseif (is_object($action)) {
             $this->outputFromObject($action);
-        } elseif (is_array($action)) {
-            $this->outputFromArray($action);
         } elseif (is_string($action)) {
             $parts = explode('@', $action);
 
@@ -181,14 +136,14 @@ class Router extends Routes
     }
 
     /**
-     * Outputs the content from a closure
-     * @param \Closure $route The closure to output
-     * @param array $params The params to pass to the closure
+     * Outputs the content from a callable
+     * @param callable $route The closure to output
+     * @param array $params The params to pass to the callable
      */
-    protected function outputFromClosure(\Closure $route, array $params)
+    protected function outputFromClosure(callable $route, array $params)
     {
         ob_start();
-        $value = call_user_func_array($route, [...$params, $this->app]);
+        $value = call_user_func_array($route, [...$this->app->reflection->getParams($route, $params), $this->app]);
         $content = ob_get_clean();
 
         $this->outputContent($value, $content);
@@ -208,15 +163,6 @@ class Router extends Routes
     }
 
     /**
-     * Outputs the content from an array
-     * @param array $array The array to output
-     */
-    protected function outputFromArray(array $array)
-    {
-        $this->app->send($array);
-    }
-
-    /**
      * Outputs the content from a class
      * @param string $class_name The class name
      * @param string $method The method to call
@@ -231,7 +177,7 @@ class Router extends Routes
         } else {
             if ($method) {
                 ob_start();
-                $value = call_user_func_array([$controller, $method], $params);
+                $value = call_user_func_array([$controller, $method], $this->app->reflection->getParams([$controller, $method], $params));
                 $content = ob_get_clean();
 
                 $this->outputContent($value, $content);

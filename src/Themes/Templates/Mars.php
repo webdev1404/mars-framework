@@ -61,8 +61,7 @@ class Mars implements TemplateInterface
      */
     public function parse(string $content, array $params) : string
     {
-        $parsers = $this->parsers->getAll();
-        foreach ($parsers as $parser) {
+        foreach ($this->parsers as $parser) {
             $content = $parser->parse($content, $params);
         }
 

@@ -34,16 +34,6 @@ class Dir
     }
 
     /**
-     * Returns a Dir instance
-     * @param string $dir The dir
-     * @return \Mars\Dir The Dir instance
-     */
-    public function get(string $dir) : DirObj
-    {
-        return new DirObj($dir);
-    }
-
-    /**
      * Checks if a dir exists
      * @param string $dir The dir
      * @return bool True if the dir exists
@@ -88,7 +78,7 @@ class Dir
      * @param array $exclude_extensions If specified, will exclude the files matching the extensions
      * @return array The files
      */
-    public function getAll(string $dir, bool $recursive = true, bool $full_path = true, array $extensions = [], array $exclude_dirs = [], array $exclude_extensions = []) : array
+    public function get(string $dir, bool $recursive = true, bool $full_path = true, array $extensions = [], array $exclude_dirs = [], array $exclude_extensions = []) : array
     {
         return new DirObj($dir)->get($recursive, $full_path, $extensions, $exclude_dirs, $exclude_extensions);
     }

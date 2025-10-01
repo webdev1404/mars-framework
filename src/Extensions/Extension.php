@@ -293,7 +293,7 @@ abstract class Extension
         }
 
         if ($files === null) {
-            $files = $this->app->dir->getAll($dir, true, false);
+            $files = $this->app->dir->get($dir, true, false);
             $files = $this->app->array->flip($files);
 
             $this->app->cache->setArray($cache_filename, $files, false);

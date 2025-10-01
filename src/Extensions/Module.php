@@ -27,6 +27,7 @@ class Module extends Extension
         'languages' => 'languages',
         'templates' => 'templates',
         'blocks' => 'blocks',
+        'pages' => 'pages',
         'plugins' => 'plugins',
         'routes' => 'routes',
         'setup' => 'setup',

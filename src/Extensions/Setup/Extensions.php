@@ -44,8 +44,7 @@ class Extensions
      */
     public function prepare()
     {
-        $handlers = $this->handlers->getAll();
-        foreach ($handlers as $handler) {
+        foreach ($this->handlers as $handler) {
             $handler->prepare();
         }
     }

@@ -90,8 +90,8 @@ class Data extends Cacheable
     /**
      * Stores an array to a php file
      * @param string $filename The name of the file
-     * @param bool $hash_filename Whether to hash the filename or not
      * @param array $data The data to store
+     * @param bool $hash_filename Whether to hash the filename or not
      * @return static $this
      */
     public function setArray(string $filename, array $data, bool $hash_filename = true) : static
@@ -127,13 +127,59 @@ class Data extends Cacheable
     }
 
     /**
+     * Checks whether a cached php code file exists
+     * @param string $filename The name of the file
+     * @param bool $hash_filename Whether to hash the filename or not
+     * @return bool True if the file exists, false otherwise
+     */
+    public function isCodeFile(string $filename, bool $hash_filename = true) : bool
+    {
+        $filename = $this->getFilename($filename, 'php', $hash_filename);
+
+        return $this->isFile($filename, $this->path);
+    }
+
+    /**
+     * Stores an array to a php file, as php code
+     * @param string $filename The name of the file
+     * @param array $data The data to store
+     * @param bool $hash_filename Whether to hash the filename or not
+     * @return static $this
+     */
+    public function setCode(string $filename, array $data, bool $hash_filename = true) : static
+    {
+        $filename = $this->getFilename($filename, 'php', $hash_filename);
+
+        $content = "<?php\n\n";
+        $content.= implode("\n\n", $data);
+        $content.= "\n";
+        
+        file_put_contents($filename, $content);
+
+        $this->setIsFile($filename, $this->path);
+
+        return $this;
+    }
+
+    /**
+     * Deletes a cached php code file
+     * @param string $filename The name of the file
+     * @param bool $hash_filename Whether to hash the filename or not
+     * @return static $this
+     */
+    public function deleteCode(string $filename, bool $hash_filename = true) : static
+    {
+        return $this->deleteArray($filename, $hash_filename);
+    }
+
+    /**
      * Gets the filename for a cache file
      * @param string $filename The name of the file
      * @param string|null $extension The extension of the file. If null, $this->extension will be used
      * @param bool $hash_filename Whether to hash the filename or not
      * @return string The filename
      */
-    protected function getFilename(string $filename, ?string $extension = null, bool $hash_filename = true) : string
+    public function getFilename(string $filename, ?string $extension = null, bool $hash_filename = true) : string
     {
         return $this->path . '/' . $this->getName($filename, $extension, $hash_filename);
     }

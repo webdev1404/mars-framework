@@ -14,8 +14,6 @@ class Template extends Content implements ContentInterface
 {
     public function output()
     {
-        $this->outputTitleAndMeta();
-            
         echo $this->app->theme->getTemplate($this->name);
     }
 }

@@ -17,10 +17,12 @@ class Page extends Content implements ContentInterface
      */
     public function output()
     {
-        $this->outputTitleAndMeta();
+        $filename = $this->name;
+        
+        if (!str_starts_with($filename, '/')) {
+            $filename = $this->app->app_path . '/pages/' . $this->name . '.php';
+        }
 
-        $template = $this->app->base_path . '/app/pages/' . $this->name . '.php';
-
-        echo $this->app->theme->getTemplateFromFilename($template);
+        echo $this->app->theme->getTemplateFromFilename($filename);
     }
 }

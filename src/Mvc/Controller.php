@@ -141,7 +141,7 @@ abstract class Controller extends \stdClass
             }
             
             $this->model = null;
-            if ($this->load_model) {
+            if ($this->load_model && $this->parent) {
                 $this->model = $this->getModel();
             }
 
@@ -159,7 +159,7 @@ abstract class Controller extends \stdClass
             }
 
             $this->view = null;
-            if ($this->load_view) {
+            if ($this->load_view && $this->parent) {
                 $this->view = $this->getView();
             }
 
@@ -416,7 +416,7 @@ abstract class Controller extends \stdClass
     {
         $this->current_method = $method;
 
-        return call_user_func_array([$this, $method], $params);
+        return call_user_func_array([$this, $method], $this->app->reflection->getParams([$this, $method], $params));
     }
 
     /**
