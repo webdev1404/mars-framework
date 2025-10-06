@@ -39,12 +39,20 @@ trait MapTrait
     }
 
     /**
-     * Adds an element
+     * Alias for set()
+     */
+    public function add(string $name, mixed $value) : static
+    {
+        return $this->set($name, $value);
+    }
+
+    /**
+     * Sets an element
      * @param string $name The name of the element
      * @param mixed $value The value
      * @return static
      */
-    public function add(string $name, mixed $value) : static
+    public function set(string $name, mixed $value) : static
     {
         $this->{static::$property}[$name] = $value;
 
@@ -52,11 +60,11 @@ trait MapTrait
     }
 
     /**
-     * Sets the list
+     * Assign the list
      * @param array $list The list of elements in the name => value format
      * @return static
      */
-    public function set(array $list) : static
+    public function assign(array $list) : static
     {
         $this->{static::$property} = $list;
         

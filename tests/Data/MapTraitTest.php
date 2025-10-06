@@ -24,7 +24,7 @@ final class MapTraitTest extends Base
         $this->assertNull($elements->get('X-Test-Header'));
 
         $elements->add('X-Test-Header', 'test123');
-        $elements->add('X-Test-Header2', 'test345');
+        $elements->set('X-Test-Header2', 'test345');
         $this->assertSame($elements->get('X-Test-Header'), 'test123');
         $this->assertSame($elements->get(), ['X-Test-Header' => 'test123', 'X-Test-Header2' => 'test345']);
 
@@ -45,11 +45,11 @@ final class MapTraitTest extends Base
         $this->assertFalse($elements->exists('X-Test-Header'));
     }
 
-    public function testSet()
+    public function testAssign()
     {
         $elements = new Elements;
 
-        $elements->set(['X-Test-Header' => 'test123', 'X-Test-Header2' => 'test345']);
+        $elements->assign(['X-Test-Header' => 'test123', 'X-Test-Header2' => 'test345']);
         $this->assertSame($elements->get(), ['X-Test-Header' => 'test123', 'X-Test-Header2' => 'test345']);
     }
 }

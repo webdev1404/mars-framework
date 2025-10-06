@@ -312,8 +312,6 @@ class Language extends BaseLanguage
             }
         }
 
-        parent::loadFile($file);
-
-        return $this;
+        return parent::loadFile($file);
     }
 }

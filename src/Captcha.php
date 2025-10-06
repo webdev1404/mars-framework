@@ -22,7 +22,8 @@ class Captcha
      * @var array $supported_drivers The supported drivers
      */
     public protected(set) array $supported_drivers = [
-        'recaptcha2' => \Mars\Captcha\Recaptcha2::class
+        'recaptcha2' => \Mars\Captcha\Recaptcha2::class,
+        'recaptcha3' => \Mars\Captcha\Recaptcha3::class
     ];
 
     /**

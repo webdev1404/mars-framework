@@ -638,7 +638,22 @@ class Config
     /**
      * @var string $captcha_driver The captca driver to use
      */
-    public string $captcha_driver = 'recaptcha2';
+    public string $captcha_driver = 'recaptcha3';
+
+    /**
+     * @var string $captcha_recaptcha_site_key The recaptcha public key
+     */
+    public string $captcha_recaptcha_site_key = '';
+
+    /**
+     * @var string $captcha_recaptcha_secret_key The recaptcha private key
+     */
+    public string $captcha_recaptcha_secret_key = '';
+
+    /**
+     * @var float $captcha_recaptcha_min_score The minimum score required to consider the captcha valid
+     */
+    public float $captcha_recaptcha_min_score = 0.5;
 
     /**
      * @var array $curl_options The curl options to use when making http requests

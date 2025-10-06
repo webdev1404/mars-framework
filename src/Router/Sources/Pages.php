@@ -42,7 +42,6 @@ class Pages extends Source
                 $filename = $dir . '/' . $file;
                 $route = $this->getRoute($file);
                 $lang = $this->getLanguage($file);
-
                 $hash = $this->getHash($route, $lang, 'get');
 
                 $this->routes->list[$hash] = $this->getData($route, $filename);
@@ -108,7 +107,18 @@ class Pages extends Source
             return '/';
         }
 
-        return $route;
+        $parts = explode('/', $route);
+        $lang = $parts[0] ?? '';
+
+        if (!$lang) {
+            return $route;
+        }
+
+        if (!isset($this->app->lang->multi_list[$lang])) {
+            return $route;
+        }
+
+        return implode('/', array_slice($parts, 1));
     }
 
     /**

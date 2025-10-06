@@ -42,6 +42,11 @@ class Language extends Extension
     protected array $loaded_files = [];
 
     /**
+     * @var array $invalid_files The list of invalid files we tried to load, but couldn't
+     */
+    protected array $invalid_files = [];
+
+    /**
      * @var string $files_path The path for the theme's files folder
      */
     public protected(set) string $files_path {
@@ -128,12 +133,19 @@ class Language extends Extension
         if (isset($this->loaded_files[$file])) {
             return $this;
         }
+        if (isset($this->invalid_files[$file])) {
+            return $this;
+        }
+
+        if (!$this->isFile($file)) {
+            $this->invalid_files[] = $file;
+
+            return $this;
+        }
 
         $this->loaded_files[$file] = true;
-
-        if ($this->isFile($file)) {
-            $this->loadFilename($this->getFilename($file), $file);
-        }
+        
+        $this->loadFilename($this->getFilename($file), $file);
 
         return $this;
     }
@@ -178,17 +190,13 @@ class Language extends Extension
     {
         $keys = [];
         $index = strpos($string, '.');
-
         if ($index !== false) {
             //we have a dot in the key. Search for the string in the specified file
             $file = substr($string, 0, $index);
             $string = substr($string, $index + 1);
             $keys = [$file];
 
-            //load the file if not already loaded
-            if (!isset($this->loaded_files[$file])) {
-                $this->loadFile($file);
-            }
+            $this->loadFile($file);
         } else {
             $keys = $key ? [$key] : $this->strings_search;
         }

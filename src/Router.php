@@ -31,9 +31,10 @@ class Router extends Base
             }
 
             $this->path = $this->app->url->path;
+
             //remove the language code from the path, if multi-language is enabled
             if ($this->app->lang->multi) {
-                $this->path = str_replace('/' . $this->app->lang->code, '', $this->path);
+                $this->path = str_replace($this->app->lang->code, '', $this->path);
             }
 
             //remove the leading slash, for all the routes except the root

@@ -14,7 +14,7 @@ namespace Mars\Data;
 trait ObjectsTrait
 {
     use MapTrait {
-        add as protected addToMap;
+        set as protected setInMap;
         remove as protected removeFromMap;
     }
 
@@ -35,11 +35,21 @@ trait ObjectsTrait
      */
     public function add(string $name, mixed $class) : static
     {
+        return $this->set($name, $class);
+    }
+
+    /**
+     * Adds an object to the list
+     * @param string $name The name of the object
+     * @param mixed $class The class of the object, or a callable
+     */
+    public function set(string $name, mixed $class) : static
+    {
         if ($this->store && isset($this->objects[$name])) {
             unset($this->objects[$name]);
         }
 
-        $this->addToMap($name, $class);
+        $this->setInMap($name, $class);
 
         return $this;
     }

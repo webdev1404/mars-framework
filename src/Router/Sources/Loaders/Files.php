@@ -47,7 +47,7 @@ class Files extends \Mars\Router\Sources\Files
      */
     public function getByPreg(array $hashes) : array|null
     {
-        $hashes = array_filter($hashes, fn ($route) => $route['preg']);
+        $hashes = array_filter($hashes, fn ($route) => $route['preg'] ?? false);
         if (!$hashes) {
             return null;
         }

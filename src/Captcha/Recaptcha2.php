@@ -25,8 +25,8 @@ class Recaptcha2 implements CaptchaInterface
     {
         $this->app = $app;
 
-        if (!$this->app->config->captcha_recaptcha_public_key || !$this->app->config->captcha_recaptcha_private_key) {
-            throw new \Exception('The recaptcha2 public and private keys must be set');
+        if (!$this->app->config->captcha_recaptcha_site_key || !$this->app->config->captcha_recaptcha_secret_key) {
+            throw new \Exception('The recaptcha2 site and secret keys must be set');
         }
 
         $this->app->document->javascript->load('https://www.google.com/recaptcha/api.js');
@@ -39,8 +39,8 @@ class Recaptcha2 implements CaptchaInterface
     public function check() : bool
     {
         $post_data = [
-            'secret' => $this->app->config->captcha_recaptcha_private_key,
-            'response' => $this->app->request->post('g-recaptcha-response'),
+            'secret' => $this->app->config->captcha_recaptcha_secret_key,
+            'response' => $this->app->request->post->get('g-recaptcha-response'),
             'remoteip' => $this->app->ip
         ];
 
@@ -48,7 +48,7 @@ class Recaptcha2 implements CaptchaInterface
 
         $data = $response->getJson();
 
-        return $data->success;
+        return $data['success'] ?? false;
     }
 
     /**
@@ -57,6 +57,6 @@ class Recaptcha2 implements CaptchaInterface
      */
     public function output()
     {
-        echo '<div class="g-recaptcha" data-sitekey="' . $this->app->config->captcha_recaptcha_public_key . '"></div>';
+        echo '<div class="g-recaptcha" data-sitekey="' . $this->app->config->captcha_recaptcha_site_key . '"></div>';
     }
 }

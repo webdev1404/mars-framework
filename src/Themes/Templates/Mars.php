@@ -21,12 +21,13 @@ class Mars implements TemplateInterface
      * @var array $supported_structures The list of supported parsers
      */
     protected array $supported_parsers = [
+        'global' => \Mars\Themes\Templates\Mars\GlobalParser::class,
         'templates' => \Mars\Themes\Templates\Mars\TemplatesParser::class,
         'include' => \Mars\Themes\Templates\Mars\IncludeParser::class,
         'variables_raw' => \Mars\Themes\Templates\Mars\VariablesRawParser::class,
         'variables' => \Mars\Themes\Templates\Mars\VariablesParser::class,
         'if' => \Mars\Themes\Templates\Mars\IfParser::class,
-        'foreach' => \Mars\Themes\Templates\Mars\ForeachParser::class
+        'foreach' => \Mars\Themes\Templates\Mars\ForeachParser::class,
     ];
 
     /**

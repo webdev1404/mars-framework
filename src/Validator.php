@@ -39,6 +39,7 @@ class Validator
         'time' => \Mars\Validation\Time::class,
         'date' => \Mars\Validation\Date::class,
         'datetime' => \Mars\Validation\Datetime::class,
+        'captcha' => \Mars\Validation\Captcha::class,
     ];
 
     /**

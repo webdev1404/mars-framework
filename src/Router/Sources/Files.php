@@ -216,7 +216,7 @@ class Files extends Source
      * @param array $methods The request methods to handle. Default: GET, POST
      * @return static
      */
-    public function block(string $route, string $module_name, string $name = '', array $params = [], string|array|null $languages = null, array $methods = ['get', 'post']) : static
+    public function block(string $route, string $module_name, string $name = '', array $params = [], string|array|null $languages = '*', array $methods = ['get', 'post']) : static
     {
         $action = fn () => new Block($module_name, $name, $params, $this->app);
 
@@ -231,7 +231,7 @@ class Files extends Source
      * @param array $methods The request methods to handle. Default: get
      * @return static
      */
-    public function template(string $route, string $template, string|array|null $languages = null, array $methods = ['get']) : static
+    public function template(string $route, string $template, string|array|null $languages = '*', array $methods = ['get']) : static
     {
         $action = fn () => new Template($template, $this->app);
 
