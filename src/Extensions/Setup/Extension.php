@@ -43,6 +43,8 @@ abstract class Extension
     {
         $this->app = $app;
         $this->lazyLoad($this->app);
+        var_dump($this);
+        die;
     }
 
     public function enable()

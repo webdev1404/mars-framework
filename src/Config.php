@@ -80,6 +80,11 @@ class Config
     public string $site_slogan = '';
 
     /**
+     * @var string|array $site_emails The site emails
+     */
+    public string|array $site_emails = [];
+
+    /**
      * @var string $open_basedir If specified, will limit the files which are accessible to the specified folder. If the value is true the installation dir is used. If array, will use the specified paths. If false, no limitation is applied
      */
     public bool|string|array $open_basedir = true;

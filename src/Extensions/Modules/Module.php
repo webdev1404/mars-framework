@@ -4,9 +4,11 @@
 * @package Mars
 */
 
-namespace Mars\Extensions;
+namespace Mars\Extensions\Modules;
 
 use Mars\App;
+use Mars\Extensions\Extension;
+use Mars\Extensions\Extensions;
 use Mars\Extensions\Modules\Abilities\LanguagesTrait;
 use Mars\Extensions\Modules\Abilities\TemplatesTrait;
 
@@ -36,22 +38,9 @@ class Module extends Extension
     /**
      * @internal
      */
-    protected static ?array $list = null;
-
-    /**
-     * @internal
-     */
-    protected static string $list_config_file = 'modules.php';
-
-    /**
-     * @internal
-     */
-    protected static ?array $available_list = null;
-
-    /**
-     * @internal
-     */
-    protected static bool $list_filter = true;
+    public Extensions $manager {
+        get => $this->app->modules;
+    }
 
     /**
      * @internal
@@ -69,11 +58,6 @@ class Module extends Extension
     protected static string $base_namespace = "\\Modules";
 
     /**
-     * @internal
-     */
-    protected static string $setup_class = \Mars\Extensions\Setup\Module::class;
-
-    /**
      * @var string $lang_key The key used to store the language strings
      */
     public protected(set) string $lang_key {
@@ -86,16 +70,5 @@ class Module extends Extension
 
             return $this->lang_key;
         }
-    }
-
-    /**
-     * Returns the namespace for the specified plugin name
-     * @param string $module_name The name of the module the plugin belongs to
-     * @param string $plugin_name The name of the plugin
-     * @return string The namespace for the plugin
-     */
-    public static function getPluginNamespace(string $module_name, string $plugin_name) : string
-    {
-        return static::$base_namespace . '\\' . App::getClass($module_name) . '\\' . App::getClass(static::DIRS['plugins']) . '\\' . App::getClass($plugin_name);
     }
 }

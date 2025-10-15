@@ -8,8 +8,9 @@ namespace Mars\Router\Sources;
 
 use Mars\Content\Page;
 use Mars\Content\Template;
-use Mars\Extensions\Module;
-use Mars\Extensions\Modules\Block;
+use Mars\Extensions\Modules\Module;
+use Mars\Extensions\Modules\Modules;
+use Mars\Extensions\Modules\Components\Block;
 
 /**
  * The Files Routes Source Class
@@ -46,8 +47,8 @@ class Files extends Source
     {
         $dirs = [];
 
-        $modules = Module::getList();
-        foreach ($modules as $module_path) {
+        $modules = new Modules($this->app);
+        foreach ($modules->get() as $module_path) {
             $module_dir = $module_path . '/' . Module::DIRS['routes'];
             if (is_dir($module_dir)) {
                 $dirs[] = $module_dir;

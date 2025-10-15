@@ -4,9 +4,11 @@
 * @package Mars
 */
 
-namespace Mars\Extensions;
+namespace Mars\Extensions\Languages;
 
 use Mars\App;
+use Mars\Extensions\Extension;
+use Mars\Extensions\Extensions;
 
 /**
  * The Language Class
@@ -81,17 +83,12 @@ class Language extends Extension
     /**
      * @internal
      */
-    protected static ?array $list = null;
+    protected string $manager_class = \Mars\Extensions\Languages\Languages::class;
 
     /**
      * @internal
      */
-    protected static string $list_config_file = 'languages.php';
-
-    /**
-     * @internal
-     */
-    protected static bool $list_filter = false;
+    protected static ?Extensions $manager_instance = null;
 
     /**
      * @internal
@@ -107,11 +104,6 @@ class Language extends Extension
      * @internal
      */
     protected static string $base_namespace = "\\Languages";
-
-    /**
-     * @internal
-     */
-    protected static string $setup_class = \Mars\Extensions\Setup\Language::class;
 
     /**
      * Checks if the specified file exists in the language's files

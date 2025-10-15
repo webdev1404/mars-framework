@@ -7,7 +7,7 @@
 namespace Mars\Extensions\Themes\Links;
 
 use Mars\Document\Links\Urls;
-use Mars\Extensions\Theme;
+use Mars\Extensions\Themes\Theme;
 
 /**
  * The Theme's Css Links Class

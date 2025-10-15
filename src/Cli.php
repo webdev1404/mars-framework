@@ -34,7 +34,7 @@ class Cli
         'message' => '0',
         'error' => '0;41',
         'warning' => '93',
-        'info' => '32',
+        'notice' => '1;36',
         'header' => '0;33',
         'list_1' => '0;32',
         'list_2' => '0',
@@ -291,8 +291,7 @@ class Cli
     {
         echo str_repeat($this->newline, $times);
 
-        flush();
-        ob_flush();
+        $this->flush();
     }
 
     /**
@@ -340,8 +339,7 @@ class Cli
             echo $this->newline;
         }
 
-        flush();
-        ob_flush();
+        $this->flush();
 
         return $this;
     }
@@ -380,8 +378,7 @@ class Cli
         $this->print($text, $this->colors['error']);
         echo "\n";
 
-        flush();
-        ob_flush();
+        $this->flush();
 
         if ($die) {
             die;
@@ -401,13 +398,13 @@ class Cli
     }
 
     /**
-     * Outputs an info string
+     * Outputs a notice string
      * @param string $text The text to output
      * @return static
      */
-    public function info(string $text) : static
+    public function notice(string $text) : static
     {
-        $this->print($text, $this->colors['info']);
+        $this->print($text, $this->colors['notice']);
 
         return $this;
     }
@@ -458,6 +455,19 @@ class Cli
     {
         $printer = $this->printers->get('table');
         $printer->print($headers, $data, $colors, $align, $paddings_left, $paddings_right);
+
+        return $this;
+    }
+
+    /**
+     * Flushes the output buffer
+     */
+    public function flush() : static
+    {
+        flush();
+        if (ob_get_level() > 0) {
+            ob_flush();
+        }
 
         return $this;
     }

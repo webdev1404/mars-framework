@@ -7,17 +7,15 @@
 namespace Mars\System;
 
 use Mars\App;
-use Mars\App\Kernel;
-use Mars\Extensions\Modules\Plugin;
+use Mars\Extensions\Modules\Components\Plugin;
+use Mars\Extensions\Modules\Components\Plugins as BasePlugins;
 
 /**
  * The Plugins Class
  * Class implementing the Plugins functionality
  */
-class Plugins
+class Plugins extends BasePlugins
 {
-    use Kernel;
-
     /**
      * @var bool $enabled True, if plugins are enabled
      */
@@ -47,8 +45,7 @@ class Plugins
 
             $this->plugins = [];
 
-            $plugins = Plugin::getList();
-            foreach ($plugins as $class_name => $module_name) {
+            foreach ($this->get() as $class_name => $module_name) {
                 $plugin = new $class_name($module_name, [], $this->app);
 
                 if (!$plugin instanceof Plugin) {

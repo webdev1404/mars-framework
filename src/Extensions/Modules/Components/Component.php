@@ -1,19 +1,19 @@
 <?php
 /**
-* The SubModule Extension Class
+* The Module Component Extension Class
 * @package Mars
 */
 
-namespace Mars\Extensions\Modules;
+namespace Mars\Extensions\Modules\Components;
 
 use Mars\App;
-use Mars\Extensions\Module;
 use Mars\Extensions\Extension;
+use Mars\Extensions\Modules\Module;
 use Mars\Extensions\Modules\Abilities\LanguagesTrait;
 use Mars\Extensions\Modules\Abilities\TemplatesTrait;
 
 /**
- * The SubModule Extension Class
+ * The Module Component Extension Class
  * Base class for all extensions found in the modules folder
  */
 abstract class Component extends Extension
@@ -134,7 +134,7 @@ abstract class Component extends Extension
         $this->name = $name;
         $this->params = $params;
         $this->module = new Module($module_name, [], $this->app);
-        $this->app = $app ;
+        $this->app = $app;
     }
 
     /**

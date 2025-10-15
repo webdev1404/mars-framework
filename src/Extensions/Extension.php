@@ -39,8 +39,8 @@ abstract class Extension
             if (isset($this->path)) {
                 return $this->path;
             }
-            
-            $this->path = static::$list[$this->name] ?? '';
+
+            $this->path = $this->manager->getPath($this->name);
 
             return $this->path;
         }
@@ -100,7 +100,7 @@ abstract class Extension
                 return $this->namespace;
             }
 
-            $this->namespace =  $this->getBaseNamespace() . '\\' . App::getClass($this->name);
+            $this->namespace =  static::$base_namespace . '\\' . App::getClass($this->name);
 
             return $this->namespace;
         }
@@ -132,19 +132,34 @@ abstract class Extension
     public float $exec_time = 0;
 
     /**
-     * @var array|null $list The list of enabled extensions of this type
+     * @var Extensions $manager The extensions manager object
      */
-    protected static ?array $list = null;
+    public protected(set) Extensions $manager {
+        get {
+            if (isset($this->manager)) {
+                return $this->manager;
+            }
+
+            if (static::$manager_instance === null) {
+                $class_name = $this->manager_class;
+                static::$manager_instance = new $class_name($this->app);
+            }
+
+            $this->manager = static::$manager_instance;
+
+            return $this->manager;
+        }
+    }
 
     /**
-     * @var string $list_config_file The config file where the enabled extensions are listed
+     * @var string $manager_class The class of the extensions manager
      */
-    protected static string $list_config_file = '';
+    protected string $manager_class = '';
 
     /**
-     * @var bool $list_filter If true, the list of extensions is filtered based on the config file
+     * @var Extensions|null $manager_instance The instance of the extensions manager
      */
-    protected static bool $list_filter = true;
+    protected static ?Extensions $manager_instance = null;
 
     /**
      * @var string $type The type of the extension
@@ -169,85 +184,13 @@ abstract class Extension
      */
     public function __construct(string $name, array $params = [], ?App $app = null)
     {
-        static::$list = static::getList();
-
         $this->name = $name;
         $this->params = $params;
         $this->app = $app;
 
-        if (!isset(static::$list[$this->name])) {
+        if (!$this->manager->isEnabled($this->name)) {
             throw new \Exception("Extension '{$this->name}' of type '" . static::$type . "' not found. It either does not exist or is not enabled.");
         }
-    }
-
-    /**
-     * Returns the list of enabled extensions of this type
-     * @return array The list of enabled extensions
-     */
-    public static function getList() : array
-    {
-        if (static::$list !== null) {
-            return static::$list;
-        }
-
-        $app = App::obj();
-
-        $filename = static::getListFilename();
-
-        static::$list = $app->cache->getArray($filename, false);
-
-        // If we are in development mode, we always read the list from the filesystem
-        $development = $app->development ? true : $app->config->development_extensions[static::$base_dir] ?? false;
-        if ($development) {
-            static::$list = null;
-        }
-
-        if (static::$list !== null) {
-            return static::$list;
-        }
-
-        static::$list = static::getListData($app);
-
-        if (static::$list_config_file && static::$list_filter) {
-            $enabled_list = $app->config->read(static::$list_config_file);
-
-            static::$list = array_filter(static::$list, fn ($extension) => in_array($extension, $enabled_list), ARRAY_FILTER_USE_KEY);
-        }
-
-        $app->cache->setArray($filename, static::$list, false);
-
-        return static::$list;
-    }
-
-    /**
-     * Returns the filename used to cache the list of available extensions
-     * @return string The filename
-     */
-    public static function getListFilename() : string
-    {
-        return static::$base_dir . '-extensions-list';
-    }
-
-    /**
-     * Reads the list of extensions of this type from the disk and returns it
-     */
-    protected static function getListData(App $app) : array
-    {
-        return new Reader($app)->get(static::$base_dir);
-    }
-
-    /**
-     * Returns the path of the extension
-     * @param string $name The name of the extension
-     * @return string|null The path of the extension, or null if not found
-     */
-    public static function getPath(string $name) : ?string
-    {
-        if (static::$list === null) {
-            static::getList();
-        }
-
-        return static::$list[$name] ?? null;
     }
 
     /**
@@ -272,7 +215,7 @@ abstract class Extension
      * Returns the base namespace for this type of extension
      * @return string The base namespace
      */
-    public function getBaseNamespace() : string
+    public static function getBaseNamespace() : string
     {
         return static::$base_namespace;
     }
@@ -301,15 +244,6 @@ abstract class Extension
 
         return $files;
     }
-
-    /**
-     * Returns the setup class for this type of extension
-     * @return string The setup class
-     */
-    /*public static function getSetupClass() : string
-    {
-        return static::$setup_class;
-    }*/
 
     /**
      * Runs the extension and outputs the generated content

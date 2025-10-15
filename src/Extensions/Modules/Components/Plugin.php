@@ -4,13 +4,10 @@
 * @package Mars
 */
 
-namespace Mars\Extensions\Modules;
+namespace Mars\Extensions\Modules\Components;
 
 use Mars\App;
-use Mars\Extensions\Extension;
-use Mars\Extensions\Abilities\LanguagesTrait;
-use Mars\Extensions\Abilities\TemplatesTrait;
-use Mars\Extensions\List\Plugins as Reader;
+use Mars\Extensions\Extensions;
 
 /**
  * The Plugin Class
@@ -51,17 +48,12 @@ abstract class Plugin extends Component
     /**
      * @internal
      */
-    protected static ?array $list = null;
+    protected string $manager_class = \Mars\Extensions\Modules\Components\Plugins::class;
 
     /**
      * @internal
      */
-    protected static string $list_config_file = '';
-
-    /**
-     * @internal
-     */
-    protected static bool $list_filter = false;
+    protected static ?Extensions $manager_instance = null;
 
     /**
      * Builds the extension
@@ -74,13 +66,5 @@ abstract class Plugin extends Component
         parent::__construct($module_name, '', $params, $app);
 
         $this->app->plugins->addHooks($this, $this->hooks);
-    }
-
-    /**
-     * Reads the list of extensions of this type from the disk and returns it
-     */
-    protected static function getListData(App $app) : array
-    {
-        return new Reader($app)->get();
     }
 }

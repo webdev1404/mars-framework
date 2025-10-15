@@ -7,7 +7,7 @@
 namespace Mars\System;
 
 use Mars\App;
-use Mars\Extensions\Language as BaseLanguage;
+use Mars\Extensions\Languages\Language as BaseLanguage;
 
 /**
  * The System's Language Class
@@ -116,7 +116,7 @@ class Language extends BaseLanguage
                 return $this->multi_list;
             }
 
-            $this->multi_list = $this->app->config->read(static::$list_config_file);
+            $this->multi_list = $this->app->config->read('languages.php');
 
             return $this->multi_list;
         }
@@ -260,7 +260,6 @@ class Language extends BaseLanguage
             }
 
             $this->parent = null;
-
             if ($this->parent_name) {
                 $this->parent = new BaseLanguage($this->parent_name, [], $this->app);
             }

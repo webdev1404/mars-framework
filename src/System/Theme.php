@@ -6,7 +6,7 @@
 
 namespace Mars\System;
 
-use Mars\Extensions\Theme as BaseTheme;
+use Mars\Extensions\Themes\Theme as BaseTheme;
 
 use Mars\App;
 
@@ -53,7 +53,7 @@ class Theme extends BaseTheme
     public function __construct(App $app)
     {
         if (!$app->config->theme) {
-            return;
+            throw new \Exception('No theme set in config');
         }
 
         parent::__construct($app->config->theme, [], $app);

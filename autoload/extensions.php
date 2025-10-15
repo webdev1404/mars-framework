@@ -2,14 +2,19 @@
 namespace Mars\Autoload;
 
 use Mars\App;
-use Mars\Extensions\Theme;
-use Mars\Extensions\Language;
-use Mars\Extensions\Module;
+use Mars\Extensions\Themes\Themes;
+use Mars\Extensions\Languages\Languages;
+use Mars\Extensions\Modules\Modules;
 
 /**
  * Autoloader for the extension files
  */
 \spl_autoload_register(function ($name) {
+    static $app;
+    if (!isset($app)) {
+        $app = App::obj();
+    }
+
     $parts = explode('\\', $name);
     if (count($parts) < 2) {
         return;
@@ -19,14 +24,14 @@ use Mars\Extensions\Module;
     $name = $parts[1];
 
     $handlers = [
-        'Themes' => function ($name) {
-            return Theme::getPath($name);
+        'Themes' => function ($name) use ($app) {
+            return $app->theme->manager->getPath($name);
         },
-        'Languages' => function ($name) {
-            return Language::getPath($name);
+        'Languages' => function ($name) use ($app) {
+            return $app->lang->manager->getPath($name);
         },
-        'Modules' => function ($name) {
-            return Module::getPath($name);
+        'Modules' => function ($name) use ($app) {
+            return $app->modules->getPath($name);
         },
     ];
 

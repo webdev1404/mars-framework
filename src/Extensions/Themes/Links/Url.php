@@ -9,7 +9,7 @@ namespace Mars\Extensions\Themes\Links;
 use Mars\App;
 use Mars\App\Kernel;
 use Mars\Document\Links\Urls;
-use Mars\Extensions\Theme;
+use Mars\Extensions\Themes\Theme;
 
 /**
  * The Base Class for the theme document elements

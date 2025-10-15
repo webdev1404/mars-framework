@@ -28,6 +28,7 @@ use Mars\Time\Timestamp;
 use Mars\Time\Timezone;
 use Mars\System\Language;
 use Mars\System\Plugins;
+use Mars\System\Modules;
 use Mars\System\Theme;
 use Mars\System\Uri;
 
@@ -213,6 +214,12 @@ class App
      */
     #[LazyLoadProperty]
     public Messages $messages;
+
+    /**
+     * @var Modules $modules The modules object
+     */
+    #[LazyLoadProperty]
+    public Modules $modules;
 
     /**
      * @var ObjectType $object The object object

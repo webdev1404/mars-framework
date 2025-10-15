@@ -4,13 +4,15 @@
 * @package Mars
 */
 
-namespace Mars\Extensions;
+namespace Mars\Extensions\Themes;
 
 use Mars\App;
 use Mars\App\LazyLoad;
 use Mars\LazyLoadProperty;
 use Mars\HiddenProperty;
 use Mars\Document;
+use Mars\Extensions\Extension;
+use Mars\Extensions\Extensions;
 use Mars\Extensions\Themes\Links\Css;
 use Mars\Extensions\Themes\Links\Javascript;
 use Mars\Extensions\Themes\Links\Fonts;
@@ -214,11 +216,6 @@ class Theme extends Extension
     }
 
     /**
-     * @var array $vars The theme's vars are stored here
-     */
-    public array $vars = [];
-
-    /**
      * @var array $templates Array with the list of available templates
      */
     public protected(set) array $templates {
@@ -256,6 +253,11 @@ class Theme extends Extension
     public protected(set) array $templates_loaded = [];
 
     /**
+     * @var array $vars The theme's vars are stored here
+     */
+    public array $vars = [];
+
+    /**
      * @var string $content The generated content
      */
     protected string $content = '';
@@ -263,17 +265,12 @@ class Theme extends Extension
     /**
      * @internal
      */
-    protected static ?array $list = null;
+    protected string $manager_class = \Mars\Extensions\Themes\Themes::class;
 
     /**
      * @internal
      */
-    protected static string $list_config_file = '';
-
-    /**
-     * @internal
-     */
-    protected static bool $list_filter = false;
+    protected static ?Extensions $manager_instance = null;
 
     /**
      * @internal
@@ -289,11 +286,6 @@ class Theme extends Extension
      * @internal
      */
     protected static string $base_namespace = "\\Themes";
-
-    /**
-     * @internal
-     */
-    protected static string $setup_class = \Mars\Extensions\Setup\Theme::class;
 
     /**
      * Builds the theme

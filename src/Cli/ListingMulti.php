@@ -28,7 +28,6 @@ class ListingMulti extends Listing
             foreach ($list as $text) {
                 $this->printMulti($text, $colors, $paddings_left, $max);
             }
-            $this->app->cli->printNewline();
         }
     }
 

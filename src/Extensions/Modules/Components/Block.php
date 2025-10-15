@@ -4,7 +4,7 @@
 * @package Mars
 */
 
-namespace Mars\Extensions\Modules;
+namespace Mars\Extensions\Modules\Components;
 
 use Mars\Content\ContentInterface;
 use Mars\Extensions\Modules\Abilities\MvcTrait;
