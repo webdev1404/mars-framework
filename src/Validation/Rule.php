@@ -19,12 +19,12 @@ abstract class Rule
     /**
      * @var string $error The generated error, if any
      */
-    protected string $error = '';
+    public string $error = '';
 
     /**
      * @var array $error_replacements An array of replacements for the error message
      */
-    protected array $error_replacements = [];
+    public array $error_replacements = [];
 
     /**
      * Validates a value

@@ -277,24 +277,32 @@ class Url implements \Stringable
 
     /**
      * Builds an url by appendding the path parts
-     * @param array $parts Array with the parts to append
+     * @param string|array $parts Array with the parts to append
+     * @param array $params Array with the query parameters
      * @param bool $encode If true, it will encode the parts using rawurlencode
+     * @param bool $remove_empty_params If true, it will remove empty parameters
      * @return static Returns a new url instance
      */
-    public function build(array $parts, bool $encode = true) : static
+    public function get(string|array $parts, array $params = [], bool $encode = true, bool $remove_empty_params = true) : static
     {
-        $parts = array_filter($parts);
-        if (!$parts) {
+        $parts = array_filter($this->app->array->get($parts));
+        if (!$parts && !$params) {
             return clone $this;
         }
+
+        //remove slashes from parts
+        $parts = array_map(fn ($part) => trim($part, '/ '), $parts);
 
         if ($encode) {
             $parts = array_map(fn ($part) => rawurlencode($part), $parts);
         }
 
-        $url = $this->url . '/' . implode('/', $parts);
+        $url = new static($this->url . '/' . implode('/', $parts));
+        if ($params) {
+            return $url->add($params, $remove_empty_params);
+        }
 
-        return new static($url);
+        return $url;
     }
 
     /**

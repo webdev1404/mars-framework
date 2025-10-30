@@ -6,6 +6,7 @@
 
 namespace Mars\Extensions\Modules;
 
+use Mars\App;
 use Mars\Extensions\Extensions;
 
 /**
@@ -13,11 +14,6 @@ use Mars\Extensions\Extensions;
  */
 class Modules extends Extensions
 {
-    /**
-     * @internal
-     */
-    protected static ?array $list = null;
-
     /**
      * @internal
      */
@@ -36,15 +32,5 @@ class Modules extends Extensions
     /**
      * @internal
      */
-    protected static string $base_dir = 'modules';
-
-    /**
-     * @internal
-     */
-    public function get(): array
-    {
-        static::$list ??= $this->getEnabled();
-
-        return static::$list;
-    }
+    protected static string $instance_class = Module::class;
 }

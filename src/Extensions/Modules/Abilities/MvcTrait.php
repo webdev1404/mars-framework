@@ -57,9 +57,11 @@ trait MvcTrait
 
         $class_name = $this->namespace . '\\' . $controller_class;
 
-        $this->controller = new $class_name($this, $this->app);
+        $controller = new $class_name($this, $this->app);
 
-        return $this->controller;
+        $controller = $this->app->plugins->filter('get_controller', $controller, $class_name, $this);
+
+        return $controller;
     }
 
     /**
@@ -78,7 +80,11 @@ trait MvcTrait
 
         $class_name = $this->namespace . '\\' . $model_class;
 
-        return new $class_name($this->app, $controller);
+        $model = new $class_name($this->app, $controller);
+
+        $model = $this->app->plugins->filter('get_model', $model, $class_name, $this);
+
+        return $model;
     }
 
     /**
@@ -97,6 +103,10 @@ trait MvcTrait
 
         $class_name = $this->namespace . '\\' . $view_class;
 
-        return new $class_name($this->app, $controller);
+        $view = new $class_name($this->app, $controller);
+
+        $view = $this->app->plugins->filter('get_view', $view, $class_name, $this);
+
+        return $view;
     }
 }

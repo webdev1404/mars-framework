@@ -14,6 +14,7 @@ use Mars\Hidden;
 use Mars\Escape;
 use Mars\Filter;
 use Mars\Http\Request;
+use Mars\Mail;
 use Mars\Validator;
 use Mars\System\Plugins;
 use Mars\System\Uri;
@@ -34,7 +35,7 @@ abstract class Controller extends \stdClass
     /**
      * @var string $default_method Default method to be executed on dispatch/route or if the requested method doesn't exist or is not public
      */
-    public string $default_method {
+    public protected(set) string $default_method {
         get {
             if (isset($this->default_method)) {
                 return $this->default_method;
@@ -49,7 +50,7 @@ abstract class Controller extends \stdClass
     /**
      * @var string $default_success_method Method to be executed on dispatch/route, if the requested method returns true
      */
-    public string $default_success_method {
+    public protected(set) string $default_success_method {
         get {
             if (isset($this->default_success_method)) {
                 return $this->default_success_method;
@@ -64,7 +65,7 @@ abstract class Controller extends \stdClass
     /**
      * @var string $default_error_method Method to be executed on dispatch/route, if the requested method returns false
      */
-    public string $default_error_method {
+    public protected(set) string $default_error_method {
         get {
             if (isset($this->default_error_method)) {
                 return $this->default_error_method;
@@ -79,7 +80,7 @@ abstract class Controller extends \stdClass
     /**
      * @var string $current_method The name of the currently executed method
      */
-    public string $current_method = '';
+    public protected(set) string $current_method = '';
 
     /**
      * @var string $path The controller's parents's dir. Alias for $this->parent->path
@@ -229,6 +230,14 @@ abstract class Controller extends \stdClass
     }
 
     /**
+     * @var Mail $mail The mail object. Alias for $this->app->mail
+     */
+    #[HiddenProperty]
+    protected Mail $mail {
+        get => $this->app->mail;
+    }
+
+    /**
      * @var Errors $errors The errors object. Alias for $this->app->errors
      */
     protected Errors $errors {
@@ -262,14 +271,9 @@ abstract class Controller extends \stdClass
     protected bool $load_model = true;
 
     /**
-     * @var bool $load_voew If true, will automatically load the view
+     * @var bool $load_view If true, will automatically load the view
      */
     protected bool $load_view = true;
-
-    /**
-     * @var array $validation_rules Validation rules
-     */
-    protected static array $validation_rules = [];
 
     /**
      * Builds the controller
@@ -346,7 +350,7 @@ abstract class Controller extends \stdClass
         if (!$method) {
             $method = $this->app->request->getAction();
             if (!$method) {
-                $method = $this->default_method;
+                $method = $this->parent->params['action'] ?? $this->default_method;
             }
         }
 

@@ -7,8 +7,8 @@
 namespace Mars\System;
 
 use Mars\App;
-use Mars\Extensions\Modules\Components\Plugin;
-use Mars\Extensions\Modules\Components\Plugins as BasePlugins;
+use Mars\Extensions\Modules\Plugin;
+use Mars\Extensions\Modules\Plugins as BasePlugins;
 
 /**
  * The Plugins Class
@@ -45,13 +45,14 @@ class Plugins extends BasePlugins
 
             $this->plugins = [];
 
-            foreach ($this->get() as $class_name => $module_name) {
+            foreach ($this->getEnabled() as $class_name => $module_name) {
                 $plugin = new $class_name($module_name, [], $this->app);
 
                 if (!$plugin instanceof Plugin) {
                     throw new \Exception("Plugin {$class_name} must extend class Plugin");
                 }
-
+                
+                $class_name = ltrim($class_name, '\\');
                 $this->plugins[$class_name] = $plugin;
             }
 
@@ -163,11 +164,14 @@ class Plugins extends BasePlugins
     /**
      * Filters a value, by running the hooks. Unlike run(), the args are not passed by reference
      * @param string $hook The name of the hook
+     * @param mixed $value The value to be filtered
      * @param mixed $args The arguments to be passed to the plugins
      * @return mixed The filtered value
      */
-    public function filter(string $hook, &...$args)
+    public function filter(string $hook, $value, &...$args)
     {
+        array_unshift($args, $value);
+        
         return $this->run($hook, ...$args);
     }
 

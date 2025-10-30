@@ -36,6 +36,7 @@ class Theme extends Extension
         'js' => 'js',
         'fonts' => 'fonts',
         'templates' => 'templates',
+        'setup' => 'setup',
     ];
 
     /**
@@ -265,7 +266,7 @@ class Theme extends Extension
     /**
      * @internal
      */
-    protected string $manager_class = \Mars\Extensions\Themes\Themes::class;
+    protected static string $manager_class = Themes::class;
 
     /**
      * @internal
@@ -298,6 +299,18 @@ class Theme extends Extension
         $this->lazyLoad($app);
 
         parent::__construct($name, $params, $app);
+    }
+
+    /***************** Data METHODS *********************************/
+
+    /**
+     * Returns a data value.
+     * @param string $name The name of the data
+     * @return mixed The data value
+     */
+    public function getData(string $name)
+    {
+        return $this->template->data[$name] ?? null;
     }
 
     /***************** VARS METHODS *********************************/
@@ -368,6 +381,16 @@ class Theme extends Extension
     }
 
     /************** TEMPLATES METHODS **************************/
+
+    /**
+     * Checks if the specified template exists in the theme's templates
+     * @param string $file The filename to check
+     * @return bool True if the template exists, false otherwise
+     */
+    public function isTemplate(string $template) : bool
+    {
+        return isset($this->templates[$template]);
+    }
 
     /**
      * Returns the template filename. It will check if the template exists in the mobile templates, if the device is mobile.
@@ -453,16 +476,23 @@ class Theme extends Extension
     /**
      * Loads a template and returns it's content
      * @param string $filename The filename of the template
+     * @param string $filename_rel The relative filename of the template
      * @param array $vars Vars to pass to the template, if any
      * @param string $type The template's type, if any
      * @param array $params The template's params, if any
      * @param bool $development If true, the template will be parsed in development mode
      * @return string The template content
      */
-    public function getTemplateFromFilename(string $filename, array $vars = [], string $type = 'template', array $params = [], bool $development = false) : string
+    public function getTemplateFromFilename(string $filename, ?string $filename_rel = null, array $vars = [], string $type = 'template', array $params = [], bool $development = false) : string
     {
         if ($this->app->config->debug) {
             $this->templates_loaded[] = $filename;
+        }
+
+        if ($filename_rel) {
+            if (isset($this->templates[$filename_rel])) {
+                $filename = $this->templates_path . '/' . $filename_rel;
+            }
         }
 
         return $this->template->getFromFilename($filename, $vars, $type, $params, $development);

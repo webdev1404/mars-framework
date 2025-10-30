@@ -14,7 +14,7 @@ class Url extends Rule
     /**
      * {@inheritdoc}
      */
-    protected string $error = 'error.validate_url';
+    public string $error = 'error.validate_url';
 
     /**
      * Checks if $value is a valid url
@@ -33,6 +33,10 @@ class Url extends Rule
             return false;
         }
 
-        return filter_var($value, FILTER_VALIDATE_URL);
+        if (!filter_var($value, FILTER_VALIDATE_URL)) {
+            return false;
+        }
+
+        return $this->app->plugins->filter('validate_url', true, $value, $this);
     }
 }

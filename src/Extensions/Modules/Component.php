@@ -4,7 +4,7 @@
 * @package Mars
 */
 
-namespace Mars\Extensions\Modules\Components;
+namespace Mars\Extensions\Modules;
 
 use Mars\App;
 use Mars\Extensions\Extension;
@@ -40,6 +40,21 @@ abstract class Component extends Extension
             $this->path = $this->module->path . '/' . static::$base_dir . '/' . $this->name;
 
             return $this->path;
+        }
+    }
+
+    /**
+     * @var string $path_rel The relative path where the extension is located
+     */
+    public protected(set) string $path_rel {
+        get {
+            if (isset($this->path_rel)) {
+                return $this->path_rel;
+            }
+
+            $this->path_rel = $this->module->path_rel . '/' . static::$base_dir . '/' . $this->name;
+
+            return $this->path_rel;
         }
     }
 

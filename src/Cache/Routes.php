@@ -41,7 +41,7 @@ class Routes extends Data
             return [];
         }
 
-        return $this->getArray('hashes-' . $prefix, false);
+        return $this->getArray('hashes-' . $prefix, false) ?? [];
     }
 
     /**

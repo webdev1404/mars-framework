@@ -14,7 +14,7 @@ class Email extends Rule
     /**
      * {@inheritdoc}
      */
-    protected string $error = 'error.validate_email';
+    public string $error = 'error.validate_email';
 
     /**
      * Checks if $value is a valid email address
@@ -27,6 +27,10 @@ class Email extends Rule
             return false;
         }
 
-        return filter_var($value, FILTER_VALIDATE_EMAIL);
+        if (!filter_var($value, FILTER_VALIDATE_EMAIL)) {
+            return false;
+        }
+
+        return $this->app->plugins->filter('validate_email', true, $value, $this);
     }
 }

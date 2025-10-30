@@ -4,10 +4,11 @@
 * @package Mars
 */
 
-namespace Mars\Extensions\Modules\Components;
+namespace Mars\Extensions\Modules;
 
 use Mars\Content\ContentInterface;
 use Mars\Extensions\Modules\Abilities\MvcTrait;
+use Mars\Extensions\Extensions;
 
 /**
  * The Block Class
@@ -30,6 +31,20 @@ class Block extends Component implements ContentInterface
     /**
      * @internal
      */
+    public ?Extensions $manager {
+        get => null;
+    }
+
+    /**
+     * @internal
+     */
+    public protected(set) bool $enabled {
+        get => true;
+    }
+
+    /**
+     * @internal
+     */
     protected static string $type = 'block';
 
     /**
@@ -41,4 +56,5 @@ class Block extends Component implements ContentInterface
      * @internal
      */
     protected static string $base_namespace = "\\Blocks";
+
 }

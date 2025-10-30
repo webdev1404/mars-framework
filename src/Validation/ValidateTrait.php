@@ -28,14 +28,24 @@ trait ValidateTrait
     /*protected static array $validation_rules = [];*/
 
     /**
-     * @var array $validation_rules_to_skip Validation rules to skip when validating, if any
-     */
-    //protected array $validation_rules_to_skip = [];
-
-    /**
      * @var array $validation_error_strings Custom error strings
      */
-    /*protected array static $validation_error_strings = [];*/
+    /*protected static array $validation_error_strings = [];*/
+
+    /**
+     * @var array $validation_rules_to_skip Validation rules to skip when validating, if any
+     */
+    protected ?array $validation_rules_to_skip = null;
+
+    /**
+     * @var array|null $validation_rules_custom Custom validation rules for the current validation
+     */
+    protected ?array $validation_rules_custom = null;
+
+    /**
+     * @var array|null $validation_error_strings_custom Custom error strings for the current validation
+     */
+    protected ?array $validation_error_strings_custom = null;
 
     /**
      * Returns the validation rules
@@ -43,7 +53,19 @@ trait ValidateTrait
      */
     protected function getValidationRules() : array
     {
-        return static::$validation_rules ?? [];
+        return $this->validation_rules_custom ?? (static::$validation_rules ?? []);
+    }
+
+    /**
+     * Sets the validation rules
+     * @param array $validation_rules The rules
+     * @return $this
+     */
+    public function setValidationRules(array $validation_rules) : static
+    {
+        $this->validation_rules_custom = $validation_rules;
+
+        return $this;
     }
 
     /**
@@ -56,12 +78,36 @@ trait ValidateTrait
     }
 
     /**
+     * Sets the validation rules to skip
+     * @param array $validation_rules_to_skip The rules to skip
+     * @return $this
+     */
+    protected function setValidationRulesToSkip(array $validation_rules_to_skip) : static
+    {
+        $this->validation_rules_to_skip = $validation_rules_to_skip;
+
+        return $this;
+    }
+
+    /**
      * Returns the validation error strings
      * @return array The error strings
      */
     protected function getValidationErrorStrings() : array
     {
-        return static::$validation_error_strings ?? [];
+        return $this->validation_error_strings_custom ?? (static::$validation_error_strings ?? []);
+    }
+
+    /**
+     * Sets the validation error strings
+     * @param array $validation_error_strings The error strings
+     * @return $this
+     */
+    public function setValidationErrorStrings(array $validation_error_strings) : static
+    {
+        $this->validation_error_strings_custom = $validation_error_strings;
+
+        return $this;
     }
 
     /**
@@ -101,7 +147,7 @@ trait ValidateTrait
             $data = $this;
         }
 
-        $rules = $this->getValidationRules();
+        $rules = $this->app->plugins->filter('validate_rules', $this->getValidationRules(), $data, $this);
         if (!$rules) {
             return true;
         }
@@ -112,7 +158,7 @@ trait ValidateTrait
             return false;
         }
 
-        return true;
+        return $this->app->plugins->filter('validate_after', true, $data, $this->errors, $this);
     }
 
     /**

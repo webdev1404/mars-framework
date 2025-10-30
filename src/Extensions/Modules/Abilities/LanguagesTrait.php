@@ -52,6 +52,10 @@ trait LanguagesTrait
             $this->app->lang->loadFilename($filename, $this->lang_key);
         }
 
+        //load from the language's files folder
+        $filename_rel = $this->path_rel . '/' . $file;
+        $this->app->lang->loadFile($filename_rel, $this->lang_key);
+
         return $this;
     }
 

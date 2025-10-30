@@ -47,6 +47,36 @@ abstract class Extension
     }
 
     /**
+     * @var string $path_rel The relative path of the extension
+     */
+    public protected(set) string $path_rel {
+        get {
+            if (isset($this->path_rel)) {
+                return $this->path_rel;
+            }
+
+            $this->path_rel = static::getBaseDir() . '/' . $this->name;
+
+            return $this->path_rel;
+        }
+    }
+
+    /**
+     * @var bool $enabled If true, the extension is enabled
+     */
+    public protected(set) bool $enabled {
+        get {
+            if (isset($this->enabled)) {
+                return $this->enabled;
+            }
+
+            $this->enabled = $this->manager->isEnabled($this->name);
+
+            return $this->enabled;
+        }
+    }
+
+    /**
      * @var string $assets_path The folder where the assets files are stored
      */
     public protected(set) string $assets_path {
@@ -134,14 +164,14 @@ abstract class Extension
     /**
      * @var Extensions $manager The extensions manager object
      */
-    public protected(set) Extensions $manager {
+    public protected(set) ?Extensions $manager {
         get {
             if (isset($this->manager)) {
                 return $this->manager;
             }
 
             if (static::$manager_instance === null) {
-                $class_name = $this->manager_class;
+                $class_name = static::$manager_class;
                 static::$manager_instance = new $class_name($this->app);
             }
 
@@ -154,7 +184,7 @@ abstract class Extension
     /**
      * @var string $manager_class The class of the extensions manager
      */
-    protected string $manager_class = '';
+    protected static string $manager_class = '';
 
     /**
      * @var Extensions|null $manager_instance The instance of the extensions manager
@@ -188,8 +218,8 @@ abstract class Extension
         $this->params = $params;
         $this->app = $app;
 
-        if (!$this->manager->isEnabled($this->name)) {
-            throw new \Exception("Extension '{$this->name}' of type '" . static::$type . "' not found. It either does not exist or is not enabled.");
+        if (!$this->manager->exists($this->name)) {
+            throw new \Exception("Extension '{$this->name}' of type '" . static::$type . "' not found. Please clear the cache if you just added it.");
         }
     }
 
@@ -236,7 +266,7 @@ abstract class Extension
         }
 
         if ($files === null) {
-            $files = $this->app->dir->get($dir, true, false);
+            $files = $this->app->dir->getFiles($dir, true, false);
             $files = $this->app->array->flip($files);
 
             $this->app->cache->setArray($cache_filename, $files, false);

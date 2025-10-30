@@ -24,14 +24,14 @@ use Mars\Extensions\Modules\Modules;
     $name = $parts[1];
 
     $handlers = [
-        'Themes' => function ($name) use ($app) {
-            return $app->theme->manager->getPath($name);
+        'Themes' => function () use ($app) {
+            return $app->theme->manager;
         },
-        'Languages' => function ($name) use ($app) {
-            return $app->lang->manager->getPath($name);
+        'Languages' => function () use ($app) {
+            return $app->lang->manager;
         },
-        'Modules' => function ($name) use ($app) {
-            return $app->modules->getPath($name);
+        'Modules' => function () use ($app) {
+            return $app->modules;
         },
     ];
 
@@ -39,7 +39,7 @@ use Mars\Extensions\Modules\Modules;
         return;
     }
 
-    $path = $handlers[$root](convert_part($name));
+    $path = $handlers[$root]()->getPath(convert_part($name));
     if (!$path) {
         return;
     }

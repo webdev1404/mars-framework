@@ -15,7 +15,12 @@ class VariablesParser
     /**
      * @internal
      */
-    protected string $variable_preg = '/(\$[a-z0-9_\.\->#\[\]\'"]*)/is';
+    protected string $variable_preg = '/(\$[a-z0-9_\.\->#\[\]\'"\(\)]*)/is';
+
+    /**
+     * @internal
+     */
+    protected string $lang_preg = '/\*([a-z0-9_\.\-]*)/is';
 
     /**
      * @var array $supported_modifiers Array listing the supported modifiers in the format modifier => [function, priority, escape]
@@ -182,17 +187,52 @@ class VariablesParser
         return "\$lang->get('{$value}')";
     }
 
+    public function replaceAll(string $str, bool $add_brackets = false) : string
+    {
+        $str = $this->replaceVariables($str, $add_brackets);
+        $str = $this->replaceLanguageStrings($str, $add_brackets);
+
+        return $str;
+    }
+
     /**
      * Replaces all variables in a string
      * @param string The string
      * @return string The string with the replaced vars
      */
-    public function replaceVariables(string $str) : string
+    public function replaceVariables(string $str, bool $add_brackets = false) : string
     {
         $str = trim($str);
         
-        $str = preg_replace_callback($this->variable_preg, function (array $match) {
-            return $this->buildVariable($match[1], [], false);
+        $str = preg_replace_callback($this->variable_preg, function (array $match) use ($add_brackets) {
+            $var = $this->buildVariable($match[1], [], false);
+            if ($add_brackets) {
+                return '{' . $var . '}';
+            }
+
+            return $var;
+        }, $str);
+
+        return $str;
+    }
+
+    /**
+     * Replaces all language strings in a string
+     * @param string The string
+     * @return string The string with the replaced lang strings
+     */
+    public function replaceLanguageStrings(string $str, bool $add_brackets = false) : string
+    {
+        $str = trim($str);
+        
+        $str = preg_replace_callback($this->lang_preg, function (array $match) use ($add_brackets) {
+            $lang_key = $match[1];
+            $var = "\$lang->get('{$lang_key}')";
+            if ($add_brackets) {
+                return '{' . $var . '}';
+            }
+
+            return $var;
         }, $str);
 
         return $str;

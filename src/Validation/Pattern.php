@@ -14,7 +14,7 @@ class Pattern extends Rule
     /**
      * {@inheritdoc}
      */
-    protected string $error = '';
+    public string $error = '';
 
     /**
      * Validates that $value matches a pattern

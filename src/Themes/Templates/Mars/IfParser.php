@@ -7,7 +7,6 @@
 namespace Mars\Themes\Templates\Mars;
 
 use Mars\App\Kernel;
-use Mars\Themes\Templates\TemplateInterface;
 
 /**
  * The If Hander
@@ -17,7 +16,7 @@ class IfParser
     use Kernel;
     
     /**
-     * @see TemplateInterface::parse()
+     * @see \Mars\Themes\Templates\TemplateInterface::parse()
      * {@inheritdoc}
      */
     public function parse(string $content, array $params = []) : string

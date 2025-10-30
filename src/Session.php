@@ -67,6 +67,25 @@ class Session
     }
 
     /**
+     * @var string $token The session csrf token name
+     */
+    public protected(set) ?string $token {
+        get {
+            if (isset($this->token)) {
+                return $this->token;
+            }
+
+            $this->token = $this->get('token_csrf');
+            if (!$this->token) {
+                $this->token = $this->app->random->getString(32);
+                $this->set('token_csrf', $this->token);
+            }
+
+            return $this->token;
+        }
+    }
+
+    /**
      * @var bool $started True if the session has been started
      */
     public protected(set) bool $started = false;
@@ -76,6 +95,10 @@ class Session
      */
     protected function start()
     {
+        if ($this->started) {
+            return;
+        }
+
         session_start();
 
         $this->started = true;

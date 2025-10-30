@@ -15,9 +15,9 @@ class FloatVal extends Rule
     /**
      * {@inheritdoc}
      */
-    protected string $error = '';
+    public string $error = '';
 
-    protected array $errors = [
+    public array $errors = [
         'simple' => 'error.validate_float',
         'min' => 'error.validate_float_min',
         'max' => 'error.validate_float_max',

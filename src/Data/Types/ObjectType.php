@@ -41,10 +41,17 @@ class ObjectType
     /**
      * Returns the properties of an object
      * @param object $object The object
+     * @param bool $flip Whether to flip keys and values
      * @return array The properties
      */
-    public function getProperties(object $object) : array
+    public function getProperties(object $object, bool $flip = false) : array
     {
-        return get_object_vars($object);
+        $properties = get_object_vars($object);
+
+        if ($flip) {
+            return array_fill_keys(array_keys($properties), true);
+        }
+
+        return $properties;
     }
 }

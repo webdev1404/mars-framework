@@ -4,7 +4,7 @@
 * @package Mars
 */
 
-namespace Mars\Extensions\Modules\Components;
+namespace Mars\Extensions\Modules;
 
 use Mars\App;
 use Mars\Extensions\Extensions;
@@ -48,7 +48,7 @@ abstract class Plugin extends Component
     /**
      * @internal
      */
-    protected string $manager_class = \Mars\Extensions\Modules\Components\Plugins::class;
+    protected static string $manager_class = Plugins::class;
 
     /**
      * @internal

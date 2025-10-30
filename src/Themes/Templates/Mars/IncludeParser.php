@@ -8,7 +8,6 @@ namespace Mars\Themes\Templates\Mars;
 
 use Mars\App;
 use Mars\App\Kernel;
-use Mars\Themes\Templates\TemplateInterface;
 
 /**
  * The Include Parser
@@ -17,7 +16,7 @@ use Mars\Themes\Templates\TemplateInterface;
 class IncludeParser
 {
     /**
-     * @see TemplateInterface::parse()
+     * @see \Mars\Themes\Templates\TemplateInterface::parse()
      * {@inheritdoc}
      */
     public function parse(string $content, array $params = []) : string

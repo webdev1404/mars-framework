@@ -21,6 +21,8 @@ class Language extends Extension
     public const array DIRS = [
         'assets' => 'assets',
         'files' => 'files',
+        'templates' => 'templates',
+        'setup' => 'setup',
     ];
 
     /**
@@ -81,9 +83,41 @@ class Language extends Extension
     }
 
     /**
+     * @var string $templates_path The path for the languages's templates folder
+     */
+    public protected(set) string $templates_path {
+        get {
+            if (isset($this->templates_path)) {
+                return $this->templates_path;
+            }
+
+            $this->templates_path = $this->path . '/' . static::DIRS['templates'];
+
+            return $this->templates_path;
+        }
+    }
+
+    /**
+     * @var array $templates Array with the list of available templates
+     */
+    public protected(set) array $templates {
+        get {
+            if (isset($this->templates)) {
+                return $this->templates;
+            }
+
+            $filename = "language-{$this->name}-templates";
+
+            $this->templates = $this->getExistingFiles($this->templates_path, $filename);
+
+            return $this->templates;
+        }
+    }
+
+    /**
      * @internal
      */
-    protected string $manager_class = \Mars\Extensions\Languages\Languages::class;
+    protected static string $manager_class = Languages::class;
 
     /**
      * @internal
@@ -116,11 +150,22 @@ class Language extends Extension
     }
 
     /**
+     * Checks if the specified template exists in the language's templates
+     * @param string $file The filename to check
+     * @return bool True if the file exists, false otherwise
+     */
+    public function isTemplate(string $file) : bool
+    {
+        return isset($this->templates[$file]);
+    }
+
+    /**
      * Loads the specified $file from the languages folder
      * @param string $file The name of the file to load (must not include the .php extension)
+     * @param string|null $key The key to use for the loaded strings
      * @return static
      */
-    public function loadFile(string $file) : static
+    public function loadFile(string $file, ?string $key = null) : static
     {
         if (isset($this->loaded_files[$file])) {
             return $this;
@@ -135,9 +180,10 @@ class Language extends Extension
             return $this;
         }
 
+        $key ??= $file;
         $this->loaded_files[$file] = true;
-        
-        $this->loadFilename($this->getFilename($file), $file);
+
+        $this->loadFilename($this->getFilename($file), $key);
 
         return $this;
     }
@@ -240,5 +286,19 @@ class Language extends Extension
         $this->strings_search = $this->strings_search_old;
 
         return $this;
+    }
+
+    /**
+     * Returns the filename of a template in the language's templates
+     * @param string $template The name of the template
+     * @return string|null The full path to the template, or null if not found
+     */
+    public function getTemplateFilename(string $template) : ?string
+    {
+        if (!isset($this->templates[$template])) {
+            return null;
+        }
+
+        return $this->templates_path . '/' . $template;
     }
 }

@@ -276,6 +276,12 @@ class App
     public Serializer $serializer;
 
     /**
+     * @var Security $security The security object
+     */
+    #[LazyLoadProperty]
+    public Security $security;
+
+    /**
      * @var Session $session The session object
      */
     #[LazyLoadProperty]

@@ -35,6 +35,11 @@ trait ItemTrait
     }
 
     /**
+     * @var bool $loaded True if the item was loaded
+     */
+    protected bool $loaded = false;
+
+    /**
      * Builds an item
      * @param mixed $data If data is an int, will load the data with id = data from the database. If string will load the data with name = data. If an array or oject, will assume the array contains the object's data. If null, will load the defaults
      * @param App $app The app object
@@ -144,12 +149,20 @@ trait ItemTrait
     /**
      * Loads an object
      * @param mixed $data If data is an int, will load the data with id = data from the database. If string will load the data with name = data. If an array or oject, will assume the array contains the object's data. If null, will load the defaults
+     * @param bool $reload If true, will reload the object even if it's already loaded
      * @return static
      */
-    public function load(mixed $data) : static
+    public function load(mixed $data = null, bool $reload = false) : static
     {
+        if ($this->loaded && !$reload) {
+            return $this;
+        }
+
+        $overwrite = true;
+
         if ($data === null) {
             //load defaults
+            $overwrite = false;
             $data = $this->getDefaultData();
         }
 
@@ -170,7 +183,9 @@ trait ItemTrait
         }
 
         //set the data from the array/object
-        $this->set($data);
+        $this->set($data, $overwrite);
+
+        $this->loaded = true;
 
         return $this;
     }
@@ -193,6 +208,17 @@ trait ItemTrait
     public function loadByName(string $name) : static
     {
         return $this->load($this->getRowByName($name));
+    }
+
+    /**
+     * Loads the default data
+     * @return static
+     */
+    public function loadDefaults() : static
+    {
+        $data = $this->getDefaultData();
+
+        return $this->set($data);
     }
 
     /**
@@ -326,17 +352,12 @@ trait ItemTrait
         unset($data[$id_field]);
 
         //unset the errors & fields property
-        unset($data['errors']);
+        //unset($data['errors']);
         unset($data['fields']);
 
         $ignore = static::$ignore ?? [];
-        $bind_data = static::$bind_data ?? false;
-
         if ($ignore) {
             $data = $this->app->array->unset($data, $ignore);
-        }
-        if ($bind_data) {
-            $data = $this->db->bind($this->getTable(), $data);
         }
 
         return $data;
@@ -353,13 +374,15 @@ trait ItemTrait
 
     /**
      * Binds the data from $data to the object's properties
-     * @param array $data The data to bind. If empty, the $_POST data is used
-     * @param array $ignore_columns Array listing the columns from $table which shouldn't be included in the returned result
-     * @param string $ignore_value If $ignore_value is not null, any values which equals $ignore_value won't be included in the returned result
-     * @return $this
+     * @see \Mars\Objects\EntityTrait::bind()
+     * {@inheritdoc}
      */
-    public function bind(array $data = [], ?array $ignore_columns = null, ?string $ignore_value = null) : static
+    public function bind(array|object $data = [], ?array $ignore_columns = null, ?string $ignore_value = null, ?array $properties = null) : static
     {
+        if (!$this->loaded) {
+            $this->load();
+        }
+
         $id_field = $this->getIdField();
 
         //if no ignore columns array are specified, include the id field automatically
@@ -367,23 +390,21 @@ trait ItemTrait
             $ignore_columns = [$id_field];
         }
 
-        $data = $this->db->bind($this->getTable(), $this->getBindData($data), $ignore_columns, $ignore_value);
-
-        return $this->set($data);
+        return parent::bind($data, $ignore_columns, $ignore_value, $properties);
     }
 
     /**
      * Binds the data from $data to the object's properties
-     * @param array $allowed_columns Array with the columns from $data which should be used
-     * @param array $data The data to bind
-     * @param string $ignore_value If $ignore_value is not null, any values which equals $ignore_value won't be included in the returned result
-     * @return $this
+     * @see \Mars\Objects\EntityTrait::bindList()
+     * {@inheritdoc}
      */
-    public function bindList(array $allowed_columns, array $data = [], ?string $ignore_value = null) : static
+    public function bindList(array $allowed_columns, array|object $data = [], ?string $ignore_value = null) : static
     {
-        $data = $this->db->bindList($this->getTable(), $this->getBindData($data), $allowed_columns, $ignore_value);
+        if (!$this->loaded) {
+            $this->load();
+        }
 
-        return $this->set($data);
+        return parent::bind($data, null, $ignore_value, $allowed_columns);
     }
 
     /**

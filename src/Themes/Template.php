@@ -56,6 +56,11 @@ class Template
     }
 
     /**
+     * @var array $data Data set in the array
+     */
+    public protected(set) array $data = [];
+
+    /**
      * @var bool $development If true, the templates will be parsed in development mode
      */
     protected bool $development {
@@ -193,6 +198,8 @@ class Template
      */
     protected function incorporate(string $cache_name, array $vars = []) : string
     {
+        $this->data = [];
+
         $app = $this->app;
         $lang = $this->app->lang;
         $theme = $this->app->theme;

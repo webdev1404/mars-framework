@@ -82,4 +82,24 @@ class Theme extends BaseTheme
 
         return null;
     }
+
+    /**
+     * @see BaseTheme::getTemplateFromFilename()
+     * {@inheritdoc}
+     */
+    public function getTemplateFromFilename(string $filename, ?string $filename_rel = null, array $vars = [], string $type = 'template', array $params = [], bool $development = false) : string
+    {
+        if ($filename_rel) {
+            if (!isset($this->templates[$filename_rel])) {
+                //does the parent have it?
+                if ($this->parent) {
+                    if (isset($this->parent->templates[$filename_rel])) {
+                        $filename = $this->parent->templates_path . '/' . $filename_rel;
+                    }
+                }
+            }
+        }
+
+        return parent::getTemplateFromFilename($filename, $filename_rel, $vars, $type, $params, $development);
+    }
 }

@@ -263,6 +263,26 @@ class Request
     }
 
     /**
+     * Returns true if the request passes the post check
+     * @return bool True if the request is a post and the CSRF token is valid
+     */
+    public function canPost() : bool
+    {
+        if (!$this->is_post) {
+            $this->app->errors->add(App::__('error.request_not_post'));
+            return false;
+        }
+
+        $token = $this->post->get($this->app->config->html_csrf_name);
+        if (!$token || $token != $this->app->session->token) {
+            $this->app->errors->add(App::__('error.request_invalid_csrf'));
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
      * Returns the action to be performed
      * @param string $action_param The action param
      * @return string The action

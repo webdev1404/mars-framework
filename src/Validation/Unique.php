@@ -14,7 +14,7 @@ class Unique extends Rule
     /**
      * {@inheritdoc}
      */
-    protected string $error = '';
+    public string $error = '';
 
     /**
      * Validates that a value is unique in a table

@@ -69,7 +69,7 @@ class Pages extends Source
         $dirs = [];
 
         $modules = new Modules($this->app);
-        foreach ($modules->get() as $module_path) {
+        foreach ($modules->getEnabled() as $module_path) {
             $module_dir = $module_path . '/' . Module::DIRS['pages'];
             if (is_dir($module_dir)) {
                 $dirs[] = $module_dir;

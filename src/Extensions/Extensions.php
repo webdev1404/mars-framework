@@ -18,11 +18,6 @@ abstract class Extensions
     use Kernel;
 
     /**
-     * @var array|null $list The list of enabled extensions of this type
-     */
-    protected static ?array $list = null;
-
-    /**
      * @var array|null $list_enabled The list of enabled extensions of this type
      */
     protected static ?array $list_enabled = null;
@@ -38,9 +33,32 @@ abstract class Extensions
     protected static string $list_config_file = '';
 
     /**
-     * @var string $base_dir The base directory for the extension
+     * @var string $instance_class The class of the extensions instance
      */
-    protected static string $base_dir = '';
+    protected static string $instance_class = '';
+
+    /**
+     * Returns a new instance of the extensions manager
+     * @param string $name The name of the extension
+     * @param array $params Optional parameters to pass to the extension constructor
+     * @return Extensions The extensions manager instance
+     */
+    public function get(string $name, array $params = []) : Extension
+    {
+        return new static::$instance_class($name, $params, $this->app);
+    }
+
+    /**
+     * Determines if an extension exists
+     * @param string $name The name of the extension
+     * @return bool True if the extension exists, false otherwise
+     */
+    public function exists(string $name): bool
+    {
+        static::$list_all ??= $this->getAll();
+
+        return isset(static::$list_all[$name]);
+    }
 
     /**
      * Determines if an extension is enabled
@@ -49,9 +67,9 @@ abstract class Extensions
      */
     public function isEnabled(string $name): bool
     {
-        static::$list ??= $this->get();
+        static::$list_enabled ??= $this->getEnabled();
 
-        return isset(static::$list[$name]);
+        return isset(static::$list_enabled[$name]);
     }
 
     /**
@@ -61,9 +79,26 @@ abstract class Extensions
      */
     public function getPath(string $name): ?string
     {
-        static::$list ??= $this->get();
+        static::$list_all ??= $this->getAll();
 
-        return static::$list[$name] ?? null;
+        return static::$list_all[$name] ?? null;
+    }
+
+    /**
+     * Returns the base namespace for a module
+     * @param string $name The name of the module
+     * @param string $dir An optional subdir inside the module
+     * @return string The base namespace for the module
+     */
+    public function getBaseNamespace(string $name, string $dir = ''): string
+    {
+        $namespace = static::$instance_class::getBaseNamespace() . '\\' . App::getClass($name);
+        
+        if ($dir) {
+            $namespace .= '\\' . App::getClass($dir);
+        }
+
+        return $namespace;
     }
 
     /**
@@ -71,17 +106,13 @@ abstract class Extensions
      * @param string $name The name of the extension
      * @return array The info array
      */
-    /*public static function getInfo(string $name) : array
+    public function getInfo(string $name) : array
     {
-        $path = static::getPath($name);
+        $list = $this->getAll();
+        
+        $path = $list[$name] ?? null;
         if (!$path) {
-            //look in all extensions, if we didn't find it in the enabled ones
-            $all_list = static::getAllList();
-            $path = $all_list[$name] ?? null;
-
-            if (!$path) {
-                return [];
-            }
+            return [];
         }
 
         $info_filename = $path . '/info.php';
@@ -90,17 +121,6 @@ abstract class Extensions
         }
 
         return include($info_filename);
-    }*/
-
-    /**
-     * Gets the list of enabled extensions of this type
-     * @return array The list of enabled extensions
-     */
-    public function get(): array
-    {
-        static::$list ??= $this->getAll();
-
-        return static::$list;
     }
 
     /**
@@ -114,7 +134,7 @@ abstract class Extensions
             return static::$list_all;
         }
 
-        $cache_filename = static::$base_dir . '-extensions-list-all';
+        $cache_filename = static::$instance_class::getBaseDir() . '-extensions-list-all';
 
         static::$list_all = $this->getList($use_cache, $cache_filename, function () {
             return $this->readAll();
@@ -125,12 +145,13 @@ abstract class Extensions
 
     /**
      * Gets the list of available (not enabled) extensions of this type
+     * @param bool $use_cache If true, the cache will be used
      * @return array The list of available extensions
      */
-    public function getAvailable(): array
+    public function getAvailable(bool $use_cache = true): array
     {
-        $list_enabled = $this->getEnabled();
-        $list_all = $this->getAll();
+        $list_enabled = $this->getEnabled($use_cache);
+        $list_all = $this->getAll($use_cache);
 
         return array_diff_key($list_all, $list_enabled);
     }
@@ -146,7 +167,7 @@ abstract class Extensions
             return static::$list_enabled;
         }
 
-        $cache_filename = static::$base_dir . '-extensions-list-enabled';
+        $cache_filename = static::$instance_class::getBaseDir() . '-extensions-list-enabled';
 
         static::$list_enabled = $this->getList($use_cache, $cache_filename, function () {
             $list_all = $this->getAll();
@@ -176,7 +197,7 @@ abstract class Extensions
         $list = $this->app->cache->getArray($cache_filename, false);
 
         // If we are in development mode, we always read the list from the filesystem
-        $development = $this->app->development ? true : $this->app->config->development_extensions[static::$base_dir] ?? false;
+        $development = $this->app->development ? true : $this->app->config->development_extensions[static::$instance_class::getBaseDir()] ?? false;
         if ($development || !$use_cache) {
             $list = null;
         }
@@ -198,7 +219,7 @@ abstract class Extensions
      */
     protected function readAll(): array
     {
-        $dirs = array_merge($this->readFromVendor(static::$base_dir), $this->readFromExtensionsDir(static::$base_dir));
+        $dirs = array_merge($this->readFromVendor(static::$instance_class::getBaseDir()), $this->readFromExtensionsDir(static::$instance_class::getBaseDir()));
 
         $list = [];
         foreach ($dirs as $dir) {
@@ -270,5 +291,186 @@ abstract class Extensions
         }
 
         return $dirs;
+    }
+
+    /**
+     * Installs the specified extension
+     * @param string $name The name of the extension
+     */
+    public function install(string $name)
+    {
+        $extension = $this->get($name);
+        if ($extension->enabled) {
+            throw new \Exception("Extension '{$name}' is already installed.");
+        }
+
+        $setup = $this->getSetupManager($name);
+        if ($setup && method_exists($setup, 'install')) {
+            $setup->install();
+        }
+
+        $this->addConfig($name);
+       
+        $this->createSymlink($extension);
+    }
+
+    /**
+     * Enables the specified extension
+     * @param string $name The name of the extension
+     */
+    public function enable(string $name)
+    {
+        $extension = $this->get($name);
+
+        $setup = $this->getSetupManager($name);
+        if ($setup && method_exists($setup, 'enable')) {
+            $setup->enable();
+        }
+
+        $this->addConfig($name);
+       
+        $this->createSymlink($extension);
+    }
+
+    /**
+     * Disables the specified extension
+     * @param string $name The name of the extension
+     */
+    public function disable(string $name)
+    {
+        $extension = $this->get($name);
+        if (!$extension->enabled) {
+            throw new \Exception("Extension '{$name}' is not enabled.");
+        }
+
+        $setup = $this->getSetupManager($name);
+        if ($setup && method_exists($setup, 'disable')) {
+            $setup->disable();
+        }
+
+        $this->removeConfig($name);
+       
+        $this->removeSymlink($extension);
+    }
+
+    /**
+     * Upgrades the specified extension
+     * @param string $name The name of the extension
+     */
+    public function upgrade(string $name)
+    {
+        $extension = $this->get($name);
+        if (!$extension->enabled) {
+            throw new \Exception("Extension '{$name}' is not enabled.");
+        }
+
+        $setup = $this->getSetupManager($name);
+        if ($setup && method_exists($setup, 'upgrade')) {
+            $setup->upgrade();
+        }
+
+        $this->createSymlink($extension);
+    }
+
+    /**
+     * Uninstalls the specified extension
+     * @param string $name The name of the extension
+     */
+    public function uninstall(string $name)
+    {
+        $extension = $this->get($name);
+        if (!$extension->enabled) {
+            throw new \Exception("Extension '{$name}' is not enabled.");
+        }
+
+        $setup = $this->getSetupManager($name);
+        if ($setup && method_exists($setup, 'uninstall')) {
+            $setup->uninstall();
+        }
+
+        $this->removeConfig($name);
+
+        $this->removeSymlink($extension);
+    }
+
+    /**
+     * Adds the specified extension to the config file listing the enabled extensions
+     */
+    protected function addConfig(string $name)
+    {
+        if (!static::$list_config_file) {
+            return;
+        }
+
+        $extensions = $this->app->config->read(static::$list_config_file);
+        
+        $extensions[] = $name;
+        $extensions = array_unique($extensions);
+
+        $this->app->config->write(static::$list_config_file, $extensions);
+    }
+
+    /**
+     * Removes the specified extension from the config file listing the enabled extensions
+     */
+    protected function removeConfig(string $name)
+    {
+        if (!static::$list_config_file) {
+            return;
+        }
+
+        $extensions = $this->app->config->read(static::$list_config_file);
+        
+        $extensions = array_filter($extensions, fn ($extension) => $extension !== $name);
+
+        $this->app->config->write(static::$list_config_file, $extensions);
+    }
+
+    /**
+     * Returns the setup manager for the specified extension
+     * @param string $name The name of the extension
+     * @return object|null The setup manager object, or null if not found
+     */
+    protected function getSetupManager(string $name) : ?object
+    {
+        $setup_file = $this->getPath($name) . '/' . static::$instance_class::DIRS['setup'] . '/Setup.php';
+        if (!is_file($setup_file)) {
+            return null;
+        }
+
+        $setup_class = $this->getBaseNamespace($name, static::$instance_class::DIRS['setup']) . '\\Setup';
+
+        return new $setup_class($this->app);
+    }
+
+    /**
+     * Creates a symlink to the assets folder in the public directory
+     * @param Extension $extension The extension object
+     */
+    protected function createSymlink(Extension $extension)
+    {
+        if (!is_dir($extension->assets_path)) {
+            return;
+        }
+        if (is_link($extension->assets_target)) {
+            return;
+        }
+
+        symlink($extension->assets_path, $extension->assets_target);
+
+        if (!is_link($extension->assets_target)) {
+            throw new \Exception("Failed to create symlink for assets folder: {$extension->assets_target}");
+        }
+    }
+
+    /**
+     * Removes the symlink to the assets folder in the public directory
+     * @param Extension $extension The extension object
+     */
+    protected function removeSymlink(Extension $extension)
+    {
+        if (is_link($extension->assets_target)) {
+            unlink($extension->assets_target);
+        }
     }
 }

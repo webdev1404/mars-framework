@@ -635,4 +635,13 @@ class Html
 
         return $this->getTag('time', '', $attributes);
     }
+
+    /**
+     * Returns a hidden CSRF field
+     * @return string The html code
+     */
+    public function csrf() : string
+    {
+        return $this->hidden($this->app->config->html_csrf_name, $this->app->session->token);
+    }
 }

@@ -26,6 +26,7 @@ class Module extends Extension
      */
     public const array DIRS = [
         'assets' => 'assets',
+        'bin' => 'bin',
         'languages' => 'languages',
         'templates' => 'templates',
         'blocks' => 'blocks',
@@ -38,7 +39,7 @@ class Module extends Extension
     /**
      * @internal
      */
-    public Extensions $manager {
+    public ?Extensions $manager {
         get => $this->app->modules;
     }
 

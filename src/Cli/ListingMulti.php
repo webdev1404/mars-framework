@@ -23,11 +23,19 @@ class ListingMulti extends Listing
     {
         $max = $this->getMaxLength($data, $paddings_right);
 
+        $count = count($data);
+        $i = 0;
         foreach ($data as $header => $list) {
             $this->app->cli->header($header);
             foreach ($list as $text) {
                 $this->printMulti($text, $colors, $paddings_left, $max);
             }
+
+            if ($i < $count - 1) {
+                $this->app->cli->printNewline();
+            }
+
+            $i++;
         }
     }
 

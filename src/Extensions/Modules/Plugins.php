@@ -4,7 +4,7 @@
 * @package Mars
 */
 
-namespace Mars\Extensions\Modules\Components;
+namespace Mars\Extensions\Modules;
 
 use Mars\App;
 use Mars\Extensions\Extensions;
@@ -16,11 +16,6 @@ use Mars\Extensions\Modules\Modules;
  */
 class Plugins extends Extensions
 {
-    /**
-     * @internal
-     */
-    protected static ?array $list = null;
-
     /**
      * @internal
      */
@@ -39,7 +34,7 @@ class Plugins extends Extensions
     /**
      * @internal
      */
-    protected static string $base_dir = 'plugins';
+    protected static string $instance_class = Plugin::class;
 
     /**
      * @see Extensions::readAll()
@@ -50,7 +45,7 @@ class Plugins extends Extensions
         $list = [];
 
         $modules = new Modules($this->app);
-        foreach ($modules->get() as $module_path) {
+        foreach ($modules->getEnabled() as $module_path) {
             $module_name = basename($module_path);
             $plugins_dir = $module_path . '/' . Module::DIRS['plugins'];
             if (!is_dir($plugins_dir)) {
@@ -62,10 +57,10 @@ class Plugins extends Extensions
                 continue;
             }
 
-            $base_namespace = ltrim(Module::getBaseNamespace(), '\\') . '\\' . App::getClass($module_name) . '\\' . App::getClass(Module::DIRS['plugins']) . '\\';
+            $base_namespace = $this->app->modules->getBaseNamespace($module_name, Module::DIRS['plugins']);
             foreach ($plugins as $plugin) {
                 $plugin_name = $this->app->file->getStem($plugin);
-                $class_name = $base_namespace . App::getClass($plugin_name);
+                $class_name = $base_namespace . '\\' . App::getClass($plugin_name);
 
                 $list[$class_name] = $module_name;
             }

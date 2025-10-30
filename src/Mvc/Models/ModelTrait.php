@@ -70,4 +70,12 @@ trait ModelTrait
 
         return true;
     }
+
+    /**
+     * Alias for $this->app->lang->get()
+     */
+    protected function __(string $str, array $replace = [], string $prefix = '') : string
+    {
+        return $this->app->lang->get($str, $replace, $prefix);
+    }
 }

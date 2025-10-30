@@ -72,10 +72,10 @@ final class UrlTest extends Base
         $this->assertFalse($url->contains('notfound'));
     }
 
-    public function testBuildAndAdd()
+    public function testGetAndAdd()
     {
         $url = new Url('https://example.com/path');
-        $newUrl = $url->build(['more', 'parts']);
+        $newUrl = $url->get(['more', 'parts']);
         $this->assertEquals('https://example.com/path/more/parts', (string)$newUrl);
 
         $url2 = new Url('https://example.com/path');

@@ -352,21 +352,6 @@ final class DbTest extends Base
         $cols = $this->app->db->getColumns('select_test', false);
         $this->assertEquals($cols, ['col1' => 'string', 'col2' => 'int']);
 
-        //bind()
-        $values = ['col1' => 'zxc', 'col2' => 456, 'col3' => 'a', 'col4' => 'b'];
-        $data = $this->app->db->bind('select_test', $values);
-        $this->assertEquals($data, ['col1' => 'zxc', 'col2' => 456]);
-
-        $data = $this->app->db->bind('select_test', $values, ['col1']);
-        $this->assertEquals($data, ['col2' => 456]);
-
-        $data = $this->app->db->bind('select_test', $values, [], '456');
-        $this->assertEquals($data, ['col1' => 'zxc']);
-
-        //bindList()
-        $data = $this->app->db->bindList('select_test', $values, ['id', 'col1']);
-        $this->assertEquals($data, ['col1' => 'zxc']);
-
         //fill()
         $data = $this->app->db->fill('select_test', [], [], 1, 'test');
         $this->assertEquals($data, ['col1' => 'test', 'col2' => 1]);

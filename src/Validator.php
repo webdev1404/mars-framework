@@ -40,6 +40,8 @@ class Validator
         'date' => \Mars\Validation\Date::class,
         'datetime' => \Mars\Validation\Datetime::class,
         'captcha' => \Mars\Validation\Captcha::class,
+        'username' => \Mars\Validation\Username::class,
+        'password' => \Mars\Validation\Password::class
     ];
 
     /**
@@ -88,12 +90,14 @@ class Validator
         $ok = true;
         $this->errors = [];
 
+        $data = $this->app->array->get($data);
+
         foreach ($rules as $field => $field_rules) {
             if (in_array($field, $skip_array)) {
                 continue;
             }
 
-            $value = $this->app->data->getProperty($data, $field) ?? '';
+            $value = $data[$field] ?? '';
 
             $error_name = $field_rules['name'] ?? $field;
             $rules_array = $field_rules['rules'] ?? $field_rules;
@@ -153,7 +157,7 @@ class Validator
 
         //do we have in the $error_strings array a custom error for this rule & $field?
         if ($error_strings && isset($error_strings[$field][$rule])) {
-            $this->errors[$field][] = $error_strings[$field][$rule];
+            $this->errors[$field][] = App::__($error_strings[$field][$rule]);
 
             return;
         }

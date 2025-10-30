@@ -16,11 +16,6 @@ class Themes extends Extensions
     /**
      * @internal
      */
-    protected static ?array $list = null;
-
-    /**
-     * @internal
-     */
     protected static ?array $list_enabled = null;
 
     /**
@@ -36,5 +31,51 @@ class Themes extends Extensions
     /**
      * @internal
      */
-    protected static string $base_dir = 'themes';
+    protected static string $instance_class = Theme::class;
+
+    /**
+     * @see Extensions::getEnabled()
+     * {@inheritdoc}
+     */
+    public function getEnabled(bool $use_cache = true): array
+    {
+        if (static::$list_enabled !== null) {
+            return static::$list_enabled;
+        }
+
+        static::$list_enabled = $this->getAll($use_cache);
+
+        return static::$list_enabled;
+    }
+
+    /**
+     * @see Extensions::install()
+     * {@inheritdoc}
+     */
+    public function install(string $name)
+    {
+        $extension = $this->get($name);
+
+        $setup = $this->getSetupManager($name);
+        if ($setup && method_exists($setup, 'install')) {
+            $setup->install();
+        }
+       
+        $this->createSymlink($extension);
+    }
+
+    /**
+     * @see Extensions::uninstall()
+     */
+    public function uninstall(string $name)
+    {
+        $extension = $this->get($name);
+
+        $setup = $this->getSetupManager($name);
+        if ($setup && method_exists($setup, 'uninstall')) {
+            $setup->uninstall();
+        }
+
+        $this->removeSymlink($extension);
+    }
 }

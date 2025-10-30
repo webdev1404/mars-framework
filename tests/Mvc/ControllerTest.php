@@ -10,6 +10,9 @@ class MyController extends Controller
     protected bool $load_model = false;
     protected bool $load_view = false;
 
+    public protected(set) string $default_success_method = 'mySuccess';
+    public protected(set) string $default_error_method = 'myError';
+
     public function index()
     {
         echo 'my index';
@@ -63,8 +66,6 @@ final class ControllerTest extends Base
     public function testDispatch()
     {
         $controller = new MyController;
-        $controller->default_success_method = 'mySuccess';
-        $controller->default_error_method = 'myError';
 
         ob_start();
         $controller->dispatch();

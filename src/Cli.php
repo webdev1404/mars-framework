@@ -35,6 +35,7 @@ class Cli
         'error' => '0;41',
         'warning' => '93',
         'notice' => '1;36',
+        'important' => '1;31',
         'header' => '0;33',
         'list_1' => '0;32',
         'list_2' => '0',
@@ -70,76 +71,21 @@ class Cli
     }
 
     /**
-     * @var array $argv List of arguments
+     * @var array $params List of parameters
      */
-    public protected(set) array $argv {
+    public protected(set) array $params {
         get {
-            if (isset($this->argv)) {
-                return $this->argv;
+            if (isset($this->params)) {
+                return $this->params;
             }
 
             global $argv;
-            $this->argv = $argv ?? [];
+            $this->params = $argv ?? [];
 
             //remove the script name
-            array_shift($this->argv);
+            array_shift($this->params);
 
-            return $this->argv;
-        }
-    }
-
-    /**
-     * @var array $commands List of commands
-     */
-    public protected(set) array $commands {
-        get {
-            if (isset($this->commands)) {
-                return $this->commands;
-            }
-
-            $this->commands = [];
-            foreach ($this->argv as $arg) {
-                if (str_starts_with($arg, '-')) {
-                    continue;
-                }
-
-                $this->commands = explode(':', $arg);
-                break;
-            }
-
-            return $this->commands;
-        }
-    }
-
-    /**
-     * @var string $command The name of the command
-     */
-    public protected(set) string $command {
-        get {
-            if (isset($this->command)) {
-                return $this->command;
-            }
-
-            $this->command = $this->commands[0] ?? '';
-
-            return $this->command;
-        }
-    }
-
-    /**
-     * @var string $action The action of the command
-     */
-    public protected(set) string $action {
-        get {
-            if (isset($this->action)) {
-                return $this->action;
-            }
-
-            $slice = array_slice($this->commands, 1);
-
-            $this->action = implode(':', $slice);
-
-            return $this->action;
+            return $this->params;
         }
     }
 
@@ -153,18 +99,18 @@ class Cli
             }
 
             $this->options = [];
-            foreach ($this->argv as $arg) {
-                if (str_starts_with($arg, '--')) {
-                    $parts = explode('=', substr($arg, 2));
+            foreach ($this->params as $param) {
+                if (str_starts_with($param, '--')) {
+                    $parts = explode('=', substr($param, 2));
 
                     $this->options[$parts[0]] = $parts[1] ?? true;
-                } elseif (str_starts_with($arg, '-')) {
-                    $parts = explode('=', substr($arg, 1));
+                } elseif (str_starts_with($param, '-')) {
+                    $parts = explode('=', substr($param, 1));
 
                     if (count($parts) > 1) {
                         $this->options[$parts[0]] = $parts[1] ?? '';
                     } else {
-                        $name = substr($arg, 1);
+                        $name = substr($param, 1);
 
                         $this->options[$name] = true;
                     }
@@ -267,9 +213,9 @@ class Cli
      * @param string $question The question
      * @return string The answer
      */
-    public function ask(string $question) : string
+    public function ask(string $question, string $color = '') : string
     {
-        echo $question . ': ';
+        $this->print($question . ': ', $color, false);
 
         return $this->read();
     }

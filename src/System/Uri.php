@@ -68,7 +68,7 @@ class Uri implements \Stringable
                 return $this->current;
             }
 
-            $this->current = $this->build($this->app->base_url, [$this->request_uri], false);
+            $this->current = $this->get($this->app->base_url, $this->request_uri, [], false);
 
             return $this->current;
         }
@@ -283,12 +283,14 @@ class Uri implements \Stringable
      * Builds an url by appendding the $parts to $base_url
      * @param string $base_url The base url
      * @param array $parts Array with the parts to append to base_url
+     * @param array $params Array with the query parameters
      * @param bool $encode If true, it will encode the parts using rawurlencode
+     * @param bool $remove_empty_params If true, it will remove empty parameters
      * @return Url Returns the url
      */
-    public function build(string $base_url, array $parts, bool $encode = true) : Url
+    public function get(string $base_url, string|array $parts, array $params = [], bool $encode = true, bool $remove_empty_params = true) : Url
     {
-        return new Url($base_url)->build($parts, $encode);
+        return new Url($base_url)->get($parts, $params, $encode, $remove_empty_params);
     }
 
     /**

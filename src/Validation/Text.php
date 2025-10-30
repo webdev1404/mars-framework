@@ -14,9 +14,9 @@ class Text extends Rule
     /**
      * {@inheritdoc}
      */
-    protected string $error = '';
+    public string $error = '';
 
-    protected array $errors = [
+    public array $errors = [
         'min' => 'error.validate_text_min',
         'max' => 'error.validate_text_max',
     ];
@@ -36,7 +36,7 @@ class Text extends Rule
 
         $length = mb_strlen($value);
 
-        $min = $min ?? 0;
+        $min ??= 0;
         if ($max) {
             $this->error = $this->errors['max'];
 

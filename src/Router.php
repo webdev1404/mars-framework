@@ -78,7 +78,12 @@ class Router extends Base
     {
         $route = $this->getRoute();
         if (!$route) {
-            $this->notFound();
+            //try to get the 404 route, if exists
+            $route = $this->getRoute('404');
+
+            if (!$route) {
+                $this->notFound();
+            }
         }
         
         $this->output($route);
@@ -95,17 +100,20 @@ class Router extends Base
 
     /**
      * Returns the route matching the current request
+     * @param string|null $path The path to get the route for. If null, the current path will be used
      * @return mixed
      */
-    protected function getRoute() : array|null
+    protected function getRoute(?string $path = null) : array|null
     {
         //check if the method is allowed
         if (!in_array($this->app->request->method, static::ALLOWED_METHODS)) {
             return null;
         }
 
-        $hashes = $this->app->cache->routes->getHashes($this->getPrefix($this->path));
-        $hash = $this->getHash($this->path, $this->app->lang->code, $this->app->request->method);
+        $path ??= $this->path;
+
+        $hashes = $this->app->cache->routes->getHashes($this->getPrefix($path));
+        $hash = $this->getHash($path, $this->app->lang->code, $this->app->request->method);
 
         if (isset($hashes[$hash])) {
             return $this->loader->getByHash($hash, $hashes[$hash]);

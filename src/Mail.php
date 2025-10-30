@@ -131,7 +131,7 @@ class Mail
     {
         $content = '';
         if (is_file($filename)) {
-            $content = $this->app->theme->getTemplateFromFilename($filename, $vars, 'mail');
+            $content = $this->app->theme->getTemplateFromFilename($filename, null, $vars, 'mail');
         } else {
             $content = $this->app->theme->getTemplate($filename, $vars, 'mail');
         }

@@ -295,22 +295,52 @@ class Language extends BaseLanguage
      * @see \Mars\Extensions\Language::loadFile()
      * {@inheritdoc}
      */
-    public function loadFile(string $file) : static
+    public function loadFile(string $file, ?string $key = null) : static
     {
+        $key ??= $file;
+
         //load first the fallback language file, if enabled
         if ($this->fallback) {
             if ($this->fallback->isFile($file)) {
-                $this->loadFilename($this->fallback->getFilename($file), $file);
+                $this->loadFilename($this->fallback->getFilename($file), $key);
             }
         }
 
         //load the parent language file, if any
         if ($this->parent) {
             if ($this->parent->isFile($file)) {
-                $this->loadFilename($this->parent->getFilename($file), $file);
+                $this->loadFilename($this->parent->getFilename($file), $key);
             }
         }
 
-        return parent::loadFile($file);
+        return parent::loadFile($file, $key);
+    }
+
+    /**
+     * @see \Mars\Extensions\Language::getTemplateFilename()
+     * {@inheritdoc}
+     */
+    public function getTemplateFilename(string $template) : ?string
+    {
+        $template_filename = parent::getTemplateFilename($template);
+        if ($template_filename) {
+            return $template_filename;
+        }
+
+        if ($this->parent) {
+            $template_filename = $this->parent->getTemplateFilename($template);
+            if ($template_filename) {
+                return $template_filename;
+            }
+        }
+
+        if ($this->fallback) {
+            $template_filename = $this->fallback->getTemplateFilename($template);
+            if ($template_filename) {
+                return $template_filename;
+            }
+        }
+
+        return null;
     }
 }

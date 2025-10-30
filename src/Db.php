@@ -224,6 +224,11 @@ class Db
     protected array $last_query = ['sql' => '', 'params' => []];
 
     /**
+     * @var array $columns_cache Cache for the table columns
+     */
+    protected static array $columns_cache = [];
+
+    /**
      * Destroys the database object. Disconnects from the database server
      */
     public function __destruct()
@@ -780,11 +785,10 @@ class Db
      */
     public function getColumns(string $table, bool $primary_key = true, bool $cache = true) : array
     {
-        static $columns_cache = [];
         $key = $table . ($primary_key ? '1' : '0');
 
-        if ($cache && isset($columns_cache[$key])) {
-            return $columns_cache[$key];
+        if ($cache && isset(static::$columns_cache[$key])) {
+            return static::$columns_cache[$key];
         }
 
         $cols = [];
@@ -810,76 +814,10 @@ class Db
         }
 
         if ($cache) {
-            $columns_cache[$key] = $cols;
+            static::$columns_cache[$key] = $cols;
         }
 
         return $cols;
-    }
-
-    /**
-     * Builds a set from table $table with values from $values. The values are filtered based on the column's type
-     * The difference between bind and bindList is bind is blacklisting the columns which shouldn't be included; bindList is whitelisting the desired columns.
-     * @param string $table The name of the table
-     * @param array $values The values in the col => value format
-     * @param array $ignore_columns Array listing the columns from $table which shouldn't be included in the returned result
-     * @param string $ignore_value If $ignore_value is not null, any values which equals $ignore_value won't be included in the returned result
-     * @param string $values_prefix Prefix to be used on $values, if any
-     * @return array The data
-     */
-    public function bind(string $table, array $values = [], array $ignore_columns = [], ?string $ignore_value = null, string $values_prefix = '') : array
-    {
-        $data = $this->getBindData($table, $values, $ignore_value, $values_prefix);
-
-        return array_filter($data, function ($col) use ($ignore_columns) {
-            return !in_array($col, $ignore_columns);
-        }, ARRAY_FILTER_USE_KEY);
-    }
-
-    /**
-     * Builds a set from table $table with values from $data. The values are filtered based on the column's type
-     * The difference between bind and bindList is bind is blacklisting the columns which shouldn't be included; bindList is whitelisting the desired columns.
-     * @param string $table The name of the table
-     * @param array $values The values in the col => value format
-     * @param array $allowed_columns Array listing the columns of table $table for which the request values should be bind
-     * @param string $ignore_value If $ignore_value is not null, any values which equals $ignore_value won't be included in the returned result
-     * @param string $values_prefix Prefix to be used on $values, if any
-     * @return array
-     */
-    public function bindList(string $table, array $values = [], array $allowed_columns = [], ?string $ignore_value = null, string $values_prefix = '') : array
-    {
-        $data = $this->getBindData($table, $values, $ignore_value, $values_prefix);
-
-        return array_filter($data, function ($col) use ($allowed_columns) {
-            return in_array($col, $allowed_columns);
-        }, ARRAY_FILTER_USE_KEY);
-    }
-
-    /**
-     * Returns the data used by the bind/bindList operations
-     * @see Db::bind()
-     */
-    protected function getBindData(string $table, array $values, ?string $ignore_value, string $values_prefix) : array
-    {
-        $data = [];
-        $columns = $this->getColumns($table);
-
-        foreach ($columns as $name => $type) {
-            $key = $values_prefix . $name;
-
-            if (!isset($values[$key])) {
-                continue;
-            }
-
-            $value = $this->app->filter->value($values[$key], $type);
-
-            if ($ignore_value !==null && $value == $ignore_value) {
-                continue;
-            }
-
-            $data[$name] = $value;
-        }
-
-        return $data;
     }
 
     /**

@@ -14,7 +14,7 @@ class Ip extends Rule
     /**
      * {@inheritdoc}
      */
-    protected string $error = 'error.validate_ip';
+    public string $error = 'error.validate_ip';
 
     /**
      * Checks if $ip is a valid IP address
@@ -66,6 +66,6 @@ class Ip extends Rule
             }
         }
 
-        return true;
+        return $this->app->plugins->filter('validate_ip', true, $value, $wildcards, $this);
     }
 }

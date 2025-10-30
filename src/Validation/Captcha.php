@@ -15,7 +15,7 @@ class Captcha extends Rule
     /**
      * {@inheritdoc}
      */
-    protected string $error = 'error.validate_captcha';
+    public string $error = 'error.validate_captcha';
 
     /**
      * Validates a captcha

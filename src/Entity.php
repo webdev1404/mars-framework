@@ -20,5 +20,5 @@ class Entity
     /**
      * @var array $frozen_fields Fields which cannot be changed by set()
      */
-    protected static array $frozen_fields = [];
+    protected static array $frozen_fields = ['errors'];
 }

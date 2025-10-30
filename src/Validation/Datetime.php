@@ -16,7 +16,7 @@ class Datetime extends Rule
     /**
      * {@inheritdoc}
      */
-    protected string $error = 'error.validate_datetime';
+    public string $error = 'error.validate_datetime';
 
     /**
      * Validates a datetime

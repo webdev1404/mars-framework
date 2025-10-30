@@ -268,6 +268,20 @@ abstract class View
     }
 
     /**
+     * Returns the contents of a email template
+     * @param string $template The name of the template to load. If not set, the method's name will be used
+     * @param array $vars Vars to pass to the template, if any
+     * @return string The contents of the template
+     */
+    public function getEmailTemplate(string $template = '', array $vars = []) : ?string
+    {
+        $this->app->theme->addVars(get_object_vars($this));
+        $this->app->theme->addVar('view', $this);
+
+        return $this->parent->getEmailTemplate($template, $vars);
+    }
+
+    /**
      * Returns the contents of a module template
      * @param string $template The name of the template to load
      * @param array $vars Vars to pass to the template, if any
@@ -332,5 +346,15 @@ abstract class View
         }
 
         return true;
+    }
+
+    /**
+     * Returns a data value.
+     * @param string $name The name of the data
+     * @return mixed The data value
+     */
+    public function getData(string $name)
+    {
+        return $this->app->theme->getData($name);
     }
 }

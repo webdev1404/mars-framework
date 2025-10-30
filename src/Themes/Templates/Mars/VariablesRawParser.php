@@ -14,7 +14,7 @@ use Mars\App;
 class VariablesRawParser extends VariablesParser
 {
     /**
-     * @see TemplateInterface::parse()
+     * @see \Mars\Themes\Templates\TemplateInterface::parse()
      * {@inheritdoc}
      */
     public function parse(string $content, array $params = []) : string

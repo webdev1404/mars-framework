@@ -502,6 +502,11 @@ class Config
     public ?string $html_allowed_attributes = '*.class,*.style,img.src,img.alt,a.target,a.rel,a.href,a.title';
 
     /**
+     * @var string $html_csrf_name The name of the CSRF hidden field
+     */
+    public string $html_csrf_name = 'token_csrf';
+
+    /**
      * @var string $request_action_param The name of the action request param
      */
     public string $request_action_param = 'action';
@@ -724,15 +729,35 @@ class Config
     }
 
     /**
-     * Reads the config settings from the specified $filename and returns it
-     * @param string $filename The filename
+     * Reads the config settings from the specified $file and returns it
+     * @param string $file The file
      * @return array
      */
-    public function read(string $filename) : array
+    public function read(string $file) : array
     {
         $app = $this->app;
 
-        return require($this->app->config_path . '/' . $filename);
+        return require($this->app->config_path . '/' . basename($file));
+    }
+
+    /**
+     * Writes the specified $data to the specified config $file
+     * @param string $file The file
+     * @param array $data The data to write
+     * @return static
+     */
+    public function write(string $file, array $data) : static
+    {
+        $filename = $this->app->config_path . '/' . basename($file);
+        if (!is_writable($filename)) {
+            throw new \Exception("The config file '{$file}' is not writable");
+        }
+
+        $content = "<?php\n\nreturn " . var_export($data, true) . ";";
+
+        file_put_contents($filename, $content);
+
+        return $this;
     }
 
     /**

@@ -14,12 +14,12 @@ class Required extends Rule
     /**
      * {@inheritdoc}
      */
-    protected string $error = '';
+    public string $error = '';
 
     /**
      * {@inheritdoc}
      */
-    protected array $errors = [
+    public array $errors = [
         'required' => 'error.validate_required',
         'min' => 'error.validate_required_min',
         'max' => 'error.validate_required_max',
