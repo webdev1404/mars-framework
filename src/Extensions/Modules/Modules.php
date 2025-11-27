@@ -33,4 +33,42 @@ class Modules extends Extensions
      * @internal
      */
     protected static string $instance_class = Module::class;
+
+    /**
+     * @see Extensions::install()
+     */
+    public function install(string $name)
+    {
+        $extension = $this->get($name);
+
+        $setup = $this->getSetupManager($name);
+        if ($setup && method_exists($setup, 'install')) {
+            $setup->install();
+        }
+       
+        $this->createSymlink($extension);
+
+        if (!$extension->enabled) {
+            $this->addConfig($name);
+        }
+    }
+
+    /**
+     * @see Extensions::uninstall()
+     */
+    public function uninstall(string $name)
+    {
+        $extension = $this->get($name);
+
+        $setup = $this->getSetupManager($name);
+        if ($setup && method_exists($setup, 'uninstall')) {
+            $setup->uninstall();
+        }
+
+        $this->removeSymlink($extension);
+
+        if ($extension->enabled) {
+            $this->removeConfig($name);
+        }
+    }
 }

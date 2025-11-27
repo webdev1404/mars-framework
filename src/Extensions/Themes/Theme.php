@@ -15,8 +15,11 @@ use Mars\Extensions\Extension;
 use Mars\Extensions\Extensions;
 use Mars\Extensions\Themes\Links\Css;
 use Mars\Extensions\Themes\Links\Javascript;
+use Mars\Extensions\Themes\Links\Favicon;
 use Mars\Extensions\Themes\Links\Fonts;
 use Mars\Extensions\Themes\Links\Images;
+use Mars\Extensions\Abilities\FilesCacheTrait;
+use Mars\Extensions\Abilities\LanguagesTrait;
 use Mars\Themes\Template;
 
 /**
@@ -25,6 +28,8 @@ use Mars\Themes\Template;
 class Theme extends Extension
 {
     use LazyLoad;
+    use FilesCacheTrait;
+    use LanguagesTrait;
 
     /**
      * @internal
@@ -33,8 +38,9 @@ class Theme extends Extension
         'assets' => 'assets',
         'images' => 'images',
         'css' => 'css',
-        'js' => 'js',
         'fonts' => 'fonts',
+        'js' => 'js',
+        'languages' => 'languages',
         'templates' => 'templates',
         'setup' => 'setup',
     ];
@@ -66,6 +72,12 @@ class Theme extends Extension
      */
     #[LazyLoadProperty]
     public Javascript $javascript;
+
+    /**
+     * @var Favicon $favicon The favicon object
+     */
+    #[LazyLoadProperty]
+    public Favicon $favicon;
     
     /**
      * @var Fonts $fonts The fonts object
@@ -93,6 +105,7 @@ class Theme extends Extension
     protected static array $lazyload_add_this = [
        Css::class,
        Javascript::class,
+       Favicon::class,
        Fonts::class,
        Images::class,
     ];
@@ -225,9 +238,7 @@ class Theme extends Extension
                 return $this->templates;
             }
 
-            $filename = "theme-{$this->name}-templates";
-
-            $this->templates = $this->getExistingFiles($this->templates_path, $filename);
+            $this->templates = $this->getCachedFiles($this->templates_path);
 
             return $this->templates;
         }
@@ -299,9 +310,9 @@ class Theme extends Extension
         $this->lazyLoad($app);
 
         parent::__construct($name, $params, $app);
-    }
 
-    /***************** Data METHODS *********************************/
+        $this->init();
+    }
 
     /**
      * Returns a data value.
@@ -312,8 +323,6 @@ class Theme extends Extension
     {
         return $this->template->data[$name] ?? null;
     }
-
-    /***************** VARS METHODS *********************************/
 
     /**
      * Returns a theme variable.
@@ -379,8 +388,6 @@ class Theme extends Extension
 
         return $this;
     }
-
-    /************** TEMPLATES METHODS **************************/
 
     /**
      * Checks if the specified template exists in the theme's templates
@@ -498,8 +505,6 @@ class Theme extends Extension
         return $this->template->getFromFilename($filename, $vars, $type, $params, $development);
     }
 
-    /**************** RENDER METHODS *************************************/
-
     /**
      * Outputs the header
      */
@@ -526,8 +531,6 @@ class Theme extends Extension
     {
         echo $this->getTemplate($this->footer_template);
     }
-
-    /**************** OUTPUT METHODS *************************************/
 
     /**
      * Outputs the language
@@ -600,8 +603,6 @@ class Theme extends Extension
     {
         return round(memory_get_peak_usage(true) / (1024 * 1024), 4);
     }
-
-    /**************** OUTPUT MESSAGES *************************************/
 
     /**
      * Outputs all the alers: messages/errors/info/warnings

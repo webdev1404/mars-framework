@@ -21,7 +21,11 @@ class PermissionDenied
      */
     public function output()
     {
-        echo 'Permission denied!' . "\n";
-        die;
+        if ($this->app->is_cli) {
+            $this->app->cli->error('Permission denied!');
+            return;
+        }
+
+        $this->app->theme->render('message/permission-denied');
     }
 }

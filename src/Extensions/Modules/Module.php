@@ -9,6 +9,8 @@ namespace Mars\Extensions\Modules;
 use Mars\App;
 use Mars\Extensions\Extension;
 use Mars\Extensions\Extensions;
+use Mars\Extensions\Abilities\FilesCacheTrait;
+use Mars\Extensions\Modules\Abilities\ConfigTrait;
 use Mars\Extensions\Modules\Abilities\LanguagesTrait;
 use Mars\Extensions\Modules\Abilities\TemplatesTrait;
 
@@ -18,6 +20,8 @@ use Mars\Extensions\Modules\Abilities\TemplatesTrait;
  */
 class Module extends Extension
 {
+    use FilesCacheTrait;
+    use ConfigTrait;
     use LanguagesTrait;
     use TemplatesTrait;
 
@@ -27,12 +31,13 @@ class Module extends Extension
     public const array DIRS = [
         'assets' => 'assets',
         'bin' => 'bin',
-        'languages' => 'languages',
-        'templates' => 'templates',
         'blocks' => 'blocks',
+        'config' => 'config',
+        'languages' => 'languages',
         'pages' => 'pages',
         'plugins' => 'plugins',
         'routes' => 'routes',
+        'templates' => 'templates',
         'setup' => 'setup',
     ];
 

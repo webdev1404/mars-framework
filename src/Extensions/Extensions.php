@@ -33,6 +33,11 @@ abstract class Extensions
     protected static string $list_config_file = '';
 
     /**
+     * @var string $list_config_key The config key where the enabled extensions are listed
+     */
+    protected static string $list_config_key = '';
+
+    /**
      * @var string $instance_class The class of the extensions instance
      */
     protected static string $instance_class = '';
@@ -130,7 +135,7 @@ abstract class Extensions
      */
     public function getAll(bool $use_cache = true): array
     {
-        if (static::$list_all !== null) {
+        if ($use_cache && static::$list_all !== null) {
             return static::$list_all;
         }
 
@@ -163,7 +168,7 @@ abstract class Extensions
      */
     public function getEnabled(bool $use_cache = true): array
     {
-        if (static::$list_enabled !== null) {
+        if ($use_cache && static::$list_enabled !== null) {
             return static::$list_enabled;
         }
 
@@ -173,7 +178,13 @@ abstract class Extensions
             $list_all = $this->getAll();
 
             if (static::$list_config_file) {
+                //read the enabled extensions from the config file
                 $list_enabled = $this->app->config->read(static::$list_config_file);
+
+                return array_filter($list_all, fn ($extension) => in_array($extension, $list_enabled), ARRAY_FILTER_USE_KEY);
+            } elseif (static::$list_config_key) {
+                //read the enabled extensions from the config key
+                $list_enabled = $this->app->config->get(static::$list_config_key) ?? [];
 
                 return array_filter($list_all, fn ($extension) => in_array($extension, $list_enabled), ARRAY_FILTER_USE_KEY);
             }
@@ -194,7 +205,7 @@ abstract class Extensions
      */
     protected function getList(bool $use_cache, string $cache_filename, callable $get) : array
     {
-        $list = $this->app->cache->getArray($cache_filename, false);
+        $list = $this->app->cache->get($cache_filename);
 
         // If we are in development mode, we always read the list from the filesystem
         $development = $this->app->development ? true : $this->app->config->development_extensions[static::$instance_class::getBaseDir()] ?? false;
@@ -208,7 +219,7 @@ abstract class Extensions
 
         $list = $get();
 
-        $this->app->cache->setArray($cache_filename, $list, false);
+        $this->app->cache->set($cache_filename, $list, false);
 
         return $list;
     }
@@ -300,16 +311,11 @@ abstract class Extensions
     public function install(string $name)
     {
         $extension = $this->get($name);
-        if ($extension->enabled) {
-            throw new \Exception("Extension '{$name}' is already installed.");
-        }
 
         $setup = $this->getSetupManager($name);
         if ($setup && method_exists($setup, 'install')) {
             $setup->install();
         }
-
-        $this->addConfig($name);
        
         $this->createSymlink($extension);
     }
@@ -379,16 +385,11 @@ abstract class Extensions
     public function uninstall(string $name)
     {
         $extension = $this->get($name);
-        if (!$extension->enabled) {
-            throw new \Exception("Extension '{$name}' is not enabled.");
-        }
 
         $setup = $this->getSetupManager($name);
         if ($setup && method_exists($setup, 'uninstall')) {
             $setup->uninstall();
         }
-
-        $this->removeConfig($name);
 
         $this->removeSymlink($extension);
     }

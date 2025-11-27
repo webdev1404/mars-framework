@@ -345,8 +345,10 @@ abstract class Controller extends \stdClass
      * @param string $method The name of the method
      * @param array $params Params to be passed to the method, if any
      */
-    public function dispatch(string $method = '', array $params = [])
+    public function dispatch(string $method = '', ?array $params = null)
     {
+        $params = $params ?? ($this->parent->params_route ?? []);
+        
         if (!$method) {
             $method = $this->app->request->getAction();
             if (!$method) {

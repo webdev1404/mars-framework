@@ -66,7 +66,6 @@ abstract class Image
 
         $finfo = \finfo_open(FILEINFO_MIME_TYPE);
         $mime_type = \finfo_file($finfo, $this->filename);
-        finfo_close($finfo);
 
         return $mime_type == $this->mime_type;
     }

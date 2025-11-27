@@ -14,5 +14,5 @@ interface ContentInterface
     /**
      * Outputs the route's content
      */
-    public function output();
+    public function output(array $params = []);
 }

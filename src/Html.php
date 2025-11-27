@@ -104,7 +104,7 @@ class Html
         foreach ($attributes as $name => $value) {
             if (is_array($value)) {
                 //don't escape if $value is an array
-                $value = reset($value);
+                $value = array_first($value);
             } else {
                 if (!is_bool($value)) {
                     $value = $this->app->escape->html($value);
@@ -642,6 +642,9 @@ class Html
      */
     public function csrf() : string
     {
+        //don't cache the pages where the csrf token is shown
+        $this->app->cache->pages->can_cache = false;
+
         return $this->hidden($this->app->config->html_csrf_name, $this->app->session->token);
     }
 }

@@ -6,28 +6,14 @@
 
 namespace Mars\Cache\Cacheable;
 
-use Mars\App\Kernel;
 use Mars\Cache\Cacheable\CacheableInterface;
 
 /**
  * The Cachable Memcache Driver
  * Driver which stores in memcache the cached resources
  */
-class Memcache implements CacheableInterface
+class Memcache extends Base implements CacheableInterface
 {
-    use Kernel;
-
-    /**
-     * Checks if memcache is enabled
-     * @throws \Exception
-     */
-    protected function check()
-    {
-        if (!$this->app->memcache->enabled) {
-            throw new \Exception('Memcache must be enabled to be able to use the memcache cachable driver');
-        }
-    }
-
     /**
      * Returns the filename without the cache path
      * @param string $filename The filename
@@ -35,35 +21,58 @@ class Memcache implements CacheableInterface
      */
     protected function getFilename(string $filename) : string
     {
-        return str_replace($this->app->cache_path . '/', '', $filename);
+        return str_replace($this->app->base_path . '/', '', $filename);
     }
 
     /**
      * @see CacheableInterface::get()
      * {@inheritdoc}
      */
-    public function get(string $filename) : string
+    public function get(string $filename, bool $unserialize) : mixed
     {
-        $this->check();
+        $filename = $this->getFilename($filename);
+        
+        $content = $this->app->memcache->get($filename);
+        if (!$content) {
+            return $content;
+        }
 
-        return $this->app->memcache->get($this->getFilename($filename));
+        return $this->app->serializer->unserializeData($content);
     }
 
     /**
      * @see CacheableInterface::store()
      * {@inheritdoc}
      */
-    public function store(string $filename, string $content, string $type) : bool
+    public function set(string $filename, mixed $content, bool $serialize) : bool
     {
-        $this->check();
-
         $filename = $this->getFilename($filename);
 
-        $this->app->memcache->set($filename, $content);
+        $this->app->memcache->set($filename, $this->app->serializer->serializeData($content));
         $this->app->memcache->set($filename . '-last-modified', time());
-        $this->app->memcache->storeKey($filename, $type);
+        $this->app->memcache->storeKey($filename, $this->type);
 
         return true;
+    }
+
+    /**
+     * @see CacheableInterface::create()
+     * {@inheritdoc}
+     */
+    public function create(string $filename)
+    {
+        $this->set($filename, '', false);
+    }
+
+    /**
+     * @see CacheableInterface::exists()
+     * {@inheritdoc}
+     */
+    public function exists(string $filename) : bool
+    {
+        $filename = $this->getFilename($filename);
+
+        return $this->app->memcache->exists($filename);
     }
 
     /**
@@ -72,8 +81,6 @@ class Memcache implements CacheableInterface
      */
     public function getLastModified(string $filename) : int
     {
-        $this->check();
-
         $filename = $this->getFilename($filename);
 
         return (int)$this->app->memcache->get($filename . '-last-modified');
@@ -83,15 +90,13 @@ class Memcache implements CacheableInterface
      * @see CacheableInterface::delete()
      * {@inheritdoc}
      */
-    public function delete(string $filename, string $type) : bool
+    public function delete(string $filename) : bool
     {
-        $this->check();
-
         $filename = $this->getFilename($filename);
 
         $this->app->memcache->delete($filename);
         $this->app->memcache->delete($filename . '-last-modified');
-        $this->app->memcache->deleteKey($filename, $type);
+        $this->app->memcache->deleteKey($filename, $this->type);
 
         return true;
     }
@@ -100,11 +105,9 @@ class Memcache implements CacheableInterface
      * @see CacheableInterface::clean()
      * {@inheritdoc}
      */
-    public function clean(string $dir, string $type)
+    public function clean(string $dir)
     {
-        $this->check();
-
-        $keys = $this->app->memcache->getKeys($type);
+        $keys = $this->app->memcache->getKeys($this->type);
         if (!$keys) {
             return;
         }
@@ -114,6 +117,6 @@ class Memcache implements CacheableInterface
             $this->app->memcache->delete($key . '-last-modified');
         }
 
-        $this->app->memcache->deleteKeyEntry($type);
+        $this->app->memcache->deleteKeyEntry($this->type);
     }
 }

@@ -18,6 +18,36 @@ class Uri implements \Stringable
     use Kernel;
 
     /**
+     * @var string $request_uri_full The full request URI as read from $_SERVER['REQUEST_URI']
+     */
+    public protected(set) string $request_uri_full {
+        get {
+            if (isset($this->request_uri_full)) {
+                return $this->request_uri_full;
+            }
+
+            $this->request_uri_full = new Url($_SERVER['REQUEST_URI'] ?? '')->path;
+
+            return $this->request_uri_full;
+        }
+    }
+
+    /**
+     * @var array $parts_full The parts of the full request uri, splitted by '/'
+     */
+    public protected(set) array $parts_full {
+        get {
+            if (isset($this->parts_full)) {
+                return $this->parts_full;
+            }
+
+            $this->parts_full = explode('/', $this->request_uri_full);
+
+            return $this->parts_full;
+        }
+    }
+
+    /**
      * @var string $request_uri The request URI as read from $_SERVER['REQUEST_URI']
      */
     public protected(set) string $request_uri {
@@ -26,12 +56,15 @@ class Uri implements \Stringable
                 return $this->request_uri;
             }
 
-            $this->request_uri = new Url($_SERVER['REQUEST_URI'] ?? '')->path;
+            $this->request_uri = $this->app->lang->request_uri ?? $this->request_uri_full;
 
             return $this->request_uri;
         }
     }
 
+    /**
+     * @var array $parts The parts of the request uri, splitted by '/'
+     */
     public protected(set) array $parts {
         get {
             if (isset($this->parts)) {
@@ -68,7 +101,7 @@ class Uri implements \Stringable
                 return $this->current;
             }
 
-            $this->current = $this->get($this->app->base_url, $this->request_uri, [], false);
+            $this->current = $this->get($this->root, $this->request_uri, [], false);
 
             return $this->current;
         }
@@ -78,44 +111,29 @@ class Uri implements \Stringable
      * @var string $path The path of the current url
      */
     public string $path {
-        get => $this->current->path;
+        get {
+            if (isset($this->path)) {
+                return $this->path;
+            }
+
+            $this->path = implode('/', $this->parts);
+
+            return $this->path;
+        }
     }
 
     /**
-     * @var string $root The root url. Includes the language code, if languages_multi is enabled. Eg: http://mydomain.com/mars/en
+     * @var Url $root The root url. Includes the language code, if languages_multi is enabled. Eg: http://mydomain.com/mars/en
      */
-    public protected(set) string $root {
+    public protected(set) Url $root {
         get {
             if (isset($this->root)) {
                 return $this->root;
             }
 
-            $this->root = $this->base;
-            if ($this->app->lang->multi) {
-                // Append the language code to the base URL, if we are using multi-languages
-                $this->root .= '/' . $this->app->lang->code;
-            }
+            $this->root = new Url($this->app->lang->url);
 
             return $this->root;
-        }
-    }
-
-    /**
-     * @var string $lang The language code from the url, if multi languages is enabled. Eg: en, fr, de
-     */
-    public protected(set) string $lang {
-        get {
-            if (isset($this->lang)) {
-                return $this->lang;
-            }
-
-            // If multi-language is enabled, the first part of the URL is the language code
-            $this->lang = '';
-            if ($this->app->lang->multi) {
-                $this->lang = $this->parts[0] ?? '';
-            }
-
-            return $this->lang;
         }
     }
 
@@ -136,6 +154,21 @@ class Uri implements \Stringable
             }
 
             return $this->full;
+        }
+    }
+
+    /**
+     * @var array $routes The list of routes names
+     */
+    protected array $routes {
+        get {
+            if (isset($this->routes)) {
+                return $this->routes;
+            }
+
+            $this->routes = $this->app->cache->routes->getNames($this->app->lang->code);
+
+            return $this->routes;
         }
     }
 
@@ -303,6 +336,20 @@ class Uri implements \Stringable
     public function add(string $base_url, array $params, bool $remove_empty_params = true) : Url
     {
         return new Url($base_url)->add($params, $remove_empty_params);
+    }
+
+    /**
+     * Returns the url of a route
+     * @param string $name The name of the route
+     */
+    public function route(string $name) : ?Url 
+    {
+        $url = $this->routes[$name] ?? null;
+        if (!$url) {
+            return null;
+        }
+
+        return new Url($this->base . '/' . $url);
     }
 
     /**

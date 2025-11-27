@@ -89,8 +89,5 @@ abstract class Operation
         imagecopyresampled($destination, $source, $destination_x, $destination_y, $source_x, $source_y, $destination_width, $destination_height, $source_width, $source_height);
 
         $this->destination->save($destination);
-
-        imagedestroy($source);
-        imagedestroy($destination);
     }
 }

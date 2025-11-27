@@ -27,7 +27,7 @@ class Config
     /**
      * @var int $display_errors Controls whether errors should be displayed or not
      */
-    public int $display_errors = 1;
+    public int $display_errors = 0;
 
     /**
      * @var int $error_reporting The error reporting level
@@ -237,7 +237,7 @@ class Config
     /**
      * Change the driver only if you know what you're doing! Preferably at installation time.
      * You might try to unserialize data which has been serialized with a different driver, otherwise
-     * @var string $serializer_driver The serializer driver. Supported options: php, igbinary
+     * @var string $serializer_driver The serializer driver. Supported options: php, json, igbinary
      */
     public string $serializer_driver = 'php';
 
@@ -362,6 +362,26 @@ class Config
     public string $language_fallback = 'english';
 
     /**
+     * @var array $language_codes The list of available language codes, in the format code => language name
+     */
+    public array $language_codes = ['en' => 'english'];
+
+    /**
+     * @var string $localization_driver The localization driver. Supported options: path, subdomain, domain, query_string, cookie
+     */
+    public string $localization_driver = 'path';
+
+    /**
+     * @var string $localization_cookie_name The name of the cookie used for language
+     */
+    public string $localization_cookie_name = 'locale';
+
+    /**
+     * @var array $localization_urls The list of supported localization urls, in the format language code => url
+     */
+    public array $localization_urls = [];
+
+    /**
      * @var string $lang The default theme
      */
     public string $theme = 'mars';
@@ -442,9 +462,19 @@ class Config
     public string $cache_hash = 'sha256';
 
     /**
-     * @var string $cache_driver
+     * @var string $cache_driver The driver used for caching. Supported options: file, php, memcache
      */
-    public string $cache_driver = 'file';
+    public string $cache_driver = 'php';
+
+    /**
+     * @var string|null $cache_data_driver The driver used for data caching. If null, will use the default cache_driver
+     */
+    public ?string $cache_data_driver = null;
+
+    /**
+     * @var string|null $cache_routes_driver The driver used for routes caching. If null, will use the default cache_driver
+     */
+    public ?string $cache_routes_driver = null;
 
     /**
      * @var bool $cache_page_enable If true, will enable the content cache functionality
@@ -465,6 +495,8 @@ class Config
      * @var bool $cache_page_minify If true will minify the cached content
      */
     public bool $cache_page_minify = true;
+
+    //public string $cache_
 
     /**
      * @var int $routes_prefix_length The length of the prefix used for routing
@@ -676,9 +708,9 @@ class Config
     public int $file_max_chars = 300;
 
     /**
-     * @var bool $use_is_file_cache If true, will use the is_file cache functionality
+     * @var bool $files_cache_use If true, will use the is_file cache functionality
      */
-    public bool $use_is_file_cache = true;
+    public bool $files_cache_use = true;
 
     /**
      * @var string $title_prefix The prefix of the <title> tag
@@ -729,15 +761,35 @@ class Config
     }
 
     /**
+     * Returns the value of a config option
+     * @param string $name The name of the config option
+     * @return mixed The value of the config option
+     */
+    public function get(string $name) : mixed
+    {
+        return $this->$name ?? null;
+    }
+
+    /**
      * Reads the config settings from the specified $file and returns it
      * @param string $file The file
      * @return array
      */
     public function read(string $file) : array
     {
+        return $this->readFilename($this->app->config_path . '/' . basename($file));
+    }
+
+    /**
+     * Reads the config settings from the specified $filename and returns it
+     * @param string $filename The filename
+     * @return array
+     */
+    public function readFilename(string $filename) : array
+    {
         $app = $this->app;
 
-        return require($this->app->config_path . '/' . basename($file));
+        return require($filename);
     }
 
     /**
@@ -761,13 +813,25 @@ class Config
     }
 
     /**
+     * Reads the config settings from the specified $file and loads it
+     * @param string $file The file
+     * @return static
+     */
+    public function load(string $file) : static
+    {
+        $this->assign($this->read($file));
+
+        return $this;
+    }
+
+    /**
      * Reads the config settings from the specified $filename and loads it
      * @param string $filename The filename
      * @return static
      */
-    public function load(string $filename) : static
+    public function loadFilename(string $filename) : static
     {
-        $this->assign($this->read($filename));
+        $this->assign($this->readFilename($filename));
 
         return $this;
     }

@@ -71,8 +71,9 @@ class Cache
     /**
      * Gets a cached value
      * @param string $name The name of the value to get
+     * @return mixed The cached value or null if it does not exist
      */
-    public function get(string $name)
+    public function get(string $name) : mixed
     {
         return $this->data->get($name);
     }
@@ -96,44 +97,6 @@ class Cache
     public function delete(string $name) : static
     {
         $this->data->delete($name);
-
-        return $this;
-    }
-
-    /**
-     * Gets an array from a php file
-     * @param string $filename The name of the file
-     * @param bool $hash_filename Whether to hash the filename or not
-     * @return array The array or null if the file does not exist
-     */
-    public function getArray(string $filename, bool $hash_filename = true) : ?array
-    {
-        return $this->data->getArray($filename, $hash_filename);
-    }
-    
-    /**
-     * Stores an array to a php file
-     * @param string $filename The name of the file
-     * @param bool $hash_filename Whether to hash the filename or not
-     * @param array $data The data to store
-     * @return static $this
-     */
-    public function setArray(string $filename, array $data, bool $hash_filename = true) : static
-    {
-        $this->data->setArray($filename, $data, $hash_filename);
-
-        return $this;
-    }
-
-    /**
-     * Deletes a cached php file
-     * @param string $filename The name of the file
-     * @param bool $hash_filename Whether to hash the filename or not
-     * @return static $this
-     */
-    public function deleteArray(string $filename, bool $hash_filename = true) : static
-    {
-        $this->data->deleteArray($filename, $hash_filename);
 
         return $this;
     }

@@ -16,14 +16,26 @@ use Mars\Assets\Minifier;
 class Pages extends Cacheable
 {
     /**
+     * @var bool $can_cache True if the content can be cached
+     */
+    public bool $can_cache = false;
+
+    /**
      * @var string $dir The dir where the page files will be cached
      */
     protected string $dir = 'pages';
 
     /**
-     * @var bool $can_cache True if the content can be cached
+     * @var bool $can_hash Whether to hash the filename or not
      */
-    public bool $can_cache = false;
+    protected bool $can_hash = true;
+
+    /**
+     * @var string $driver_name The name of the driver to use
+     */
+    protected string $driver_name {
+        get => $this->app->config->cache_page_driver;
+    }
 
     /**
      * @var bool $minify True, if the output can be minified
@@ -48,12 +60,12 @@ class Pages extends Cacheable
                 return $this->file;
             }
 
-            $this->file = $this->app->url->full;
+            $this->file = $this->app->url->full . '-' . $this->app->lang->code;
 
             return $this->file;
         }
     }
-
+    
     /**
      * @var string $filename The filename of the file used to cache the content
      */
@@ -67,18 +79,6 @@ class Pages extends Cacheable
 
             return $this->filename;
         }
-    }
-
-    /**
-     * @var string $extension The extension of the cache file
-     */
-    protected string $extension = 'htm';
-
-    /**
-     * @var string $driver_name The name of the driver to use
-     */
-    protected string $driver_name {
-        get => $this->app->config->cache_page_driver;
     }
 
     /**
@@ -116,18 +116,19 @@ class Pages extends Cacheable
             $content = $this->minify($content);
         }
 
-        $this->driver->store($this->filename, $content, $this->dir);
+        $this->driver->set($this->filename, $content, false);
 
         return $this;
     }
 
     /**
      * Deletes the cache file
+     * @param string $name Unused parameter
      * @return static
      */
-    public function delete() : static
+    public function delete(string $name = '') : static
     {
-        $this->driver->delete($this->filename, $this->dir);
+        $this->driver->delete($this->filename);
 
         return $this;
     }
@@ -141,7 +142,7 @@ class Pages extends Cacheable
     {
         $filename = $this->path . '/' . $this->getName($file);
 
-        $this->driver->delete($filename, $this->dir);
+        $this->driver->delete($filename);
 
         return $this;
     }
@@ -151,7 +152,7 @@ class Pages extends Cacheable
      */
     public function clean() : static
     {
-        $this->driver->clean($this->path, $this->dir);
+        $this->driver->clean($this->path);
         
         return $this;
     }
@@ -234,7 +235,7 @@ class Pages extends Cacheable
     {
         $this->outputContentType();
 
-        $content = $this->driver->get($this->filename);
+        $content = $this->driver->get($this->filename, false);
         
         header('Content-Length: ' . strlen($content));
 
@@ -267,7 +268,7 @@ class Pages extends Cacheable
      */
     protected function getEtag(int $last_modified) : string
     {
-        return md5($this->file . $last_modified);
+        return md5($this->filename . $last_modified);
     }
 
     /**

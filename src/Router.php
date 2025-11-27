@@ -8,8 +8,8 @@ namespace Mars;
 
 use Mars\App\LazyLoad;
 use Mars\Router\Base;
-use Mars\Router\Routes;
 use Mars\Router\Loader;
+use Mars\Router\Handler;
 use Mars\Content\ContentInterface;
 use Mars\Mvc\Controller;
 
@@ -22,43 +22,38 @@ class Router extends Base
     use LazyLoad;
 
     /**
-     * @var string $path The path used by the router
+     * @var string $route The route used by the router
      */
-    public protected(set) string $path {
+    public protected(set) string $route {
         get {
-            if (isset($this->path)) {
-                return $this->path;
+            if (isset($this->route)) {
+                return $this->route;
             }
 
-            $this->path = $this->app->url->path;
+            $this->route = $this->app->url->path;
 
-            //remove the language code from the path, if multi-language is enabled
-            if ($this->app->lang->multi) {
-                $this->path = str_replace($this->app->lang->code, '', $this->path);
-            }
-
-            //remove the leading slash, for all the routes except the root
-            if ($this->path) {
-                $this->path = ltrim($this->path, '/');
+            //remove the slashes, for all the routes except the root
+            if ($this->route) {
+                $this->route = trim($this->route, '/');
             } else {
-                $this->path = '/';
+                $this->route = '/';
             }
 
-            return $this->path;
+            return $this->route;
         }
     }
 
     /**
-     * @var Routes $routes The routes list container
-     */
-    #[LazyLoadProperty]
-    public protected(set) Routes $routes;
-
-    /**
-     * @var Loader $loader The routes loader container
+     * @var Loader $loader The routes loader
      */
     #[LazyLoadProperty]
     public protected(set) Loader $loader;
+
+    /**
+     * @var Handler $handler The routes handler
+     */
+    #[LazyLoadProperty]
+    public protected(set) Handler $handler;
 
     /**
      * The constructor
@@ -100,26 +95,24 @@ class Router extends Base
 
     /**
      * Returns the route matching the current request
-     * @param string|null $path The path to get the route for. If null, the current path will be used
+     * @param string|null $route The route to get the route for. If null, the current route will be used
      * @return mixed
      */
-    protected function getRoute(?string $path = null) : array|null
+    protected function getRoute(?string $route = null) : array|null
     {
         //check if the method is allowed
         if (!in_array($this->app->request->method, static::ALLOWED_METHODS)) {
             return null;
         }
 
-        $path ??= $this->path;
-
-        $hashes = $this->app->cache->routes->getHashes($this->getPrefix($path));
-        $hash = $this->getHash($path, $this->app->lang->code, $this->app->request->method);
-
-        if (isset($hashes[$hash])) {
-            return $this->loader->getByHash($hash, $hashes[$hash]);
-        } else {
-            return $this->loader->getByPreg($hashes);
+        $route ??= $this->route;
+        $hash = $this->getHash($route);
+        $hashes = $this->app->cache->routes->getHashes($this->app->request->method, $this->app->lang->code, $this->getPrefix($route));
+        if (!$hashes) {
+            return null;
         }
+
+        return $this->handler->get($hash, $hashes);
     }
 
     /**
@@ -133,7 +126,7 @@ class Router extends Base
         if (is_callable($action)) {
             $this->outputFromClosure($action, $params);
         } elseif (is_object($action)) {
-            $this->outputFromObject($action);
+            $this->outputFromObject($action, $params);
         } elseif (is_string($action)) {
             $parts = explode('@', $action);
 
@@ -155,17 +148,17 @@ class Router extends Base
         $value = call_user_func_array($route, [...$this->app->reflection->getParams($route, $params), $this->app]);
         $content = ob_get_clean();
 
-        $this->outputContent($value, $content);
+        $this->outputContent($value, $content, $params);
     }
 
     /**
      * Outputs the content from an object
      * @param object $object The object to output
      */
-    protected function outputFromObject(object $object)
+    protected function outputFromObject(object $object, array $params)
     {
         if ($object instanceof ContentInterface) {
-            $object->output();
+            $object->output($params);
         } else {
             $this->app->send($object);
         }
@@ -200,8 +193,9 @@ class Router extends Base
      * Outputs the returned value and the content
      * @param string|array|object|null $value The value to output
      * @param string $content The content to output
+     * @param array $params The params of the route
      */
-    protected function outputContent(string|array|object|null $value, string $content)
+    protected function outputContent(string|array|object|null $value, string $content, array $params = [])
     {
         //if nothing was returned, output the content. Otherwise, append the content to the returned value
         if (!$value || is_string($value)) {
@@ -213,7 +207,7 @@ class Router extends Base
         } elseif (is_array($value)) {
             $this->app->send($value);
         } elseif (is_object($value)) {
-            $this->outputFromObject($value);
+            $this->outputFromObject($value, $params);
         }
     }
 }

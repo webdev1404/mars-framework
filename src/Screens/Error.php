@@ -6,6 +6,7 @@
 
 namespace Mars\Screens;
 
+use Mars\App;
 use Mars\App\Kernel;
 
 /**
@@ -20,17 +21,14 @@ class Error
      * Outputs the error screen
      * @param string $text The error's text
      * @param string $title The error's title, if any
-     * @param bool $escape_html If true will escape the title and error message
      */
-    public function output(string $text, string $title = '', ?bool $escape_html = null)
+    public function output(string $text, ?string $title = null)
     {
-        $escape_html = $escape_html ?? $this->app->is_web;
-
-        if ($escape_html) {
-            $text = $this->app->escape->html($text);
+        if ($this->app->is_cli) {
+            $this->app->cli->error($text);
+            return;
         }
 
-        echo 'Error: ' . $text . "\n";
-        die;
+        $this->app->theme->render('message/error', ['title' => $title ?? App::__('message.error'), 'text' => $text]);
     }
 }

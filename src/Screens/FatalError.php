@@ -19,21 +19,16 @@ class FatalError
     /**
      * Displays a fatal error screen
      * @param string $text The error's text
-     * @param bool $escape_html If true will escape the error message
      */
-    public function output(string $text, ?bool $escape_html = null)
+    public function output(string $text)
     {
-        $escape_html = $escape_html ?? $this->app->is_web;
-        
-        if ($escape_html) {
-            $text = $this->app->escape->html($text);
+        if ($this->app->is_cli) {
+            echo 'Fatal Error: ' . $text . "\n";
+            die;
         }
 
-        if ($this->app->is_web) {
-            $text = nl2br($text);
-        }
 
-        echo 'Fatal Error: ' . $text . "\n";
+        $text = nl2br($this->app->escape->html($text));
         die;
     }
 }

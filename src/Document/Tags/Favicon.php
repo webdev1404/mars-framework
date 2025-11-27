@@ -21,10 +21,8 @@ class Favicon extends Tag
             return;
         }
 
-        $favicon = $this->app->assets_url . '/' . $this->value;
+        $favicon = $this->app->plugins->filter('document_favicon_output', $this->value, $this);
 
-        $favicon = $this->app->plugins->filter('document_favicon_output', $favicon);
-
-        echo '<link rel="shortcut icon" type="image/png" href="' . $this->app->escape->html($favicon) . '" />' . "\n";
+        echo '<link rel="icon" type="image/png" href="' . $this->app->escape->html($favicon) . '" />' . "\n";
     }
 }

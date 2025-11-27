@@ -15,7 +15,7 @@ class Page extends Content implements ContentInterface
     /**
      * Outputs a html page from the app's pages folder
      */
-    public function output()
+    public function output(array $params = [])
     {
         $filename = $this->name;
         

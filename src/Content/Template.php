@@ -12,7 +12,7 @@ namespace Mars\Content;
  */
 class Template extends Content implements ContentInterface
 {
-    public function output()
+    public function output(array $params = [])
     {
         echo $this->app->theme->getTemplate($this->name);
     }

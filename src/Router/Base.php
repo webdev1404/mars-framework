@@ -54,13 +54,11 @@ abstract class Base
     /**
      * Returns the hash for a route
      * @param string $route The route
-     * @param string $language The language code
-     * @param string $method The method
      * @return string The hash
      */
-    protected function getHash(string $route, string $language, string $method) : string
+    protected function getHash(string $route) : string
     {
-        return hash('sha256', $route) . '-' . md5($method . $language);
+        return hash('sha256', $route);
     }
 
     /**
@@ -105,25 +103,5 @@ abstract class Base
         $methods = array_map('strtolower', $methods);
 
         return $methods;
-    }
-
-    /**
-     * Returns the languages to use for a route
-     * @param string|array|null $languages The languages to use
-     * @return array The list of languages
-     */
-    protected function getLanguages(string|array|null $languages = null) : array
-    {
-        if ($languages === null) {
-            return [$this->app->lang->default_code];
-        } elseif (is_array($languages)) {
-            return $languages;
-        }
-
-        if ($languages == '*') {
-            return $this->app->lang->codes;
-        }
-
-        return [$languages];
     }
 }

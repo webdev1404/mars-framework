@@ -24,6 +24,7 @@ class Serializer
      */
     protected array $supported_drivers = [
         'php' => \Mars\Serializers\Php::class,
+        'json' => \Mars\Serializers\Json::class,
         'igbinary' => \Mars\Serializers\Igbinary::class,
     ];
 
@@ -96,7 +97,7 @@ class Serializer
      * @param bool $use_php_driver If true, will always serialize using the php driver
      * @return string The serialized data
      */
-    public function serialize($data, bool $encode = true, bool $use_php_driver = true) : string
+    public function serialize(mixed $data, bool $encode = false, bool $use_php_driver = true) : string
     {
         $data = $this->getDriver($use_php_driver)->serialize($data);
 
@@ -115,7 +116,7 @@ class Serializer
      * @param bool $use_php_driver If true, will always unserialize using the php driver
      * @return mixed The unserialized data
      */
-    public function unserialize(?string $data, $default_value = [], bool $decode = true, bool $use_php_driver = true)
+    public function unserialize(?string $data, $default_value = [], bool $decode = false, bool $use_php_driver = true)
     {
         if ($data === '' || $data === null) {
             return $default_value;
@@ -126,5 +127,28 @@ class Serializer
         }
 
         return $this->getDriver($use_php_driver)->unserialize($data);
+    }
+
+    /**
+     * Serializes data using the current driver
+     * @param mixed $data The data to serialize
+     * @param bool $encode If true, will base64 encode the serialize data
+     * @return string The serialized data
+     */
+    public function serializeData(mixed $data, bool $encode = false) : string
+    {
+        return $this->serialize($data, $encode, false);
+    }
+
+    /**
+     * Unserializes data using the current driver
+     * @param mixed $data The data to unserialize
+     * @param mixed $default_value The default value to return if $data is an empty string or null
+     * @param bool $decode If true, will base64 decode the serialize data
+     * @return mixed The unserialized data
+     */    
+    public function unserializeData(?string $data, $default_value = [], bool $decode = false)
+    {
+        return $this->unserialize($data, $default_value, $decode, false);
     }
 }

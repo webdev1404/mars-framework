@@ -6,6 +6,7 @@
 
 namespace Mars\Screens;
 
+use Mars\App;
 use Mars\App\Kernel;
 
 /**
@@ -17,20 +18,17 @@ class Message
     use Kernel;
 
     /**
-     * Outputs the error screen
-     * @param string $text The error's text
-     * @param string $title The error's title, if any
-     * @param bool $escape_html If true will escape the title and message
+     * Outputs the message screen
+     * @param string $text The message's text
+     * @param string $title The message's title, if any
      */
-    public function output(string $text, string $title = '', ?bool $escape_html = null)
+    public function output(string $text, ?string $title = null)
     {
-        $escape_html = $escape_html ?? $this->app->is_web;
-
-        if ($escape_html) {
-            $text = $this->app->escape->html($text);
+        if ($this->app->is_cli) {
+            $this->app->cli->message($text);
+            return;
         }
 
-        echo 'Message: ' . $text . "\n";
-        die;
+        $this->app->theme->render('message/message', ['title' => $title ?? App::__('message.message'), 'text' => $text]);
     }
 }

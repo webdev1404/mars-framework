@@ -145,14 +145,10 @@ class Request
             $error = curl_error($ch);
             $errno = curl_errno($ch);
 
-            curl_close($ch);
-
             throw new \Exception("Curl error: {$error} ({$errno})");
         }
 
         $response = new Response($ch, $result, $this->app);
-
-        curl_close($ch);
 
         return $response;
     }

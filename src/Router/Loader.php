@@ -1,56 +1,69 @@
 <?php
 /**
-* The Routes Loader Class
+* The Loader Class
 * @package Mars
 */
 
 namespace Mars\Router;
 
-use Mars\Mvc\Controller;
+use Mars\App\Handlers;
+use Mars\Router\Loaders\Routes;
 
 /**
- * The Routes Loader Class
- * Routes loading and handling class
+ * The Loader Class
+ * Loads the routes from defined loaders
  */
-class Loader extends Routes
+class Loader extends Base
 {
     /**
-     * @var array $supported_sources The list of supported route sources
+     * @var array $supported_loaders The list of supported route loaders
      */
-    public protected(set) array $supported_sources = [
-        'pages' => \Mars\Router\Sources\Loaders\Pages::class,
-        'files' => \Mars\Router\Sources\Loaders\Files::class,
+    public protected(set) array $supported_loaders = [
+        'pages' => \Mars\Router\Loaders\Pages::class,
+        'files' => \Mars\Router\Loaders\Files::class,
     ];
 
     /**
-     * Returns the route by its hash
-     * @param string $hash The hash of the route
-     * @param array $data The route data
-     * @return array|null The route, or null if not found
+     * @var Handlers $loaders The loaders object
      */
-    public function getByHash(string $hash, array $data) : array|null
-    {
-        $source = $this->sources->get($data['type']);
-        $source->routes = $this;
+    public protected(set) Handlers $loaders {
+        get {
+            if (isset($this->loaders)) {
+                return $this->loaders;
+            }
 
-        return $source->getByHash($hash, $data);
+            $this->loaders = new Handlers($this->supported_loaders, null, $this->app);
+
+            return $this->loaders;
+        }
     }
 
     /**
-     * Returns the route from a preg match
-     * @param array $hashes The list of hashes
-     * @return array|null The route, or null if not found
+     * @var Routes $routes The routes data container
      */
-    public function getByPreg(array $hashes) : array|null
-    {
-        foreach ($this->sources as $source) {
-            $source->routes = $this;
-            $route = $source->getByPreg($hashes);
-            if ($route) {
-                return $route;
+    public protected(set) Routes $routes {
+        get {
+            if (isset($this->routes)) {
+                return $this->routes;
             }
+
+            $this->routes = new Routes;
+
+            return $this->routes;
+        }
+    }
+
+    /**
+     * Loads the routes from all the loaders
+     * @return Routes The routes data
+     */
+    public function load() : Routes
+    {
+        foreach ($this->loaders as $loader) {
+            $loader->routes = $this->routes;
+            $loader->load();
         }
 
-        return null;
+        return $this->routes;
     }
 }

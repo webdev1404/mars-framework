@@ -47,35 +47,4 @@ class Themes extends Extensions
 
         return static::$list_enabled;
     }
-
-    /**
-     * @see Extensions::install()
-     * {@inheritdoc}
-     */
-    public function install(string $name)
-    {
-        $extension = $this->get($name);
-
-        $setup = $this->getSetupManager($name);
-        if ($setup && method_exists($setup, 'install')) {
-            $setup->install();
-        }
-       
-        $this->createSymlink($extension);
-    }
-
-    /**
-     * @see Extensions::uninstall()
-     */
-    public function uninstall(string $name)
-    {
-        $extension = $this->get($name);
-
-        $setup = $this->getSetupManager($name);
-        if ($setup && method_exists($setup, 'uninstall')) {
-            $setup->uninstall();
-        }
-
-        $this->removeSymlink($extension);
-    }
 }

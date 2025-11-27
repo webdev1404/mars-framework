@@ -50,7 +50,7 @@ trait ListTrait
             return '';
         }
 
-        return reset($this->{static::$property});
+        return array_first($this->{static::$property});
     }
 
     /**

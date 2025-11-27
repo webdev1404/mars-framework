@@ -46,32 +46,29 @@ class Screens
      * Displays an error screen
      * @param string $text The error's text
      * @param string $title The error's title, if any
-     * @param bool $escape_html If true will escape the title and error message
      */
-    public function error(string $text, string $title = '', ?bool $escape_html = null)
+    public function error(string $text, ?string $title = null)
     {
-        $this->screens->get('error')->output($text, $title, $escape_html);
+        $this->screens->get('error')->output($text, $title);
     }
 
     /**
      * Displayes a message screen
      * @param string $text The text of the message
      * @param string $title The title of the message, if any
-     * @param bool $escape_html If true will escape the title and message
      */
-    public function message(string $text, string $title = '', ?bool $escape_html = null)
+    public function message(string $text, ?string $title = null)
     {
-        $this->screens->get('message')->output($text, $title, $escape_html);
+        $this->screens->get('message')->output($text, $title);
     }
 
     /**
      * Displays an error screen
      * @param string $text The error's text
-     * @param bool $escape_html If true will escape the error message
      */
-    public function fatalError(string $text, ?bool $escape_html = null)
+    public function fatalError(string $text)
     {
-        $this->screens->get('fatal_error')->output($text, $escape_html);
+        $this->screens->get('fatal_error')->output($text);
     }
 
     /**

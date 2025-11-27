@@ -111,6 +111,17 @@ class Memcache
     }
 
     /**
+     * Checks if memcache is enabled
+     * @throws \Exception If memcache is not enabled
+     */
+    protected function check()
+    {
+        if (!$this->enabled) {
+            throw new \Exception('Memcache must be enabled to be able to use it. Please check the \'memcache_enable\' config option.');
+        }
+    }
+
+    /**
      * Adds a key to the memcache only if it doesn't already exists
      * @param string $key The key
      * @param string $value The value
@@ -120,9 +131,7 @@ class Memcache
      */
     public function add(string $key, $value, bool $serialize = false, int $expires = 0)
     {
-        if (!$this->enabled) {
-            return false;
-        }
+        $this->check();
 
         if ($serialize) {
             $value = $this->app->serializer->serialize($value, false);
@@ -141,9 +150,7 @@ class Memcache
      */
     public function set(string $key, $value, bool $serialize = false, int $expires = 0) : bool
     {
-        if (!$this->enabled) {
-            return false;
-        }
+        $this->check();
     
         if ($serialize) {
             $value = $this->app->serializer->serialize($value, false);
@@ -160,9 +167,7 @@ class Memcache
      */
     public function get(string $key, bool $unserialize = false)
     {
-        if (!$this->enabled) {
-            return null;
-        }
+        $this->check();
 
         $value = $this->driver->get($key . '-' . $this->key);
 
@@ -180,9 +185,7 @@ class Memcache
      */
     public function exists(string $key) : bool
     {
-        if (!$this->enabled) {
-            return false;
-        }
+        $this->check();
 
         return $this->driver->exists($key . '-' . $this->key);
     }
@@ -195,9 +198,7 @@ class Memcache
      */
     public function delete(string $key) : bool
     {
-        if (!$this->enabled) {
-            return false;
-        }
+        $this->check();
 
         return $this->driver->delete($key . '-' . $this->key);
     }
@@ -208,9 +209,7 @@ class Memcache
      */
     public function deleteAll() : static
     {
-        if (!$this->enabled) {
-            return $this;
-        }
+        $this->check();
 
         $this->driver->deleteAll();
 
@@ -225,7 +224,6 @@ class Memcache
     public function getKeys(string $type) : array
     {
         $keys = $this->get("{$type}-all-keys") ?? [];
-        print_r($keys);
         if ($keys) {
             $keys = (array)json_decode($keys);
         }

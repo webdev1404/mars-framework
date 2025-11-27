@@ -203,6 +203,7 @@ class Template
         $app = $this->app;
         $lang = $this->app->lang;
         $theme = $this->app->theme;
+        $modules = $this->app->modules;
         $config = $this->app->config;
         $html = $this->app->html;
         $ui = $this->app->ui;

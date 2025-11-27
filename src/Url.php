@@ -168,7 +168,7 @@ class Url implements \Stringable
             }
 
             $this->path = (string)parse_url($this->url, PHP_URL_PATH);
-            $this->path = trim($this->path, '/');
+            $this->path = ltrim($this->path, '/');
 
             return $this->path;
         }
@@ -226,7 +226,7 @@ class Url implements \Stringable
      */
     public function __construct(string $url, bool $sanitize = true)
     {
-        $this->url = rtrim($url, '/');
+        $this->url = $url;
 
         if ($sanitize) {
             $this->url = filter_var($this->url, FILTER_SANITIZE_URL);
@@ -289,9 +289,6 @@ class Url implements \Stringable
         if (!$parts && !$params) {
             return clone $this;
         }
-
-        //remove slashes from parts
-        $parts = array_map(fn ($part) => trim($part, '/ '), $parts);
 
         if ($encode) {
             $parts = array_map(fn ($part) => rawurlencode($part), $parts);

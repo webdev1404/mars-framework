@@ -224,6 +224,21 @@ abstract class Extension
     }
 
     /**
+     * Initializes the extension by including its init.php file
+     */
+    public function init()
+    {
+        include($this->path . '/init.php');
+    }
+
+    /**
+     * Prepares the extension
+     */
+    public function prepare()
+    {
+    }
+
+    /**
      * Returns the extension's type
      * @return string
      */
@@ -248,31 +263,6 @@ abstract class Extension
     public static function getBaseNamespace() : string
     {
         return static::$base_namespace;
-    }
-
-    /**
-     * Returns the list of existing files in the specified directory
-     * @param string $dir The directory to scan for files
-     * @param string $cache_filename The filename used to cache the list of files
-     * @return array The list of existing files
-     */
-    protected function getExistingFiles(string $dir, string $cache_filename) : array
-    {
-        $files = $this->app->cache->getArray($cache_filename, false);
-
-        // Force files scan if we are in development mode
-        if ($this->development) {
-            $files = null;
-        }
-
-        if ($files === null) {
-            $files = $this->app->dir->getFiles($dir, true, false);
-            $files = $this->app->array->flip($files);
-
-            $this->app->cache->setArray($cache_filename, $files, false);
-        }
-
-        return $files;
     }
 
     /**

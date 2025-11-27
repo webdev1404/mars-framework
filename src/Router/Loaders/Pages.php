@@ -1,10 +1,10 @@
 <?php
 /**
-* The Pages Routes Source Class
+* The Pages Loader Class
 * @package Mars
 */
 
-namespace Mars\Router\Sources;
+namespace Mars\Router\Loaders;
 
 use Mars\App\Handlers;
 use Mars\Mvc\Controller;
@@ -14,10 +14,10 @@ use Mars\Extensions\Modules\Module;
 use Mars\Extensions\Modules\Modules;
 
 /**
- * The Pages Routes Source Class
- * Stores and handles the page routes
+ * The Pages Loader Class
+ * Loads the page routes
  */
-class Pages extends Source
+class Pages extends Loader
 {
     /**
      * @var string $homepage The name of the homepage file
@@ -25,7 +25,12 @@ class Pages extends Source
     protected string $homepage = 'homepage';
 
     /**
-     * @see Source::load()
+     * @var string $method The HTTP method for the page routes
+     */
+    protected string $method = 'get';
+
+    /**
+     * @see Loader::load()
      * {@inheritdoc}
      */
     public function load()
@@ -36,28 +41,25 @@ class Pages extends Source
 
         $dirs = $this->getDirsList();
         foreach ($dirs as $dir) {
-            $files_array = $this->getFromDir($dir);
+            $files = $this->getFromDir($dir);
 
-            foreach ($files_array as $file) {
+            foreach ($files as $file) {
                 $filename = $dir . '/' . $file;
                 $route = $this->getRoute($file);
-                $lang = $this->getLanguage($file);
-                $hash = $this->getHash($route, $lang, 'get');
+                $prefix = $this->getPrefix($route);
+                $languages = $this->getLanguages($file, $files);
 
-                $this->routes->list[$hash] = $this->getData($route, $filename);
+                if (!$languages) {
+                    continue;
+                }
+
+                foreach ($languages as $language) {
+                    $hash = $this->getHash($route, $language, 'get');
+
+                    $this->loadHash($this->method, $language, $route, $prefix, $hash, 'page', ['page' => $filename], null);
+                }
             }
         }
-    }
-
-    /**
-     * Returns the data for a route
-     * @param string $route The route
-     * @param string $filename The filename
-     * @return array The route data
-     */
-    protected function getData(string $route, string $filename) : array
-    {
-        return ['type' => 'pages', 'prefix' => $this->getPrefix($route),'filename' => $filename];
     }
 
     /**
@@ -92,7 +94,7 @@ class Pages extends Source
             return [];
         }
 
-        return $this->app->dir->getFilesSorted($dir, true, false, extensions: ['php']);
+        return $this->app->dir->getFiles($dir, true, false, extensions: ['php']);
     }
 
     /**
@@ -114,7 +116,7 @@ class Pages extends Source
             return $route;
         }
 
-        if (!isset($this->app->lang->multi_list[$lang])) {
+        if (!isset($this->app->lang->codes_list[$lang])) {
             return $route;
         }
 
@@ -122,23 +124,33 @@ class Pages extends Source
     }
 
     /**
-     * Returns the language code from a file name
+     * Returns the language codes for a file name
      * @param string $file The file
-     * @return string The language code
+     * @return array The language codes
      */
-    protected function getLanguage(string $file) : string
+    protected function getLanguages(string $file, array $files) : array
     {
         $parts = explode('/', $file);
         $lang = $parts[0] ?? '';
 
-        if (!$lang) {
-            return $this->app->lang->default_code;
+        if (count($parts) >= 2 && isset($this->app->lang->codes_list[$lang])) {
+            return [$lang];
         }
 
-        if (!isset($this->app->lang->multi_list[$lang])) {
-            return $this->app->lang->default_code;
+        if (!$this->app->lang->multi) {
+            return $this->app->lang->codes;
         }
 
-        return $lang;
+        $languages = [];
+        foreach ($this->app->lang->codes as $language) {
+            $lang_file = $language . '/' . $file;
+            if (in_array($lang_file, $files)) {
+                continue;
+            }
+
+            $languages[] = $language;
+        }
+
+        return $languages;
     }
 }

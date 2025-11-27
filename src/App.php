@@ -482,9 +482,9 @@ class App
     }
 
     /**
-     * @var string $root_url The url. Includes the language code, if languages_multi is enabled. Eg: http://mydomain.com/en
+     * @var Url $root_url The url. Includes the language code, if languages_multi is enabled. Eg: http://mydomain.com/en
      */
-    public string $root_url {
+    public Url $root_url {
         get => $this->url->root;
     }
 
@@ -504,7 +504,7 @@ class App
                 if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
                     if (in_array($this->ip, $this->config->trusted_proxies)) {
                         //HTTP_X_FORWARDED_FOR can contain multiple IPs. Use only the first one
-                        $this->ip = trim(reset(explode(',', $_SERVER['HTTP_X_FORWARDED_FOR'])));
+                        $this->ip = trim(array_first(explode(',', $_SERVER['HTTP_X_FORWARDED_FOR'])));
                     }
                 }
 
@@ -923,33 +923,30 @@ class App
     /**
      * Displays a fatal error screen
      * @param $text The error's text
-     * @param bool $escape_html If true will escape the error message
      */
-    public function fatalError(string $text, ?bool $escape_html = null)
+    public function fatalError(string $text)
     {
-        $this->screens->fatalError($text, $escape_html);
+        $this->screens->fatalError($text);
     }
 
     /**
      * Displays an error screen
      * @param string $text The error's text
      * @param string $title The error's title, if any
-     * @param bool $escape_html If true will escape the title and error message
      */
-    public function error(string $text, string $title = '', bool $escape_html = true)
+    public function error(string $text, ?string $title = null)
     {
-        $this->screens->error($text, $title, $escape_html);
+        $this->screens->error($text, $title);
     }
 
     /**
      * Displayes a message screen
      * @param string $text The text of the message
      * @param string $title The title of the message, if any
-     * @param bool $escape_html If true will escape the title and message
      */
-    public function message(string $text, string $title = '', bool $escape_html = true)
+    public function message(string $text, ?string $title = null)
     {
-        $this->screens->message($text, $title, $escape_html);
+        $this->screens->message($text, $title);
     }
 
     /**

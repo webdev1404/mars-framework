@@ -9,12 +9,15 @@ namespace Mars\Extensions\Languages;
 use Mars\App;
 use Mars\Extensions\Extension;
 use Mars\Extensions\Extensions;
+use Mars\Extensions\Abilities\FilesCacheTrait;
 
 /**
  * The Language Class
  */
 class Language extends Extension
 {
+    use FilesCacheTrait;
+    
     /**
      * @internal
      */
@@ -51,6 +54,11 @@ class Language extends Extension
     protected array $invalid_files = [];
 
     /**
+     * @var array $registered_files The list of registered files
+     */
+    protected array $registered_files = [];
+
+    /**
      * @var string $files_path The path for the theme's files folder
      */
     public protected(set) string $files_path {
@@ -74,9 +82,7 @@ class Language extends Extension
                 return $this->files;
             }
 
-            $filename = "language-{$this->name}-files";
-
-            $this->files = $this->getExistingFiles($this->files_path, $filename);
+            $this->files = $this->getCachedFiles($this->files_path);
 
             return $this->files;
         }
@@ -106,13 +112,76 @@ class Language extends Extension
                 return $this->templates;
             }
 
-            $filename = "language-{$this->name}-templates";
-
-            $this->templates = $this->getExistingFiles($this->templates_path, $filename);
+            $this->templates = $this->getCachedFiles($this->templates_path);
 
             return $this->templates;
         }
     }
+
+    /**
+     * @var string $encoding The encoding of the language
+     */
+    public string $encoding = 'UTF-8';
+
+    /**
+     * @var string $lang The language's html lang attribute
+     */
+    public string $lang = '';
+
+    /**
+     * @var string $datetime_format The format in which a timestamp will be displayed
+     */
+    public string $datetime_format = 'm/d/Y h:i:s a';
+
+    /**
+     * @var string $date_format The format in which a date will be displayed
+     */
+    public string $date_format = 'm/d/Y';
+
+    /**
+     * @var string $time_format The format in which the time of the day will be displayed
+     */
+    public string $time_format = 'h:i:s a';
+
+    /**
+     * @var string datetime_picker_format The format of the datetime picker
+     */
+    public string $datetime_picker_format = 'm-d-Y H:i:s';
+
+    /**
+     * @var string datetime_picker_desc The description of the datetime picker
+     */
+    public string $datetime_picker_desc = 'mm-dd-yyyy hh:mm:ss';
+
+    /**
+     * @var string date_picker_format The format of the date picker
+     */
+    public string $date_picker_format = 'm-d-Y';
+
+    /**
+     * @var string date_picker_desc The description of the date picker
+     */
+    public string $date_picker_desc = 'mm-dd-yyyy';
+
+    /**
+     * @var string time_picker_format The format of the time picker
+     */
+    public string $time_picker_format = 'H:i:s';
+
+    /**
+     * @var string time_picker_desc The description of the time picker
+     */
+    public string $time_picker_desc = 'hh:mm:ss';
+
+    /**
+     * @var string $decimal_separator The language's decimal_separator
+     */
+    public string $decimal_separator = '.';
+
+    /**
+     * @var string $thousands_separator The language's thousands_separator
+     */
+    public string $thousands_separator = ',';
 
     /**
      * @internal
@@ -138,6 +207,19 @@ class Language extends Extension
      * @internal
      */
     protected static string $base_namespace = "\\Languages";
+
+    /**
+     * Builds the language
+     * @param string $name The name of the exension
+     * @param array $params The params passed to the language, if any
+     * @param App $app The app object
+     */
+    public function __construct(string $name, array $params = [], ?App $app = null)
+    {
+        parent::__construct($name, $params, $app);
+
+        $this->init();
+    }
 
     /**
      * Checks if the specified file exists in the language's files
@@ -228,13 +310,14 @@ class Language extends Extension
     {
         $keys = [];
         $index = strpos($string, '.');
+        
         if ($index !== false) {
             //we have a dot in the key. Search for the string in the specified file
             $file = substr($string, 0, $index);
             $string = substr($string, $index + 1);
             $keys = [$file];
 
-            $this->loadFile($file);
+            $this->load($file);
         } else {
             $keys = $key ? [$key] : $this->strings_search;
         }
@@ -252,6 +335,22 @@ class Language extends Extension
         }
 
         return $string;
+    }
+
+    /**
+     * Loads a language file
+     * @param string $file The name of the file to load
+     */
+    protected function load(string $file) 
+    {
+        if (!isset($this->registered_files[$file])) {
+            //the file isn't registered, so load it normally
+            $this->loadFile($file);
+            return;
+        } else {
+            //execute the registered callback
+            $this->registered_files[$file]();
+        }
     }
 
     /**
@@ -284,6 +383,19 @@ class Language extends Extension
     public function restoreSearchKeys() : static
     {
         $this->strings_search = $this->strings_search_old;
+
+        return $this;
+    }
+
+    /**
+     * Registers a callback to be called to load a language file
+     * @param string $name The name of the language file
+     * @param callable $callback The callback to be called to load the file
+     * @return static
+     */
+    public function register(string $name, callable $callback) : static
+    {
+        $this->registered_files[$name] = $callback;
 
         return $this;
     }

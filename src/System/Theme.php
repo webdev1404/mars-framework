@@ -57,8 +57,18 @@ class Theme extends BaseTheme
         }
 
         parent::__construct($app->config->theme, [], $app);
+    }
 
-        include($this->path . '/init.php');
+    /**
+     * Prepares the theme
+     */
+    public function prepare()
+    {
+        if (!$this->parent) {
+            return;
+        }
+
+        $this->parent->init();
     }
 
     /**
@@ -101,5 +111,17 @@ class Theme extends BaseTheme
         }
 
         return parent::getTemplateFromFilename($filename, $filename_rel, $vars, $type, $params, $development);
+    }
+
+    /**
+     * @see LanguagesTrait::loadLanguage
+     */
+    public function loadLanguage(string $file, string $key) : static
+    {
+        if ($this->parent) {
+            $this->parent->loadLanguage($file, $key);
+        }
+
+        return parent::loadLanguage($file, $key);
     }
 }

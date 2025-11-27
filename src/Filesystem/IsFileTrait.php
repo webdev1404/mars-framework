@@ -10,17 +10,32 @@ namespace Mars\Filesystem;
  * The Is File Trait
  * Trait which caches in a single file the files existing in a folder, to avoid multiple is_file calls
  */
-trait IsFile
+trait IsFileTrait
 {
     /**
-     * @var array|null $existing_files The list of cached existing files
+     * @var bool $files_cache_use Whether to use the existing files cache
      */
-    protected ?array $existing_files = null;
+    protected bool $files_cache_use {
+        get {
+            if (isset($this->files_cache_use)) {
+                return $this->files_cache_use;
+            }
+
+            $this->files_cache_use = $this->app->config->files_cache_use;
+
+            return $this->files_cache_use;
+        }
+    }
 
     /**
-     * @var string $existing_files_file The file where the list of existing files is cached
+     * @var array|null $files_cache_list The list of cached existing files
      */
-    protected string $existing_files_file = 'cached-files-list.php';
+    protected ?array $files_cache_list = null;
+
+    /**
+     * @var string $files_cache_file The file where the list of existing files is cached
+     */
+    protected string $files_cache_file = 'cached-files-list.php';
 
     /**
      * Checks if a file exists
@@ -30,24 +45,24 @@ trait IsFile
      */
     protected function isFile(string $filename, ?string $path = null) : bool
     {
-        if (!$this->app->config->use_is_file_cache) {
+        if (!$this->files_cache_use) {
             return is_file($filename);
         }
 
-        if ($this->existing_files !== null) {
-            return isset($this->existing_files[$filename]);
+        if ($this->files_cache_list !== null) {
+            return isset($this->files_cache_list[$filename]);
         }
 
         $path??= dirname($filename);
-        $cache_filename = $path . '/' . $this->existing_files_file;
+        $cache_filename = $path . '/' . $this->files_cache_file;
 
         if (!is_file($cache_filename)) {
             $this->cacheIsFile($path);
         }
         
-        $this->existing_files = require $cache_filename;
+        $this->files_cache_list = require $cache_filename;
 
-        return isset($this->existing_files[$filename]);
+        return isset($this->files_cache_list[$filename]);
     }
 
     /**
@@ -57,24 +72,24 @@ trait IsFile
      */
     protected function setIsFile(string $filename, ?string $path = null)
     {
-        if (!$this->app->config->use_is_file_cache) {
+        if (!$this->files_cache_use) {
             return;
         }
 
         //if we're adding a new file, we need to delete the existing files cache file
-        if ($this->existing_files !== null) {
-            if (isset($this->existing_files[$filename])) {
+        if ($this->files_cache_list !== null) {
+            if (isset($this->files_cache_list[$filename])) {
                 return;
             }
 
             $path??= dirname($filename);
-            $cache_filename = $path . '/' . $this->existing_files_file;
+            $cache_filename = $path . '/' . $this->files_cache_file;
 
             if (is_file($cache_filename)) {
                 unlink($cache_filename);
             }
 
-            $this->existing_files = null;
+            $this->files_cache_list = null;
         }
     }
 
@@ -84,11 +99,11 @@ trait IsFile
      */
     protected function cacheIsFile(string $path)
     {
-        if (!$this->app->config->use_is_file_cache) {
+        if (!$this->files_cache_use) {
             return;
         }
 
-        $cache_filename = $path . '/' . $this->existing_files_file;
+        $cache_filename = $path . '/' . $this->files_cache_file;
         $files = $this->app->dir->getFiles($path, false, true);
         
         $content = "<?php\n\nreturn ";

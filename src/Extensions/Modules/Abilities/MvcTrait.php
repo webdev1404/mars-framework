@@ -1,7 +1,7 @@
 <?php
 /**
 * The Extension's MVC Trait
-* @package Venus
+* @package Mars
 */
 
 namespace Mars\Extensions\Modules\Abilities;

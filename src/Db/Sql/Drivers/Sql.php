@@ -186,7 +186,7 @@ abstract class Sql implements SqlInterface
      */
     public function valuesMulti(array $values_list) : string
     {
-        $cols = $this->getColumnsList(array_keys(reset($values_list)));
+        $cols = $this->getColumnsList(array_keys(array_first($values_list)));
 
         $list = [];
         foreach ($values_list as $key => $values) {
@@ -241,7 +241,7 @@ abstract class Sql implements SqlInterface
             if (isset($value['value'])) {
                 return $this->addParam($col, $value['value']);
             } else {
-                return reset($value);
+                return array_first($value);
             }
         }
     }

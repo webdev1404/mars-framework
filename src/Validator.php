@@ -109,7 +109,7 @@ class Validator
 
             foreach ($rules_array as $rule) {
                 $parts = explode(':', trim($rule));
-                $rule = reset($parts);
+                $rule = array_first($parts);
                 $params = $this->getParams($parts);
 
                 if (!$this->isValid($value, $rule, ...$params)) {

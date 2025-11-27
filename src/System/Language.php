@@ -7,6 +7,8 @@
 namespace Mars\System;
 
 use Mars\App;
+use Mars\App\Drivers;
+use Mars\Localization\LocalizationInterface;
 use Mars\Extensions\Languages\Language as BaseLanguage;
 
 /**
@@ -15,69 +17,43 @@ use Mars\Extensions\Languages\Language as BaseLanguage;
 class Language extends BaseLanguage
 {
     /**
-     * @var string $encoding The encoding of the language
+     * @var array $supported_drivers The supported drivers
      */
-    public string $encoding = 'UTF-8';
+    protected array $supported_drivers = [
+        'cookie' => \Mars\Localization\Cookie::class,
+        'domain' => \Mars\Localization\Domain::class,
+        'path' => \Mars\Localization\Path::class,
+    ];
 
     /**
-     * @var string $lang The language's html lang attribute
+     * @var Drivers $drivers The drivers object
      */
-    public string $lang = '';
+    public protected(set) Drivers $drivers {
+        get {
+            if (isset($this->drivers)) {
+                return $this->drivers;
+            }
+
+            $this->drivers = new Drivers($this->supported_drivers, LocalizationInterface::class, 'localization', $this->app);
+
+            return $this->drivers;
+        }
+    }
 
     /**
-     * @var string $datetime_format The format in which a timestamp will be displayed
+     * @var LocalizationInterface $driver The driver object
      */
-    public string $datetime_format = 'm/d/Y h:i:s a';
+    public protected(set) ?LocalizationInterface $driver {
+        get {
+            if (isset($this->driver)) {
+                return $this->driver;
+            }
 
-    /**
-     * @var string $date_format The format in which a date will be displayed
-     */
-    public string $date_format = 'm/d/Y';
+            $this->driver = $this->drivers->get($this->app->config->localization_driver);
 
-    /**
-     * @var string $time_format The format in which the time of the day will be displayed
-     */
-    public string $time_format = 'h:i:s a';
-
-    /**
-     * @var string datetime_picker_format The format of the datetime picker
-     */
-    public string $datetime_picker_format = 'm-d-Y H:i:s';
-
-    /**
-     * @var string datetime_picker_desc The description of the datetime picker
-     */
-    public string $datetime_picker_desc = 'mm-dd-yyyy hh:mm:ss';
-
-    /**
-     * @var string date_picker_format The format of the date picker
-     */
-    public string $date_picker_format = 'm-d-Y';
-
-    /**
-     * @var string date_picker_desc The description of the date picker
-     */
-    public string $date_picker_desc = 'mm-dd-yyyy';
-
-    /**
-     * @var string time_picker_format The format of the time picker
-     */
-    public string $time_picker_format = 'H:i:s';
-
-    /**
-     * @var string time_picker_desc The description of the time picker
-     */
-    public string $time_picker_desc = 'hh:mm:ss';
-
-    /**
-     * @var string $decimal_separator The language's decimal_separator
-     */
-    public string $decimal_separator = '.';
-
-    /**
-     * @var string $thousands_separator The language's thousands_separator
-     */
-    public string $thousands_separator = ',';
+            return $this->driver;
+        }
+    }
 
     /**
      * @var string $name The name of the language
@@ -88,37 +64,12 @@ class Language extends BaseLanguage
                 return $this->name;
             }
 
-            $this->name = $this->app->config->language;
-
-            //read the language name from the url, if multi-language is enabled
-            if ($this->multi) {
-                $code = $this->app->url->lang;
-
-                if (isset($this->multi_list[$code])) {
-                    $this->name = $this->multi_list[$code];
-                }
-            }
-
+            $this->name = $this->codes_list[$this->code] ?? null;
             if (!$this->name) {
                 throw new \Exception('No language set in the config file.');
             }
 
             return $this->name;
-        }
-    }
-
-    /**
-     * @var array $multi_list The list of available languages for multi-language support
-     */
-    public protected(set) array $multi_list {
-        get {
-            if (isset($this->multi_list)) {
-                return $this->multi_list;
-            }
-
-            $this->multi_list = $this->app->config->read('languages.php');
-
-            return $this->multi_list;
         }
     }
 
@@ -132,11 +83,41 @@ class Language extends BaseLanguage
             }
 
             $this->multi = false;
-            if (count($this->multi_list) > 1) {
+            if (count($this->codes_list) > 1) {
                 $this->multi = true;
             }
 
             return $this->multi;
+        }
+    }
+
+    /**
+     * @var array $codes_list The list of available languages for multi-language support
+     */
+    public protected(set) array $codes_list {
+        get {
+            if (isset($this->codes_list)) {
+                return $this->codes_list;
+            }
+
+            $this->codes_list = $this->app->config->language_codes;
+
+            return $this->codes_list;
+        }
+    }
+
+    /**
+     * @var array $codes The list of available language codes, if multi-language is enabled
+     */
+    public protected(set) array $codes {
+        get {
+            if (isset($this->codes)) {
+                return $this->codes;
+            }
+
+            $this->codes = array_keys($this->codes_list);
+
+            return $this->codes;
         }
     }
 
@@ -149,15 +130,7 @@ class Language extends BaseLanguage
                 return $this->code;
             }
 
-            $this->code = $this->name;
-
-            if ($this->multi) {
-                $this->code = $this->getCode($this->name);
-
-                if (!$this->code) {
-                    throw new \Exception("Language code not found for language: {$this->name}");
-                }
-            }
+            $this->code = $this->driver->getCode();
 
             return $this->code;
         }
@@ -172,13 +145,9 @@ class Language extends BaseLanguage
                 return $this->default_code;
             }
 
-            $this->default_code = $this->code;
-            if ($this->multi) {
-                $this->default_code = $this->getCode($this->app->config->language);
-
-                if (!$this->default_code) {
-                    throw new \Exception("Default language code not found");
-                }
+            $this->default_code = array_find_key($this->codes_list, fn ($value) => $value === $this->app->config->language);
+            if (!$this->default_code) {
+                throw new \Exception("Default language code not found");
             }
 
             return $this->default_code;
@@ -186,21 +155,32 @@ class Language extends BaseLanguage
     }
 
     /**
-     * @var array $codes The list of available language codes, if multi-language is enabled
+     * @var string $url The base URL for the current language
      */
-    public protected(set) array $codes {
+    public protected(set) string $url {
         get {
-            if (isset($this->codes)) {
-                return $this->codes;
+            if (isset($this->url)) {
+                return $this->url;
             }
 
-            if ($this->multi) {
-                $this->codes = array_keys($this->multi_list);
-            } else {
-                $this->codes = [$this->code];
+            $this->url = $this->driver->getUrl($this->code);
+
+            return $this->url;
+        }
+    }
+
+    /**
+     * @var string $request_uri The request URI
+     */
+    public protected(set) ?string $request_uri {
+        get {
+            if (isset($this->request_uri)) {
+                return $this->request_uri;
             }
 
-            return $this->codes;
+            $this->request_uri = $this->driver->getRequestUri();
+
+            return $this->request_uri;
         }
     }
 
@@ -277,18 +257,23 @@ class Language extends BaseLanguage
         $this->app = $app;
 
         parent::__construct($this->name, [], $this->app);
-
-        include($this->path . '/init.php');
     }
 
     /**
-     * Returns the code for the specified language name
-     * @param string $name The language name
-     * @return string|null The code of the language, or null if not found
+     * Prepares the language
      */
-    public function getCode(string $name) : ?string
+    public function prepare()
     {
-        return array_find_key($this->multi_list, fn ($value) => $value === $name);
+        if (!$this->parent) {
+            return;
+        }
+
+        $this->parent->init();
+
+        $properties = ['lang', 'datetime_format', 'date_format', 'time_format', 'datetime_picker_format', 'datetime_picker_desc', 'date_picker_format', 'date_picker_desc', 'time_picker_format', 'time_picker_desc', 'decimal_separator', 'thousands_separator'];
+        foreach ($properties as $property) {
+            $this->$property = $this->parent->$property;
+        }
     }
 
     /**

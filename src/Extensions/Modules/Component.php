@@ -9,8 +9,6 @@ namespace Mars\Extensions\Modules;
 use Mars\App;
 use Mars\Extensions\Extension;
 use Mars\Extensions\Modules\Module;
-use Mars\Extensions\Modules\Abilities\LanguagesTrait;
-use Mars\Extensions\Modules\Abilities\TemplatesTrait;
 
 /**
  * The Module Component Extension Class
@@ -18,11 +16,6 @@ use Mars\Extensions\Modules\Abilities\TemplatesTrait;
  */
 abstract class Component extends Extension
 {
-    use LanguagesTrait {
-        LanguagesTrait::loadLanguage as loadLanguageFromTrait;
-    }
-    use TemplatesTrait;
-
     /**
      * @var Module $module The parent module of the extension
      */
