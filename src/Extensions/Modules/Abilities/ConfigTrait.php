@@ -16,12 +16,14 @@ trait ConfigTrait
      * Loads the config settings from the specified $file and returns it
      * @param string $file The file
      */
-    public function loadConfig(?string $file = null)
+    public function loadConfig(string $file)
     {
-        $file ??= $this->name . '.php';
+        $file = $file . '.php';
+        
+        //load the config file from the module's config dir
+        $this->app->config->loadFilename($this->path . '/' . static::DIRS['config'] . '/' . $file);
 
-        $filename = $this->path . '/' . static::DIRS['config'] . '/' . $file;
-
-        $this->app->config->loadFilename($filename);
+        //load the config file from the config/modules dir
+        $this->app->config->loadModule($this->path_rel . '/' . $file);
     }
 }

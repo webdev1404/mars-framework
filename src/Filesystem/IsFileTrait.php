@@ -21,7 +21,7 @@ trait IsFileTrait
                 return $this->files_cache_use;
             }
 
-            $this->files_cache_use = $this->app->config->files_cache_use;
+            $this->files_cache_use = $this->app->config->files->cache->use;
 
             return $this->files_cache_use;
         }

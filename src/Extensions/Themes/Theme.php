@@ -46,6 +46,11 @@ class Theme extends Extension
     ];
 
     /**
+     * @const array CACHE_DIRS The dirs to be cached
+     */
+    public const array CACHE_DIRS = ['templates', 'languages'];
+
+    /**
      * @const array MOBILE_DORS The locations of the used mobile subdirs
      */
     public const array MOBILE_DIRS = [
@@ -232,16 +237,8 @@ class Theme extends Extension
     /**
      * @var array $templates Array with the list of available templates
      */
-    public protected(set) array $templates {
-        get {
-            if (isset($this->templates)) {
-                return $this->templates;
-            }
-
-            $this->templates = $this->getCachedFiles($this->templates_path);
-
-            return $this->templates;
-        }
+    public array $templates {
+        get => $this->files_cache_list['templates'] ?? [];
     }
 
     /**
@@ -390,16 +387,6 @@ class Theme extends Extension
     }
 
     /**
-     * Checks if the specified template exists in the theme's templates
-     * @param string $file The filename to check
-     * @return bool True if the template exists, false otherwise
-     */
-    public function isTemplate(string $template) : bool
-    {
-        return isset($this->templates[$template]);
-    }
-
-    /**
      * Returns the template filename. It will check if the template exists in the mobile templates, if the device is mobile.
      * If the device is a smartphone, it will check for the smartphone template first, then the tablet template, and finally the generic mobile template.
      * @param string $template The name of the template
@@ -473,7 +460,7 @@ class Theme extends Extension
      */
     public function getTemplate(string $template, array $vars = []) : string
     {
-        if ($this->app->config->debug) {
+        if ($this->app->config->debug->enable) {
             $this->templates_loaded[] = $template;
         }
 
@@ -492,7 +479,7 @@ class Theme extends Extension
      */
     public function getTemplateFromFilename(string $filename, ?string $filename_rel = null, array $vars = [], string $type = 'template', array $params = [], bool $development = false) : string
     {
-        if ($this->app->config->debug) {
+        if ($this->app->config->debug->enable) {
             $this->templates_loaded[] = $filename;
         }
 

@@ -219,11 +219,12 @@ abstract class View
 
     /**
      * Renders a template.
+     * @param string $method The method to render. If not set, the current method will be used
      * @param array $vars Vars to pass to the template, if any
      */
-    public function render(array $vars = [])
+    public function render(?string $method = null, array $vars = [])
     {
-        $template = $this->get(vars: $vars);
+        $template = $this->get(vars: $vars, method: $method);
         if ($template === null) {
             return;
         }
@@ -235,14 +236,12 @@ abstract class View
      * Returns the contents of a template.
      * @param string $template The name of the template to load. If not set, the method's name will be used
      * @param array $vars Vars to pass to the template, if any
+     * @param string $method The method to execute before loading the template. If not set, the current method will be used
      * @return string The contents of the template
      */
-    public function get(string $template = '', array $vars = []) : ?string
+    public function get(string $template = '', array $vars = [], ?string $method = null) : ?string
     {
-        $method = $this->controller->current_method;
-        if (!$method) {
-            $method = $this->default_method;
-        }
+        $method = $this->getMethodName($method);
 
         if ($this->canDispatch($method)) {
             $ret = $this->$method();
@@ -268,17 +267,38 @@ abstract class View
     }
 
     /**
-     * Returns the contents of a email template
+     * Returns the method name to be executed on dispatch/route
+     * @param string|null $method The requested method name
+     * @return string The method name to be executed
+     */
+    protected function getMethodName(?string $method) : string
+    {
+        $method ??= $this->controller->current_method;
+        if (!$method) {
+            $method = $this->default_method;
+        }
+
+        if(str_contains($method, '::')) {
+            //has __METHOD__ format
+            $method = substr($method, strrpos($method, '::') + 2);
+        }
+
+        return $method;
+    }
+
+    /**
+     * Returns the contents of a language template
+     * @param string $dir The directory where the template is located
      * @param string $template The name of the template to load. If not set, the method's name will be used
      * @param array $vars Vars to pass to the template, if any
      * @return string The contents of the template
      */
-    public function getEmailTemplate(string $template = '', array $vars = []) : ?string
+    public function getLanguageTemplate(string $dir, string $template = '', array $vars = []) : ?string
     {
         $this->app->theme->addVars(get_object_vars($this));
         $this->app->theme->addVar('view', $this);
 
-        return $this->parent->getEmailTemplate($template, $vars);
+        return $this->parent->getLanguageTemplate($dir, $template, $vars);
     }
 
     /**

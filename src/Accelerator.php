@@ -29,7 +29,7 @@ class Accelerator
      * @var bool $enabled Will be set to true, if enabled
      */
     public bool $enabled {
-        get => $this->app->config->accelerator_enable;
+        get => $this->app->config->accelerator->enable;
     }
 
     /**
@@ -59,7 +59,7 @@ class Accelerator
                 return $this->driver;
             }
 
-            $this->driver = $this->drivers->get($this->app->config->accelerator_driver);
+            $this->driver = $this->drivers->get($this->app->config->accelerator->driver);
 
             return $this->driver;
         }

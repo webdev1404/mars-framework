@@ -58,8 +58,8 @@ class Device
             if ($this->app->is_cli) {
                 return $this->device;
             }
-            if ($this->app->config->development_device) {
-                $this->device = $this->app->config->development_device;
+            if ($this->app->config->development->device) {
+                $this->device = $this->app->config->development->device;
                 return $this->device;
             }
 
@@ -78,7 +78,7 @@ class Device
             }
 
             if (!$this->device) {
-                $driver = $this->drivers->get($this->app->config->device_driver);
+                $driver = $this->drivers->get($this->app->config->device->driver);
                 $this->device = $driver->get();
             }
 

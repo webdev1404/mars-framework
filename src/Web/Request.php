@@ -53,7 +53,7 @@ class Request
                 return $this->options;
             }
 
-            $this->options = $this->app->config->curl_options;
+            $this->options = $this->app->config->curl->options;
 
             return $this->options;
         }
@@ -64,7 +64,7 @@ class Request
      */
     public function resetOptions() : static
     {
-        $this->options = $this->app->config->curl_options;
+        $this->options = $this->app->config->curl->options;
 
         return $this;
     }

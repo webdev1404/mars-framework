@@ -18,17 +18,17 @@ final class MemcacheTest extends Base
     {
         parent::setUp();
 
-        $this->app->config->memcache_enable = true;
-        $this->driver = $this->app->config->memcache_driver;
-        $this->host = $this->app->config->memcache_host;
-        $this->port = $this->app->config->memcache_port;
+        $this->app->config->memcache->enable = true;
+        $this->driver = $this->app->config->memcache->driver;
+        $this->host = $this->app->config->memcache->host;
+        $this->port = $this->app->config->memcache->port;
     }
 
     public function tearDown() : void
     {
-        $this->app->config->memcache_driver = $this->driver;
-        $this->app->config->memcache_host = $this->host;
-        $this->app->config->memcache_port = $this->port;
+        $this->app->config->memcache->driver = $this->driver;
+        $this->app->config->memcache->host = $this->host;
+        $this->app->config->memcache->port = $this->port;
     }
 
     protected function getKey() : string
@@ -54,7 +54,7 @@ final class MemcacheTest extends Base
 
     public function testMemcachedConnection()
     {
-        $this->app->config->memcache_driver = 'memcached';
+        $this->app->config->memcache->driver = 'memcached';
 
         $memcache = new Memcache($this->app);
         $this->assertTrue($memcache->add($this->getKey(), '12345'));
@@ -62,7 +62,7 @@ final class MemcacheTest extends Base
 
     public function testMemcached()
     {
-        $this->app->config->memcache_driver = 'memcached';
+        $this->app->config->memcache->driver = 'memcached';
 
         $memcache = new Memcache($this->app);
         $this->runAssertions($memcache);
@@ -70,8 +70,8 @@ final class MemcacheTest extends Base
 
     public function testRedisConnection()
     {
-        $this->app->config->memcache_driver = 'redis';
-        $this->app->config->memcache_port = '6379';
+        $this->app->config->memcache->driver = 'redis';
+        $this->app->config->memcache->port = '6379';
 
         $memcache = new Memcache($this->app);
         $this->assertTrue($memcache->add($this->getKey(), '12345'));
@@ -79,8 +79,8 @@ final class MemcacheTest extends Base
 
     public function testRedis()
     {
-        $this->app->config->memcache_driver = 'redis';
-        $this->app->config->memcache_port = '6379';
+        $this->app->config->memcache->driver = 'redis';
+        $this->app->config->memcache->port = '6379';
 
         $memcache = new Memcache($this->app);
 
@@ -89,8 +89,8 @@ final class MemcacheTest extends Base
 
     public function testInvalidMemcacheConnection()
     {
-        $this->app->config->memcache_driver = 'memcache';
-        $this->app->config->memcache_port = '11312';
+        $this->app->config->memcache->driver = 'memcache';
+        $this->app->config->memcache->port = '11312';
 
         $this->expectException(\Exception::class);
 
@@ -101,8 +101,8 @@ final class MemcacheTest extends Base
 
     public function testInvalidMemcachedConnection()
     {
-        $this->app->config->memcache_driver = 'memcached';
-        $this->app->config->memcache_port = '11312';
+        $this->app->config->memcache->driver = 'memcached';
+        $this->app->config->memcache->port = '11312';
 
         $this->expectException(\Exception::class);
 
@@ -113,8 +113,8 @@ final class MemcacheTest extends Base
 
     public function testInvalidRedisConnection()
     {
-        $this->app->config->memcache_driver = 'redis';
-        $this->app->config->memcache_port = '11312';
+        $this->app->config->memcache->driver = 'redis';
+        $this->app->config->memcache->port = '11312';
 
         $this->expectException(\Exception::class);
 
@@ -125,7 +125,7 @@ final class MemcacheTest extends Base
 
     public function testAddWithSerialization()
     {
-        $this->app->config->memcache_driver = 'memcached';
+        $this->app->config->memcache->driver = 'memcached';
 
         $memcache = new Memcache($this->app);
         $key = $this->getKey();
@@ -137,7 +137,7 @@ final class MemcacheTest extends Base
 
     public function testSetWithSerialization()
     {
-        $this->app->config->memcache_driver = 'memcached';
+        $this->app->config->memcache->driver = 'memcached';
 
         $memcache = new Memcache($this->app);
         $key = $this->getKey();
@@ -149,7 +149,7 @@ final class MemcacheTest extends Base
 
     public function testDeleteAll()
     {
-        $this->app->config->memcache_driver = 'memcached';
+        $this->app->config->memcache->driver = 'memcached';
 
         $memcache = new Memcache($this->app);
         $key1 = $this->getKey();

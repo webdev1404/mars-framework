@@ -30,7 +30,7 @@ class Log
                 $ext = 'cli.log';
             }
 
-            $this->suffix = date($this->app->config->log_suffix) . '.' . $ext;
+            $this->suffix = date($this->app->config->log->suffix) . '.' . $ext;
 
             return $this->suffix;
         }
@@ -45,7 +45,7 @@ class Log
                 return $this->date;
             }
 
-            $this->date = date($this->app->config->log_date_format);
+            $this->date = date($this->app->config->log->date_format);
 
             return $this->date;
         }
@@ -64,8 +64,8 @@ class Log
     {
         $this->app = $app;
         
-        if ($this->app->config->log_errors) {
-            set_error_handler([$this, 'handleError'], $this->app->config->log_error_reporting);
+        if ($this->app->config->log->enable) {
+            set_error_handler([$this, 'handleError'], $this->app->config->log->reporting);
         }
     }
 

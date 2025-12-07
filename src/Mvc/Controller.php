@@ -33,6 +33,36 @@ abstract class Controller extends \stdClass
     use Kernel;
 
     /**
+     * @var string $name The name of the controller
+     */
+    public protected(set) string $name {
+        get {
+            if (isset($this->name)) {
+                return $this->name;
+            }
+
+            $this->name = basename(str_replace('\\', '/', static::class));
+
+            return $this->name;
+        }
+    }
+
+    /**
+     * @var string $name_lc The lowercase name of the controller
+     */
+    public protected(set) string $name_lc {
+        get {
+            if (isset($this->name_lc)) {
+                return $this->name_lc;
+            }
+
+            $this->name_lc = strtolower($this->name);
+
+            return $this->name_lc;
+        }
+    }
+
+    /**
      * @var string $default_method Default method to be executed on dispatch/route or if the requested method doesn't exist or is not public
      */
     public protected(set) string $default_method {
@@ -142,7 +172,7 @@ abstract class Controller extends \stdClass
             }
             
             $this->model = null;
-            if ($this->load_model && $this->parent) {
+            if ($this->parent) {
                 $this->model = $this->getModel();
             }
 
@@ -160,7 +190,7 @@ abstract class Controller extends \stdClass
             }
 
             $this->view = null;
-            if ($this->load_view && $this->parent) {
+            if ($this->parent) {
                 $this->view = $this->getView();
             }
 
@@ -266,16 +296,6 @@ abstract class Controller extends \stdClass
     }
 
     /**
-     * @var bool $load_model If true, will automatically load the model
-     */
-    protected bool $load_model = true;
-
-    /**
-     * @var bool $load_view If true, will automatically load the view
-     */
-    protected bool $load_view = true;
-
-    /**
      * Builds the controller
      * @param Extension $parent The parent extension
      * @param App $app The app object
@@ -323,6 +343,10 @@ abstract class Controller extends \stdClass
      */
     public function getModel(string $model = '') : object
     {
+        if (!$model) {
+            $model = $this->name;
+        }
+
         return $this->parent->getModel($model, $this);
     }
 
@@ -333,6 +357,10 @@ abstract class Controller extends \stdClass
      */
     public function getView(string $view = '') : View
     {
+        if (!$view) {
+            $view = $this->name;
+        }
+
         return $this->parent->getView($view, $this);
     }
 
@@ -471,5 +499,27 @@ abstract class Controller extends \stdClass
         $this->app->errors->add($error);
 
         $this->app->send([]);
+    }
+
+    /**
+     * Loads the config settings from a file
+     * @param string|null $file The config file. If null, will load the file with the same name as the controller
+     */
+    public function loadConfig(?string $file = null)
+    {
+        $file ??= $this->name_lc;
+
+        $this->parent->loadConfig($file);
+    }
+
+    /**
+     * Loads the language strings from a file
+     * @param string|null $file The language file. If null, will load the file with the same name as the controller
+     */
+    public function loadLanguage(?string $file = null)
+    {
+        $file ??= $this->name_lc;
+
+        $this->parent->loadLanguage($file);
     }
 }

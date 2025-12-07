@@ -24,7 +24,7 @@ class Tag implements TagInterface
     /**
      * @var bool $escape If true, will escape the content
      */
-    public static bool $escape = true;
+    protected static bool $escape = true;
 
     /**
      * @var string $newline Newline to add after the tag, if any

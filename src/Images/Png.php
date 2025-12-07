@@ -27,8 +27,8 @@ class Png extends Image implements ImageInterface
     {
         parent::__construct($filename, $app);
 
-        $this->quality = $this->app->config->image_png_quality;
-        $this->optimize_command = $this->app->config->image_png_optimize_command;
+        $this->quality = $this->app->config->image->png->quality;
+        $this->optimize_command = $this->app->config->image->png->optimize_command;
     }
 
     /**

@@ -84,7 +84,7 @@ abstract class Urls
         $this->app = $app;
 
         if ($this->preload_config_key) {
-            $urls = $this->app->config->preload[$this->preload_config_key] ?? [];
+            $urls = $this->app->config->hints->preload[$this->preload_config_key] ?? [];
             if ($urls) {
                 $this->preload($urls);
             }
@@ -293,7 +293,7 @@ abstract class Urls
      */
     public function getNonce() : string
     {
-        if (!$this->app->config->csp_enable || !$this->app->config->csp_use_nonce) {
+        if (!$this->app->config->http->response->csp->enable || !$this->app->config->http->response->csp->use_nonce) {
             return '';
             
         }

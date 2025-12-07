@@ -17,7 +17,7 @@ class Css extends Urls
      * {@inheritdoc}
      */
     public string $version {
-        get => $this->app->config->css_version;
+        get => $this->app->config->document->css->version;
     }
 
     /**

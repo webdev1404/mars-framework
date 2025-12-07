@@ -39,10 +39,10 @@ class Path extends Base implements LocalizationInterface
     public function getUrl(string $code) : string
     {
         if ($code == $this->app->lang->default_code) {
-            return $this->app->config->url;
+            return $this->app->config->url->base;
         }
 
-        return $this->app->config->url . '/' . $code;
+        return $this->app->config->url->base . '/' . $code;
     }
 
     /**

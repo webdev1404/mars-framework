@@ -36,7 +36,7 @@ abstract class Image
      * @var bool $optimize If true, the images will be optimized when processed/uploaded
      */
     protected bool $optimize {
-        get => $this->app->config->image_optimize;
+        get => $this->app->config->image->optimize;
     }
 
     /**

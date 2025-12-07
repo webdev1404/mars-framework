@@ -26,7 +26,7 @@ class Languages extends Extensions
     /**
      * @internal
      */
-    protected static string $list_config_key = 'language_codes';
+    protected static string $list_config_key = 'language.codes';
 
     /**
      * @internal

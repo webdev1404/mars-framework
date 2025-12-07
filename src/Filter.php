@@ -175,15 +175,15 @@ class Filter
     public function tags($value, array|string|null $allowed_tags = null) : string|array
     {
         return $this->app->data->map($value, function ($value) use ($allowed_tags) {
-            return strip_tags($value, $allowed_tags);
+            return strip_tags($value, $allowed_tags);   
         });
     }
 
     /**
      * Filters html using HtmlPurifier
      * @param string $html The $text to filter
-     * @param string $allowed_elements String containing the allowed html elements. If null, it will be read from config->html_allowed_elements
-     * @param string $allowed_attributes The allowed attributes. If null, it will be read from config->html_allowed_attributes
+     * @param string $allowed_elements String containing the allowed html elements. If null, it will be read from config->html->allowed_elements
+     * @param string $allowed_attributes The allowed attributes. If null, it will be read from config->html->allowed_attributes
      * @param string $encoding The encoding of the text
      * @return string The filtered html
      */

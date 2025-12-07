@@ -48,8 +48,8 @@ class Ui
      */
     public function buildPagination(string $base_url, int $total_items, ?int $items_per_page = null, ?int $max_links = null) : string
     {
-        $items_per_page = $items_per_page ?? $this->app->config->pagination_items_per_page;
-        $max_links = $max_links ?? $this->app->config->pagination_max_links;
+        $items_per_page = $items_per_page ?? $this->app->config->pagination->items_per_page;
+        $max_links = $max_links ?? $this->app->config->pagination->max_links;
 
         $pag = $this->uis->get('pagination', $base_url, $items_per_page, $total_items, $max_links);
 

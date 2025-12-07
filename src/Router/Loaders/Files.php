@@ -180,21 +180,21 @@ class Files extends Loader
     }
 
     /**
-     * Handles a block request
+     * Handles a module request
      * @param string|array $routes The route(s)
-     * @param string $module_name The module the block belongs to
-     * @param string $block_name The block's name
-     * @param array $params The params to pass to the block, if any     
+     * @param string $module The name of the module
+     * @param string $action The action to execute
+     * @param array $params The params to pass to the module, if any
      * @param string|array|null $languages The language to use for the route, if any. If null, will use the default language. If '*', will use all languages
      * @param array $methods The request methods to handle. Default: GET, POST
      * @param string $name The name of the route
      * @return static
      */
-    public function block(string|array $routes, string $module_name, string $block_name = '', array $params = [], string|array|null $languages = '*', array $methods = ['get', 'post'], string $name = '') : static
+    public function module(string|array $routes, string $module, string $action, array $params = [], string|array|null $languages = '*', array $methods = ['get', 'post'], string $name = '') : static
     {
-        $data = ['module_name' => $module_name, 'block_name' => $block_name, 'params' => $params];
+        $data = ['name' => $module, 'action' => $action, 'params' => $params];
 
-        return $this->add($routes, null, $methods, $languages, 'block', $data, $name);
+        return $this->add($routes, null, $methods, $languages, 'module', $data, $name);
     }
     
     /**

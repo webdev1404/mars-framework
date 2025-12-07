@@ -27,7 +27,7 @@ class Avif extends Image implements ImageInterface
     {
         parent::__construct($filename, $app);
 
-        $this->quality = $this->app->config->image_avif_quality;
+        $this->quality = $this->app->config->image->avif->quality;
     }
 
     /**

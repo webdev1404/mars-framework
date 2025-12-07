@@ -14,11 +14,11 @@ class Password extends Rule
     /**
      * {@inheritdoc}
      */
-    public string $error = 'error.validate_password';
+    public string $error = 'validate.password';
 
     public array $errors = [
-        'min_max' => 'error.validate_password_length',
-        'chars' => 'error.validate_password_chars',
+        'min_max' => 'validate.password.length',
+        'chars' => 'validate.password.chars',
     ];
 
     protected int $min = 6;

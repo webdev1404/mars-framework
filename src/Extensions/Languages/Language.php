@@ -29,34 +29,34 @@ class Language extends Extension
     ];
 
     /**
+     * @const array CACHE_DIRS The dirs to be cached
+     */
+    public const array CACHE_DIRS = ['files', 'templates'];
+
+    /**
      * @var array $strings The language's strings
      */
     public array $strings = [];
 
     /**
-     * @var array $strings_search The keys where we're search for strings without a dot
+     * @var array $local_keys The keys where we're search for strings without a dot (local keys)
      */
-    protected array $strings_search = [];
+    protected array $local_keys = [];
 
     /**
-     * @var array $strings_search_old The old search keys
+     * @var array $local_keys_old The old local keys
      */
-    protected array $strings_search_old = [];
+    protected array $local_keys_old = [];
 
     /**
-     * @var array $loaded_files The list of loaded files
+     * @var array $registered_keys The list of registered keys
      */
-    protected array $loaded_files = [];
+    protected array $registered_keys = [];
 
     /**
-     * @var array $invalid_files The list of invalid files we tried to load, but couldn't
+     * @var array $loaded_keys The list of loaded files
      */
-    protected array $invalid_files = [];
-
-    /**
-     * @var array $registered_files The list of registered files
-     */
-    protected array $registered_files = [];
+    protected array $loaded_keys = [];
 
     /**
      * @var string $files_path The path for the theme's files folder
@@ -76,16 +76,8 @@ class Language extends Extension
     /**
      * @var array $files Array with the list of available files
      */
-    public protected(set) array $files {
-        get {
-            if (isset($this->files)) {
-                return $this->files;
-            }
-
-            $this->files = $this->getCachedFiles($this->files_path);
-
-            return $this->files;
-        }
+    public array $files {
+         get => $this->files_cache_list['files'] ?? [];
     }
 
     /**
@@ -106,16 +98,8 @@ class Language extends Extension
     /**
      * @var array $templates Array with the list of available templates
      */
-    public protected(set) array $templates {
-        get {
-            if (isset($this->templates)) {
-                return $this->templates;
-            }
-
-            $this->templates = $this->getCachedFiles($this->templates_path);
-
-            return $this->templates;
-        }
+    public array $templates {
+        get => $this->files_cache_list['templates'] ?? [];
     }
 
     /**
@@ -222,71 +206,81 @@ class Language extends Extension
     }
 
     /**
-     * Checks if the specified file exists in the language's files
-     * @param string $file The filename to check
-     * @return bool True if the file exists, false otherwise
-     */
-    public function isFile(string $file) : bool
-    {
-        return isset($this->files[$file . '.php']);
-    }
-
-    /**
-     * Checks if the specified template exists in the language's templates
-     * @param string $file The filename to check
-     * @return bool True if the file exists, false otherwise
-     */
-    public function isTemplate(string $file) : bool
-    {
-        return isset($this->templates[$file]);
-    }
-
-    /**
-     * Loads the specified $file from the languages folder
-     * @param string $file The name of the file to load (must not include the .php extension)
-     * @param string|null $key The key to use for the loaded strings
+     * Registers a language file to be loaded when the key is requested
+     * @param string $key The key of the language file
+     * @param string|array $filename The filename of the language file(s)
      * @return static
      */
-    public function loadFile(string $file, ?string $key = null) : static
+    public function register(string $key, string|array $filename) : static
     {
-        if (isset($this->loaded_files[$file])) {
-            return $this;
+        $filenames = $this->app->array->get($filename);
+
+        if (isset($this->registered_keys[$key])) {
+            $this->registered_keys[$key] = array_merge($this->registered_keys[$key], $filenames);
+        } else {
+            $this->registered_keys[$key] = $filenames;
         }
-        if (isset($this->invalid_files[$file])) {
-            return $this;
-        }
-
-        if (!$this->isFile($file)) {
-            $this->invalid_files[] = $file;
-
-            return $this;
-        }
-
-        $key ??= $file;
-        $this->loaded_files[$file] = true;
-
-        $this->loadFilename($this->getFilename($file), $key);
 
         return $this;
     }
 
     /**
-     * Returns the full path to the specified language file
-     * @param string $file The filename to get the path for
-     * @return string The full path to the file
+     * Registers a language file, from the language's files folder, to be loaded when the key is requested
+     * @param string $key The key of the language file
+     * @param string $file The file to register
+     * @return static
      */
-    public function getFilename(string $file) : string
+    public function registerFile(string $key, string $file) : static
     {
-        return $this->files_path . '/' . $file . '.php';
+        $file = $file . '.php';
+
+        if (!isset($this->files[$file])) {
+            return $this;
+        }
+
+        return $this->register($key, $this->files_path . '/' . $file);
+    }
+
+    /**
+     * Loads a language file
+     * @param string $key The key of the language file
+     */
+    protected function load(string $key) 
+    {
+        $this->loaded_keys[$key] = true;
+
+        if (isset($this->registered_keys[$key])) {
+            foreach ($this->registered_keys[$key] as $filename) {
+                $this->loadFilename($key, $filename);
+            }
+        } else {
+            $this->loadFile($key);
+        }
+    }
+
+    /**
+     * Loads the specified $file from the languages folder
+     * @param string $file The name of the file to load (must not include the .php extension)
+     */
+    protected function loadFile(string $file)
+    {
+        $key = $file;
+        $file = $file . '.php';
+
+        if (!isset($this->files[$file])) {
+            return;
+        }
+
+        $this->loadFilename($key, $this->files_path . '/' . $file);
     }
 
     /**
      * Loads the specified filename from anywhere on the disk as a language file
-     * @param string $filename The filename to load
      * @param string $key The key to use for the loaded strings
+     * @param string $filename The filename to load
      * @return static
      */
-    public function loadFilename(string $filename, string $key) : static
+    public function loadFilename(string $key, string $filename) : static
     {
         $strings = include($filename);
 
@@ -294,6 +288,24 @@ class Language extends Extension
             $this->strings[$key] = array_merge($this->strings[$key], $strings);
         } else {
             $this->strings[$key] = $strings;
+        }
+
+        return $this;
+    }
+
+    /**
+     * Unloads the specified key
+     * @param string $key The key to unload
+     * @return static
+     */
+    public function unload(string $key) : static
+    {
+        if (isset($this->strings[$key])) {
+            unset($this->strings[$key]);
+        }
+
+        if (isset($this->registered_keys[$key])) {
+            unset($this->registered_keys[$key]);
         }
 
         return $this;
@@ -309,95 +321,40 @@ class Language extends Extension
     public function get(string $string, array $replace = [], $key = '') : string
     {
         $keys = [];
+        $found_string = '';
         $index = strpos($string, '.');
-        
-        if ($index !== false) {
-            //we have a dot in the key. Search for the string in the specified file
-            $file = substr($string, 0, $index);
-            $string = substr($string, $index + 1);
-            $keys = [$file];
+    
+        if ($index === false) {
+            //no dot in the key. Search for the string in the specified local keys
+            foreach ($this->local_keys as $key) {
+                if (!isset($this->strings[$key])) {
+                    $this->load($key);
+                }
 
-            $this->load($file);
-        } else {
-            $keys = $key ? [$key] : $this->strings_search;
-        }
-
-        // See if the string exists in the specified keys
-        foreach ($keys as $key) {
-            if (isset($this->strings[$key][$string])) {
-                $string = $this->strings[$key][$string];
-                break;
+                $found_string = $this->strings[$key][$string] ?? '';
+                if ($found_string) {
+                    break;
+                }
             }
+        } else {
+            //we have a dot in the key. Search for the string in the specified file
+            $key = substr($string, 0, $index);
+            $string_key = substr($string, $index + 1);
+
+            if (!isset($this->strings[$key])) {
+                if (!isset($this->loaded_keys[$key])) {
+                    $this->load($key);
+                }
+            }
+
+            $found_string = $this->strings[$key][$string_key] ?? '';
         }
 
         if ($replace) {
-            $string = str_replace(array_keys($replace), $replace, $string);
+            $found_string = str_replace(array_keys($replace), $replace, $found_string);
         }
 
-        return $string;
-    }
-
-    /**
-     * Loads a language file
-     * @param string $file The name of the file to load
-     */
-    protected function load(string $file) 
-    {
-        if (!isset($this->registered_files[$file])) {
-            //the file isn't registered, so load it normally
-            $this->loadFile($file);
-            return;
-        } else {
-            //execute the registered callback
-            $this->registered_files[$file]();
-        }
-    }
-
-    /**
-     * Adds a search key to the list of keys where we're searching for strings
-     * @param string $key The key to add
-     * @return static
-     */
-    public function addSearchKey(string $key) : static
-    {
-        array_unshift($this->strings_search, $key);
-
-        return $this;
-    }
-
-    /**
-     * Saves the current prefixes to the old ones
-     * @return static
-     */
-    public function saveSearchKeys() : static
-    {
-        $this->strings_search_old = $this->strings_search;
-
-        return $this;
-    }
-
-    /**
-     * Restores the prefixes to the previous ones
-     * @return static
-     */
-    public function restoreSearchKeys() : static
-    {
-        $this->strings_search = $this->strings_search_old;
-
-        return $this;
-    }
-
-    /**
-     * Registers a callback to be called to load a language file
-     * @param string $name The name of the language file
-     * @param callable $callback The callback to be called to load the file
-     * @return static
-     */
-    public function register(string $name, callable $callback) : static
-    {
-        $this->registered_files[$name] = $callback;
-
-        return $this;
+        return $found_string;
     }
 
     /**
@@ -412,5 +369,39 @@ class Language extends Extension
         }
 
         return $this->templates_path . '/' . $template;
+    }
+
+    /**
+     * Adds a local key to the list of keys where we're searching for strings
+     * @param string $key The key to add
+     * @return static
+     */
+    public function addLocalKey(string $key) : static
+    {
+        array_unshift($this->local_keys, $key);
+
+        return $this;
+    }
+
+    /**
+     * Saves the current local keys to the old ones
+     * @return static
+     */
+    public function saveLocalKeys() : static
+    {
+        $this->local_keys_old = $this->local_keys;
+
+        return $this;
+    }
+
+    /**
+     * Restores the local keys to the previous ones
+     * @return static
+     */
+    public function restoreLocalKeys() : static
+    {
+        $this->local_keys = $this->local_keys_old;
+
+        return $this;
     }
 }

@@ -7,6 +7,7 @@
 namespace Mars;
 
 use Mars\App\LazyLoad;
+use Mars\Cache\Config;
 use Mars\Cache\Css;
 use Mars\Cache\Javascript;
 use Mars\Cache\Data;
@@ -22,6 +23,12 @@ use Mars\Cache\Templates;
 class Cache
 {
     use LazyLoad;
+
+    /**
+     * @var Config $config The Config Cache object
+     */
+    #[LazyLoadProperty]
+    public protected(set) Config $config;
 
     /**
      * @var Css $css The Css Cache object
@@ -83,7 +90,7 @@ class Cache
      * @param string $name The name
      * @param mixed $value The value
      */
-    public function set(string $name, $value) : static
+    public function set(string $name, mixed $value) : static
     {
         $this->data->set($name, $value);
 

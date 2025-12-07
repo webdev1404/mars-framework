@@ -21,35 +21,35 @@ class Cookies
      * @var int $expires The cookie's expires timestamp
      */
     protected int $expires {
-        get => time() + (3600 * 24 * $this->app->config->cookie_expire_days);
+        get => time() + (3600 * 24 * $this->app->config->cookie->expire_days);
     }
 
     /**
      * @var string $path The cookie's path
      */
     protected string $path {
-        get => $this->app->config->cookie_path;
+        get => $this->app->config->cookie->path;
     }
 
     /**
      * @var string $domain The cookie's domain
      */
     protected string $domain {
-        get => $this->app->config->cookie_domain;
+        get => $this->app->config->cookie->domain;
     }
 
     /**
      * @var string $secure If true the cookies will only be sent over secure connections.
      */
     protected bool $secure {
-        get => $this->app->config->cookie_secure;
+        get => $this->app->config->cookie->secure;
     }
 
     /**
      * @var bool $httponly If true then httponly flag will be set for the cookies
      */
     public bool $httponly {
-        get => $this->app->config->cookie_httponly;
+        get => $this->app->config->cookie->httponly;
     }
 
     /**

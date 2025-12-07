@@ -26,7 +26,7 @@ abstract class Base
      * @var int $prefix_length The length of the prefix used for route caching
      */
     protected int $prefix_length {
-        get => $this->app->config->routes_prefix_length;
+        get => $this->app->config->routes->prefix_length;
     }
 
     /**
@@ -103,5 +103,19 @@ abstract class Base
         $methods = array_map('strtolower', $methods);
 
         return $methods;
+    }
+
+    /**
+     * Returns the file name for a route's name
+     * @param string $name The name of the route
+     * @return string The file name
+     */
+    public function getNameFile(string $name) : string
+    {
+        if (!str_contains($name, '.')) {
+            return 'global';
+        }
+
+        return substr($name, strpos($name, '.') + 1);
     }
 }

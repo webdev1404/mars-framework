@@ -18,14 +18,14 @@ class Title extends Tag
     public function output()
     {
         $parts = [
-            $this->app->config->title_prefix,
+            $this->app->config->document->title->prefix,
             $this->value,
-            $this->app->config->title_suffix
+            $this->app->config->document->title->suffix
         ];
 
         $parts = array_filter($parts);
 
-        $title = implode($this->app->config->title_separator, $parts);
+        $title = implode($this->app->config->document->title->separator, $parts);
 
         $title = $this->app->plugins->filter('document_title_output', $title);
 

@@ -30,7 +30,7 @@ class Captcha
      * @var bool $enabled Will be set to true, if captcha is enabled
      */
     public bool $enabled {
-        get => $this->app->config->captcha_enable;
+        get => $this->app->config->captcha->enable;
     }
 
     /**

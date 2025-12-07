@@ -18,7 +18,7 @@ class Domain extends Base implements LocalizationInterface
      */
     public function getCode() : string
     {
-        if (!$this->app->config->localization_urls) {
+        if (!$this->app->config->localization->urls) {
             throw new \Exception('Localization urls are not configured. It must be specified in the \'localization_urls\' config value.');
         }
 
@@ -28,7 +28,7 @@ class Domain extends Base implements LocalizationInterface
             throw new \Exception('Cannot detect the language code from the domain because the HTTP_HOST server variable is empty.');
         }
 
-        $code = array_find_key($this->app->config->localization_urls, function($url) use ($host) {
+        $code = array_find_key($this->app->config->localization->urls, function($url) use ($host) {
             return $this->app->url->getHost($url) == $host;
         });
 
@@ -45,6 +45,6 @@ class Domain extends Base implements LocalizationInterface
      */    
     public function getUrl(string $code) : string
     {
-        return $this->app->config->localization_urls[$code] ?? $this->app->config->url;
+        return $this->app->config->localization->urls[$code] ?? $this->app->config->url->base;
     }
 }

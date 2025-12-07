@@ -63,8 +63,9 @@ class Drivers implements \Countable, \IteratorAggregate
     public function get(string $driver, ...$args) : object
     {
         if ($this->config_key) {
-            if (isset($this->app->config->drivers[$this->config_key])) {
-                $this->list = $this->app->config->drivers[$this->config_key] + $this->list;
+            $config_key = $this->config_key;
+            if (isset($this->app->config->drivers->$config_key)) {
+                $this->list = $this->app->config->drivers->$config_key + $this->list;
             }
         }
 

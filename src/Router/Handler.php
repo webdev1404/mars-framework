@@ -23,7 +23,7 @@ class Handler
      */
     public protected(set) array $supported_handlers = [
         'action' => \Mars\Router\Handlers\Action::class,
-        'block' => \Mars\Router\Handlers\Block::class,
+        'module' => \Mars\Router\Handlers\Module::class,
         'page' => \Mars\Router\Handlers\Page::class,
         'template' => \Mars\Router\Handlers\Template::class,
     ];

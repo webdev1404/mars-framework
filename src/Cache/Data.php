@@ -6,8 +6,6 @@
 
 namespace Mars\Cache;
 
-use Mars\Filesystem\IsFileTrait;
-
 /**
  * The Data Cache Class
  * Class which handles the caching of data
@@ -18,7 +16,7 @@ class Data extends Cacheable
      * @var string $driver The used driver
      */
     protected string $driver_name {
-        get => $this->app->config->cache_data_driver ?? $this->app->config->cache_driver;
+        get => $this->app->config->cache->data_driver ?? $this->app->config->cache->driver;
     }
 
     /**

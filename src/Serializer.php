@@ -52,7 +52,7 @@ class Serializer
                 return $this->driver;
             }
 
-            $this->driver = $this->drivers->get($this->app->config->serializer_driver);
+            $this->driver = $this->drivers->get($this->app->config->serializer->driver);
 
             return $this->driver;
         }
@@ -68,7 +68,7 @@ class Serializer
             }
 
             $this->php_driver = $this->driver;
-            if ($this->app->config->serializer_driver != 'php') {
+            if ($this->app->config->serializer->driver != 'php') {
                 $this->php_driver = $this->drivers->get('php');
             }
 

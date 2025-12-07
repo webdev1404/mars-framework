@@ -50,7 +50,7 @@ class Mail
                 return $this->driver;
             }
 
-            $this->driver = $this->drivers->get($this->app->config->mail_driver);
+            $this->driver = $this->drivers->get($this->app->config->mail->driver);
 
             return $this->driver;
         }
@@ -71,8 +71,8 @@ class Mail
         $this->app->plugins->run('mail_send', $to, $subject, $message, $options, $attachments, $bcc, $this);
 
         $is_html = $options['is_html'] ?? true;
-        $from = $options['from'] ?? $this->app->config->mail_from;
-        $from_name = $options['from_name'] ?? $this->app->config->mail_from_name;
+        $from = $options['from'] ?? $this->app->config->mail->from;
+        $from_name = $options['from_name'] ?? $this->app->config->mail->from_name;
         $reply_to = $options['reply_to'] ?? '';
         $reply_to_name = $options['reply_to_name'] ?? '';
 
@@ -99,7 +99,7 @@ class Mail
         } catch (\Exception $e) {
             $this->app->plugins->run('mail_send_error', $e, $to, $subject, $message, $options, $attachments, $bcc, $this);
 
-            throw new \Exception(App::__('error.mail_send', ['{ERROR}' => $e->getMessage()]));
+            throw new \Exception(App::__('error.mail.send', ['{ERROR}' => $e->getMessage()]));
         }
     }
 

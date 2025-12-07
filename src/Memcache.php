@@ -31,7 +31,7 @@ class Memcache
      * @var bool $enabled Will be set to true, if memcache is enabled
      */
     public bool $enabled {
-        get => $this->app->config->memcache_enable;
+        get => $this->app->config->memcache->enable;
     }
 
     /**
@@ -61,7 +61,7 @@ class Memcache
                 return $this->driver;
             }
 
-            $this->driver = $this->drivers->get($this->app->config->memcache_driver);
+            $this->driver = $this->drivers->get($this->app->config->memcache->driver);
             $this->driver->connect($this->host, $this->port);
 
             return $this->driver;
@@ -72,14 +72,14 @@ class Memcache
      * @var string $host The host to connect to
      */
     protected string $host {
-        get => $this->app->config->memcache_host;
+        get => $this->app->config->memcache->host;
     }
 
     /**
      * @var string $port The port to connect to
      */
     protected string $port {
-        get => $this->app->config->memcache_port;
+        get => $this->app->config->memcache->port;
     }
 
     /**
@@ -91,7 +91,7 @@ class Memcache
                 return $this->key;
             }
 
-            $this->key = $this->app->config->memcache_key;
+            $this->key = $this->app->config->memcache->key;
             if (!$this->key && $this->enabled) {
                 throw new \Exception('The memcache_key config option must be set if memcache is enabled');
             }

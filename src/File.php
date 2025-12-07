@@ -197,11 +197,11 @@ class File implements \Stringable
      */
     protected function getOpenBaseDirs() : bool|array
     {
-        if ($this->app->config->open_basedir === false) {
+        if ($this->app->config->security->open_basedir === false) {
             return false;
         }
 
-        $dir = ($this->app->config->open_basedir === true) ? $this->app->base_path : $this->app->config->open_basedir;
+        $dir = ($this->app->config->security->open_basedir === true) ? $this->app->base_path : $this->app->config->security->open_basedir;
         $dirs = $this->app->array->get($dir);
 
         array_walk($dirs, function (&$item) {
@@ -218,8 +218,8 @@ class File implements \Stringable
      */
     public function check() : static
     {
-        if (strlen(basename($this->filename)) > $this->app->config->file_max_chars) {
-            throw new \Exception(App::__('error.file_invalid_maxchars', ['{FILE}' => $this->filename]));
+        if (strlen(basename($this->filename)) > $this->app->config->files->max_chars) {
+            throw new \Exception(App::__('error.file.invalid_maxchars', ['{FILE}' => $this->filename]));
         }
 
         $this->checkForInvalidChars();
@@ -240,7 +240,7 @@ class File implements \Stringable
             }
 
             if (!$contains) {
-                throw new \Exception(App::__('error.file_invalid_basedir', ['{FILE}' => $this->filename]));
+                throw new \Exception(App::__('error.file.invalid_basedir', ['{FILE}' => $this->filename]));
             }
         }
 
@@ -257,7 +257,7 @@ class File implements \Stringable
         if (str_contains($this->filename, '../') || str_contains($this->filename, './')
             || str_contains($this->filename, '..\\') || str_contains($this->filename, '.\\')
             || str_starts_with($this->filename, strtolower('php:'))) {
-            throw new \Exception(App::__('error.file_invalid_chars', ['{FILE}' => $this->filename]));
+            throw new \Exception(App::__('error.file.invalid_chars', ['{FILE}' => $this->filename]));
         }
 
         return $this;
@@ -350,7 +350,7 @@ class File implements \Stringable
 
         $content = file_get_contents($this->filename);
         if ($content === false) {
-            throw new \Exception(App::__('error.file_read', ['{FILE}' => $this->filename]));
+            throw new \Exception(App::__('error.file.read', ['{FILE}' => $this->filename]));
         }
 
         return $content;
@@ -376,7 +376,7 @@ class File implements \Stringable
 
         $bytes = file_put_contents($this->filename, $content, $flags);
         if ($bytes === false) {
-            throw new \Exception(App::__('error.file_write', ['{FILE}' => $this->filename]));
+            throw new \Exception(App::__('error.file.write', ['{FILE}' => $this->filename]));
         }
 
         return $bytes;
@@ -398,7 +398,7 @@ class File implements \Stringable
         $this->app->plugins->run('file_delete', $this);
 
         if (unlink($this->filename) === false) {
-            throw new \Exception(App::__('error.file_delete', ['{FILE}' => $this->filename]));
+            throw new \Exception(App::__('error.file.delete', ['{FILE}' => $this->filename]));
         }
 
         return null;
@@ -424,7 +424,7 @@ class File implements \Stringable
         $this->app->plugins->run('file_copy', $this, $destination);
 
         if (copy($this->filename, $destination->filename) === false) {
-            throw new \Exception(App::__('error.file_copy', ['{SOURCE}' => $this->filename, '{DESTINATION}' => $destination->filename]));
+            throw new \Exception(App::__('error.file.copy', ['{SOURCE}' => $this->filename, '{DESTINATION}' => $destination->filename]));
         }
 
         return $destination;
@@ -450,7 +450,7 @@ class File implements \Stringable
         $this->app->plugins->run('file_move', $this, $destination);
 
         if (rename($this->filename, $destination->filename) === false) {
-            throw new \Exception(App::__('error.file_move', ['{SOURCE}' => $this->filename, '{DESTINATION}' => $destination->filename]));
+            throw new \Exception(App::__('error.file.move', ['{SOURCE}' => $this->filename, '{DESTINATION}' => $destination->filename]));
         }
 
         return $destination;

@@ -46,7 +46,7 @@ class Db
      * @var bool $use_multi If true, will use multiple databases for read & write queries
      */
     protected bool $use_multi {
-        get => is_array($this->app->config->db_hostname);
+        get => is_array($this->app->config->db->hostname);
     }
 
     /**
@@ -60,7 +60,7 @@ class Db
 
             $this->read_key = 0;
             if ($this->use_multi) {
-                $this->read_key = mt_rand(0, count($this->app->config->db_hostname) - 1);
+                $this->read_key = mt_rand(0, count($this->app->config->db->hostname) - 1);
             }
     
             return $this->read_key;
@@ -71,84 +71,84 @@ class Db
      * @var string $read_hostname The hostname to connect to for read queries
      */
     protected string $read_hostname {
-        get => $this->use_multi ? $this->app->config->db_hostname[$this->read_key] : $this->app->config->db_hostname;
+        get => $this->use_multi ? $this->app->config->db->hostname[$this->read_key] : $this->app->config->db->hostname;
     }
 
     /**
      * @var string $read_port The port to connect to for read queries
      */
     protected string $read_port {
-        get => $this->use_multi ? $this->app->config->db_port[$this->read_key] : $this->app->config->db_port;
+        get => $this->use_multi ? $this->app->config->db->port[$this->read_key] : $this->app->config->db->port;
     }
 
     /**
      * @var string $read_username The username used to connect to the read server
      */
     protected string $read_username {
-        get => $this->use_multi ? $this->app->config->db_username[$this->read_key] : $this->app->config->db_username;
+        get => $this->use_multi ? $this->app->config->db->username[$this->read_key] : $this->app->config->db->username;
     }
 
     /**
      * @var string $read_password The password used to connect to the read server
      */
     protected string $read_password {
-        get => $this->use_multi ? $this->app->config->db_password[$this->read_key] : $this->app->config->db_password;
+        get => $this->use_multi ? $this->app->config->db->password[$this->read_key] : $this->app->config->db->password;
     }
 
     /**
      * @var string $read_database The database to connect to the read server
      */
     protected string $read_database {
-        get => $this->use_multi ? $this->app->config->db_name[$this->read_key] : $this->app->config->db_name;
+        get => $this->use_multi ? $this->app->config->db->name[$this->read_key] : $this->app->config->db->name;
     }
 
     /**
      * @var bool $read_pesistent If true, the read db connection will be persistent
      */
     protected bool $read_persistent {
-        get => $this->use_multi ? $this->app->config->db_persistent[$this->read_key] : $this->app->config->db_persistent;
+        get => $this->use_multi ? $this->app->config->db->persistent[$this->read_key] : $this->app->config->db->persistent;
     }
 
     /**
      * @var string $write_hostname The hostname to connect to for write queries
      */
     protected string $write_hostname {
-        get => $this->use_multi ? $this->app->config->db_hostname[0] : $this->app->config->db_hostname;
+        get => $this->use_multi ? $this->app->config->db->hostname[0] : $this->app->config->db->hostname;
     }
 
     /**
      * @var string $write_port The port to connect to for write queries
      */
     protected string $write_port {
-        get => $this->use_multi ? $this->app->config->db_port[0] : $this->app->config->db_port;
+        get => $this->use_multi ? $this->app->config->db->port[0] : $this->app->config->db->port;
     }
 
     /**
      * @var string $write_username The username used to connect to the write server
      */
     protected string $write_username {
-        get => $this->use_multi ? $this->app->config->db_username[0] : $this->app->config->db_username;
+        get => $this->use_multi ? $this->app->config->db->username[0] : $this->app->config->db->username;
     }
 
     /**
      * @var string $write_password The password used to connect to the write server
      */
     protected string $write_password {
-        get => $this->use_multi ? $this->app->config->db_password[0] : $this->app->config->db_password;
+        get => $this->use_multi ? $this->app->config->db->password[0] : $this->app->config->db->password;
     }
 
     /**
      * @var string $write_database The database to connect to the write server
      */
     protected string $write_database {
-        get => $this->use_multi ? $this->app->config->db_name[0] : $this->app->config->db_name;
+        get => $this->use_multi ? $this->app->config->db->name[0] : $this->app->config->db->name;
     }
 
     /**
      * @var bool $write_pesistent If true, the write db connection will be persistent
      */
     protected bool $write_persistent {
-        get => $this->use_multi ? $this->app->config->db_persistent[0] : $this->app->config->db_persistent;
+        get => $this->use_multi ? $this->app->config->db->persistent[0] : $this->app->config->db->persistent;
     }
 
     /**
@@ -165,7 +165,7 @@ class Db
 
             try {
                 if ($this->use_multi) {
-                    $this->read_driver = $this->drivers->get($this->app->config->db_driver);
+                    $this->read_driver = $this->drivers->get($this->app->config->db->driver);
                     $this->read_driver->connect($this->read_hostname, $this->read_port, $this->read_username, $this->read_password, $this->read_database, $this->read_persistent, $this->charset);
                 } else {
                     $this->read_driver = $this->write_driver;
@@ -191,7 +191,7 @@ class Db
             }
 
             try {
-                $this->write_driver = $this->drivers->get($this->app->config->db_driver);
+                $this->write_driver = $this->drivers->get($this->app->config->db->driver);
                 $this->write_driver->connect($this->write_hostname, $this->write_port, $this->write_username, $this->write_password, $this->write_database, $this->write_persistent, $this->charset);
             } catch (\Exception $e) {
                 throw new \Exception('Error connecting to the database: ' . $e->getMessage());
@@ -205,7 +205,7 @@ class Db
      * @var string $charset The charset
      */
     public string $charset {
-        get => $this->app->config->db_charset;
+        get => $this->app->config->db->charset;
     }
     
     /**
@@ -308,7 +308,7 @@ class Db
      */
     public function query(string|Sql $sql, array $params = [], ?bool $is_read = null) : Result
     {
-        if ($this->app->config->debug) {
+        if ($this->app->config->debug->enable) {
             $this->app->timer->start('sql');
         }
 
@@ -328,7 +328,7 @@ class Db
             throw new \Exception('Query Error: ' . $this->getQueryError($e->getMessage(), $sql, $params));
         }
 
-        if ($this->app->config->debug) {
+        if ($this->app->config->debug->enable) {
             $exec_time = $this->app->timer->stop('sql');
 
             $this->queries_time+= $exec_time;
@@ -411,7 +411,7 @@ class Db
      */
     protected function getFullQuery(string $sql, array $params) : string
     {
-        if (!$this->app->config->debug_db) {
+        if (!$this->app->config->debug->db) {
             return $sql;
         }
 

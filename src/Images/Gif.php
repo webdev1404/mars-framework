@@ -27,7 +27,7 @@ class Gif extends Image implements ImageInterface
     {
         parent::__construct($filename, $app);
 
-        $this->optimize_command = $this->app->config->image_gif_optimize_command;
+        $this->optimize_command = $this->app->config->image->gif->optimize_command;
     }
 
     /**

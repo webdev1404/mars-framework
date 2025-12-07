@@ -78,7 +78,7 @@ final class RequestTest extends Base
 
     public function testGetOrderBy()
     {
-        $_REQUEST[$this->app->config->request_orderby_param] = 'myfield';
+        $_REQUEST[$this->app->config->request->orderby->param] = 'myfield';
 
         $this->assertSame($this->app->request->getOrderBy(), 'myfield');
         $this->assertSame($this->app->request->getOrderBy(['myfield', 'val']), 'myfield');
@@ -89,25 +89,25 @@ final class RequestTest extends Base
 
     public function testGetOrder()
     {
-        $_REQUEST[$this->app->config->request_order_param] = ' ASC ';
+        $_REQUEST[$this->app->config->request->order->param] = ' ASC ';
         $this->assertSame($this->app->request->getOrder(), 'ASC');
 
-        $_REQUEST[$this->app->config->request_order_param] = ' asc ';
+        $_REQUEST[$this->app->config->request->order->param] = ' asc ';
         $this->assertSame($this->app->request->getOrder(), 'ASC');
 
-        $_REQUEST[$this->app->config->request_order_param] = ' ascx ';
+        $_REQUEST[$this->app->config->request->order->param] = ' ascx ';
         $this->assertSame($this->app->request->getOrder(), '');
     }
 
     public function testGetPage()
     {
-        $_REQUEST[$this->app->config->request_page_param] = 'abc';
+        $_REQUEST[$this->app->config->request->page->param] = 'abc';
         $this->assertSame($this->app->request->getPage(), 0);
 
-        $_REQUEST[$this->app->config->request_page_param] = 20;
+        $_REQUEST[$this->app->config->request->page->param] = 20;
         $this->assertSame($this->app->request->getPage(), 20);
 
-        $_REQUEST[$this->app->config->request_page_param] = -20;
+        $_REQUEST[$this->app->config->request->page->param] = -20;
         $this->assertSame($this->app->request->getPage(), 20);
     }
 }

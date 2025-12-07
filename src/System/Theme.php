@@ -52,11 +52,11 @@ class Theme extends BaseTheme
      */
     public function __construct(App $app)
     {
-        if (!$app->config->theme) {
+        if (!$app->config->theme->name) {
             throw new \Exception('No theme set in config');
         }
 
-        parent::__construct($app->config->theme, [], $app);
+        parent::__construct($app->config->theme->name, [], $app);
     }
 
     /**

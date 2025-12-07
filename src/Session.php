@@ -56,7 +56,7 @@ class Session
                 return $this->prefix;
             }
 
-            $this->prefix = $this->app->config->session_prefix;
+            $this->prefix = $this->app->config->session->prefix;
 
             if ($this->prefix) {
                 $this->prefix .= '-';
@@ -104,7 +104,7 @@ class Session
         $this->started = true;
 
         //get the driver manually, since we're not using it per se
-        $this->driver = $this->drivers->get($this->app->config->session_driver);
+        $this->driver = $this->drivers->get($this->app->config->session->driver);
     }
 
     /**

@@ -30,7 +30,7 @@ class Db implements SessionInterface, \SessionHandlerInterface, \SessionUpdateTi
     {
         $this->app = $app;
 
-        $this->table = $this->app->config->session_table;
+        $this->table = $this->app->config->session->table;
 
         if (!$this->table) {
             throw new \Exception('The database table where the session data is stored is not set');

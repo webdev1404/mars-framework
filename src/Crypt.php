@@ -50,7 +50,7 @@ class Crypt
                 return $this->driver;
             }
 
-            $this->driver = $this->drivers->get($this->app->config->crypt_driver);
+            $this->driver = $this->drivers->get($this->app->config->crypt->driver);
 
             return $this->driver;
         }
@@ -65,7 +65,7 @@ class Crypt
                 return $this->keys;
             }
 
-            $this->keys = $this->app->config->crypt_keys;
+            $this->keys = $this->app->config->crypt->keys;
             if (!$this->keys) {
                 throw new \Exception('No crypt keys defined in the configuration');
             }
@@ -94,7 +94,7 @@ class Crypt
             }
 
             $this->key = $this->keys[$this->key_index];
-            if ($this->app->config->crypt_driver == 'sodium') {
+            if ($this->app->config->crypt->driver == 'sodium') {
                 if (strlen($this->key) != SODIUM_CRYPTO_SECRETBOX_KEYBYTES) {
                     throw new \Exception('The crypt key must be ' . SODIUM_CRYPTO_SECRETBOX_KEYBYTES . ' bytes long for the sodium driver');
                 }

@@ -43,7 +43,7 @@ class Base
      */    
     public function getUrl(string $code) : string
     {
-        return $this->app->config->url;
+        return $this->app->config->url->base;
     }
 
     /**

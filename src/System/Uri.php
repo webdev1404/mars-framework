@@ -86,7 +86,7 @@ class Uri implements \Stringable
                 return $this->base;
             }
 
-            $this->base = new Url($this->app->config->url);
+            $this->base = new Url($this->app->config->url->base);
 
             return $this->base;
         }
@@ -160,17 +160,7 @@ class Uri implements \Stringable
     /**
      * @var array $routes The list of routes names
      */
-    protected array $routes {
-        get {
-            if (isset($this->routes)) {
-                return $this->routes;
-            }
-
-            $this->routes = $this->app->cache->routes->getNames($this->app->lang->code);
-
-            return $this->routes;
-        }
-    }
+    protected array $routes = [];
 
     /**
      * Returns the current url
@@ -344,12 +334,17 @@ class Uri implements \Stringable
      */
     public function route(string $name) : ?Url 
     {
-        $url = $this->routes[$name] ?? null;
+        $file = $this->app->router->getNameFile($name);
+        if (!isset($this->routes[$file])) {
+            $this->routes[$file] = $this->app->cache->routes->getNames($file, $this->app->lang->code);
+        }
+
+        $url = $this->routes[$file][$name] ?? null;
         if (!$url) {
             return null;
         }
 
-        return new Url($this->base . '/' . $url);
+        return new Url($this->root . '/' . $url);
     }
 
     /**

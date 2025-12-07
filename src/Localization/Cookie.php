@@ -23,7 +23,7 @@ class Cookie extends Base implements LocalizationInterface
 
             $this->code = '';
 
-            $code = $this->app->request->cookies->get($this->app->config->localization_cookie_name);
+            $code = $this->app->request->cookies->get($this->app->config->localization->cookie_name);
             if (isset($this->app->lang->codes_list[$code])) {
                 $this->code = $code;
             }

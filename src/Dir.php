@@ -389,7 +389,7 @@ class Dir implements \Stringable
         $this->app->plugins->run('dir_create', $this);
 
         if (!mkdir($this->path)) {
-            throw new \Exception(App::__('error.dir_create', ['{DIR}' => $this->path]));
+            throw new \Exception(App::__('error.dir.create', ['{DIR}' => $this->path]));
         }
         if ($permissions) {
             chmod($this->path, $permissions);
@@ -455,7 +455,7 @@ class Dir implements \Stringable
         $this->app->plugins->run('dir_move', $this, $destination);
 
         if (!rename($this->path, $destination->path)) {
-            throw new \Exception(App::__('error.dir_move', ['{SOURCE}' => $this->path, '{DESTINATION}' => $destination->path]));
+            throw new \Exception(App::__('error.dir.move', ['{SOURCE}' => $this->path, '{DESTINATION}' => $destination->path]));
         }
 
         return $destination;
@@ -481,7 +481,7 @@ class Dir implements \Stringable
         foreach ($iterator as $file) {
             if ($file->isDir()) {
                 if (!rmdir($file->getPathname())) {
-                    throw new \Exception(App::__('error.dir_delete', ['{DIR}' => $file->getPathname()]));
+                    throw new \Exception(App::__('error.dir.delete', ['{DIR}' => $file->getPathname()]));
                 }
             } else {
                 if (!unlink($file->getPathname())) {
@@ -492,7 +492,7 @@ class Dir implements \Stringable
 
         if ($delete_dir) {
             if (!rmdir($this->path)) {
-                throw new \Exception(App::__('error.dir_delete', ['{DIR}' => $this->path]));
+                throw new \Exception(App::__('error.dir.delete', ['{DIR}' => $this->path]));
             }
 
             return null;

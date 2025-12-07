@@ -17,10 +17,10 @@ class Html extends Filter
     public function filter(string $html, ?string $allowed_elements = null, ?string $allowed_attributes = null, string $encoding = 'UTF-8') : string
     {
         if ($allowed_elements === null) {
-            $allowed_elements = $allowed_elements = $this->app->config->html_allowed_elements;
+            $allowed_elements = $allowed_elements = $this->app->config->html->allowed_elements;
         }
         if ($allowed_attributes === null) {
-            $allowed_attributes = $this->app->config->html_allowed_attributes;
+            $allowed_attributes = $this->app->config->html->allowed_attributes;
         }
 
         $config = \HTMLPurifier_Config::createDefault();

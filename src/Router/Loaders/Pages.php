@@ -35,7 +35,7 @@ class Pages extends Loader
      */
     public function load()
     {
-        if (!$this->app->config->routes_pages_autoload) {
+        if (!$this->app->config->routes->pages_autoload) {
             return;
         }
 

@@ -11,7 +11,7 @@ final class UiTest extends Base
 {
     public function testPagination()
     {
-        $_REQUEST[$this->app->config->request_page_param] = 1;
+        $_REQUEST[$this->app->config->request->page->param] = 1;
 
         $pag = new Pagination('https://www.mydomain.com/', 10, 1000, 10, $this->app);
         $links = $pag->getLinks();

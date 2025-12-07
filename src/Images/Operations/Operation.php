@@ -81,7 +81,7 @@ abstract class Operation
 
         //fill the image with the chosen background
         if ($fill) {
-            $bc = $this->htmlToRgb($options['background_color'] ?? $this->app->config->image_background_color);
+            $bc = $this->htmlToRgb($options['background_color'] ?? $this->app->config->image->background_color);
 
             imagefill($destination, 0, 0, imagecolorallocate($destination, $bc[0], $bc[1], $bc[2]));
         }

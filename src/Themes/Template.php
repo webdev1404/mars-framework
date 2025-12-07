@@ -49,7 +49,7 @@ class Template
                 return $this->driver;
             }
 
-            $this->driver = $this->drivers->get($this->app->config->templates_driver);
+            $this->driver = $this->drivers->get($this->app->config->templates->driver);
 
             return $this->driver;
         }

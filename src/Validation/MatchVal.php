@@ -14,7 +14,7 @@ class MatchVal extends Rule
     /**
      * {@inheritdoc}
      */
-    public string $error = 'error.validate_match';
+    public string $error = 'validate.match';
 
     /**
      * Validates a match

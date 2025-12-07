@@ -25,7 +25,7 @@ class Plugins extends BasePlugins
                 return $this->enabled;
             }
             
-            $this->enabled = $this->app->config->plugins_enable;
+            $this->enabled = $this->app->config->plugins->enable;
 
             return $this->enabled;
         }
@@ -130,7 +130,7 @@ class Plugins extends BasePlugins
         $return_value = null;
         
         foreach ($hooks_array as $hook_data) {
-            if ($this->app->config->debug) {
+            if ($this->app->config->debug->enable) {
                 $this->startTimer();
             }
 
@@ -153,7 +153,7 @@ class Plugins extends BasePlugins
                 $return_value = $plugin_return_value;
             }
 
-            if ($this->app->config->debug) {
+            if ($this->app->config->debug->enable) {
                 $this->endTimer($class_name, $hook);
             }
         }

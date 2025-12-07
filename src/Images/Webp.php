@@ -27,7 +27,7 @@ class Webp extends Image implements ImageInterface
     {
         parent::__construct($filename, $app);
 
-        $this->quality = $this->app->config->image_webp_quality;
+        $this->quality = $this->app->config->image->webp->quality;
     }
 
     /**

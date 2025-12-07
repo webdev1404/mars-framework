@@ -56,7 +56,7 @@ class Headers
 
         $this->app = $app;
 
-        $this->list = $this->app->config->headers;
+        $this->list = $this->app->config->http->response->headers->list;
     }
 
     /**
@@ -64,7 +64,7 @@ class Headers
      */
     public function output()
     {
-        if ($this->app->config->csp_enable) {
+        if ($this->app->config->http->response->headers->csp->enable) {
             $this->csp->output();
         }
 

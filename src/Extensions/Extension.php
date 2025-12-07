@@ -27,6 +27,11 @@ abstract class Extension
     ];
 
     /**
+     * @const array CACHE_DIRS The dirs to be cached
+     */
+    public const array CACHE_DIRS = [];
+
+    /**
      * @var string $name The name of the extension
      */
     public protected(set) string $name = '';
@@ -145,7 +150,7 @@ abstract class Extension
                 return $this->development;
             }
 
-            $this->development = $this->app->development ? true : $this->app->config->development_extensions[static::$base_dir] ?? false;
+            $this->development = $this->app->development ? true : $this->app->config->development->extensions[static::$base_dir] ?? false;
 
             return $this->development;
         }

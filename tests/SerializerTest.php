@@ -20,17 +20,17 @@ final class SerializerTest extends Base
     {
         parent::setUp();
 
-        $this->driver = $this->app->config->serializer_driver;
+        $this->driver = $this->app->config->serializer->driver;
     }
 
     public function tearDown() : void
     {
-        $this->app->config->serializer_driver = $this->driver;
+        $this->app->config->serializer->driver = $this->driver;
     }
 
     public function testPhp()
     {
-        $this->app->config->serializer_driver = 'php';
+        $this->app->config->serializer->driver = 'php';
 
         $serializer = new Serializer($this->app);
         $this->assertEquals($serializer->serialize($this->data, true), $this->expected_encoded);
@@ -41,7 +41,7 @@ final class SerializerTest extends Base
 
     public function testIgbinary()
     {
-        $this->app->config->serializer_driver = 'igbinary';
+        $this->app->config->serializer->driver = 'igbinary';
 
         $serializer = new Serializer($this->app);
         $this->assertEquals($serializer->serialize($this->data, true), $this->expected_encoded);
@@ -52,7 +52,7 @@ final class SerializerTest extends Base
 
     /*public function testUnserializePhp()
     {
-        $this->app->config->serializer_driver = 'php';
+        $this->app->config->serializer->driver = 'php';
 
         $serializer = new Serializer($this->app);
         $this->assertEquals($serializer->unserialize($this->expected_encoded, [], true), $this->data);
@@ -61,7 +61,7 @@ final class SerializerTest extends Base
 
     public function testUnserializeIgbinary()
     {
-        $this->app->config->serializer_driver = 'igbinary';
+        $this->app->config->serializer->driver = 'igbinary';
 
         $serializer = new Serializer($this->app);
         $this->assertEquals($serializer->unserialize($this->expected_encoded, [], true), $this->data);

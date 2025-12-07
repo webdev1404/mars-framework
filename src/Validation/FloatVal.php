@@ -18,10 +18,10 @@ class FloatVal extends Rule
     public string $error = '';
 
     public array $errors = [
-        'simple' => 'error.validate_float',
-        'min' => 'error.validate_float_min',
-        'max' => 'error.validate_float_max',
-        'min_max' => 'error.validate_float_min_max',
+        'simple' => 'validate.float',
+        'min' => 'validate.float.min',
+        'max' => 'validate.float.max',
+        'min_max' => 'validate.float.min_max',
     ];
 
     /**

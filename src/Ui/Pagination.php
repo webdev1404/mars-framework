@@ -215,7 +215,7 @@ class Pagination
             return str_replace($this->seo_param, $page, $this->base_url);
         } else {
             //build the url, by appending the page as a query string
-            return $this->app->url->add($this->base_url, [$this->app->config->request_page_param => $page]);
+            return $this->app->url->add($this->base_url, [$this->app->config->request->page->param => $page]);
         }
     }
 

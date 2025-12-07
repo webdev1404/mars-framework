@@ -20,7 +20,7 @@ class Select extends Tag implements FormInputInterface
     /**
      * @var string $type The tag's type
      */
-    public static string $tag = 'select';
+    public protected(set) static string $tag = 'select';
 
     /**
      * The name of the name attribute

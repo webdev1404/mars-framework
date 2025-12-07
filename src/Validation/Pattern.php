@@ -28,7 +28,7 @@ class Pattern extends Rule
             throw new \Exception("The 'pattern' validation rule must have the pattern specified. Eg: pattern:/[a-Z0-9]*/");
         }
 
-        $this->error = $error ?? 'error.validate_pattern';
+        $this->error = $error ?? 'validate.pattern';
 
         if (!$value) {
             return false;

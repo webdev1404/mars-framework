@@ -23,7 +23,7 @@ class Preconnect extends Preload
     {
         $this->app = $app;
 
-        $urls = $this->app->config->preconnect ?? [];
+        $urls = $this->app->config->hints->preconnect ?? [];
         if ($urls) {
             $this->load($urls);
         }

@@ -32,7 +32,9 @@ abstract class Loader extends Base
      */
     protected function loadName(string $language, string $name, string $route)
     {
-        $this->routes->names[$language][$name] = $route;
+        $file = $this->getNameFile($name);
+
+        $this->routes->names[$language][$file][$name] = $route;
     }
 
     /**

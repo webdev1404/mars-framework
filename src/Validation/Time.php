@@ -14,7 +14,7 @@ class Time extends Datetime
     /**
      * {@inheritdoc}
      */
-    public string $error = 'error.validate_time';
+    public string $error = 'validate.time';
 
     /**
      * @see DateTime::isValid()

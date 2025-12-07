@@ -269,13 +269,13 @@ class Request
     public function canPost() : bool
     {
         if (!$this->is_post) {
-            $this->app->errors->add(App::__('error.request_not_post'));
+            $this->app->errors->add(App::__('error.request.not_post'));
             return false;
         }
 
-        $token = $this->post->get($this->app->config->html_csrf_name);
+        $token = $this->post->get($this->app->config->html->csrf_name);
         if (!$token || $token != $this->app->session->token) {
-            $this->app->errors->add(App::__('error.request_invalid_csrf'));
+            $this->app->errors->add(App::__('error.request.invalid_csrf'));
             return false;
         }
 
@@ -289,7 +289,7 @@ class Request
      */
     public function getAction(string $action_param = '') : string
     {
-        $action_param = $action_param ? $action_param : $this->app->config->request_action_param;
+        $action_param = $action_param ? $action_param : $this->app->config->request->action->param;
 
         return $this->request->get($action_param);
     }
@@ -303,7 +303,7 @@ class Request
      */
     public function getOrderBy(array $valid_fields = [], string $default_field = '', string $orderby_param = '') : string
     {
-        $orderby_param = $orderby_param ? $orderby_param : $this->app->config->request_orderby_param;
+        $orderby_param = $orderby_param ? $orderby_param : $this->app->config->request->orderby->param;
 
         $orderby = $this->request->get($orderby_param);
 
@@ -331,7 +331,7 @@ class Request
      */
     public function getOrder(string $order_param = 'order') : string
     {
-        $order_param = $order_param ?? $this->app->config->request_order_param;
+        $order_param = $order_param ?? $this->app->config->request->order->param;
 
         $order = strtolower($this->request->get($order_param));
 
@@ -351,7 +351,7 @@ class Request
      */
     public function getPage(string $page_param = '') : int
     {
-        $page_param = $page_param ? $page_param : $this->app->config->request_page_param;
+        $page_param = $page_param ? $page_param : $this->app->config->request->page->param;
 
         return $this->request->get($page_param, 0, 'absint');
     }

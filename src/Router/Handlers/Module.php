@@ -1,6 +1,6 @@
 <?php
 /**
- * The Block Route Handler Class
+ * The Module Route Handler Class
  * @package Mars
  */
 namespace Mars\Router\Handlers;
@@ -9,7 +9,7 @@ namespace Mars\Router\Handlers;
  * The Page Route Handler Class
  * Handles page routes
  */
-class Block extends Handler
+class Module extends Handler
 {
     /**
      * @see Handler::getRoute()
@@ -17,6 +17,8 @@ class Block extends Handler
      */
     public function getRoute(string $hash, array $data)
     {
-        return new \Mars\Extensions\Modules\Block($data['module_name'], $data['block_name'], $data['params'], $this->app);
+        $data['params']['action'] = $data['action'];
+
+        return new \Mars\Extensions\Modules\Module($data['name'], $data['params'], $this->app);
     }
 }

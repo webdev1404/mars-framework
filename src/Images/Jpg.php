@@ -27,8 +27,8 @@ class Jpg extends Image implements ImageInterface
     {
         parent::__construct($filename, $app);
 
-        $this->quality = $this->app->config->image_jpg_quality;
-        $this->optimize_command = $this->app->config->image_jpg_optimize_command;
+        $this->quality = $this->app->config->image->jpg->quality;
+        $this->optimize_command = $this->app->config->image->jpg->optimize_command;
     }
 
     /**

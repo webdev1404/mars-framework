@@ -38,12 +38,12 @@ class CSP
      */
     public function output()
     {
-        if (!$this->app->config->csp_enable) {
+        if (!$this->app->config->http->response->headers->csp->enable) {
             return;
         }
 
         //get the sources from the defaults
-        foreach ($this->app->config->csp_defaults as $name => $src) {
+        foreach ($this->app->config->http->response->headers->csp->defaults as $name => $src) {
             $this->results[$name] = $src;
         }
 
@@ -53,8 +53,8 @@ class CSP
         }
 
         //get the sources from the config
-        if ($this->app->config->csp_list) {
-            foreach ($this->app->config->csp_list as $name => $src) {
+        if ($this->app->config->http->response->headers->csp->list) {
+            foreach ($this->app->config->http->response->headers->csp->list as $name => $src) {
                 if ($src) {
                     $this->results[$name] = $src;
                 }
@@ -62,7 +62,7 @@ class CSP
         }
 
         //add noonce
-        if ($this->app->config->csp_use_nonce) {
+        if ($this->app->config->http->response->headers->csp->use_nonce) {
             $nonce = $this->app->nonce;
 
             $this->results['script-src'] .= " 'nonce-$nonce'";
@@ -99,8 +99,8 @@ class CSP
     protected function getFromDocument(string $name, string $source) : string
     {
         //return from config if we have it set
-        if (!empty($this->app->config->csp_list[$name])) {
-            return $this->app->config->csp_list[$name];
+        if (!empty($this->app->config->http->response->headers->csp->list[$name])) {
+            return $this->app->config->http->response->headers->csp->list[$name];
         }
 
         $external_urls = [];

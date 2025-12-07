@@ -49,7 +49,7 @@ class Language extends BaseLanguage
                 return $this->driver;
             }
 
-            $this->driver = $this->drivers->get($this->app->config->localization_driver);
+            $this->driver = $this->drivers->get($this->app->config->localization->driver);
 
             return $this->driver;
         }
@@ -100,7 +100,7 @@ class Language extends BaseLanguage
                 return $this->codes_list;
             }
 
-            $this->codes_list = $this->app->config->language_codes;
+            $this->codes_list = $this->app->config->language->codes;
 
             return $this->codes_list;
         }
@@ -145,7 +145,7 @@ class Language extends BaseLanguage
                 return $this->default_code;
             }
 
-            $this->default_code = array_find_key($this->codes_list, fn ($value) => $value === $this->app->config->language);
+            $this->default_code = array_find_key($this->codes_list, fn ($value) => $value === $this->app->config->language->name);
             if (!$this->default_code) {
                 throw new \Exception("Default language code not found");
             }
@@ -194,10 +194,10 @@ class Language extends BaseLanguage
             }
 
             $this->can_use_fallback = false;
-            if ($this->app->config->language_fallback) {
+            if ($this->app->config->language->fallback) {
                 //if the current language or it's parent language is not the fallback language, we can use the fallback.
-                if ($this->name !== $this->app->config->language_fallback) {
-                    if (!$this->parent || $this->parent->name !== $this->app->config->language_fallback) {
+                if ($this->name !== $this->app->config->language->fallback) {
+                    if (!$this->parent || $this->parent->name !== $this->app->config->language->fallback) {
                         $this->can_use_fallback = true;
                     }
                 }
@@ -218,7 +218,7 @@ class Language extends BaseLanguage
 
             $this->fallback = null;
             if ($this->can_use_fallback) {
-                $this->fallback = new BaseLanguage($this->app->config->language_fallback, [], $this->app);
+                $this->fallback = new BaseLanguage($this->app->config->language->fallback, [], $this->app);
             }
 
             return $this->fallback;
@@ -272,7 +272,11 @@ class Language extends BaseLanguage
 
         $properties = ['lang', 'datetime_format', 'date_format', 'time_format', 'datetime_picker_format', 'datetime_picker_desc', 'date_picker_format', 'date_picker_desc', 'time_picker_format', 'time_picker_desc', 'decimal_separator', 'thousands_separator'];
         foreach ($properties as $property) {
-            $this->$property = $this->parent->$property;
+            if ($this->parent->$property) {
+                if (!$this->$property) {
+                    $this->$property = $this->parent->$property;
+                }
+            }
         }
     }
 
@@ -280,25 +284,59 @@ class Language extends BaseLanguage
      * @see \Mars\Extensions\Language::loadFile()
      * {@inheritdoc}
      */
-    public function loadFile(string $file, ?string $key = null) : static
+    protected function loadFile(string $file)
     {
-        $key ??= $file;
+        $key = $file;
 
-        //load first the fallback language file, if enabled
+        $filenames = $this->findFilenames($file);
+        foreach ($filenames as $filename) {
+            $this->loadFilename($key, $filename);
+        }
+    }
+
+    /**
+     * @see \Mars\Extensions\Language::registerFile()
+     * {@inheritdoc}
+     */
+    public function registerFile(string $key, string $file) : static
+    {
+        $filenames = $this->findFilenames($file);
+        if (!$filenames) {
+            return $this;
+        }
+
+        return $this->register($key, $filenames);
+    }
+
+    /**
+     * Finds the filenames for a language file, including parent and fallback languages
+     * @param string $file The file to find
+     * @return array The list of filenames
+     */
+    protected function findFilenames(string $file) : array
+    {
+        $filenames = [];
+        $file = $file . '.php';
+
         if ($this->fallback) {
-            if ($this->fallback->isFile($file)) {
-                $this->loadFilename($this->fallback->getFilename($file), $key);
+            //check if the fallback language file exists
+            if (isset($this->fallback->files[$file])) {
+                $filenames[] = $this->fallback->files_path . '/' . $file;
             }
         }
 
-        //load the parent language file, if any
         if ($this->parent) {
-            if ($this->parent->isFile($file)) {
-                $this->loadFilename($this->parent->getFilename($file), $key);
+            //check if the parent language file exists. If it does, load it
+            if (isset($this->parent->files[$file])) {
+                $filenames[] = $this->parent->files_path . '/' . $file;
             }
         }
 
-        return parent::loadFile($file, $key);
+        if (isset($this->files[$file])) {
+            $filenames[] = $this->files_path . '/' . $file;
+        }
+
+        return $filenames;
     }
 
     /**

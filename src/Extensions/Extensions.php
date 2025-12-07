@@ -208,7 +208,7 @@ abstract class Extensions
         $list = $this->app->cache->get($cache_filename);
 
         // If we are in development mode, we always read the list from the filesystem
-        $development = $this->app->development ? true : $this->app->config->development_extensions[static::$instance_class::getBaseDir()] ?? false;
+        $development = $this->app->development ? true : $this->app->config->development->extensions[static::$instance_class::getBaseDir()] ?? false;
         if ($development || !$use_cache) {
             $list = null;
         }

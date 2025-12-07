@@ -20,5 +20,5 @@ class Hidden extends Input
     /**
      * @var bool $value_fixed If true, the value will be fixed
      */
-    public static bool $value_fixed = true;
+    public protected(set) static bool $value_fixed = true;
 }

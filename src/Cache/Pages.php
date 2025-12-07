@@ -34,21 +34,26 @@ class Pages extends Cacheable
      * @var string $driver_name The name of the driver to use
      */
     protected string $driver_name {
-        get => $this->app->config->cache_page_driver;
+        get => $this->app->config->cache->page->driver;
     }
+
+    /**
+     * @var array $driver_params The parameters to pass to the driver constructor
+     */
+    protected array $driver_params = [false, 'cacheable_pages'];
 
     /**
      * @var bool $minify True, if the output can be minified
      */
     protected bool $minify {
-        get => $this->app->config->cache_page_minify;
+        get => $this->app->config->cache->page->minify;
     }
 
     /**
      * @var int $expires_hours The interval - in hours - after which the content should be refreshed by the browser
      */
     protected int $expires_hours {
-        get => $this->app->config->cache_page_expire_hours;
+        get => $this->app->config->cache->page->expire_hours;
     }
 
     /**
@@ -89,10 +94,10 @@ class Pages extends Cacheable
     {
         $this->app = $app;
 
-        if ($this->app->is_cli || !$this->app->config->cache_page_enable || defined('DISABLE_CACHE_PAGE')) {
+        if ($this->app->is_cli || !$this->app->config->cache->page->enable || defined('DISABLE_CACHE_PAGE')) {
             return;
-        }
-        if ($this->app->config->debug || $this->app->config->development) {
+        }        
+        if ($this->app->config->debug->enable || $this->app->config->development->enable) {
             return;
         }
         if ($this->app->request->method != 'get') {

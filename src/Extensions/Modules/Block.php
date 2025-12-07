@@ -9,8 +9,9 @@ namespace Mars\Extensions\Modules;
 use Mars\Content\ContentInterface;
 use Mars\Extensions\Extensions;
 use Mars\Extensions\Abilities\FilesCacheTrait;
-use Mars\Extensions\Modules\Abilities\LanguagesTrait;
+use Mars\Extensions\Modules\Abilities\ConfigTrait;
 use Mars\Extensions\Modules\Abilities\MvcTrait;
+use Mars\Extensions\Modules\Abilities\LanguagesTrait;
 use Mars\Extensions\Modules\Abilities\TemplatesTrait;
 
 /**
@@ -18,11 +19,10 @@ use Mars\Extensions\Modules\Abilities\TemplatesTrait;
  */
 class Block extends Component implements ContentInterface
 {    
+    use ConfigTrait;
     use FilesCacheTrait;
-    use LanguagesTrait {
-        LanguagesTrait::loadLanguage as loadLanguageFromTrait;
-    }
     use MvcTrait;
+    use LanguagesTrait;
     use TemplatesTrait;
 
     /**
@@ -92,15 +92,11 @@ class Block extends Component implements ContentInterface
     }
 
     /**
-     * @see \Mars\Extensions\Modules\Abilities\ConfigTrait::loadConfig()
+     * @see \Mars\Extensions\Abilities\FilesCacheTrait::getCachedFilesBase()
      * {@inheritdoc}
      */
-    public function loadConfig(?string $file = null)
+    protected function getCachedFilesBase() : string
     {
-        $file ??= $this->name . '.php';
-
-        $filename = $this->path . '/' . static::DIRS['config'] . '/' . $file;
-
-        $this->app->config->loadFilename($filename);
+        return 'module-' . $this->module->name . '-' . static::$type . '-' . $this->name;
     }
 }

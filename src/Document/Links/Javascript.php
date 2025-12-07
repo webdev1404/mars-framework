@@ -17,7 +17,7 @@ class Javascript extends Urls
      * {@inheritdoc}
      */
     public string $version {
-        get => $this->app->config->javascript_version;
+        get => $this->app->config->document->javascript->version;
     }
 
     /**

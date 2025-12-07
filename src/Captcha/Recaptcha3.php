@@ -25,11 +25,11 @@ class Recaptcha3 implements CaptchaInterface
     {
         $this->app = $app;
 
-        if (!$this->app->config->captcha_recaptcha_site_key || !$this->app->config->captcha_recaptcha_secret_key) {
+        if (!$this->app->config->captcha->recaptcha->site_key || !$this->app->config->captcha->recaptcha->secret_key) {
             throw new \Exception('The recaptcha3 site and secret keys must be set');
         }
 
-        $this->app->document->javascript->load('https://www.google.com/recaptcha/api.js?render=' . urlencode($this->app->config->captcha_recaptcha_site_key));
+        $this->app->document->javascript->load('https://www.google.com/recaptcha/api.js?render=' . urlencode($this->app->config->captcha->recaptcha->site_key));
     }
 
     /**
@@ -39,7 +39,7 @@ class Recaptcha3 implements CaptchaInterface
     public function check() : bool
     {
         $post_data = [
-            'secret' => $this->app->config->captcha_recaptcha_secret_key,
+            'secret' => $this->app->config->captcha->recaptcha->secret_key,
             'response' => $this->app->request->post->get('recaptcha3-token'),
             'remoteip' => $this->app->ip
         ];
@@ -54,7 +54,7 @@ class Recaptcha3 implements CaptchaInterface
         }
 
         $score = $data['score'] ?? 0;
-        if ($score >= $this->app->config->captcha_recaptcha_min_score) {
+        if ($score >= $this->app->config->captcha->recaptcha->min_score) {
             return true;
         }
 
@@ -73,7 +73,7 @@ class Recaptcha3 implements CaptchaInterface
         ?>
         <script>
             grecaptcha.ready(function() {
-                grecaptcha.execute('<?php echo $this->app->config->captcha_recaptcha_site_key; ?>', {action: 'submit'}).then(function(token) {
+                grecaptcha.execute('<?php echo $this->app->config->captcha->recaptcha->site_key; ?>', {action: 'submit'}).then(function(token) {
                     document.getElementById('<?php echo $field_name; ?>').value = token;
                 });
             });

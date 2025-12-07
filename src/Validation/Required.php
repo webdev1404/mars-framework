@@ -20,9 +20,9 @@ class Required extends Rule
      * {@inheritdoc}
      */
     public array $errors = [
-        'required' => 'error.validate_required',
-        'min' => 'error.validate_required_min',
-        'max' => 'error.validate_required_max',
+        'required' => 'validate.required',
+        'min' => 'validate.required.min',
+        'max' => 'validate.required.max',
     ];
 
     /**

@@ -50,7 +50,7 @@ class Sql implements \Stringable
                 return $this->driver;
             }
 
-            $this->driver = $this->drivers->get($this->app->config->db_driver);
+            $this->driver = $this->drivers->get($this->app->config->db->driver);
 
             return $this->driver;
         }

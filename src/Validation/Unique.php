@@ -29,7 +29,7 @@ class Unique extends Rule
             throw new \Exception("The 'unique' validation rule must have the name of the table and (optionally) column specified. Eg: unique:users or unique:users:id");
         }
 
-        $this->error = $error ?? 'error.validate_unique';
+        $this->error = $error ?? 'validate.unique';
 
         $exists = $this->app->db->exists($table, [$column => $value], $column);
         if (!$exists) {

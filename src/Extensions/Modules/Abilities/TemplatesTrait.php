@@ -13,6 +13,36 @@ namespace Mars\Extensions\Modules\Abilities;
 trait TemplatesTrait
 {
     /**
+     * @var string $templates_path The path to the extension's templates dir
+     */
+    public protected(set) string $templates_path {
+        get {
+            if (isset($this->templates_path)) {
+                return $this->templates_path;
+            }
+
+            $this->templates_path = $this->path . '/' . static::DIRS['templates'];
+
+            return $this->templates_path;
+        }
+    }
+
+    /**
+     * @var array $templates The list of template files in the extension
+     */
+    public protected(set) array $templates {
+        get {
+            if (isset($this->templates)) {
+                return $this->templates;
+            }
+
+            $this->templates = $this->files_cache_list[static::DIRS['templates']] ?? [];
+
+            return $this->templates;
+        }
+    }
+
+    /**
      * Loads the template and outputs it.
      * @param string $template The name of the template
      * @param array $vars Vars to pass to the template, if any
@@ -31,70 +61,73 @@ trait TemplatesTrait
     public function getTemplate(string $template, array $vars = []) : string
     {
         $file = $template . '.php';
-        $filename = $this->path . '/' . static::DIRS['templates'] . '/' . $file;
+        $filename = $this->templates_path . '/' . $file;
         $rel_filename = $this->path_rel . '/' . $file;
 
         return $this->app->theme->getTemplateFromFilename($filename, $rel_filename, $vars, static::$type, [], $this->development);
     }
 
     /**
-     * Loads an email template from the extension's templates dir
+     * Loads a language template from the extension's templates dir
+     * @param string $dir The directory where the template is located
      * @param string $template The name of the template to load
      * @param array $vars Vars to pass to the template, if any
      * @return string The contents of the template
      */
-    public function getEmailTemplate(string $template, array $vars = []) : string
+    public function getLanguageTemplate(string $dir, string $template, array $vars = []) : string
     {
-        $content = '';
-        $file = $template . '.php';
-        $filename = $this->path . '/' . static::DIRS['templates'] . '/' . $file;
+        $file = $dir . '/' . $template . '.php';
         $rel_filename = $this->path_rel . '/' . $file;
-        
-        $language_filename = $this->app->lang->getTemplateFilename($rel_filename);
-        if ($language_filename) {
-            //do we have a template set in the current's language templates folder?
-            $content = $this->app->theme->getTemplateFromFilename($language_filename, null, $vars, static::$type, [], $this->development);
-        } else {
-            //check if we have a language-specific template in the extension's templates folder
-            $template_filename = $this->getLanguageTemplateFilename($filename, $rel_filename) ?? $filename;
-            if ($template_filename) {
-                [$filename, $rel_filename] = $template_filename;
-            }
 
-            $content = $this->app->theme->getTemplateFromFilename($filename, $rel_filename, $vars, static::$type, [], $this->development);
+        //do we have a template set in the current's language templates folder?
+        $language_filename = $this->app->lang->getTemplateFilename($rel_filename);
+        if ($language_filename) {            
+            return $this->app->theme->getTemplateFromFilename($language_filename, null, $vars, static::$type, [], $this->development);
+        } 
+
+        //check if we have a language-specific template in the extension's templates folder
+        $template_file = $this->getLanguageTemplateFile($dir, $template);
+        if ($template_file) {
+            $filename = $this->templates_path . '/' . $template_file;
+            $rel_filename = $this->path_rel . '/' . $template_file;
+
+            return $this->app->theme->getTemplateFromFilename($filename, $rel_filename, $vars, static::$type, [], $this->development);
         }
 
-        return nl2br($content);
+        return '';
     }
 
     /**
      * Returns the filename of a template in the current language
      * @param string $filename The original filename of the template
-     * @return array|null An array containing the filename and the relative filename, or null if no language-specific template was found
+     * @return string|null The file of the language-specific template, or null if none was found
      */
-    protected function getLanguageTemplateFilename(string $filename, string $rel_filename) : ?array
+    protected function getLanguageTemplateFile(string $dir, string $template) : ?string
     {
-        $dir = dirname($filename);
-        $rel_dir = dirname($rel_filename);
-        $file = basename($filename);
+        $file = $template . '.php';
+        $template_file = $dir . '/' . $this->app->lang->name . '/' . $file;
 
-        $template_filename = $dir . '/' . $this->app->lang->name . '/' . $file;
-        if (is_file($template_filename)) {
-            return [$template_filename, $rel_dir . '/' . $this->app->lang->name . '/' . $file];
+        if (isset($this->templates[$template_file])) {
+            return $template_file;
         }
 
         if ($this->app->lang->parent) {
-            $template_filename = $dir . '/' . $this->app->lang->parent->name . '/' . $file;
-            if (is_file($template_filename)) {
-                return [$template_filename, $rel_dir . '/' . $this->app->lang->parent->name . '/' . $file];
+            $template_file = $dir . '/' . $this->app->lang->parent->name . '/' . $file;            
+            if (isset($this->templates[$template_file])) {
+                return $template_file;
             }
         }
 
         if ($this->app->lang->fallback) {
-            $template_filename = $dir . '/' . $this->app->lang->fallback->name . '/' . $file;
-            if (is_file($template_filename)) {
-                return [$template_filename, $rel_dir . '/' . $this->app->lang->fallback->name . '/' . $file];
+            $template_file = $dir . '/' . $this->app->lang->fallback->name . '/' . $file;
+            if (isset($this->templates[$template_file])) {
+                return $template_file;
             }
+        }
+        
+        $template_file = $dir . '/' . $file;
+        if (isset($this->templates[$template_file])) {
+            return $template_file;
         }
 
         return null;

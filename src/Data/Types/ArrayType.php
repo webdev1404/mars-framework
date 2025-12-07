@@ -83,4 +83,30 @@ class ArrayType
 
         return $array;
     }
+
+    /**
+     * Builds a nested tree from a flat array
+     * @param array $data The flat array
+     * @param string $separator The separator used in the keys
+     * @return array The tree
+     */
+    public function getTree(array $data, string $separator = '.'): array
+    {
+        $tree = [];
+
+        foreach ($data as $key => $value) {
+            $parts = explode($separator, $key);
+            $ref = &$tree;
+
+            foreach ($parts as $part) {
+                $ref[$part] ??= [];
+                $ref = &$ref[$part];
+            }
+
+            $ref = $value;
+            unset($ref);
+        }
+
+        return $tree;
+    }
 }

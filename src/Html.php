@@ -645,6 +645,6 @@ class Html
         //don't cache the pages where the csrf token is shown
         $this->app->cache->pages->can_cache = false;
 
-        return $this->hidden($this->app->config->html_csrf_name, $this->app->session->token);
+        return $this->hidden($this->app->config->html->csrf_name, $this->app->session->token);
     }
 }

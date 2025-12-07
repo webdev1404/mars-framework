@@ -13,6 +13,21 @@ namespace Mars\Extensions\Abilities;
 trait LanguagesTrait
 {
     /**
+     * @var string $languages_path The path to the extension's languages dir
+     */
+    public protected(set) string $languages_path {
+        get {
+            if (isset($this->languages_path)) {
+                return $this->languages_path;
+            }
+
+            $this->languages_path = $this->path . '/' . static::DIRS['languages'];
+
+            return $this->languages_path;
+        }
+    }
+
+    /**
      * @var array $language_files The list of language files in the extension
      */
     public protected(set) array $language_files {
@@ -21,76 +36,46 @@ trait LanguagesTrait
                 return $this->language_files;
             }
 
-            $this->language_files = $this->getCachedFiles($this->path . '/' . static::DIRS['languages']);
+            $this->language_files = $this->files_cache_list[static::DIRS['languages']] ?? [];
 
             return $this->language_files;
         }
     }
 
     /**
-     * Loads a file from the extension's languages dir
-     * @param string $file The name of the file to load (must not include the .php extension)
+     * Registers a language file for the extension
+     * @param string $key The key of the language
+     * @param string $file The file to register
      * @return static
      */
-    public function loadLanguage(string $file, string $key) : static
+    public function registerLanguage(string $key, string $file) : static
     {
+        $filenames = [];
+        $file = $file . '.php';
+
         if ($this->app->lang->fallback) {
-            //check if the fallback language file exists. If it does, load it
-            if ($this->hasLanguageFile($this->app->lang->fallback->name, $file)) {
-                $this->app->lang->loadFilename($this->getLanguageFilename($this->app->lang->fallback->name, $file), $key);
+            //check if the fallback language file exists
+            $lang_file = $this->app->lang->fallback->name . '/' . $file;
+            if (isset($this->language_files[$lang_file])) {
+                $filenames[] = $this->languages_path . '/' . $lang_file;
             }
         }
 
         if ($this->app->lang->parent) {
             //check if the parent language file exists. If it does, load it
-            if ($this->hasLanguageFile($this->app->lang->parent->name, $file)) {
-                $this->app->lang->loadFilename($this->getLanguageFilename($this->app->lang->parent->name, $file), $key);
+            $lang_file = $this->app->lang->parent->name . '/' . $file;
+            if (isset($this->language_files[$lang_file])) {
+                $filenames[] = $this->languages_path . '/' . $lang_file;
             }
         }
 
-        if ($this->hasLanguageFile($this->app->lang->name, $file)) {
-            $this->app->lang->loadFilename($this->getLanguageFilename($this->app->lang->name, $file), $key);
+        $lang_file = $this->app->lang->name . '/' . $file;
+        if (isset($this->language_files[$lang_file])) {
+            $filenames[] = $this->languages_path . '/' . $lang_file;
         }
 
-        return $this;
-    }
-
-    /**
-     * Registers a language file for the extension
-     * @param string $name The name of the language
-     * @param string $file The file to register
-     * @return static
-     */
-    public function registerLanguage(string $name, string $file) : static
-    {
-        $this->app->lang->register($name, function() use ($name, $file) {
-            $this->loadLanguage($file, $name);
-        });
+        $this->app->lang->register($key, $filenames);
 
         return $this;
-    }
-
-    /**
-     * Returns the filename of a language file
-     * @param string $language_name The name of the language
-     * @param string $file The name of the file to load
-     * @return string The filename of the language file
-     */
-    public function getLanguageFilename(string $language_name, string $file) : string
-    {
-        return $this->path . '/' . static::DIRS['languages'] . '/' . $language_name . '/' . $file . '.php';
-    }
-
-    /**
-     * Checks if the specified language file exists
-     * @param string $language_name The name of the language
-     * @param string $file The name of the file to check
-     * @return bool True if the file exists, false otherwise
-     */
-    public function hasLanguageFile(string $language_name, string $file) : bool
-    {
-        $file = $language_name . '/' . $file . '.php';
-
-        return isset($this->language_files[$file]);
     }
 }

@@ -31,16 +31,15 @@ class PhpMailer implements MailInterface
             $this->handle->setLanguage('en', $this->app->vendor_path . '/phpmailer/phpmailer/language/');
             $this->handle->CharSet = 'UTF-8';
 
-            if ($this->app->config->mail_smtp) {
+            if ($this->app->config->mail->smtp) {
                 $this->handle->isSMTP();
-                $this->handle->Host = $this->app->config->mail_smtp_host;
-                $this->handle->Port = $this->app->config->mail_smtp_port;
-                $this->handle->SMTPSecure = $this->app->config->mail_smtp_secure;
-
-                if ($this->app->config->mail_smtp_username && $this->app->config->mail_smtp_password) {
+                $this->handle->Host = $this->app->config->mail->smtp->host;
+                $this->handle->Port = $this->app->config->mail->smtp->port;
+                $this->handle->SMTPSecure = $this->app->config->mail->smtp->secure;
+                if ($this->app->config->mail->smtp->username && $this->app->config->mail->smtp->password) {
                     $this->handle->SMTPAuth = true;
-                    $this->handle->Username = $this->app->config->mail_smtp_username;
-                    $this->handle->Password = $this->app->config->mail_smtp_password;
+                    $this->handle->Username = $this->app->config->mail->smtp->username;
+                    $this->handle->Password = $this->app->config->mail->smtp->password;
                 }
             }
 

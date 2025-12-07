@@ -25,16 +25,16 @@ class Php implements SessionInterface
     {
         $this->app = $app;
 
-        if ($this->app->config->session_save_path) {
-            session_save_path($this->app->config->session_save_path);
+        if ($this->app->config->session->save_path) {
+            session_save_path($this->app->config->session->save_path);
         }
 
-        if ($this->app->config->session_cookie_path || $this->app->config->session_cookie_domain) {
-            session_set_cookie_params(0, $this->app->config->session_cookie_path, $this->app->config->session_cookie_domain);
+        if ($this->app->config->session->cookie->path || $this->app->config->session->cookie->domain) {
+            session_set_cookie_params(0, $this->app->config->session->cookie->path, $this->app->config->session->cookie->domain);
         }
 
-        if ($this->app->config->session_name) {
-            session_name($this->app->config->session_name);
+        if ($this->app->config->session->name) {
+            session_name($this->app->config->session->name);
         }
     }
 }

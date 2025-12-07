@@ -15,7 +15,7 @@ class Max extends Rule
     /**
      * {@inheritdoc}
      */
-    public string $error = 'error.validate_float_max';
+    public string $error = 'validate.float.max';
 
     /**
      * Validates the max value of a number

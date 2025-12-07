@@ -19,7 +19,7 @@ class Routes extends Data
      * @var string $driver The used driver
      */
     protected string $driver_name {
-        get => $this->app->config->cache_routes_driver ?? $this->app->config->cache_driver;
+        get => $this->app->config->cache->routes_driver ?? $this->app->config->cache->driver;
     }
 
     /**
@@ -41,7 +41,7 @@ class Routes extends Data
      */
     public function getHashes(string $method, string $language, string $prefix) : array
     {        
-        if (!$this->exists('routes-cached') || $this->app->development || $this->app->config->development_routes) {
+        if (!$this->exists('routes-cached') || $this->app->development || $this->app->config->development->routes) {
             $this->cache();
         }
 
@@ -65,8 +65,10 @@ class Routes extends Data
         }
 
         //store the routes names
-        foreach ($routes->names as $language => $routes_list) {
-            $this->set($this->getNamesFilename($language), $routes_list);
+        foreach ($routes->names as $language => $files_list) {
+            foreach ($files_list as $file => $routes_list) {
+                $this->set($this->getNamesFilename($file, $language), $routes_list);
+            }
         }
 
         $this->create('routes-cached');
@@ -105,21 +107,23 @@ class Routes extends Data
 
     /**
      * Returns the filename for the names cache file
+     * @param string $file The file name
      * @param string $language The language code
      * @return string The filename for the names cache file
      */
-    protected function getNamesFilename(string $language) : string
+    protected function getNamesFilename(string $file, string $language) : string
     {
-        return 'names-' . $language;
+        return 'names-' . $file . '-' . $language;
     }
 
     /**
      * Returns the list of route names
+     * @param string $file The file name
      * @param string $language The language code
      * @return array The list of route names
      */
-    public function getNames(string $language) : array
+    public function getNames(string $file, string $language) : array
     {
-        return $this->get($this->getNamesFilename($language), false) ?? [];
+        return $this->get($this->getNamesFilename($file, $language), false) ?? [];
     }
 }

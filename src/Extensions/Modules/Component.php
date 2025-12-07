@@ -113,24 +113,6 @@ abstract class Component extends Extension
     }
 
     /**
-     * @var string $lang_key The key used to store the language strings
-     */
-    public protected(set) string $lang_key {
-        get {
-            if (isset($this->lang_key)) {
-                return $this->lang_key;
-            }
-
-            $this->lang_key = $this->module->lang_key;
-            if ($this->name) {
-                $this->lang_key .= '.' . $this->name;
-            }
-
-            return $this->lang_key;
-        }
-    }
-
-    /**
      * Builds the extension
      * @param string $module_name The name of the module the extension belongs to
      * @param string $name The name of the exension
@@ -143,18 +125,5 @@ abstract class Component extends Extension
         $this->params = $params;
         $this->module = new Module($module_name, [], $this->app);
         $this->app = $app;
-    }
-
-    /**
-     * @see Extension::output()
-     * {@inheritdoc}
-     */
-    public function output()
-    {
-        $this->app->lang->saveSearchKeys();
-
-        parent::output();
-
-        $this->app->lang->restoreSearchKeys();
     }
 }

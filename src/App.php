@@ -502,7 +502,7 @@ class App
                 $this->ip = $_SERVER['REMOTE_ADDR'];
 
                 if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-                    if (in_array($this->ip, $this->config->trusted_proxies)) {
+                    if (in_array($this->ip, $this->security->trusted_proxies)) {
                         //HTTP_X_FORWARDED_FOR can contain multiple IPs. Use only the first one
                         $this->ip = trim(array_first(explode(',', $_SERVER['HTTP_X_FORWARDED_FOR'])));
                     }
@@ -552,8 +552,8 @@ class App
      */
     public protected(set) string $public_path {
         get {
-            if ($this->config->public_path) {
-                return $this->config->public_path;
+            if ($this->config->site->public_path) {
+                return $this->config->site->public_path;
             }
 
             return $this->public_path;
@@ -610,8 +610,8 @@ class App
             }
 
             $base_url = $this->base_url;
-            if ($this->config->url_cdn) {
-                $base_url = $this->config->url_cdn;
+            if ($this->config->url->cdn) {
+                $base_url = $this->config->url->cdn;
             }
 
             $this->assets_url = $base_url . '/' . rawurlencode(basename($this->assets_path));
@@ -671,7 +671,7 @@ class App
                 return $this->development;
             }
 
-            $this->development = $this->config->development;
+            $this->development = $this->config->development->enable;
 
             return $this->development;
         }
@@ -732,7 +732,7 @@ class App
         $this->setErrorReporting();
 
         //send the early hints headers as soon as possible
-        if ($this->config->early_hints_enable && $this->config->early_hints_list) {
+        if ($this->config->hints->early_hints->enable && $this->config->hints->early_hints->list) {
             $this->response->headers->early_hints->output();
         }
         
@@ -769,16 +769,16 @@ class App
      */
     protected function setErrorReporting()
     {
-        $display_errors = $this->config->display_errors;
-        $error_reporting = $this->config->error_reporting;
+        $errors = $this->config->errors->display;
+        $reporting = $this->config->errors->reporting;
 
-        if ($this->config->development) {
-            $display_errors = $this->config->development_display_errors;
-            $error_reporting = $this->config->development_error_reporting;
+        if ($this->config->development->enable) {
+            $errors = $this->config->development->errors->display;
+            $reporting = $this->config->development->errors->reporting;
         }
 
-        ini_set('display_errors', $display_errors);
-        error_reporting($error_reporting);
+        ini_set('display_errors', $errors);
+        error_reporting($reporting);
     }
 
     /**
@@ -810,7 +810,7 @@ class App
      */
     protected function outputIfCached()
     {
-        if ($this->config->cache_page_enable) {
+        if ($this->config->cache->page->enable) {
             $this->cache->pages->output();
         }
     }
@@ -845,7 +845,7 @@ class App
     {
         $this->plugins->run('app_start', $this);
 
-        if ($this->config->debug) {
+        if ($this->config->debug->enable) {
             $this->timer->start('app_content_time');
         }
 
@@ -861,7 +861,7 @@ class App
         
         $content = $this->plugins->filter('app_filter_content', $content, $this);
 
-        if ($this->config->debug) {
+        if ($this->config->debug->enable) {
             $this->stats['content_size'] = strlen($content);
             $this->stats['content_time'] = $this->timer->stop('app_content_time');
 
@@ -872,12 +872,12 @@ class App
 
         $output = $this->plugins->filter('app_filter_output', $output, $this);
 
-        if ($this->config->cache_page_enable) {
+        if ($this->config->cache->page->enable) {
             //cache the page output, if caching is enabled
             $this->cache->pages->store($output);
         }
 
-        if ($this->config->debug) {
+        if ($this->config->debug->enable) {
             $this->stats['output_size'] = strlen($output);
             $this->stats['output_time'] = $this->timer->stop('app_output_time');
 
@@ -896,7 +896,7 @@ class App
      */
     protected function buildOutput(string $content) : string
     {
-        if (!$this->config->theme) {
+        if (!$this->config->theme->name) {
             return $content;
         }
 

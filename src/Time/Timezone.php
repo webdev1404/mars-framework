@@ -32,7 +32,7 @@ class Timezone
     {
         $this->app = $app;
 
-        $this->set($this->app->config->timezone);
+        $this->set($this->app->config->site->timezone);
     }
 
     /**
@@ -55,6 +55,6 @@ class Timezone
      */
     public function reset() : static
     {
-        return $this->set($this->app->config->timezone);
+        return $this->set($this->app->config->site->timezone);
     }
 }

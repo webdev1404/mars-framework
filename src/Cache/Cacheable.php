@@ -62,7 +62,7 @@ abstract class Cacheable extends Cache
      * @var string $driver The used driver
      */
     protected string $driver_name {
-        get => $this->app->config->cache_driver;
+        get => $this->app->config->cache->driver;
     }
 
     /**
@@ -74,7 +74,7 @@ abstract class Cacheable extends Cache
      * @var string $hash The hash algo. used to generate the cache file name
      */
     protected string $hash {
-        get => $this->app->config->cache_hash;
+        get => $this->app->config->cache->hash;
     }
 
     /**
