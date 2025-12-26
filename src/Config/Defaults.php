@@ -33,7 +33,7 @@ class Defaults
         'site.timezone' => 'UTC',
 
 
-        //string The public path of the site. If empty, will use the installation directory
+        // string The public path of the site. If empty, will use the installation directory
         'site.public_path' => '',
 
 
@@ -74,7 +74,7 @@ class Defaults
         // string The localization driver. Supported drivers: cookie, domain, path
         'localization.driver' => 'path',
 
-        // array The enabled localization_ urls, in the format code => url. Eg: 'en' => 'https://en.mysite.com' or 'en' => 'https://mysite.en'
+        // array The enabled localization_urls, in the format code => url. Eg: 'en' => 'https://en.mysite.com' or 'en' => 'https://mysite.en'
         'localization.urls' => [],
 
         // string The name of the cookie used to store the locale when using the cookie localization driver
@@ -201,7 +201,7 @@ class Defaults
         'mail.smtp.host' => '',
 
         // string The smtp port
-        'mail.smtp.port'=> '',
+        'mail.smtp.port' => '',
 
         // string The smtp username
         'mail.smtp.username' => '',
@@ -232,8 +232,8 @@ class Defaults
         // array The default Content Security Policy headers
         'http.response.headers.csp.defaults' => [
             'default-src' => "'self'",
-            'script-src' => "'self' 'unsafe-inline'",
-            'style-src' => "'self' 'unsafe-inline'",
+            'script-src' => "'self'",
+            'style-src' => "'self'",
             'object-src' => "'none'"
         ],
 
@@ -253,8 +253,11 @@ class Defaults
             'images' => []
         ],
 
-        // array The urls to preconnect
-        'hints.preconnect' => [],
+        // array The urls to preconnect without the crossorigin attribute
+        'hints.preconnect.non_cors' => [],
+
+        // array The urls to preconnect using the crossorigin attribute
+        'hints.preconnect.cors' => [],
 
         // bool If true, will enable the Early Hints functionality
         'hints.early_hints.enable' => false,
@@ -285,8 +288,8 @@ class Defaults
         // string The domain that the cookie is available to
         'cookie.domain' => '',
 
-        // bool If true the cookie will only be sent over secure connections
-        'cookie.secure' => false,
+        // bool If true the cookie will only be sent over secure (HTTPS) connections. Should be enabled in production.
+        'cookie.secure' => true,
 
         // bool If true, the cookie will be accessible only through the HTTP protocol.
         'cookie.httponly' => true,
@@ -320,7 +323,7 @@ class Defaults
         'session.cookie.domain' => null,
 
         // bool|null If true the session cookie will only be sent over secure connections.
-        'session.cookie.secure' => null,
+        'session.cookie.secure' => true,
 
         // bool|null If true, the session cookie will be accessible only through the HTTP protocol
         'session.cookie.httponly' => true,
@@ -395,7 +398,7 @@ class Defaults
 
 
         // string The name of the CSRF hidden field
-        'html.csrf_name' => 'token_csrf',
+        'html.csrf_name' => 'token-csrf',
 
         // string|null The allowed html elements; used when filtering html. If null, all elements are allowed
         'html.allowed_elements' => null,
@@ -448,7 +451,7 @@ class Defaults
         // string The command used to optimize the jpg images
         'image.jpg.optimize_command' => 'jpegoptim --strip-all -m 80 {FILENAME}',
 
-        // int The quality of png images
+        // int The quality of png images [0-9]
         'image.png.quality' => 6,
 
         // string The command used to optimize the png images
@@ -500,7 +503,7 @@ class Defaults
         // array The drivers configuration
         'drivers' => [
             'accelerators' => [],
-            'cachable' => [],
+            'cacheable' => [],
             'captcha' => [],
             'crypt' => [],
             'db' => [],

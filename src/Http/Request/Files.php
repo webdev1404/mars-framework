@@ -80,7 +80,7 @@ class Files extends Input
      */
     public function upload(string $name, string $upload_dir, string|array $allowed_extensions = [], bool $append_suffix = false, bool $append_suffix_if_file_exists = true) : array
     {
-        $this->app->plugins->run('request_files_upload', $name, $upload_dir, $allowed_extensions, $append_suffix, $append_suffix_if_file_exists, $this);
+        $this->app->plugins->run('http.request.files.upload', $name, $upload_dir, $allowed_extensions, $append_suffix, $append_suffix_if_file_exists, $this);
 
         if (!$this->has($name)) {
             return [];
@@ -105,12 +105,12 @@ class Files extends Input
             $filename = $this->getFilename($name, $upload_dir, $append_suffix, $append_suffix_if_file_exists);
 
             if (move_uploaded_file($tmp_filename, $filename)) {
-                $this->app->plugins->run('http_request_files_upload_success', $filename, $this);
+                $this->app->plugins->run('http.request.files.upload.success', $filename, $this);
 
                 $uploaded_files[$name] = $filename;
             } else {
-                $this->app->plugins->run('http_request_files_upload_error', $filename, $tmp_filename, $upload_dir, $this);
-
+                $this->app->plugins->run('http.request.files.upload.error', $filename, $tmp_filename, $upload_dir, $this);
+                
                 throw new \Exception($this->getUploadError($errors_array[$i], $name));
             }
         }

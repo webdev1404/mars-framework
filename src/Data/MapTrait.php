@@ -28,8 +28,9 @@ trait MapTrait
     /**
      * Returns an element, or all elements
      * @param string $name If specified, will return only this element
+     * @return mixed
      */
-    public function get(string $name = '')
+    public function get(string $name = '') : mixed
     {
         if (!$name) {
             return $this->{static::$property};

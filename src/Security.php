@@ -42,7 +42,7 @@ class Security
      * @param string $hash The hash to check
      * @return bool True if the hash needs to be rehashed, false otherwise
      */
-    public function rehashPassword(string $hash) : bool
+    public function passwordNeedsRehash(string $hash) : bool
     {
         return \password_needs_rehash($hash, PASSWORD_DEFAULT);
     }

@@ -115,7 +115,7 @@ class Files extends Loader
     {
         $data = ['filename' => $this->current_filename];
         
-        return $this->add($routes, $actions, 'get', $languages, 'action',$data, $name);
+        return $this->add($routes, $actions, 'get', $languages, 'action', $data, $name);
     }
 
     /**
@@ -123,7 +123,7 @@ class Files extends Loader
      * @param string|array $routes The route(s)
      * @param string|callable|array $actions The action(s). Can be a closure or a string (class name). If array will register multiple actions, one for each language
      * @param string|array|null $languages The language to use for the route, if any. If null, will use the default language. If '*', will use all languages
-     * 
+     *
      * @return static
      */
     public function post(string|array $routes, string|callable|array $actions, string|array|null $languages = null) : static
@@ -173,7 +173,7 @@ class Files extends Loader
         $data = ['filename' => $this->current_filename];
 
         foreach ($routes as $route => $action) {
-            $this->add($route, [$language => $action], $methods, $language, 'action',$data);
+            $this->add($route, [$language => $action], $methods, $language, 'action', $data);
         }
 
         return $this;
@@ -183,14 +183,14 @@ class Files extends Loader
      * Handles a module request
      * @param string|array $routes The route(s)
      * @param string $module The name of the module
-     * @param string $action The action to execute
+     * @param string|array $action The action to execute. If array, the request method assigned to each action can be specified. Eg: ['get' => 'form', 'post' => 'register']
      * @param array $params The params to pass to the module, if any
      * @param string|array|null $languages The language to use for the route, if any. If null, will use the default language. If '*', will use all languages
      * @param array $methods The request methods to handle. Default: GET, POST
      * @param string $name The name of the route
      * @return static
      */
-    public function module(string|array $routes, string $module, string $action, array $params = [], string|array|null $languages = '*', array $methods = ['get', 'post'], string $name = '') : static
+    public function module(string|array $routes, string $module, string|array $action, array $params = [], string|array|null $languages = '*', array $methods = ['get', 'post'], string $name = '') : static
     {
         $data = ['name' => $module, 'action' => $action, 'params' => $params];
 
@@ -366,7 +366,7 @@ class Files extends Loader
             return $this->getLanguagesForRoute($route_lang, $routes);
         } elseif (is_array($action)) {
             return $this->getLanguagesForAction($action);
-        } 
+        }
 
         return $this->getLanguagesList($languages);
     }

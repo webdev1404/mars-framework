@@ -1,6 +1,6 @@
 <?php
 /**
-* The Cachable Memcache Driver
+* The Cacheable Memcache Driver
 * @package Mars
 */
 
@@ -9,7 +9,7 @@ namespace Mars\Cache\Cacheable;
 use Mars\Cache\Cacheable\CacheableInterface;
 
 /**
- * The Cachable Memcache Driver
+ * The Cacheable Memcache Driver
  * Driver which stores in memcache the cached resources
  */
 class Memcache extends Base implements CacheableInterface
@@ -59,9 +59,9 @@ class Memcache extends Base implements CacheableInterface
      * @see CacheableInterface::create()
      * {@inheritdoc}
      */
-    public function create(string $filename)
+    public function create(string $filename) : bool
     {
-        $this->set($filename, '', false);
+        return $this->set($filename, '', false);
     }
 
     /**

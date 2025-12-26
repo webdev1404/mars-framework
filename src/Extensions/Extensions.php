@@ -43,10 +43,10 @@ abstract class Extensions
     protected static string $instance_class = '';
 
     /**
-     * Returns a new instance of the extensions manager
+     * Returns a new instance of the extension
      * @param string $name The name of the extension
      * @param array $params Optional parameters to pass to the extension constructor
-     * @return Extensions The extensions manager instance
+     * @return Extension The extension
      */
     public function get(string $name, array $params = []) : Extension
     {
@@ -104,6 +104,19 @@ abstract class Extensions
         }
 
         return $namespace;
+    }
+
+    /**
+     * Returns the filename from the namespace parts
+     * @param array $parts The namespace parts
+     * @return string The filename
+     */
+    public function getFilenameFromNamespace(array $parts) : string
+    {
+        $name = strtolower($parts[1]);
+        $file_parts = array_slice($parts, 2);
+
+        return $this->getPath($name) . '/src/' . implode('/', $file_parts) . '.php';
     }
 
     /**
@@ -205,7 +218,7 @@ abstract class Extensions
      */
     protected function getList(bool $use_cache, string $cache_filename, callable $get) : array
     {
-        $list = $this->app->cache->get($cache_filename);
+        $list = $this->app->cache->data->get($cache_filename);
 
         // If we are in development mode, we always read the list from the filesystem
         $development = $this->app->development ? true : $this->app->config->development->extensions[static::$instance_class::getBaseDir()] ?? false;
@@ -213,13 +226,13 @@ abstract class Extensions
             $list = null;
         }
 
-        if ($list) {
+        if ($list !== null) {
             return $list;
         }
 
         $list = $get();
 
-        $this->app->cache->set($cache_filename, $list, false);
+        $this->app->cache->data->set($cache_filename, $list, false);
 
         return $list;
     }

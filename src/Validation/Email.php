@@ -31,6 +31,6 @@ class Email extends Rule
             return false;
         }
 
-        return $this->app->plugins->filter('validate_email', true, $value, $this);
+        return $this->app->plugins->filter('validate.email', true, $value, $this);
     }
 }

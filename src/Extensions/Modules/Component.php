@@ -115,7 +115,7 @@ abstract class Component extends Extension
     /**
      * Builds the extension
      * @param string $module_name The name of the module the extension belongs to
-     * @param string $name The name of the exension
+     * @param string $name The name of the extension
      * @param array $params The params passed to the extension, if any
      * @param App $app The app object
      */
@@ -123,7 +123,7 @@ abstract class Component extends Extension
     {
         $this->name = $name;
         $this->params = $params;
-        $this->module = new Module($module_name, [], $this->app);
+        $this->module = new Module($module_name, [], $app);
         $this->app = $app;
     }
 }

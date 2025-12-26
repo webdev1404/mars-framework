@@ -26,7 +26,7 @@ class Recaptcha2 implements CaptchaInterface
         $this->app = $app;
 
         if (!$this->app->config->captcha->recaptcha->site_key || !$this->app->config->captcha->recaptcha->secret_key) {
-            throw new \Exception('The recaptcha2 site and secret keys must be set');
+            throw new \Exception('The reCAPTCHA v2 configuration is incomplete. Please set both captcha.recaptcha.site_key and captcha.recaptcha.secret_key in your configuration.');
         }
 
         $this->app->document->javascript->load('https://www.google.com/recaptcha/api.js');
@@ -47,6 +47,9 @@ class Recaptcha2 implements CaptchaInterface
         $response = $this->app->web->request->post('https://www.google.com/recaptcha/api/siteverify', $post_data);
 
         $data = $response->getJson();
+        if ($data === null) {
+            return false;
+        }
 
         return $data['success'] ?? false;
     }
@@ -57,6 +60,6 @@ class Recaptcha2 implements CaptchaInterface
      */
     public function output()
     {
-        echo '<div class="g-recaptcha" data-sitekey="' . $this->app->config->captcha->recaptcha->site_key . '"></div>';
+        echo '<div class="g-recaptcha" data-sitekey="' . $this->app->escape->html($this->app->config->captcha->recaptcha->site_key) . '"></div>';
     }
 }

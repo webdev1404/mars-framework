@@ -20,8 +20,9 @@ interface DbInterface
      * @param string $database The database to use
      * @param bool $persistent If true, the db connection will be persistent
      * @param string $charset The database charset
+     * @throws \Exception If the connection fails
      */
-    public function connect(string $hostname, string $port, string $username, string $password, string $database, bool $persistent, string $charset);
+    public function connect(string $hostname, string $port, #[\SensitiveParameter] string $username, #[\SensitiveParameter] string $password, string $database, bool $persistent, string $charset);
 
     /**
      * Disconnects from the database
@@ -33,7 +34,7 @@ interface DbInterface
      * @param object $result The result
      * @return \Iterator The iterator
      */
-    public function getIterator($result) : \Iterator;
+    public function getIterator(object $result) : \Iterator;
 
     /**
      * Quotes a string
@@ -61,15 +62,15 @@ interface DbInterface
      * Executes a query
      * @param string $sql The query to execute
      * @param array $params Params to be used in prepared statements
-     * @return object The result
+     * @return ?object The query result object, or null if the query fails or returns no result set
      */
     public function query(string $sql, array $params = []) : ?object;
 
     /**
      * Frees the results of a query
-     * @param resource $result The result
+     * @param object $result The result
      */
-    public function free($result);
+    public function free(object $result);
 
     /**
      * Returns the last id of an insert/replace operation
@@ -88,51 +89,51 @@ interface DbInterface
      * @param object $result The result
      * @return int The number of rows
      */
-    public function numRows($result) : int;
+    public function numRows(object $result) : int;
 
     /**
-     * Returns the next row, as an array, from a results set
+     * Returns the next row, as an associative array, from a results set
      * @param object $result The result
-     * @return array The row
+     * @return ?array The row. If no row was found, null is returned
      */
-    public function fetchArray($result) : array;
+    public function fetchArray(object $result) : ?array;
 
     /**
-     * Returns the next row, as an array, from a results set
+     * Returns the next row, as a numeric array, from a results set
      * @param object $result The result
-     * @return array The row
+     * @return ?array The row. If no row was found, null is returned
      */
-    public function fetchRow($result) : array;
+    public function fetchRow(object $result) : ?array;
 
     /**
      * Returns the next row, as an object, from a results set
      * @param object $result The result
      * @param string $class_name The class name
-     * @return object The data. If no row was found, null is returned
+     * @return ?object The data. If no row was found, null is returned
      */
-    public function fetchObject($result, string $class_name = '') : ?object;
+    public function fetchObject(object $result, string $class_name = '') : ?object;
     
     /**
      * Returns a single column from the results set
-     * @param resource $result The result
+     * @param object $result The result
      * @param int $column The column index
-     * @return string The column or null if there isn't any
+     * @return ?string The column or null if there isn't any
      */
-    public function fetchColumn($result, int $column = 0) : ?string;
+    public function fetchColumn(object $result, int $column = 0) : ?string;
 
     /**
      * Returns all the rows as objects
-     * @param resource $result The result
-     * @param string $class_name The class name, if any. If true is passed, will return the rows as arrays
+     * @param object $result The result
+     * @param bool|string $class_name The class name, if any. If true is passed, will return the rows as arrays
      * @return array The rows
      */
-    public function fetchAll($result, bool|string $class_name = '') : array;
+    public function fetchAll(object $result, bool|string $class_name = '') : array;
     
     /**
      * Returns all the results from a column
-     * @param resource $result The result
+     * @param object $result The result
      * @param int $column The column
      * @return array The rows
      */
-    public function fetchAllFromColumn($result, int $column = 0) : array;
+    public function fetchAllFromColumn(object $result, int $column = 0) : array;
 }

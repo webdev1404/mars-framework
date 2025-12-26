@@ -49,9 +49,9 @@ class File implements \Stringable
     }
 
     /**
-     * @var string|null $realpath The real path of the file or null if the file doesn't exist
+     * @var string $realpath The real path of the file or null if the file doesn't exist
      */
-    public ?string $realpath {
+    public string $realpath {
         get {
             if (isset($this->realpath)) {
                 return $this->realpath;
@@ -59,7 +59,7 @@ class File implements \Stringable
 
             $realpath = realpath($this->filename);
             if ($realpath === false) {
-                $realpath = null;
+                $realpath = '';
             }
 
             $this->realpath = $realpath;
@@ -129,33 +129,17 @@ class File implements \Stringable
     }
 
     /**
-     * @var string The MIME type of the file
+     * @var bool|string The MIME type of the file
      */
-    public protected(set) string $type {
-        get {
-            if (isset($this->type)) {
-                return $this->type;
-            }
-
-            $this->type = mime_content_type($this->filename);
-
-            return $this->type;
-        }
+    public bool|string $type {
+        get => mime_content_type($this->filename);
     }
 
     /**
-     * @var int The size of the file
+     * @var bool|int The size of the file
      */
-    public protected(set) int $size {
-        get {
-            if (isset($this->size)) {
-                return $this->size;
-            }
-
-            $this->size = filesize($this->filename);
-
-            return $this->size;
-        }
+    public bool|int $size {
+        get => filesize($this->filename);
     }
 
     /**
@@ -166,18 +150,26 @@ class File implements \Stringable
     }
 
     /**
+     * @var string The open_basedir the file must be located in
+     */
+    protected string $open_basedir = '';
+
+    /**
      * @var bool|array|null The open_basedir setting
      */
     protected static bool|array|null $open_basedirs = null;
 
     /**
      * Builds the File object
-     * @var string The filename
+     * @param string The filename
+     * @param string $open_basedir The open_basedir the file must be located in
      */
-    public function __construct(string $filename)
+    public function __construct(string $filename, string $open_basedir = '')
     {
         $this->filename = rtrim($filename, '/');
-        if (static::$open_basedirs === null) {
+        $this->open_basedir = $open_basedir;
+
+        if (!$this->open_basedir && static::$open_basedirs === null) {
             static::$open_basedirs = $this->getOpenBaseDirs();
         }
     }
@@ -212,7 +204,7 @@ class File implements \Stringable
     }
 
     /**
-     * Check that the filname doesn't contain invalid chars. and is located in the right path. Throws a fatal error for an invalid filename
+     * Check that the filename doesn't contain invalid chars. and is located in the right path. Throws a fatal error for an invalid filename
      * @return static
      * @throws Exception if the filename is not valid
      */
@@ -224,16 +216,16 @@ class File implements \Stringable
 
         $this->checkForInvalidChars();
 
-        if (static::$open_basedirs) {
+        $open_basedirs = $this->getOpenBaseDirsList();
+        if ($open_basedirs) {
             //The filename must be inside the secure dir. If it's not it will be treated as an invalid file
-            $real_filename = $this->realpath;
-            if (!$real_filename) {
-                $real_filename = $this->filename;
+            if (!$this->realpath) {
+                return $this;
             }
 
             $contains = false;
-            foreach (static::$open_basedirs as $basedir) {
-                if ($basedir->contains($real_filename)) {
+            foreach ($open_basedirs as $basedir) {
+                if ($basedir->contains($this->realpath)) {
                     $contains = true;
                     break;
                 }
@@ -248,17 +240,48 @@ class File implements \Stringable
     }
 
     /**
+     * Returns the list of open_basedirs
+     * @return array The open_basedirs
+     */
+    protected function getOpenBaseDirsList() : array
+    {
+        $open_basedirs = [];
+
+        if (static::$open_basedirs) {
+            $open_basedirs = static::$open_basedirs;
+        }
+        if ($this->open_basedir) {
+            $open_basedirs = [$this->open_basedir];
+        }
+
+        return $open_basedirs;
+    }
+
+    /**
      * Checks a filename for invalid characters. Throws a fatal error if it founds invalid chars.
      * @return static
      * @throws Exception if the filename contains invalid chars
      */
     public function checkForInvalidChars() : static
     {
-        if (str_contains($this->filename, '../') || str_contains($this->filename, './')
-            || str_contains($this->filename, '..\\') || str_contains($this->filename, '.\\')
-            || str_starts_with($this->filename, strtolower('php:'))) {
-            throw new \Exception(App::__('error.file.invalid_chars', ['{FILE}' => $this->filename]));
+        $filename = trim($this->filename);
+        $filename = preg_replace('/[\/\\\]+/', '/', $filename);
+
+        $decoded_filename = $filename;
+        for ($i = 0 ; $i < 4; $i++) {
+            if (str_starts_with(strtolower($decoded_filename), 'php:')
+            || str_contains($decoded_filename, '../') || str_contains($decoded_filename, './')
+            || str_contains($decoded_filename, '..\\') || str_contains($decoded_filename, '.\\')
+            || str_contains($decoded_filename, "\0")) {
+                throw new \Exception(App::__('error.file.invalid_chars', ['{FILE}' => $this->filename]));
+            }
+
+            $decoded_filename = rawurldecode($decoded_filename);
+            if ($decoded_filename == $filename) {
+                break;
+            }
         }
+
 
         return $this;
     }
@@ -311,7 +334,7 @@ class File implements \Stringable
     public function getPrefix(int $chars = 4) : string
     {
         $name = substr($this->filename, 0, $chars);
-        $name = str_replace(['.'], [''], $name);
+        $name = str_replace('.', '', $name);
         $name = strtolower($name);
 
         return $name;
@@ -346,7 +369,7 @@ class File implements \Stringable
     {
         $this->check();
 
-        $this->app->plugins->run('file_read', $this);
+        $this->app->plugins->run('file.read', $this);
 
         $content = file_get_contents($this->filename);
         if ($content === false) {
@@ -360,14 +383,14 @@ class File implements \Stringable
      * Writes to the file
      * @param string $content The content to write
      * @param bool $append If true will append the data to the file rather than create the file
-     * @return bool Returns the number of written bytes
+     * @return int Returns the number of written bytes
      * @throws Exception if the file can't be written
      */
     public function write(string $content, bool $append = false) : int
     {
         $this->check();
 
-        $this->app->plugins->run('file_write', $this, $content, $append);
+        $this->app->plugins->run('file.write', $this, $content, $append);
 
         $flags = 0;
         if ($append) {
@@ -395,7 +418,7 @@ class File implements \Stringable
 
         $this->check();
 
-        $this->app->plugins->run('file_delete', $this);
+        $this->app->plugins->run('file.delete', $this);
 
         if (unlink($this->filename) === false) {
             throw new \Exception(App::__('error.file.delete', ['{FILE}' => $this->filename]));
@@ -421,7 +444,7 @@ class File implements \Stringable
         $this->check();
         $destination->check();
 
-        $this->app->plugins->run('file_copy', $this, $destination);
+        $this->app->plugins->run('file.copy', $this, $destination);
 
         if (copy($this->filename, $destination->filename) === false) {
             throw new \Exception(App::__('error.file.copy', ['{SOURCE}' => $this->filename, '{DESTINATION}' => $destination->filename]));
@@ -447,7 +470,7 @@ class File implements \Stringable
         $this->check();
         $destination->check();
         
-        $this->app->plugins->run('file_move', $this, $destination);
+        $this->app->plugins->run('file.move', $this, $destination);
 
         if (rename($this->filename, $destination->filename) === false) {
             throw new \Exception(App::__('error.file.move', ['{SOURCE}' => $this->filename, '{DESTINATION}' => $destination->filename]));

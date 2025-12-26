@@ -12,7 +12,7 @@ namespace Mars\Filters;
 class Filepath extends Filename
 {
     /**
-     * @see \Mars\Filters\Filter::filepath()
+     * @see \Mars\Filter::filepath()
      */
     public function filter(string $filepath) : string
     {
@@ -25,6 +25,6 @@ class Filepath extends Filename
             $filepath = parent::filter($filename);
         }
 
-        return $this->app->plugins->filter('filters_filepath_filter', $filepath);
+        return $this->app->plugins->filter('filter.filepath', $filepath);
     }
 }

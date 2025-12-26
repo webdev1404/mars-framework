@@ -22,7 +22,7 @@ class Image
     /**
      * @const array EXTENSIONS The image extensions
      */
-    public const array EXTENSIONS = ['jpg', 'jpeg', 'gif', 'png', 'bmp', 'webp', 'avif'];
+    public const array EXTENSIONS = ['jpg', 'jpeg', 'gif', 'png', 'webp', 'avif'];
 
     /**
      * @var array $supported_drivers The supported drivers
@@ -137,7 +137,7 @@ class Image
     }
 
     /**
-     * Returns the radio between width and height
+     * Returns the ratio between width and height
      * @param string $filename The image's filename
      * @return float
      */
@@ -243,11 +243,11 @@ class Image
     }
 
     /**
-     * Places a watermark text over an image
+     * Places a watermark image over an image
      * @param string $filename The image's filename
      * @param string $destination The destination's filename
      * @param string $watermark_image The path of the image which will be used as a watermark
-     * @param int $position The position of the watermark text. Matches the 1-9 keys of the numpad. 1:bottom-left; 5:middle center; 9:top-right
+     * @param int $position The position of the watermark image. Matches the 1-9 keys of the numpad. 1:bottom-left; 5:middle center; 9:top-right
      * @param array $options Watermark options, if any
      * @return bool Returns true, if the watermarked image was created
      */

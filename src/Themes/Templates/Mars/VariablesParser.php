@@ -28,7 +28,6 @@ class VariablesParser
     protected array $supported_modifiers = [
         //escape modifiers
         'html' => ['$this->app->escape->html', 40],
-        'htmlx2' => ['$this->app->escape->htmlx2', 60],
         'js' => ['$this->app->escape->js', 20, false],
         'jsstring' => ['$this->app->escape->jsString', 20, false],
         'json' => ['$this->app->json->encode', 20, false],

@@ -14,8 +14,9 @@ class Page extends Content implements ContentInterface
 {
     /**
      * Outputs a html page from the app's pages folder
+     * @param array $vars Variables to pass to the page
      */
-    public function output(array $params = [])
+    public function output(array $vars = [])
     {
         $filename = $this->name;
         
@@ -23,6 +24,6 @@ class Page extends Content implements ContentInterface
             $filename = $this->app->app_path . '/pages/' . $this->name . '.php';
         }
 
-        echo $this->app->theme->getTemplateFromFilename($filename);
+        echo $this->app->theme->getTemplateFromFilename($filename, vars: $vars);
     }
 }

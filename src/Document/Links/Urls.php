@@ -43,7 +43,7 @@ abstract class Urls
     public protected(set) string $crossorigin = '';
 
     /**
-     * @var array $urls Array with all the urls to be outputed
+     * @var array $urls Array with all the urls to be outputted
      */
     public protected(set) array $urls = [];
 
@@ -126,7 +126,7 @@ abstract class Urls
     /**
      * Returns the url, with the version appended
      * @param string $url The url to append the version to
-     * @param bool $is_local If true, will append the version only to local urls
+     * @param bool|null $is_local Indicates whether the url is local. If null, it will be automatically determined.
      * @return string
      */
     public function getUrl(string $url, ?bool $is_local = null) : string

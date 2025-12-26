@@ -6,7 +6,6 @@
 
 namespace Mars\Alerts;
 
-use Mars\App;
 use Mars\App\Kernel;
 use Mars\Data\ListTrait;
 
@@ -48,12 +47,12 @@ abstract class Alerts implements \Countable, \IteratorAggregate
     }
 
     /**
-     * Resets the current alerts then adds the new alerts
-     * @param string|array|Alerts $alert The alert text
+     * Resets the alerts then adds the alert(s)
+     * @param string|array|Alerts $alerts The alert(s) text
      * @return static
      */
-    public function set(string|array|Alerts $alert) : static
+    public function set(string|array|Alerts $alerts) : static
     {
-        return $this->reset()->add($alert);
+        return $this->reset()->add($alerts);
     }
 }

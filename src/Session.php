@@ -21,7 +21,7 @@ class Session
     /**
      * @var array $supported_drivers The supported drivers
      */
-    protected array $supported_drivers = [
+    public protected(set) array $supported_drivers = [
         'php' => \Mars\Session\Php::class,
         'db' => \Mars\Session\Db::class,
         'memcache' => \Mars\Session\Memcache::class
@@ -45,29 +45,21 @@ class Session
     /**
      * @var SessionInterface $driver The driver object
      */
-    public protected(set) SessionInterface $driver;
-
-    /**
-     * @var string $prefix Prefix to apply to all session keys
-     */
-    protected string $prefix {
+    public protected(set) SessionInterface $driver {
         get {
-            if (isset($this->prefix)) {
-                return $this->prefix;
+            if (isset($this->driver)) {
+                return $this->driver;
             }
 
-            $this->prefix = $this->app->config->session->prefix;
+            $this->driver = $this->drivers->get($this->app->config->session->driver);
+            $this->driver->start();
 
-            if ($this->prefix) {
-                $this->prefix .= '-';
-            }
-
-            return $this->prefix;
+            return $this->driver;
         }
     }
 
     /**
-     * @var string $token The session csrf token name
+     * @var string $token The session CSRF token value
      */
     public protected(set) ?string $token {
         get {
@@ -86,43 +78,15 @@ class Session
     }
 
     /**
-     * @var bool $started True if the session has been started
-     */
-    public protected(set) bool $started = false;
-
-    /**
-     * Starts the session
-     */
-    protected function start()
-    {
-        if ($this->started) {
-            return;
-        }
-
-        session_start();
-
-        $this->started = true;
-
-        //get the driver manually, since we're not using it per se
-        $this->driver = $this->drivers->get($this->app->config->session->driver);
-    }
-
-    /**
-     * Deletes the session cookie
+     * Destroys the session and unsets all session variables
      * @return static
      */
-    public function delete() : static
+    public function destroy() : static
     {
-        if (!$this->started) {
-            $this->start();
-        }
-
-        session_unset();
-        session_destroy();
+        $this->driver->delete();
 
         return $this;
     }
-
 
     /**
      * Returns the session id
@@ -130,11 +94,7 @@ class Session
      */
     public function getId() : string
     {
-        if (!$this->started) {
-            $this->start();
-        }
-
-        return session_id();
+        return $this->driver->getId();
     }
 
     /**
@@ -143,12 +103,7 @@ class Session
      */
     public function regenerateId() : string
     {
-        if (!$this->started) {
-            $this->start();
-        }
-        session_regenerate_id();
-
-        return $this->getId();
+        return $this->driver->regenerateId();
     }
 
     /**
@@ -158,41 +113,19 @@ class Session
      */
     public function isSet(string $name) : bool
     {
-        if (!$this->started) {
-            $this->start();
-        }
-
-        $key = $this->prefix . $name;
-
-        return isset($_SESSION[$key]);
+        return $this->driver->isSet($name);
     }
 
     /**
      * Returns $_SESSION[$name] if set
      * @param string $name The name of the var
      * @param bool $unserialize If true, will unserialize the returned result
-     * @param mixed $not_set The return value, if $_SESSION[$name] isn't set
+     * @param mixed $default The return value, if $_SESSION[$name] isn't set
      * @return mixed Will return null if the session is not enabled
      */
-    public function get(string $name, bool $unserialize = false, $not_set = null)
+    public function get(string $name, bool $unserialize = false, mixed $default = null) : mixed
     {
-        if (!$this->started) {
-            $this->start();
-        }
-
-        $key = $this->prefix . $name;
-
-        if (!isset($_SESSION[$key])) {
-            return $not_set;
-        }
-
-        $value = $_SESSION[$key];
-
-        if ($unserialize) {
-            return $this->app->serializer->unserialize($value, [], false);
-        }
-
-        return $value;
+        return $this->driver->get($name, $unserialize, $default);
     }
 
     /**
@@ -202,19 +135,9 @@ class Session
      * @param bool $serialize If true, will serialize the value
      * @return static
      */
-    public function set(string $name, $value, bool $serialize = false) : static
+    public function set(string $name, mixed $value, bool $serialize = false) : static
     {
-        if (!$this->started) {
-            $this->start();
-        }
-
-        $key = $this->prefix . $name;
-
-        if ($serialize) {
-            $value = $this->app->serializer->serialize($value, false);
-        }
-
-        $_SESSION[$key] = $value;
+        $this->driver->set($name, $value, $serialize);
 
         return $this;
     }
@@ -226,13 +149,7 @@ class Session
      */
     public function unset(string $name) : static
     {
-        if (!$this->started) {
-            $this->start();
-        }
-
-        $key = $this->prefix . $name;
-
-        unset($_SESSION[$key]);
+        $this->driver->unset($name);
 
         return $this;
     }

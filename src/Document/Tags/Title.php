@@ -27,7 +27,7 @@ class Title extends Tag
 
         $title = implode($this->app->config->document->title->separator, $parts);
 
-        $title = $this->app->plugins->filter('document_title_output', $title);
+        $title = $this->app->plugins->filter('document.title.output', $title);
 
         echo '<title>' . $this->app->escape->html($title) . '</title>' . "\n";
     }

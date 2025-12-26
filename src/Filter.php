@@ -77,7 +77,7 @@ class Filter
             try {
                 return $this->filters->get($filter)->filter($value);
             } catch (\Exception $e) {
-                throw new \Exception("Filter {$filter} not found");
+                throw new \Exception("Filter {$filter} not found", 0, $e);
             }
         });
     }
@@ -119,7 +119,7 @@ class Filter
     }
 
     /**
-     * Returns an absolue value
+     * Returns an absolute value
      * @param $value The value to filter
      * @return int|float|array The filtered value
      */
@@ -131,7 +131,7 @@ class Filter
     }
 
     /**
-     * Returns an absolue value from an int
+     * Returns an absolute value from an int
      * @param $value The value to filter
      * @return int|array The filtered value
      */
@@ -143,9 +143,9 @@ class Filter
     }
 
     /**
-     * Returns an absolue value from a float
+     * Returns an absolute value from a float
      * @param $value The value to filter
-     * @return int|array The filtered value
+     * @return float|array The filtered value
      */
     public function absfloat($value) : float|array
     {
@@ -175,15 +175,15 @@ class Filter
     public function tags($value, array|string|null $allowed_tags = null) : string|array
     {
         return $this->app->data->map($value, function ($value) use ($allowed_tags) {
-            return strip_tags($value, $allowed_tags);   
+            return strip_tags($value, $allowed_tags);
         });
     }
 
     /**
      * Filters html using HtmlPurifier
-     * @param string $html The $text to filter
-     * @param string $allowed_elements String containing the allowed html elements. If null, it will be read from config->html->allowed_elements
-     * @param string $allowed_attributes The allowed attributes. If null, it will be read from config->html->allowed_attributes
+     * @param string $html The HTML content to filter
+     * @param string|null $allowed_elements String containing the allowed html elements. If null, it will be read from config->html->allowed_elements
+     * @param string|null $allowed_attributes The allowed attributes. If null, it will be read from config->html->allowed_attributes
      * @param string $encoding The encoding of the text
      * @return string The filtered html
      */
@@ -256,7 +256,7 @@ class Filter
 
     /**
      * Filters a filepath
-     * !!Only the filename if filtered, the rest of the filepath is left untouched
+     * !!Only the filename is filtered, the rest of the filepath is left untouched
      * @param string|array $value The filepath to filter
      * @return string|array The filtered filepath
      */
@@ -335,7 +335,7 @@ class Filter
      * @param string|array $value The value(s)
      * @param string|array $allowed Array with the allowed elements
      * @param mixed $not_allowed_value The value returned if $value isn't included in $allowed
-     * @return mixed Array with the filtered values
+     * @return mixed The filtered value(s) or $not_allowed_value if not allowed
      */
     public function allowed(string|array $value, string|array $allowed, mixed $not_allowed_value = null) : mixed
     {

@@ -31,8 +31,9 @@ interface CacheableInterface
     /**
      * Creates a new cache file
      * @param string $filename The name of the cache file
+     * @return bool True on success, false on failure
      */
-    public function create(string $filename);
+    public function create(string $filename) : bool;
 
     /**
      * Checks if a cache file exists
@@ -49,7 +50,8 @@ interface CacheableInterface
     public function getLastModified(string $filename) : int;
 
     /**
-     * Deletes an asset
+     * Deletes a cached file
+     * @param string $filename The name of the cache file to delete
      * @return bool True on success, false on failure
      */
     public function delete(string $filename) : bool;

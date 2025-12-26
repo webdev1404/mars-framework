@@ -34,7 +34,7 @@ class Routes
      */
     public function getKey(array $route) : int
     {
-        $key = array_find_key($this->data, function($value) use ($route) {
+        $key = array_find_key($this->data, function ($value) use ($route) {
             return $value == $route;
         });
 

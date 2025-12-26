@@ -30,7 +30,7 @@ class Url implements \Stringable
                 return $this->is_valid;
             }
 
-            $this->is_valid = filter_var($this->url, FILTER_VALIDATE_URL);
+            $this->is_valid = (bool) filter_var($this->url, FILTER_VALIDATE_URL);
 
             return $this->is_valid;
         }
@@ -121,7 +121,7 @@ class Url implements \Stringable
     }
 
     /**
-     * @var string $domain The domain of the url. Eg: mydomain.com
+     * @var string $domain The domain of the url. Eg: mydomain.com. Use with care, it will not work with TLDs like .co.uk
      */
     public protected(set) string $domain {
         get {
@@ -221,7 +221,7 @@ class Url implements \Stringable
 
     /**
      * Builds the Url object
-     * @var string The url
+     * @param string $url The url
      * @param bool $sanitize If true, it will sanitize the url
      */
     public function __construct(string $url, bool $sanitize = true)
@@ -246,12 +246,14 @@ class Url implements \Stringable
      * Returns the local filename from a local url
      * !!!!Use with caution!!!!
      * @return string The local filename. If the url is not local, it will return an empty string
+     * @throws \Exception If the file contains invalid characters or is not inside the open_basedir paths
      */
     public function getLocalFilename() : string
     {
         $filename = '';
         if ($this->is_local) {
-            $filename = $this->app->base_path . '/' . str_replace($this->app->base_path, '', $this->path);
+            $filename = $this->app->base_path . '/' . $this->path;
+            $filename = preg_replace('/[\/\\\]+/', '/', $filename);
 
             $this->app->file->check($filename);
         }
@@ -276,7 +278,7 @@ class Url implements \Stringable
     }
 
     /**
-     * Builds an url by appendding the path parts
+     * Builds an url by appending the path parts
      * @param string|array $parts Array with the parts to append
      * @param array $params Array with the query parameters
      * @param bool $encode If true, it will encode the parts using rawurlencode
@@ -304,7 +306,7 @@ class Url implements \Stringable
 
     /**
      * Builds an url, by adding the params to the query string
-     * @param array $params Array containing the values to be appended. Specified as name = >value
+     * @param array $params Array containing the values to be appended. Specified as name => value
      * @param bool $remove_empty_params If true, will not add empty_params
      * @return static Returns a new url instance
      */

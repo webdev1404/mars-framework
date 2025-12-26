@@ -4,12 +4,12 @@
 * @package Mars
 */
 
-namespace Mars\Db\Sql;
+namespace Mars\Db;
 
 use Mars\App\Kernel;
 use Mars\App\Drivers;
 use Mars\Db\Result;
-use Mars\Db\Sql\Drivers\SqlInterface;
+use Mars\Db\SqlInterface;
 
 /**
  * The Sql Builder Class.
@@ -23,7 +23,7 @@ class Sql implements \Stringable
      * @var array $supported_drivers The supported drivers
      */
     public protected(set) array $supported_drivers = [
-        'mysql' => \Mars\Db\Sql\Drivers\Mysql::class
+        'mysql' => \Mars\Db\Mysql\Sql::class
     ];
 
     /**
@@ -76,7 +76,7 @@ class Sql implements \Stringable
 
     /**
      * Runs the SQL code as a query
-     * @param return DbResult
+     * @return Result
      */
     public function query() : Result
     {
@@ -87,7 +87,7 @@ class Sql implements \Stringable
      * Returns the sql code
      * @return string
      */
-    public function getSql() : string
+    public function get() : string
     {
         return $this->sql;
     }
@@ -103,7 +103,7 @@ class Sql implements \Stringable
 
     /**
      * Starts a new statement
-     * @param bool $is_read The tpye of the statement
+     * @param bool $is_read The type of the statement
      * @return static
      */
     public function start(bool $is_read = false) : static
@@ -173,7 +173,7 @@ class Sql implements \Stringable
 
     /**
      * Builds the VALUES part of an INSERT query
-     * @param array $values The data to insert in the column => value format. If value is an array it will be inserted as it is. Usefull if a mysql function needs to be called (EG: NOW() )
+     * @param array $values The data to insert in the column => value format. If value is an array it will be inserted as it is. Useful if a mysql function needs to be called (EG: NOW() )
      * @return static
      */
     public function values(array $values) : static
@@ -197,7 +197,7 @@ class Sql implements \Stringable
 
     /**
      * Builds the SET part of an update query
-     * @param array $values The data to updated in the column => value format. If value is an array it will be updated as it is. Usefull if a mysql function needs to be called (EG: NOW() )
+     * @param array $values The data to update in the column => value format. If value is an array it will be updated as it is. Useful if a mysql function needs to be called (EG: NOW() )
      * @return static
      */
     public function set(array $values) : static
@@ -210,6 +210,7 @@ class Sql implements \Stringable
     /**
      * Builds a SELECT query
      * @param string|array $cols The cols to select
+     * @param string|array $extra Additional SQL options or modifiers to apply to the SELECT clause
      * @return static
      */
     public function select(string|array $cols = '*', string|array $extra = '') : static
@@ -320,7 +321,6 @@ class Sql implements \Stringable
      * Returns a WHERE IN(...) clause
      * @param string $column The column
      * @param array $values Array with the elements to place in the IN list
-     * @param bool $is_int If true,will treat the elements from $in_array as int values
      * @return static
      */
     public function whereIn(string $column, array $values) : static
@@ -348,8 +348,7 @@ class Sql implements \Stringable
     }
 
     /**
-     * Returns the AND keyword
-     * @return static
+     * Returns the OR keyword
      */
     public function or() : static
     {
@@ -399,7 +398,7 @@ class Sql implements \Stringable
     /**
      * Returns a LIMIT clause
      * @param int $count The number of items
-     * @param int int The offset, if any
+     * @param int|null $offset The offset, if any
      * @return static
      */
     public function limit(int $count, ?int $offset = null) : static

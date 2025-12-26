@@ -48,21 +48,6 @@ abstract class Controller extends \stdClass
     }
 
     /**
-     * @var string $name_lc The lowercase name of the controller
-     */
-    public protected(set) string $name_lc {
-        get {
-            if (isset($this->name_lc)) {
-                return $this->name_lc;
-            }
-
-            $this->name_lc = strtolower($this->name);
-
-            return $this->name_lc;
-        }
-    }
-
-    /**
      * @var string $default_method Default method to be executed on dispatch/route or if the requested method doesn't exist or is not public
      */
     public protected(set) string $default_method {
@@ -201,7 +186,7 @@ abstract class Controller extends \stdClass
     /**
      * @var bool $accept_json Whether the controller can return json data
      */
-    protected bool $accept_json = false;
+    public protected(set) bool $accept_json = false;
 
     /**
      * @var Config $config The config object. Alias for $this->app->config
@@ -338,16 +323,12 @@ abstract class Controller extends \stdClass
 
     /**
      * Loads the model and returns the instance
-     * @param string $model The name of the model
+     * @param string|null $model The name of the model
      * @return object The model
      */
-    public function getModel(string $model = '') : object
+    public function getModel(?string $model = null) : object
     {
-        if (!$model) {
-            $model = $this->name;
-        }
-
-        return $this->parent->getModel($model, $this);
+        return $this->parent->getModel($model ?? $this->name, $this);
     }
 
     /**
@@ -355,13 +336,9 @@ abstract class Controller extends \stdClass
      * @param string $view The name of the view
      * @return View The view
      */
-    public function getView(string $view = '') : View
+    public function getView(?string $view = null) : View
     {
-        if (!$view) {
-            $view = $this->name;
-        }
-
-        return $this->parent->getView($view, $this);
+        return $this->parent->getView($view ?? $this->name, $this);
     }
 
     /**
@@ -373,14 +350,12 @@ abstract class Controller extends \stdClass
      * @param string $method The name of the method
      * @param array $params Params to be passed to the method, if any
      */
-    public function dispatch(string $method = '', ?array $params = null)
+    public function dispatch(string $method = '', array $params = [])
     {
-        $params = $params ?? ($this->parent->params_route ?? []);
-        
         if (!$method) {
             $method = $this->app->request->getAction();
             if (!$method) {
-                $method = $this->parent->params['action'] ?? $this->default_method;
+                $method = $this->default_method;
             }
         }
 
@@ -411,19 +386,18 @@ abstract class Controller extends \stdClass
      */
     protected function route(string $method, array $params = [])
     {
+        ob_start();
         $ret = $this->call($method, $params);
+        $content = ob_get_clean();
+
+        //if the request is json, send the return data as json
         $is_json = ($this->accept_json && $this->app->request->is_json) ? true : false;
-
-        //if the request is json, send the return data as json, if it is not a boolean or null
         if ($is_json) {
-            $data = [];
-            if (!is_bool($ret) && !is_null($ret)) {
-                $data['content'] = $ret;
-            }
-
-            $this->app->send($data);
+            $this->sendJson($ret, $content);
             return;
         }
+        
+        echo $content;
 
         //call the success/error methods if the first call returns true or false
         if ($ret === true) {
@@ -437,6 +411,24 @@ abstract class Controller extends \stdClass
             //output the return data as json code
             $this->app->send($ret);
         }
+    }
+
+    /**
+     * Sends json data
+     * @param mixed $ret The return value
+     * @param string $content The content
+     */
+    protected function sendJson(mixed $ret, string $content)
+    {
+        $data = [];
+
+        if (is_bool($ret) || is_null($ret)) {
+            $data['content'] = $content;
+        } else {
+            $data['content'] = $ret;
+        }
+
+        $this->app->send($data);
     }
 
     /**
@@ -474,42 +466,12 @@ abstract class Controller extends \stdClass
     }
 
     /**
-     * Alias for $this->view->render()
-     */
-    protected function render()
-    {
-        $this->view->render();
-    }
-
-    /**
-     * Returns true if no errors have been generated
-     * @return bool
-     */
-    protected function success() : bool
-    {
-        return $this->app->success();
-    }
-
-    /**
-     * Sends an error as ajax content
-     * @param string $error The response error to send
-     */
-    protected function sendError(string $error)
-    {
-        $this->app->errors->add($error);
-
-        $this->app->send([]);
-    }
-
-    /**
      * Loads the config settings from a file
      * @param string|null $file The config file. If null, will load the file with the same name as the controller
      */
     public function loadConfig(?string $file = null)
     {
-        $file ??= $this->name_lc;
-
-        $this->parent->loadConfig($file);
+        $this->parent->loadConfig($file ?? strtolower($this->name));
     }
 
     /**
@@ -518,8 +480,6 @@ abstract class Controller extends \stdClass
      */
     public function loadLanguage(?string $file = null)
     {
-        $file ??= $this->name_lc;
-
-        $this->parent->loadLanguage($file);
+        $this->parent->loadLanguage($file ?? strtolower($this->name));
     }
 }

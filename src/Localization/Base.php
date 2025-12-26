@@ -40,7 +40,7 @@ class Base
     /**
      * @see \Mars\Localization\LocalizationInterface::getUrl()
      * {@inheritdoc}
-     */    
+     */
     public function getUrl(string $code) : string
     {
         return $this->app->config->url->base;

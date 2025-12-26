@@ -12,7 +12,7 @@ namespace Mars\Filters;
 class Email extends Filter
 {
     /**
-     * @see \Mars\Filters\Filter::email()
+     * @see \Mars\Filter::email()
      */
     public function filter(string $email) : string
     {

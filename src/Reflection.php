@@ -48,7 +48,7 @@ class Reflection
 
             if ($rparam->hasType()) {
                 $type = (string)$rparam->getType();
-                if (in_array($type, ['int', 'float', 'string', 'boolean'])) {
+                if (in_array($type, ['int', 'float', 'string', 'bool'])) {
                     settype($param, $type);
                 }
             }

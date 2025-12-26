@@ -20,18 +20,19 @@ class MobileDetect implements DeviceInterface
      * @see DeviceInterface::get()
      * {@inheritdoc}
      */
-    public function get(string $useragent = '') : string
+    public function get(?string $useragent = null) : Type
     {
-        $useragent = $useragent ? $useragent : $this->app->useragent;
-        $handle = new \Detection\MobileDetect;
-        $handle->setUserAgent($useragent);
+        $useragent ??= $this->app->useragent;
 
-        if ($handle->isTablet()) {
-            return 'tablet';
-        } elseif ($handle->isMobile()) {
-            return 'smartphone';
+        $detector = new \Detection\MobileDetect;
+        $detector->setUserAgent($useragent);
+
+        if ($detector->isTablet()) {
+            return Type::Tablet;
+        } elseif ($detector->isMobile()) {
+            return Type::Smartphone;
         }
 
-        return 'desktop';
+        return Type::Desktop;
     }
 }

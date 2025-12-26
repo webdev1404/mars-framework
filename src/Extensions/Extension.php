@@ -19,7 +19,7 @@ abstract class Extension
     use Kernel;
     
     /**
-     * @const array DIR The locations of the used extensions subdirs
+     * @const array DIRS The locations of the used extensions subdirs
      */
     public const array DIRS = [
         'assets' => 'assets',
@@ -157,7 +157,7 @@ abstract class Extension
     }
 
     /**
-     * @var array $params The parames passed to the extension, if any
+     * @var array $params The params passed to the extension, if any
      */
     public protected(set) array $params = [];
 
@@ -229,18 +229,13 @@ abstract class Extension
     }
 
     /**
-     * Initializes the extension by including its init.php file
+     * Includes the extension's boot file
      */
-    public function init()
+    public function boot()
     {
-        include($this->path . '/init.php');
-    }
+        $app = $this->app;
 
-    /**
-     * Prepares the extension
-     */
-    public function prepare()
-    {
+        include($this->path . '/boot.php');
     }
 
     /**

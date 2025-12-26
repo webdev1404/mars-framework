@@ -15,7 +15,7 @@ final class LanguageTest extends Base
 
         $language = new Language($this->app);
         $language->strings = [];
-        $language->loadFilename($filename, 'test');
+        $language->loadFilename('test', $filename);
 
         $this->assertSame($language->strings, ['test' => ['str1' => 'String 1', 'str2' => 'String 2']]);
     }

@@ -56,7 +56,7 @@ class Cli
     ];
 
     /**
-     * @var Handlers $handlers The printers object
+     * @var Handlers $printers The printers object
      */
     public protected(set) Handlers $printers {
         get {
@@ -144,7 +144,7 @@ class Cli
     {
         $this->app = $app;
 
-        $this->app->plugins->run('boot_cli', $this);
+        $this->app->plugins->run('cli.boot', $this);
     }
 
     /**
@@ -162,7 +162,7 @@ class Cli
      * @param string $name The name of the option
      * @param mixed $default_value The default value to return if the option is not found
      * @param string $filter The filter to apply to the option, if any. See class Filter for a list of filters
-     * @return string The option
+     * @return mixed The option
      */
     public function get(string $name, mixed $default_value = '', string $filter = '') : mixed
     {
@@ -306,7 +306,7 @@ class Cli
      * @param string $text The text to output
      * @return static
      */
-    public function message($text) : static
+    public function message(string $text) : static
     {
         $this->print($text, $this->colors['message']);
 
@@ -316,9 +316,9 @@ class Cli
     /**
      * Outputs an error and dies
      * @param string $text The text to output
-     * @param bool $die If true, will exit the script after outputing the error
+     * @param bool $die If true, will exit the script after outputting the error
      */
-    public function error($text, bool $die = true)
+    public function error(string $text, bool $die = true)
     {
         echo "\n";
         $this->print($text, $this->colors['error']);
@@ -375,7 +375,7 @@ class Cli
      * Prints a list, with multiple sections
      * @param array $data The data to print
      * @param array $colors The colors to use
-     * @param array $paddings_right The number of left chars to apply, if any
+     * @param array $paddings_right The number of right chars to apply, if any
      * @param array $paddings_left The number of left chars to apply, if any
      * @return static
      */
@@ -394,7 +394,7 @@ class Cli
      * @param array $colors The colors to use. $colors[0] is the header's color
      * @param array $align Determines how the headers/cells are align. $align[0] is the header's alignment
      * @param array $paddings_left The number of left chars to apply, if any
-     * @param array $paddings_right The number of left chars to apply, if any
+     * @param array $paddings_right The number of right chars to apply, if any
      * @return static
      */
     public function printTable(array $headers, array $data, array $colors = [], array $align = [], array $paddings_left = [], array $paddings_right = []) : static

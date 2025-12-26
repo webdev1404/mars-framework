@@ -52,6 +52,6 @@ class Username extends Rule
             return false;
         }
 
-        return $this->app->plugins->filter('validate_username', true, $username, $min, $max, $this);
+        return $this->app->plugins->filter('validate.username', true, $username, $min, $max, $this);
     }
 }

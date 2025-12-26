@@ -96,7 +96,7 @@ class Router extends Base
     /**
      * Returns the route matching the current request
      * @param string|null $route The route to get the route for. If null, the current route will be used
-     * @return mixed
+     * @return array|null
      */
     protected function getRoute(?string $route = null) : array|null
     {
@@ -184,7 +184,7 @@ class Router extends Base
 
                 $this->outputContent($value, $content);
             } else {
-                throw new \Exception('No controller method to handle the route');
+                throw new \Exception("No controller method to handle the route for class: {$class_name}");
             }
         }
     }

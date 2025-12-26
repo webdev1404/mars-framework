@@ -207,7 +207,12 @@ trait ItemTrait
      */
     public function loadByName(string $name) : static
     {
-        return $this->load($this->getRowByName($name));
+        $data = $this->getRowByName($name);
+        if (!$data) {
+            return $this;
+        }
+
+        return $this->load($data);
     }
 
     /**
@@ -309,17 +314,17 @@ trait ItemTrait
      * Updates the object
      * @return bool Returns true if the update operation was succesfull
      */
-    public function update() : bool
+    public function update() : int
     {
         $this->process();
 
         if (!$this->validate()) {
-            return false;
+            return 0;
         }
 
         $this->db->updateById($this->getTable(), $this->getData(), $this->getId(), $this->getIdField());
 
-        return true;
+        return $this->id;
     }
 
     /**
@@ -330,9 +335,7 @@ trait ItemTrait
     {
         $id = $this->getId();
         if ($id) {
-            $this->update();
-
-            return $id;
+            return $this->update();
         } else {
             return $this->insert();
         }

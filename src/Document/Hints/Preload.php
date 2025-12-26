@@ -43,17 +43,17 @@ class Preload
 
     /**
      * Adds an url to the preload list
-     * @param string $type The type of the url [css|javascript|fonts|images]
      * @param string|array $url The url(s) to load
+     * @param string $type The type of the url [css|javascript|fonts|images]
      * @param int $priority The url's output priority. The higher, the better
      * @param array $attributes The attributes of the url, if any
      * @return static
      * @throws \Exception
      */
-    public function load(string $type, string|array $url) : static
+    public function load(string|array $url, string $type) : static
     {
         if (!isset($this->types[$type])) {
-            throw new \Exception("Invalid preload type: {$type} for url {$url}");
+            throw new \Exception("Invalid preload type: {$type}");
         }
 
         $item = $this->types[$type];
@@ -65,15 +65,15 @@ class Preload
 
     /**
      * Unloads an url from the preload list
-     * @param string $type The type of the url [css|javascript|fonts|images]
      * @param string|array $url The url(s) to unload
+     * @param string $type The type of the url [css|javascript|fonts|images]
      * @return static
      * @throws \Exception
      */
-    public function unload(string $type, string|array $url) : static
+    public function unload(string|array $url, string $type) : static
     {
         if (!isset($this->types[$type])) {
-            throw new \Exception("Invalid preload type: {$type} for url {$url}");
+            throw new \Exception("Invalid preload type: {$type}");
         }
 
         $item = $this->types[$type];

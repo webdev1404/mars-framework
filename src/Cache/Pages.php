@@ -96,7 +96,7 @@ class Pages extends Cacheable
 
         if ($this->app->is_cli || !$this->app->config->cache->page->enable || defined('DISABLE_CACHE_PAGE')) {
             return;
-        }        
+        }
         if ($this->app->config->debug->enable || $this->app->config->development->enable) {
             return;
         }
@@ -227,7 +227,7 @@ class Pages extends Cacheable
             $expires = gmdate('D, d M Y H:i:s', time() + $seconds);
 
             header('Expires: ' . $expires . ' GMT');
-            header('Cache-Control: max-age = ' . $seconds);
+            header('Cache-Control: max-age=' . $seconds);
         } else {
             header('Cache-Control: public');
         }
@@ -249,7 +249,7 @@ class Pages extends Cacheable
     }
 
     /**
-     * Outputs the content type. Must be implemented by the classes extending Cachable
+     * Outputs the content type. Must be implemented by the classes extending Cacheable
      * @return static
      */
     protected function outputContentType() : static
@@ -283,7 +283,7 @@ class Pages extends Cacheable
      */
     protected function minify(string $content) : string
     {
-        $minifier = new Minifier(($this->app));
+        $minifier = new Minifier($this->app);
         return $minifier->minifyHtml($content);
     }
 }

@@ -22,7 +22,7 @@ class Serializer
     /**
      * @var array $supported_drivers The supported drivers
      */
-    protected array $supported_drivers = [
+    public protected(set) array $supported_drivers = [
         'php' => \Mars\Serializers\Php::class,
         'json' => \Mars\Serializers\Json::class,
         'igbinary' => \Mars\Serializers\Igbinary::class,
@@ -59,7 +59,7 @@ class Serializer
     }
 
     /**
-     * protected SerializerInterface $php_driver The php driver
+     * @var SerializerInterface $php_driver The php driver
      */
     public protected(set) SerializerInterface $php_driver {
         get {
@@ -110,7 +110,7 @@ class Serializer
 
     /**
      * Unserializes data
-     * @param mixed $data The data to unserialize
+     * @param string|null $data The data to unserialize
      * @param mixed $default_value The default value to return if $data is an empty string or null
      * @param bool $decode If true, will base64 decode the serialize data
      * @param bool $use_php_driver If true, will always unserialize using the php driver
@@ -124,6 +124,9 @@ class Serializer
 
         if ($decode) {
             $data = base64_decode($data);
+            if ($data === false) {
+                return $default_value;
+            }
         }
 
         return $this->getDriver($use_php_driver)->unserialize($data);
@@ -142,11 +145,11 @@ class Serializer
 
     /**
      * Unserializes data using the current driver
-     * @param mixed $data The data to unserialize
+     * @param string|null $data The data to unserialize
      * @param mixed $default_value The default value to return if $data is an empty string or null
      * @param bool $decode If true, will base64 decode the serialize data
      * @return mixed The unserialized data
-     */    
+     */
     public function unserializeData(?string $data, $default_value = [], bool $decode = false)
     {
         return $this->unserialize($data, $default_value, $decode, false);

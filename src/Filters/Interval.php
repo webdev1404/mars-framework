@@ -12,7 +12,7 @@ namespace Mars\Filters;
 class Interval extends Filter
 {
     /**
-     * @see \Mars\Filters\Filter::interval()
+     * @see \Mars\Filter::interval()
      */
     public function filter(int|float $value, int|float $min, int|float $max, int|float $default_value) : int|float
     {

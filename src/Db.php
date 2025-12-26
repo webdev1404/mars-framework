@@ -10,7 +10,7 @@ use Mars\App\Kernel;
 use Mars\App\Drivers;
 use Mars\Db\DbInterface;
 use Mars\Db\Result;
-use Mars\Db\Sql\Sql;
+use Mars\Db\Sql;
 
 /**
  * The Database Class
@@ -24,7 +24,7 @@ class Db
      * @var array $supported_drivers The supported drivers
      */
     public protected(set) array $supported_drivers = [
-        'mysql' => \Mars\Db\Mysql::class
+        'mysql' => \Mars\Db\Mysql\Driver::class
     ];
 
     /**
@@ -60,7 +60,7 @@ class Db
 
             $this->read_key = 0;
             if ($this->use_multi) {
-                $this->read_key = mt_rand(0, count($this->app->config->db->hostname) - 1);
+                $this->read_key = random_int(0, count($this->app->config->db->hostname) - 1);
             }
     
             return $this->read_key;
@@ -103,7 +103,7 @@ class Db
     }
 
     /**
-     * @var bool $read_pesistent If true, the read db connection will be persistent
+     * @var bool $read_persistent If true, the read db connection will be persistent
      */
     protected bool $read_persistent {
         get => $this->use_multi ? $this->app->config->db->persistent[$this->read_key] : $this->app->config->db->persistent;
@@ -145,7 +145,7 @@ class Db
     }
 
     /**
-     * @var bool $write_pesistent If true, the write db connection will be persistent
+     * @var bool $write_persistent If true, the write db connection will be persistent
      */
     protected bool $write_persistent {
         get => $this->use_multi ? $this->app->config->db->persistent[0] : $this->app->config->db->persistent;
@@ -368,11 +368,16 @@ class Db
      */
     protected function isReadQuery(string $sql) : bool
     {
-        if (str_starts_with(trim($sql), 'select')) {
+        $sql = strtolower(trim($sql));
+
+        if (str_starts_with($sql, 'select')) {
+            return true;
+        }
+        if (str_starts_with($sql, 'show')) {
             return true;
         }
 
-        return true;
+        return false;
     }
 
     /**
@@ -438,9 +443,9 @@ class Db
      * @param int $limit The limit
      * @param int $limit_offset The limit offset, if any
      * @param string|array $cols The columns to select
-     * @return Result The result
+     * @return ?array The result
      */
-    public function select(string $table, array $where = [], string $order_by = '', string $order = '', int $limit = 0, int $limit_offset = 0, string|array $cols = '*') : array
+    public function select(string $table, array $where = [], string $order_by = '', string $order = '', int $limit = 0, int $limit_offset = 0, string|array $cols = '*') : ?array
     {
         $sql = $this->getSql()->select($cols)->from($table)->where($where)->orderBy($order_by, $order)->limit($limit, $limit_offset);
 
@@ -479,7 +484,7 @@ class Db
     /**
      * Selects multiple rows from the database, by id
      * @param string $table The table name
-     * @param array $ids Array with the ids for which we're retriving data
+     * @param array $ids Array with the ids for which we're retrieving data
      * @param string $order_by The order by column
      * @param string $order The order: asc/desc
      * @param string $id_col The name of the id column
@@ -553,7 +558,7 @@ class Db
      * Determines if a row matching some conditions exists
      * @param string $table The table name
      * @param array $where Where conditions in the format col => val
-     * @param string $col The column to include in the FROM clause. Should be the primary key, for performance purposes, if possible
+     * @param string $col The column to include in the SELECT clause. Should be the primary key, for performance purposes, if possible
      * @return bool True if the row exists, false otherwise
      */
     public function exists(string $table, array $where, string $col = '') : bool
@@ -587,7 +592,7 @@ class Db
     /**
      * Counts the rows with the ids defined in $ids
      * @param string $table The table name
-     * @param array $ids Array with the ids for which we're retriving the count
+     * @param array $ids Array with the ids for which we're retrieving the count
      * @param string $id_col The name of the id column
      * @return int The number of rows
      */
@@ -605,7 +610,7 @@ class Db
     /**
      * Inserts data into a table
      * @param string $table The table
-     * @param array $values The data to insert in the column => value format. If value is an array it will be inserted as it is. Usefull if a mysql function needs to be called (EG: NOW() )
+     * @param array $values The data to insert in the column => value format. If value is an array it will be inserted as it is. Useful if a mysql function needs to be called (EG: NOW() )
      * @return int Returns the id of the newly inserted row
      */
     public function insert(string $table, array $values) : int
@@ -639,7 +644,7 @@ class Db
     /**
      * Updates data
      * @param string $table The table
-     * @param array $values The data to updated in the column => value format. If value is an array it will be updated as it is. Usefull if a mysql function needs to be called (EG: NOW() )
+     * @param array $values The data to update in the column => value format. If value is an array it will be updated as it is. Useful if a mysql function needs to be called (EG: NOW() )
      * @param array $where Where conditions in the format col => val
      * @param int $limit The limit, if any
      * @return int The number of affected rows
@@ -690,7 +695,7 @@ class Db
     /**
      * Executes a replace query
      * @param string $table The table
-     * @param array $values The data to update in the column => value format. If value is an array it will be inserted without quotes/escaping. Usefull if a mysql function needs to be called (EG: NOW() )
+     * @param array $values The data to update in the column => value format. If value is an array it will be inserted without quotes/escaping. Useful if a mysql function needs to be called (EG: NOW() )
      * @return int Returns the id of the inserted row
      */
     public function replace(string $table, array $values) : int
@@ -785,10 +790,10 @@ class Db
      */
     public function getColumns(string $table, bool $primary_key = true, bool $cache = true) : array
     {
-        $key = $table . ($primary_key ? '1' : '0');
-
-        if ($cache && isset(static::$columns_cache[$key])) {
-            return static::$columns_cache[$key];
+        $cache_key = $table . ($primary_key ? '1' : '0');
+        
+        if ($cache && isset(static::$columns_cache[$cache_key])) {
+            return static::$columns_cache[$cache_key];
         }
 
         $cols = [];
@@ -814,7 +819,7 @@ class Db
         }
 
         if ($cache) {
-            static::$columns_cache[$key] = $cols;
+            static::$columns_cache[$cache_key] = $cols;
         }
 
         return $cols;

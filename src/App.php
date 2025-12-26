@@ -13,7 +13,7 @@ use Mars\Alerts\Info;
 use Mars\Alerts\Warnings;
 use Mars\Alerts\Messages;
 use Mars\Assets\Minifier;
-use Mars\Db\Sql\Sql;
+use Mars\Db\Sql;
 use Mars\Filesystem\Dir;
 use Mars\Filesystem\File;
 use Mars\Http\Request;
@@ -502,14 +502,14 @@ class App
                 $this->ip = $_SERVER['REMOTE_ADDR'];
 
                 if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-                    if (in_array($this->ip, $this->security->trusted_proxies)) {
+                    if (in_array($this->ip, $this->config->security->trusted_proxies)) {
                         //HTTP_X_FORWARDED_FOR can contain multiple IPs. Use only the first one
                         $this->ip = trim(array_first(explode(',', $_SERVER['HTTP_X_FORWARDED_FOR'])));
                     }
                 }
 
                 if (!filter_var($this->ip, FILTER_VALIDATE_IP)) {
-                    throw new \Exception("Invalid IP: {$ip}");
+                    throw new \Exception("Invalid IP: {$this->ip}");
                 }
             }
 
@@ -738,6 +738,12 @@ class App
         
         //output the cached content if it exists
         $this->outputIfCached();
+
+        //boot the modules
+        $this->modules->boot();
+
+        //run plugins boot actions
+        $this->plugins->run('app.boot');
     }
 
     /**
@@ -843,7 +849,7 @@ class App
      */
     public function start()
     {
-        $this->plugins->run('app_start', $this);
+        $this->plugins->run('app.start', $this);
 
         if ($this->config->debug->enable) {
             $this->timer->start('app_content_time');
@@ -859,7 +865,7 @@ class App
     {
         $content = ob_get_clean();
         
-        $content = $this->plugins->filter('app_filter_content', $content, $this);
+        $content = $this->plugins->filter('app.filter.content', $content, $this);
 
         if ($this->config->debug->enable) {
             $this->stats['content_size'] = strlen($content);
@@ -870,7 +876,7 @@ class App
 
         $output = $this->buildOutput($content);
 
-        $output = $this->plugins->filter('app_filter_output', $output, $this);
+        $output = $this->plugins->filter('app.filter.output', $output, $this);
 
         if ($this->config->cache->page->enable) {
             //cache the page output, if caching is enabled
@@ -886,7 +892,7 @@ class App
 
         $this->response->output($output);
 
-        $this->plugins->run('app_end', $this);
+        $this->plugins->run('app.end', $this);
     }
 
     /**
@@ -926,6 +932,11 @@ class App
      */
     public function fatalError(string $text)
     {
+        if ($this->request->is_json) {
+            $this->errors->add($text);
+            return;
+        }
+
         $this->screens->fatalError($text);
     }
 
@@ -936,16 +947,26 @@ class App
      */
     public function error(string $text, ?string $title = null)
     {
+        if ($this->request->is_json) {
+            $this->errors->add($text);
+            return;
+        }
+
         $this->screens->error($text, $title);
     }
 
     /**
-     * Displayes a message screen
+     * Displays a message screen
      * @param string $text The text of the message
      * @param string $title The title of the message, if any
      */
     public function message(string $text, ?string $title = null)
     {
+        if ($this->request->is_json) {
+            $this->messages->add($text);
+            return;
+        }
+
         $this->screens->message($text, $title);
     }
 
@@ -955,6 +976,11 @@ class App
      */
     public function permissionDenied()
     {
+        if ($this->request->is_json) {
+            $this->errors->add(static::__('permission_denied.text'));
+            return;
+        }
+
         $this->screens->permissionDenied();
     }
 
@@ -1062,7 +1088,7 @@ class App
     }
 
     /**
-     * Alias for dd
+     * Alias for pp
      * @see App::pp()
      */
     public static function dd($var, bool $die = true)

@@ -36,11 +36,7 @@ class Json
      */
     public function encode($data) : string
     {
-        if (!$data) {
-            return '';
-        }
-
-        return json_encode($data);
+        return json_encode($data, JSON_THROW_ON_ERROR);
     }
 
     /**
@@ -49,12 +45,8 @@ class Json
      * @param bool $associative If true, the returned data will be an associative array
      * @return mixed The decoded data
      */
-    public function decode(string $string, ?bool $associative = true)
+    public function decode(string $string, ?bool $associative = true) : mixed
     {
-        if (!$string) {
-            return '';
-        }
-
         return json_decode($string, $associative, 512, JSON_THROW_ON_ERROR);
     }
 
@@ -65,10 +57,6 @@ class Json
      */
     public function validate(string $string) : bool
     {
-        if (!$string) {
-            return false;
-        }
-
         return json_validate($string);
     }
 }

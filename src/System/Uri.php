@@ -331,8 +331,10 @@ class Uri implements \Stringable
     /**
      * Returns the url of a route
      * @param string $name The name of the route
+     * @param array $replace Array with the values to replace in the route
+     * @return Url|null Returns the url of the route, or null if the route does
      */
-    public function route(string $name) : ?Url 
+    public function route(string $name, array $replace = []) : ?Url
     {
         $file = $this->app->router->getNameFile($name);
         if (!isset($this->routes[$file])) {
@@ -344,7 +346,13 @@ class Uri implements \Stringable
             return null;
         }
 
-        return new Url($this->root . '/' . $url);
+        $url = $this->root . '/' . $url;
+        if ($replace) {
+            $search = array_map(fn ($key) => '{' . $key . '}', array_keys($replace));
+            $url = str_replace($search, $replace, $url);
+        }
+
+        return new Url($url);
     }
 
     /**

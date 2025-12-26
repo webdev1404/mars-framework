@@ -13,8 +13,8 @@ namespace Mars\Extensions\Modules\Abilities;
 trait ConfigTrait
 {
     /**
-     * Loads the config settings from the specified $file and returns it
-     * @param string $file The file
+     * Loads the config settings from the specified $file.
+     * @param string $file The file name (without the .php extension)
      */
     public function loadConfig(string $file)
     {

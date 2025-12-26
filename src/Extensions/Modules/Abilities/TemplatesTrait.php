@@ -81,9 +81,9 @@ trait TemplatesTrait
 
         //do we have a template set in the current's language templates folder?
         $language_filename = $this->app->lang->getTemplateFilename($rel_filename);
-        if ($language_filename) {            
+        if ($language_filename) {
             return $this->app->theme->getTemplateFromFilename($language_filename, null, $vars, static::$type, [], $this->development);
-        } 
+        }
 
         //check if we have a language-specific template in the extension's templates folder
         $template_file = $this->getLanguageTemplateFile($dir, $template);
@@ -99,7 +99,8 @@ trait TemplatesTrait
 
     /**
      * Returns the filename of a template in the current language
-     * @param string $filename The original filename of the template
+     * @param string $dir The directory where the template is located
+     * @param string $template The name of the template to load (without extension)
      * @return string|null The file of the language-specific template, or null if none was found
      */
     protected function getLanguageTemplateFile(string $dir, string $template) : ?string
@@ -112,7 +113,7 @@ trait TemplatesTrait
         }
 
         if ($this->app->lang->parent) {
-            $template_file = $dir . '/' . $this->app->lang->parent->name . '/' . $file;            
+            $template_file = $dir . '/' . $this->app->lang->parent->name . '/' . $file;
             if (isset($this->templates[$template_file])) {
                 return $template_file;
             }

@@ -16,8 +16,10 @@ class Sodium implements CryptInterface
      * @see CryptInterface::encrypt()
      * {@inheritdoc}
      */
-    public function encrypt(string $data, string $key): array
+    public function encrypt(string $key, string $data): array
     {
+        $this->checkKey($key);
+
         $nonce = random_bytes(SODIUM_CRYPTO_SECRETBOX_NONCEBYTES);
         $ciphertext = sodium_crypto_secretbox($data, $nonce, $key);
 
@@ -28,11 +30,33 @@ class Sodium implements CryptInterface
      * @see CryptInterface::decrypt()
      * {@inheritdoc}
      */
-    public function decrypt(string $key, string $iv, string $data): string
+    public function decrypt(string $key, string $nonce, string $data): string
     {
-        $nonce = base64_decode($iv);
-        $ciphertext = base64_decode($data);
+        $this->checkKey($key);
 
-        return sodium_crypto_secretbox_open($ciphertext, $nonce, $key);
+        $nonce = base64_decode($nonce, true);
+        $ciphertext = base64_decode($data, true);
+        if (!$nonce || strlen($nonce) !== SODIUM_CRYPTO_SECRETBOX_NONCEBYTES || !$ciphertext) {
+            throw new \Exception('Invalid data provided for decryption with the sodium driver');
+        }
+
+        $value = sodium_crypto_secretbox_open($ciphertext, $nonce, $key);
+        if (!$value) {
+            throw new \Exception('Decryption failed using sodium_crypto_secretbox_open');
+        }
+
+        return $value;
+    }
+
+    /**
+     * Check that the key length is valid
+     * @param string $key The encryption key
+     * @throws \Exception If the key length is invalid
+     */
+    protected function checkKey(string $key)
+    {
+        if (strlen($key) != SODIUM_CRYPTO_SECRETBOX_KEYBYTES) {
+            throw new \Exception('The crypt key must be ' . SODIUM_CRYPTO_SECRETBOX_KEYBYTES . ' bytes long for the sodium driver');
+        }
     }
 }

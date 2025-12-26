@@ -34,8 +34,8 @@ class Encoding extends Tag
     {
         $encoding = $this->value;
 
-        $encoding = $this->app->plugins->filter('document_encoding_output', $encoding);
+        $encoding = $this->app->plugins->filter('document.encoding.output', $encoding);
 
-        echo '<meta charset="' . $this->app->escape->html($encoding) . '" />' . "\n";
+        echo '<meta charset="' . $this->app->escape->html($encoding) . '">' . "\n";
     }
 }

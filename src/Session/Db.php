@@ -6,47 +6,47 @@
 
 namespace Mars\Session;
 
-use Mars\App;
-use Mars\App\Kernel;
-
 /**
  * The Db Session Class
  * Session driver which uses the database
+ * The table must be created with the following SQL:
+CREATE TABLE `sessions` (
+    `id` VARCHAR(255) NOT NULL,
+    `timestamp` INT UNSIGNED NOT NULL,
+    `data` text,
+    PRIMARY KEY (`id`),
+    INDEX `timestamp_idx` (`timestamp`)
+);
  */
-class Db implements SessionInterface, \SessionHandlerInterface, \SessionUpdateTimestampHandlerInterface
+class Db extends Base implements \SessionHandlerInterface, \SessionUpdateTimestampHandlerInterface
 {
-    use Kernel;
-
     /**
      * @var string $table The table where the sessions are stored
      */
-    protected string $table = '';
+    protected string $table {
+        get => $this->app->config->session->table;
+    }
 
     /**
-     * Builds the Db Session driver
-     * @param App $app The app object
+     * @see SessionInterface::start()
      */
-    public function __construct(App $app)
+    public function start()
     {
-        $this->app = $app;
-
-        $this->table = $this->app->config->session->table;
-
         if (!$this->table) {
-            throw new \Exception('The database table where the session data is stored is not set');
+            throw new \Exception('The database table where the session data is stored is not set in config.session.table');
         }
 
         session_set_save_handler($this);
+
+        session_start();
     }
 
     /**
      * Initialize the session
      * @see \SessionHandler::open()
-     * @param string $save_path The save path
-     * @param string $session_name The session name
-     * @return bool
+     * {@inheritdoc}
      */
-    public function open(string $save_path, string $session_name) : bool
+    public function open(string $path, string $name) : bool
     {
         return true;
     }
@@ -54,7 +54,7 @@ class Db implements SessionInterface, \SessionHandlerInterface, \SessionUpdateTi
     /**
      * Closes the session
      * @see \SessionHandler::close()
-     * @return bool
+     * {@inheritdoc}
      */
     public function close() : bool
     {
@@ -64,27 +64,21 @@ class Db implements SessionInterface, \SessionHandlerInterface, \SessionUpdateTi
     /**
      * Reads the session data
      * @see \SessionHandler::read()
-     * @param string $id The session's id
-     * @return string|false
+     * {@inheritdoc}
      */
-    public function read($id) : string|false
+    public function read(string $id) : string|false
     {
         $data = $this->app->db->selectResult($this->table, 'data', ['id' => $id]);
-        if (!$data) {
-            return '';
-        }
-
-        return $data;
+        
+        return $data ?? '';
     }
 
     /**
      * Writes the session data
      * @see \SessionHandler::write()
-     * @param string $id The session id
-     * @param string $data The data
-     * @return bool
+     * {@inheritdoc}
      */
-    public function write($id, $data) : bool
+    public function write(string $id, string $data) :  bool
     {
         $values = [
             'id' => $id,
@@ -98,12 +92,11 @@ class Db implements SessionInterface, \SessionHandlerInterface, \SessionUpdateTi
     }
 
     /**
-     * Destroy the session data
+     * Destroys the session data
      * @see \SessionHandler::destroy()
-     * @param string $id The session id
-     * @return bool
+     * {@inheritdoc}
      */
-    public function destroy($id) : bool
+    public function destroy(string $id) : bool
     {
         $this->app->db->deleteById($this->table, $id);
 
@@ -113,25 +106,20 @@ class Db implements SessionInterface, \SessionHandlerInterface, \SessionUpdateTi
     /**
      * Deletes expired sessions
      * @see \SessionHandler::gc()
-     * @param int $maxlifetime The max lifetime
-     * @return int|false
+     * {@inheritdoc}
      */
-    public function gc($maxlifetime) : int|false
+    public function gc(int $maxlifetime) : int|false
     {
         $cutoff = time() - $maxlifetime;
 
-        $this->app->db->writeQuery("DELETE FROM {$this->table} WHERE `timestamp` < {$cutoff}");
-
-        return true;
+        return $this->app->db->query("DELETE FROM {$this->table} WHERE `timestamp` < {$cutoff}")->affectedRows();
     }
 
     /**
-     * Checks if a session identifier already exists or not
-     * @see \SessionUpdateTimestampHandlerInterface::valideId()
-     * @param string $id The session id
-     * @return bool
+     * @see \SessionUpdateTimestampHandlerInterface::validateId()
+     * {@inheritdoc}
      */
-    public function validateId($id) : bool
+    public function validateId(string $id) : bool
     {
         return $this->app->db->exists($this->table, ['id' => $id]);
     }
@@ -139,9 +127,7 @@ class Db implements SessionInterface, \SessionHandlerInterface, \SessionUpdateTi
     /**
      * Updates the timestamp of a session when its data didn't change
      * @see \SessionUpdateTimestampHandlerInterface::updateTimestamp()
-     * @param string $id The session id
-     * @param string $data The data
-     * @return bool
+     * {@inheritdoc}
      */
     public function updateTimestamp(string $id, string $data) : bool
     {

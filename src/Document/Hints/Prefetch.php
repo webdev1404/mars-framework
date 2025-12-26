@@ -13,7 +13,7 @@ namespace Mars\Document\Hints;
 class Prefetch extends Preload
 {
     /**
-     * @var string $rel The rel attribute of the preload
+     * @var string $rel The rel attribute of the prefetch
      */
     protected string $rel = 'prefetch';
 }

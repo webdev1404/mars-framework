@@ -116,15 +116,15 @@ final class HtmlTest extends Base
 
     public function testCheckbox()
     {
-        $this->assertSame($this->app->html->checkbox('my-checkbox'), '<input type="checkbox" name="my-checkbox" value="1" checked id="my-checkbox">' . "\n");
-        $this->assertSame($this->app->html->checkbox('my-checkbox', 'My Label'), '<input type="checkbox" name="my-checkbox" value="1" checked id="my-checkbox-1">
+        $this->assertSame($this->app->html->checkbox('my-checkbox'), '<input type="checkbox" name="my-checkbox" value="1" id="my-checkbox">' . "\n");
+        $this->assertSame($this->app->html->checkbox('my-checkbox', 'My Label'), '<input type="checkbox" name="my-checkbox" value="1" id="my-checkbox-1">
 <label for="my-checkbox-1">My Label</label>' . "\n");
     }
 
     public function testRadio()
     {
-        $this->assertSame($this->app->html->radio('my-radio'), '<input type="radio" name="my-radio" value="1" checked id="my-radio">' . "\n");
-        $this->assertSame($this->app->html->radio('my-radio', 'My Label'), '<input type="radio" name="my-radio" value="1" checked id="my-radio-1">
+        $this->assertSame($this->app->html->radio('my-radio'), '<input type="radio" name="my-radio" value="1" id="my-radio">' . "\n");
+        $this->assertSame($this->app->html->radio('my-radio', 'My Label'), '<input type="radio" name="my-radio" value="1" id="my-radio-1">
 <label for="my-radio-1">My Label</label>' . "\n");
     }
 

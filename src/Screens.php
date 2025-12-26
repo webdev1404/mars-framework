@@ -53,7 +53,7 @@ class Screens
     }
 
     /**
-     * Displayes a message screen
+     * Displays a message screen
      * @param string $text The text of the message
      * @param string $title The title of the message, if any
      */
@@ -63,7 +63,7 @@ class Screens
     }
 
     /**
-     * Displays an error screen
+     * Displays a fatal error screen
      * @param string $text The error's text
      */
     public function fatalError(string $text)

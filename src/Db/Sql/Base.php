@@ -4,12 +4,14 @@
 * @package Mars
 */
 
-namespace Mars\Db\Sql\Drivers;
+namespace Mars\Db\Sql;
+
+use Mars\Db\SqlInterface;
 
 /**
  * The Sql Builder Base Class.
  */
-abstract class Sql implements SqlInterface
+abstract class Base implements SqlInterface
 {
     /**
      * @var array $params The params to use in prepared statements
@@ -53,12 +55,12 @@ abstract class Sql implements SqlInterface
      * Adds a param to the params list
      * @param string $param The param
      * @param string $value The value of the param
-     * @return string The param, prepanded by ':'
+     * @return string The param, prepended by ':'
      */
     protected function addParam(string $param, string $value) : string
     {
         if (isset($this->params[$param])) {
-            $param = $param . '_' . mt_rand(0, 9999999999);
+            $param = $param . '_' . random_int(0, 9999999999);
         }
 
         $this->params[$param] = $value;
@@ -129,7 +131,7 @@ abstract class Sql implements SqlInterface
      */
     protected function escapeLike(string $value) : string
     {
-        return str_replace('%', '\%', $value);
+        return str_replace(['%', '_'], ['\%', '\_'], $value);
     }
 
     /**
@@ -364,7 +366,7 @@ abstract class Sql implements SqlInterface
     }
 
     /**
-     * {@internal}
+     * @internal
      */
     protected function getJoin(string $join, string $table, string $using = '', string $on = '') : string
     {
@@ -374,7 +376,7 @@ abstract class Sql implements SqlInterface
     }
 
     /**
-     * Builds the USING or OR part of a join
+     * Builds the USING or ON part of a join
      * @param string $using The column used in the USING part, if any
      * @param string $on Custom sql to add in the ON part of the join clause, if $using is empty
      */
@@ -424,7 +426,7 @@ abstract class Sql implements SqlInterface
     public function whereIn(string $column, array $values) : string
     {
         if (!$values) {
-            return $this;
+            return '';
         }
 
         return $this->getWhere() . $this->escapeColumn($column) . $this->getIn($values, true);
@@ -480,8 +482,8 @@ abstract class Sql implements SqlInterface
      * Builds multiple conditions
      * @param array $conditions The conditions
      * @param string $delimitator The delimitator to use
-     * @param bool If true, will escape the column
-     * @param bool If true, will generate param names
+     * @param bool $escape_col If true, will escape the column
+     * @param bool $generate_param If true, will generate param names
      * @return string
      */
     protected function getConditions(array $conditions, string $delimitator, bool $escape_col = true, bool $generate_param = false) : string
@@ -548,20 +550,15 @@ abstract class Sql implements SqlInterface
             case 'like_simple':
                 $value = $this->escapeLike($string_value);
                 return 'LIKE ' . $this->addParam($col, $value) . ' ';
-                break;
             case 'like_left':
                 $value = '%' . $this->escapeLike($string_value);
                 return 'LIKE ' . $this->addParam($col, $value) . ' ';
-                break;
             case 'like_right':
                 $value = $this->escapeLike($string_value) . '%';
                 return 'LIKE ' . $this->addParam($col, $value) . ' ';
-                break;
             default:
                 return $operator . ' ' . $this->getValue($col, $value);
         }
-
-        return $value;
     }
 
     /**

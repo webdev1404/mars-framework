@@ -33,9 +33,9 @@ trait LanguagesTrait
         //add the language key to the local keys list
         $this->app->lang->addLocalKey($key);
 
-        $this->registerLanguage($key, $file);
+        $this->registerLanguageFile($key, $file);
 
-        //allow the language file to be overriden in the lang's files folder
+        //allow the language file to be overridden in the lang's files folder
         $this->app->lang->registerFile($key, $this->path_rel . '/' . $file);
 
         $this->loaded_language_keys[] = $key;

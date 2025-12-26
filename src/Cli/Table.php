@@ -49,7 +49,7 @@ class Table extends Printer
      * @param array $colors The colors to use. $colors[0] is the header's color
      * @param array $align Determines how the headers/cells are align. $align[0] is the header's alignment
      * @param array $paddings_left The number of left chars to apply, if any
-     * @param array $paddings_right The number of left chars to apply, if any
+     * @param array $paddings_right The number of right chars to apply, if any
      */
     public function print(array $headers, array $data, array $colors = [], array $align = [], array $paddings_left = [], array $paddings_right = [])
     {

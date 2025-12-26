@@ -1,24 +1,24 @@
 <?php
 /**
- * The Theme's Css Links Class
+ * The Theme's Css Urls Class
  * @package Mars
  */
 
 namespace Mars\Extensions\Themes\Links;
 
-use Mars\Document\Links\Urls;
+use Mars\Document\Links\Urls as DocumentUrls;
 use Mars\Extensions\Themes\Theme;
 
 /**
- * The Theme's Css Links Class
+ * The Theme's Css Urls Class
  * @package Mars
  */
-class Css extends Url
+class Css extends Urls
 {
     /**
      * @internal
      */
-    protected Urls $url {
+    protected DocumentUrls $urls {
         get => $this->app->document->css;
     }
 

@@ -13,7 +13,7 @@ interface CaptchaInterface
 {
     /**
      * Checks the captcha is correct
-     * @return bool Returns bool if the captcha is correct
+     * @return bool True if the captcha is valid, false otherwise
      */
     public function check() : bool;
 

@@ -66,6 +66,6 @@ class Ip extends Rule
             }
         }
 
-        return $this->app->plugins->filter('validate_ip', true, $value, $wildcards, $this);
+        return $this->app->plugins->filter('validate.ip', true, $value, $wildcards, $this);
     }
 }

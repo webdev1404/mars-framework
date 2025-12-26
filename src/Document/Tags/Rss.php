@@ -1,23 +1,24 @@
 <?php
 /**
-* The Rss tag Class
+* The RSS tag Class
 * @package Mars
 */
 
 namespace Mars\Document\Tags;
 
 /**
- * The Document's Rss tag Class
+ * The Document's RSS tag Class
  * Stores the <link rel="alternate" type="application/rss+xml"> tags of the document
  */
 class Rss extends Tags
 {
     /**
-     * Outputs a rss tag
-     * @param string $url The url of the rss file.
+     * Outputs a RSS tag
+     * @param string $url The url of the RSS file.
      * @param string $title The title of the feed
+     * @return static
      */
-    public function outputTag(string $url, string $title)
+    public function outputTag(string $url, string $title) : static
     {
         echo '<link rel="alternate" type="application/rss+xml" title="' . $this->app->escape->html($title) . '" href="' . $this->app->escape->html($url) . '">' . "\n";
 
@@ -25,8 +26,8 @@ class Rss extends Tags
     }
 
     /**
-     * Loads a rss url
-     * @param string $url The url of the rss file.
+     * Loads a RSS url
+     * @param string $url The url of the RSS file.
      * @param string $title The title of the feed
      * @return static
      */
@@ -36,8 +37,8 @@ class Rss extends Tags
     }
 
     /**
-     * Unloads a rss url
-     * @param string $url The url of the rss file.
+     * Unloads a RSS url
+     * @param string $url The url of the RSS file.
      * @return static
      */
     public function unload(string $url) : static

@@ -12,7 +12,7 @@ namespace Mars\Filters;
 class Alnum extends Filter
 {
     /**
-     * @see \Mars\Filters\Filter::alnum()
+     * @see \Mars\Filter::alnum()
      */
     public function filter(string $value, bool $space = false) : string
     {

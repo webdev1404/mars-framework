@@ -33,7 +33,7 @@ abstract class Cacheable extends Cache
                 return $this->drivers;
             }
 
-            $this->drivers = new Drivers($this->supported_drivers, CacheableInterface::class, 'cachable', $this->app);
+            $this->drivers = new Drivers($this->supported_drivers, CacheableInterface::class, 'cacheable', $this->app);
 
             return $this->drivers;
         }
@@ -56,10 +56,13 @@ abstract class Cacheable extends Cache
     /**
      * @var array $driver_params The parameters to pass to the driver constructor
      */
-    protected array $driver_params = [true, 'cacheable'];
+    protected array $driver_params = [
+        true,               // use files cache
+        'cacheable',        // driver type
+    ];
 
     /**
-     * @var string $driver The used driver
+     * @var string $driver_name The used driver
      */
     protected string $driver_name {
         get => $this->app->config->cache->driver;
@@ -93,7 +96,7 @@ abstract class Cacheable extends Cache
     }
 
     /**
-     * Sets The value of a cached value
+     * Sets the value of a cached value
      * @param string $name The name
      * @param mixed $value The value
      * @return static $this
@@ -163,7 +166,7 @@ abstract class Cacheable extends Cache
 
     /**
      * Returns the file name where the content will be cached
-     * @param string $name The name of the filee
+     * @param string $name The name of the file
      * @return string
      */
     protected function getName(string $name) : string

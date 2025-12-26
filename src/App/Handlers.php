@@ -12,7 +12,7 @@ use Mars\Data\MapTrait;
 
 /**
  * The Handlers Class
- * Encapsulates a list of suported handlers
+ * Encapsulates a list of supported handlers
  */
 class Handlers implements \IteratorAggregate
 {
@@ -28,9 +28,9 @@ class Handlers implements \IteratorAggregate
     public bool $store = true;
 
     /**
-     * @var string $interface_name The interface the driver must implement, if any
+     * @var string $interface_name The interface the handler must implement, if any
      */
-    public ?string $interface_name = '';
+    public ?string $interface_name = null;
 
     /**
      * @var array $list The list of handlers
@@ -88,14 +88,14 @@ class Handlers implements \IteratorAggregate
             return $this->objects[$name];
         }
         if (!isset($this->{static::$property}[$name])) {
-            throw new \Exception("Unknown object '{$name}'");
+            throw new \Exception("Unknown handler '{$name}'");
         }
 
         $object = $this->app->object->get($this->{static::$property}[$name], ...$args);
 
         if ($this->interface_name) {
             if (!$object instanceof $this->interface_name) {
-                throw new \Exception("Object {$class} must implement interface {$this->interface_name}");
+                throw new \Exception("Handler " . get_class($object) . " must implement interface {$this->interface_name}");
             }
         }
 

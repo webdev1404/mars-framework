@@ -17,14 +17,14 @@ class Ui
     use Kernel;
 
     /**
-     * @var array $supported_rules The list of supported rules
+     * @var array $supported_uis The list of supported UIs
      */
     protected array $supported_uis = [
         'pagination' => \Mars\Ui\Pagination::class
     ];
 
     /**
-     * @var Handlers $handlers The handlers object
+     * @var Handlers $uis The UI handlers object
      */
     public protected(set) Handlers $uis {
         get {
@@ -51,8 +51,8 @@ class Ui
         $items_per_page = $items_per_page ?? $this->app->config->pagination->items_per_page;
         $max_links = $max_links ?? $this->app->config->pagination->max_links;
 
-        $pag = $this->uis->get('pagination', $base_url, $items_per_page, $total_items, $max_links);
+        $pagination = $this->uis->get('pagination', $base_url, $items_per_page, $total_items, $max_links);
 
-        return $pag->get();
+        return $pagination->get();
     }
 }

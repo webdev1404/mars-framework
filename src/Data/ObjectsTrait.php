@@ -19,7 +19,7 @@ trait ObjectsTrait
     }
 
     /**
-     * @var bool $store If true, the handlers will be stored in $this->objects
+     * @var bool $store If true, the object will be stored in $this->objects
      */
     public bool $store = true;
 
@@ -55,9 +55,9 @@ trait ObjectsTrait
     }
 
     /**
-     * Returns the handler
-     * @param string $name The name of the handler
-     * @param mixed $args Arguments to pass to the handler's constructor
+     * Returns the object
+     * @param string $name The name of the object
+     * @param mixed $args Arguments to pass to the object's constructor
      * @return object The object
      */
     public function get(string $name, ...$args) : object
@@ -71,9 +71,9 @@ trait ObjectsTrait
   
         $object = $this->app->object->get($this->{static::$property}[$name], ...$args);
 
-        if ($this->interface_name) {
+        if (!empty($this->interface_name)) {
             if (!$object instanceof $this->interface_name) {
-                throw new \Exception("Object {$class} must implement interface {$this->interface_name}");
+                throw new \Exception("Object '" . get_class($object) . "' must implement interface '{$this->interface_name}'");
             }
         }
 

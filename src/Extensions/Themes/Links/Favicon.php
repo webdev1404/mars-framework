@@ -1,19 +1,15 @@
 <?php
 /**
- * The Theme's Fonts Links Class
+ * The Theme's Favicon Url Class
  * @package Mars
  */
 
 namespace Mars\Extensions\Themes\Links;
 
-use Mars\Document\Links\Urls;
-use Mars\Extensions\Themes\Theme;
-
 /**
- * The Theme's Fonts Links Class
- * @package Mars
+ * The Theme's Favicon Url Class
  */
-class Favicon extends Link
+class Favicon extends Base
 {
     /**
      * Loads a favicon
@@ -24,7 +20,7 @@ class Favicon extends Link
     {
         $image_url = $this->theme->images_url . '/' . ($image ?? 'favicon.png');
         
-        $this->theme->document->favicon->set($image_url);
+        $this->app->document->favicon->set($image_url);
 
         return $this;
     }

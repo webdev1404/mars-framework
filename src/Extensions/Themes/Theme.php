@@ -307,8 +307,6 @@ class Theme extends Extension
         $this->lazyLoad($app);
 
         parent::__construct($name, $params, $app);
-
-        $this->init();
     }
 
     /**
@@ -534,7 +532,7 @@ class Theme extends Extension
     {
         $this->document->outputHead();
 
-        $this->app->plugins->run('theme_output_head', $this);
+        $this->app->plugins->run('theme.output.head', $this);
     }
 
     /**
@@ -544,7 +542,7 @@ class Theme extends Extension
     {
         $this->document->outputFooter();
 
-        $this->app->plugins->run('theme_output_footer', $this);
+        $this->app->plugins->run('theme.output.footer', $this);
     }
 
     /**
@@ -554,7 +552,7 @@ class Theme extends Extension
     {
         echo $this->content;
 
-        $this->app->plugins->run('theme_output_content', $this);
+        $this->app->plugins->run('theme.output.content', $this);
     }
 
     /**

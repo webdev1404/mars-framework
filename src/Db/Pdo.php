@@ -1,15 +1,15 @@
 <?php
 /**
-* The Mysql Database Driver
+* The PDO Database Driver
 * @package Mars
 */
 
 namespace Mars\Db;
 
 /**
- * The Mysql Database Driver
+ * The PDO Database Driver
  */
-class Mysql implements DbInterface
+abstract class Pdo implements DbInterface
 {
     /**
      * @var PDO $handle The PDO handle
@@ -19,13 +19,13 @@ class Mysql implements DbInterface
     /**
      * @var object The result of the last query operation
      */
-    protected ?\PDOStatement $result;
+    protected ?\PDOStatement $result = null;
 
     /**
      * @see DbInterface::connect()
      * {@inheritdoc}
      */
-    public function connect(string $hostname, string $port, string $username, string $password, string $database, bool $persistent, string $charset)
+    public function connect(string $hostname, string $port, #[\SensitiveParameter] string $username, #[\SensitiveParameter] string $password, string $database, bool $persistent, string $charset)
     {
         $dsn = "mysql:host={$hostname};port={$port};dbname={$database};charset={$charset}";
         $options = [\PDO::ATTR_PERSISTENT => $persistent, \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION];
@@ -33,7 +33,7 @@ class Mysql implements DbInterface
         try {
             $this->handle = new \PDO($dsn, $username, $password, $options);
         } catch (\PDOException $e) {
-            throw new \Exception($e->getMessage());
+            throw new \Exception('PDO Error: ' . $e->getMessage());
         }
     }
 
@@ -111,7 +111,7 @@ class Mysql implements DbInterface
         } catch (\PDOException $e) {
             $this->result = null;
 
-            throw new \Exception($e->getMessage());
+            throw new \Exception('PDO Error: ' . $e->getMessage());
         }
 
         return $this->result;
@@ -127,7 +127,7 @@ class Mysql implements DbInterface
         $keys = array_map(function ($key) {
             return ':' . $key;
         }, array_keys($params));
-                    
+
         return array_combine($keys, $params);
     }
 
@@ -135,7 +135,7 @@ class Mysql implements DbInterface
      * @see DbInterface::free()
      * {@inheritdoc}
      */
-    public function free($result)
+    public function free(object $result)
     {
         unset($result);
     }
@@ -162,7 +162,7 @@ class Mysql implements DbInterface
      * @see DbInterface::numRows()
      * {@inheritdoc}
      */
-    public function numRows($result) : int
+    public function numRows(object $result) : int
     {
         return $result->rowCount();
     }
@@ -171,74 +171,54 @@ class Mysql implements DbInterface
      * @see DbInterface::fetchArray()
      * {@inheritdoc}
      */
-    public function fetchArray($result) : array
+    public function fetchArray(object $result) : ?array
     {
-        $row = $result->fetch(\PDO::FETCH_ASSOC);
-        if (!$row) {
-            $row = [];
-        }
-
-        return $row;
+        return $result->fetch(\PDO::FETCH_ASSOC) ?: null;
     }
 
     /**
      * @see DbInterface::fetchRow()
      * {@inheritdoc}
      */
-    public function fetchRow($result) : array
+    public function fetchRow(object $result) : ?array
     {
-        $row = $result->fetch(\PDO::FETCH_NUM);
-        if (!$row) {
-            $row = [];
-        }
-
-        return $row;
+        return $result->fetch(\PDO::FETCH_NUM) ?: null;
     }
 
     /**
      * @see DbInterface::fetchObject()
      * {@inheritdoc}
      */
-    public function fetchObject($result, string $class_name = '') : ?object
+    public function fetchObject(object $result, string $class_name = '') : ?object
     {
         if (!$class_name) {
-            $class_name = '\StdClass';
+            $class_name = '\stdClass';
         }
 
-        $row = $result->fetchObject($class_name);
-        if (!$row) {
-            $row = null;
-        }
-
-        return $row;
+        return $result->fetchObject($class_name) ?: null;
     }
     
     /**
      * @see DbInterface::fetchColumn()
      * {@inheritdoc}
      */
-    public function fetchColumn($result, int $column = 0) : ?string
+    public function fetchColumn(object $result, int $column = 0) : ?string
     {
-        $col = $result->fetchColumn($column);
-        if ($col === false) {
-            $col = null;
-        }
-        
-        return $col;
+        return $result->fetchColumn($column) ?: null;
     }
 
     /**
      * @see DbInterface::fetchAll()
      * {@inheritdoc}
      */
-    public function fetchAll($result, bool|string $class_name = '') : array
+    public function fetchAll(object $result, bool|string $class_name = '') : array
     {
         if ($class_name === true) {
             return $result->fetchAll(\PDO::FETCH_ASSOC);
         }
 
         if (!$class_name) {
-            $class_name = '\StdClass';
+            $class_name = '\stdClass';
         }
 
         return $result->fetchAll(\PDO::FETCH_CLASS, $class_name);
@@ -248,7 +228,7 @@ class Mysql implements DbInterface
      * @see DbInterface::fetchAllFromColumn()
      * {@inheritdoc}
      */
-    public function fetchAllFromColumn($result, int $column = 0) : array
+    public function fetchAllFromColumn(object $result, int $column = 0) : array
     {
         return $result->fetchAll(\PDO::FETCH_COLUMN, $column);
     }

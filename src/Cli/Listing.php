@@ -33,7 +33,7 @@ class Listing extends Printer
      * @param array $text_array The text to print
      * @param array $colors The colors to use
      * @param array $paddings_left The number of left chars to apply, if any
-     * @param array $paddings_right The number of left chars to apply, if any
+     * @param array $paddings_right The number of right chars to apply, if any
      * @return static
      */
     public function printMulti(array $text_array, array $colors = [], array $paddings_left = [], array $paddings_right = []) : static

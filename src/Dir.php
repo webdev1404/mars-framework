@@ -22,9 +22,9 @@ class Dir implements \Stringable
     public protected(set) string $path = '';
 
     /**
-     * @var string|null $realpath The real path of the directory or null if the directory doesn't exist
+     * @var string $realpath The real path of the directory or an empty string if the directory doesn't exist
      */
-    public ?string $realpath {
+    public string $realpath {
         get {
             if (isset($this->realpath)) {
                 return $this->realpath;
@@ -32,7 +32,7 @@ class Dir implements \Stringable
 
             $realpath = realpath($this->path);
             if ($realpath === false) {
-                $realpath = null;
+                $realpath = '';
             }
 
             $this->realpath = $realpath;
@@ -77,19 +77,29 @@ class Dir implements \Stringable
 
     /**
      * Checks if a filename is inside the dir
-     * It doesn't check if the file or dir actually exist
+     * It doesn't check if the file or dir actually exist so use with care
      * @param string $filename The filename to check
+     * @param bool $check_exists If true, will check if the file actually exists
      * @return bool True if $filename is inside $dir
      */
-    public function contains(string $filename) : bool
+    public function contains(string $filename, bool $check_exists = true) : bool
     {
         $filename = rtrim($filename, '/');
 
-        if ($filename == $this->path) {
+        if ($filename == $this->realpath) {
             return false;
         }
 
-        if (!str_contains($filename, $this->path)) {
+        if (!$check_exists) {
+            return str_starts_with($filename, $this->realpath . '/');
+        }
+
+        $real_filename = realpath($filename);
+        if ($real_filename === false) {
+            return false;
+        }
+
+        if (!str_contains($real_filename, $this->realpath . '/')) {
             return false;
         }
 
@@ -375,10 +385,11 @@ class Dir implements \Stringable
     /**
      * Create the folder. Does nothing if the folder already exists
      * @param int|null $permissions The permissions to set for the folder. If null, no permissions will be set
+     * @param bool $recursive If true, will create parent folders if they don't exist
      * @return static
      * @throws Exception if the folder can't be created
      */
-    public function create(?int $permissions = null) : static
+    public function create(?int $permissions = null, bool $recursive = false) : static
     {
         if ($this->exists) {
             return $this;
@@ -386,9 +397,9 @@ class Dir implements \Stringable
 
         $this->check();
 
-        $this->app->plugins->run('dir_create', $this);
+        $this->app->plugins->run('dir.create', $this);
 
-        if (!mkdir($this->path)) {
+        if (!mkdir($this->path, recursive: $recursive)) {
             throw new \Exception(App::__('error.dir.create', ['{DIR}' => $this->path]));
         }
         if ($permissions) {
@@ -415,7 +426,7 @@ class Dir implements \Stringable
         $this->check();
         $destination->check();
 
-        $this->app->plugins->run('dir_copy', $this, $destination);
+        $this->app->plugins->run('dir.copy', $this, $destination);
 
         $destination->create();
 
@@ -425,10 +436,14 @@ class Dir implements \Stringable
 
             if ($file->isDir()) {
                 if (!is_dir($target_file)) {
-                    mkdir($target_file);
+                    if (!mkdir($target_file)) {
+                        throw new \Exception(App::__('error.dir.create', ['{DIR}' => $target_file]));
+                    }
                 }
             } else {
-                copy($file->getPathname(), $target_file);
+                if (!copy($file->getPathname(), $target_file)) {
+                    throw new \Exception(App::__('error.file.copy', ['{SOURCE}' => $file->getPathname(), '{DESTINATION}' => $target_file]));
+                }
             }
         }
 
@@ -449,10 +464,10 @@ class Dir implements \Stringable
 
         $destination = new static($destination_dir);
 
-        $this->check($this->path);
+        $this->check();
         $destination->check();
 
-        $this->app->plugins->run('dir_move', $this, $destination);
+        $this->app->plugins->run('dir.move', $this, $destination);
 
         if (!rename($this->path, $destination->path)) {
             throw new \Exception(App::__('error.dir.move', ['{SOURCE}' => $this->path, '{DESTINATION}' => $destination->path]));
@@ -475,7 +490,7 @@ class Dir implements \Stringable
 
         $this->check();
 
-        $this->app->plugins->run('dir_delete', $this, $delete_dir);
+        $this->app->plugins->run('dir.delete', $this, $delete_dir);
 
         $iterator = $this->getIterator($this->path, flag: \RecursiveIteratorIterator::CHILD_FIRST);
         foreach ($iterator as $file) {
@@ -508,7 +523,7 @@ class Dir implements \Stringable
      */
     public function clean() : static
     {
-        $this->app->plugins->run('dir_clean', $this);
+        $this->app->plugins->run('dir.clean', $this);
 
         return $this->delete(false);
     }
@@ -527,7 +542,7 @@ class Dir implements \Stringable
 
         $this->check();
 
-        $this->app->plugins->run('dir_clean_expired', $this);
+        $this->app->plugins->run('dir.clean.expired', $this);
 
         $iterator = $this->getIterator($this->path, flag: \RecursiveIteratorIterator::CHILD_FIRST);
         foreach ($iterator as $file) {

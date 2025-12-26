@@ -42,13 +42,17 @@ class ArrayType
      */
     public static function flip(array $array, mixed $value = true) : array
     {
+        if (!$array) {
+            return [];
+        }
+        
         return array_combine($array, array_fill(0, count($array), $value));
     }
 
     /**
      * Unsets from $array the specified keys
      * @param array $array The array
-     * @param string|array The keys to unset
+     * @param string|array $keys The keys to unset
      * @return array The array
      */
     public static function unset(array $array, string|array $keys) : array
@@ -67,21 +71,14 @@ class ArrayType
     /**
      * Removes the specified values from the array
      * @param array $array The array
-     * @param string|array The values to remove
+     * @param string|array $values The values to remove
      * @return array The array
      */
     public static function remove(array $array, string|array $values) : array
     {
         $values = (array)$values;
 
-        foreach ($values as $value) {
-            $key = array_search($value, $array);
-            if ($key !== false) {
-                unset($array[$key]);
-            }
-        }
-
-        return $array;
+        return array_diff($array, $values);
     }
 
     /**

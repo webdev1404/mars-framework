@@ -35,7 +35,7 @@ trait ValidateTrait
     /**
      * @var array $validation_rules_to_skip Validation rules to skip when validating, if any
      */
-    protected ?array $validation_rules_to_skip = null;
+    protected array $validation_rules_to_skip = [];
 
     /**
      * @var array|null $validation_rules_custom Custom validation rules for the current validation
@@ -113,9 +113,9 @@ trait ValidateTrait
     /**
      * The same as skipValidationRules
      * @param string $rule The rule to skip
-     * @return $this
+     * @return static
      */
-    public function skipValidationRule(string $rule)
+    public function skipValidationRule(string $rule): static
     {
         return $this->skipValidationRules([$rule]);
     }
@@ -123,9 +123,9 @@ trait ValidateTrait
     /**
      * Skips rules from validation
      * @param array $skip_rules Rules which will be skipped at validation
-     * @return $this
+     * @return static
      */
-    public function skipValidationRules(array $skip_rules)
+    public function skipValidationRules(array $skip_rules): static
     {
         foreach ($skip_rules as $rule) {
             if (!in_array($rule, $this->validation_rules_to_skip)) {
@@ -138,7 +138,7 @@ trait ValidateTrait
 
     /**
      * Validates the data
-     * @param array|object $data The data to validate. If empty, the $_POST data is used
+     * @param array|object $data The data to validate. If empty, the current object ($this) is used
      * @return bool True if the validation passed all tests, false otherwise
      */
     public function validate(array|object $data = []) : bool
@@ -147,7 +147,7 @@ trait ValidateTrait
             $data = $this;
         }
 
-        $rules = $this->app->plugins->filter('validate_rules', $this->getValidationRules(), $data, $this);
+        $rules = $this->app->plugins->filter('validate.rules', $this->getValidationRules(), $data, $this);
         if (!$rules) {
             return true;
         }
@@ -158,7 +158,7 @@ trait ValidateTrait
             return false;
         }
 
-        return $this->app->plugins->filter('validate_after', true, $data, $this->errors, $this);
+        return $this->app->plugins->filter('validate.after', true, $data, $this->errors, $this);
     }
 
     /**

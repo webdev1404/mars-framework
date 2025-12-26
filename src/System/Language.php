@@ -17,9 +17,34 @@ use Mars\Extensions\Languages\Language as BaseLanguage;
 class Language extends BaseLanguage
 {
     /**
+     * @var array $strings The language's strings
+     */
+    public array $strings = [];
+
+    /**
+     * @var array $local_keys The keys where we're search for strings without a dot (local keys)
+     */
+    protected array $local_keys = [];
+
+    /**
+     * @var array $local_keys_old The old local keys
+     */
+    protected array $local_keys_old = [];
+
+    /**
+     * @var array $registered_keys The list of registered keys
+     */
+    protected array $registered_keys = [];
+
+    /**
+     * @var array $loaded_keys The list of loaded files
+     */
+    protected array $loaded_keys = [];
+
+    /**
      * @var array $supported_drivers The supported drivers
      */
-    protected array $supported_drivers = [
+    public protected(set) array $supported_drivers = [
         'cookie' => \Mars\Localization\Cookie::class,
         'domain' => \Mars\Localization\Domain::class,
         'path' => \Mars\Localization\Path::class,
@@ -219,6 +244,7 @@ class Language extends BaseLanguage
             $this->fallback = null;
             if ($this->can_use_fallback) {
                 $this->fallback = new BaseLanguage($this->app->config->language->fallback, [], $this->app);
+                $this->fallback->boot();
             }
 
             return $this->fallback;
@@ -242,6 +268,7 @@ class Language extends BaseLanguage
             $this->parent = null;
             if ($this->parent_name) {
                 $this->parent = new BaseLanguage($this->parent_name, [], $this->app);
+                $this->parent->boot();
             }
 
             return $this->parent;
@@ -257,32 +284,84 @@ class Language extends BaseLanguage
         $this->app = $app;
 
         parent::__construct($this->name, [], $this->app);
+
+        $this->boot();
     }
 
     /**
-     * Prepares the language
+     * Boots the language
      */
-    public function prepare()
+    public function boot()
     {
+        parent::boot();
+
         if (!$this->parent) {
             return;
         }
 
-        $this->parent->init();
-
         $properties = ['lang', 'datetime_format', 'date_format', 'time_format', 'datetime_picker_format', 'datetime_picker_desc', 'date_picker_format', 'date_picker_desc', 'time_picker_format', 'time_picker_desc', 'decimal_separator', 'thousands_separator'];
         foreach ($properties as $property) {
             if ($this->parent->$property) {
-                if (!$this->$property) {
-                    $this->$property = $this->parent->$property;
-                }
+                $this->$property = $this->parent->$property;
             }
         }
     }
 
     /**
-     * @see \Mars\Extensions\Language::loadFile()
-     * {@inheritdoc}
+     * Registers a language file to be loaded when the key is requested
+     * @param string $key The key of the language file
+     * @param string|array $filename The filename of the language file(s)
+     * @return static
+     */
+    public function register(string $key, string|array $filename) : static
+    {
+        $filenames = $this->app->array->get($filename);
+
+        if (isset($this->registered_keys[$key])) {
+            $this->registered_keys[$key] = array_merge($this->registered_keys[$key], $filenames);
+        } else {
+            $this->registered_keys[$key] = $filenames;
+        }
+
+        return $this;
+    }
+
+    /**
+     * Registers a language file, from the language's files folder, to be loaded when the key is requested
+     * @param string $key The key of the language file
+     * @param string $file The file to register
+     * @return static
+     */
+    public function registerFile(string $key, string $file) : static
+    {
+        $filenames = $this->findFilenames($file);
+        if (!$filenames) {
+            return $this;
+        }
+
+        return $this->register($key, $filenames);
+    }
+
+    /**
+     * Loads a language file
+     * @param string $key The key of the language file
+     */
+    protected function load(string $key)
+    {
+        $this->loaded_keys[$key] = true;
+
+        if (isset($this->registered_keys[$key])) {
+            foreach ($this->registered_keys[$key] as $filename) {
+                $this->loadFilename($key, $filename);
+            }
+        } else {
+            $this->loadFile($key);
+        }
+    }
+
+    /**
+     * Loads the specified $file from the languages folder
+     * @param string $file The name of the file to load (must not include the .php extension)
      */
     protected function loadFile(string $file)
     {
@@ -295,17 +374,22 @@ class Language extends BaseLanguage
     }
 
     /**
-     * @see \Mars\Extensions\Language::registerFile()
-     * {@inheritdoc}
+     * Loads the specified filename from anywhere on the disk as a language file
+     * @param string $key The key to use for the loaded strings
+     * @param string $filename The filename to load
+     * @return static
      */
-    public function registerFile(string $key, string $file) : static
+    public function loadFilename(string $key, string $filename) : static
     {
-        $filenames = $this->findFilenames($file);
-        if (!$filenames) {
-            return $this;
+        $strings = include($filename);
+
+        if (isset($this->strings[$key])) {
+            $this->strings[$key] = array_merge($this->strings[$key], $strings);
+        } else {
+            $this->strings[$key] = $strings;
         }
 
-        return $this->register($key, $filenames);
+        return $this;
     }
 
     /**
@@ -340,30 +424,130 @@ class Language extends BaseLanguage
     }
 
     /**
-     * @see \Mars\Extensions\Language::getTemplateFilename()
-     * {@inheritdoc}
+     * Unloads the specified key
+     * @param string $key The key to unload
+     * @return static
+     */
+    public function unload(string $key) : static
+    {
+        if (isset($this->strings[$key])) {
+            unset($this->strings[$key]);
+        }
+
+        if (isset($this->registered_keys[$key])) {
+            unset($this->registered_keys[$key]);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Returns a language string
+     * @param string $string The string as defined in the languages file
+     * @param array $replace Array with key & values to be used for to search & replace, if any
+     * @param string $key The key to use for the loaded strings
+     * @return string The language string
+     */
+    public function get(string $string, array $replace = [], $key = '') : string
+    {
+        $keys = [];
+        $found_string = '';
+        $index = strpos($string, '.');
+    
+        if ($index === false) {
+            //no dot in the key. Search for the string in the specified local keys
+            foreach ($this->local_keys as $key) {
+                if (!isset($this->strings[$key])) {
+                    $this->load($key);
+                }
+
+                $found_string = $this->strings[$key][$string] ?? '';
+                if ($found_string) {
+                    break;
+                }
+            }
+
+            if (!$found_string) {
+                $found_string = $string;
+            }
+        } else {
+            //we have a dot in the key. Search for the string in the specified file
+            $key = substr($string, 0, $index);
+            $string_key = substr($string, $index + 1);
+
+            if (!isset($this->strings[$key])) {
+                if (!isset($this->loaded_keys[$key])) {
+                    $this->load($key);
+                }
+            }
+
+            $found_string = $this->strings[$key][$string_key] ?? $string;
+        }
+
+        if ($replace) {
+            $found_string = str_replace(array_keys($replace), $replace, $found_string);
+        }
+
+        return $found_string;
+    }
+
+    /**
+     * Returns the filename of a template in the language's templates
+     * @param string $template The name of the template
+     * @return string|null The full path to the template, or null if not found
      */
     public function getTemplateFilename(string $template) : ?string
     {
-        $template_filename = parent::getTemplateFilename($template);
-        if ($template_filename) {
-            return $template_filename;
+        if (isset($this->templates[$template])) {
+            return $this->templates_path . '/' . $template;
         }
 
         if ($this->parent) {
-            $template_filename = $this->parent->getTemplateFilename($template);
-            if ($template_filename) {
-                return $template_filename;
+            if (isset($this->parent->templates[$template])) {
+                return $this->parent->templates_path . '/' . $template;
             }
         }
 
         if ($this->fallback) {
-            $template_filename = $this->fallback->getTemplateFilename($template);
-            if ($template_filename) {
-                return $template_filename;
+            if (isset($this->fallback->templates[$template])) {
+                return $this->fallback->templates_path . '/' . $template;
             }
         }
 
         return null;
+    }
+
+    /**
+     * Adds a local key to the list of keys where we're searching for strings
+     * @param string $key The key to add
+     * @return static
+     */
+    public function addLocalKey(string $key) : static
+    {
+        array_unshift($this->local_keys, $key);
+
+        return $this;
+    }
+
+    /**
+     * Saves the current local keys to the old ones
+     * @return static
+     */
+    public function saveLocalKeys() : static
+    {
+        $this->local_keys_old = $this->local_keys;
+
+        return $this;
+    }
+
+    /**
+     * Restores the local keys to the previous ones
+     * @return static
+     */
+    public function restoreLocalKeys() : static
+    {
+        $this->local_keys = $this->local_keys_old;
+
+        return $this;
     }
 }

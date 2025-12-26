@@ -57,7 +57,7 @@ class Format
     }
 
     /**
-     * Converts a value to lowercase
+     * Converts a value to uppercase
      * @param string|array $value The value
      * @return string|array The formatted value
      */
@@ -72,7 +72,7 @@ class Format
      * Rounds a float
      * @param float|array $value The value to round
      * @param int $decimals The number of decimals to round to
-     * @return float The rounded value
+     * @return float|array The rounded value
      */
     public function round(float|array $value, int $decimals = 2) : float|array
     {
@@ -87,7 +87,7 @@ class Format
      * @param int $decimals The number of decimal points
      * @param string $decimal_separator The separator for the decimal point
      * @param string $thousands_separator The thousands separator
-     * @return string The formatted number
+     * @return string|array The formatted number
      */
     public function number(float|array $number, int $decimals = 2, string $decimal_separator = '.', string $thousands_separator = ',') : string|array
     {
@@ -101,7 +101,7 @@ class Format
      * @param float|array $number The number
      * @param float $total The total
      * @param int $decimals The number of decimal points
-     * @return string The percentage
+     * @return float|array The percentage
      */
     public function percentage(float|array $number, float $total, int $decimals = 4) : float|array
     {
@@ -111,10 +111,10 @@ class Format
     }
 
     /**
-     * Formats a filesize. It returns the result in gb, mb or kb depending on the $kb parameter
+     * Formats a filesize into a human-readable unit (GB, MB, KB) using the given precision
      * @param int|float|array $bytes The filesize - in bytes - to be converted.
      * @param int $digits The number of digits to return to the result if it's MBs.
-     * @return string The formatted filesize
+     * @return string|array The formatted filesize
      */
     public function filesize(int|float|array $bytes, int $digits = 2) : string|array
     {
@@ -125,8 +125,8 @@ class Format
 
     /**
      * Formats a datetime
-     * @param int|string|DateTime $datetime The datetime
-     * @return string The formatted value
+     * @param int|string|DateTime|array $datetime The datetime
+     * @return string|array The formatted value
      */
     public function datetime(int|string|DateTime|array $datetime = 0) : string|array
     {
@@ -137,8 +137,8 @@ class Format
 
     /**
      * Formats a date
-     * @param int|string|DateTime $date The date
-     * @return string The formatted value
+     * @param int|string|DateTime|array $date The date
+     * @return string|array The formatted value
      */
     public function date(int|string|DateTime|array $date = 0) : string|array
     {
@@ -149,8 +149,8 @@ class Format
 
     /**
      * Formats time
-     * @param int|string|DateTime $time The time
-     * @return string The formatted value
+     * @param int|string|DateTime|array $time The time
+     * @return string|array The formatted value
      */
     public function time(int|string|DateTime|array $time = 0) : string|array
     {
@@ -160,11 +160,11 @@ class Format
     }
 
     /**
-     * Formats a time interval. It returns the number of weeks,days,hours,minutes,seconds it contains. Eg: 90 = 1 minute,30 seconds
-     * @param int $seconds The number of seconds
-     * @param string $separator1 The separator between the numeric value and the word. Eg: separator = : the result will be 2:weeks etc..
-     * @param string $separator2 The separator from the end of a value. Eg:separator = , result= 2weeks,3days..
-     * @return string The formatted value
+     * Formats a time interval. It returns the number of weeks, days, hours, minutes, seconds it contains. Eg: 90 = 1 minute, 30 seconds
+     * @param int|array $seconds The number of seconds
+     * @param string $separator1 The separator between the numeric value and the word. Eg: separator = : the result will be 2:weeks etc.
+     * @param string $separator2 The separator from the end of a value. Eg: separator = , result = 2 weeks, 3 days.
+     * @return string|array The formatted value
      */
     public function timeInterval(int|array $seconds, string $separator1 = ' ', string $separator2 = ', ') : string|array
     {
@@ -192,7 +192,7 @@ class Format
      * @param array $dont_quote_array If $quote is true, will NOT quote the elements with the keys found in this array
      * @return string The javascript object
      */
-    public function jsObject(array|object$data, bool $quote = true, array $dont_quote_array = [])
+    public function jsObject(array|object $data, bool $quote = true, array $dont_quote_array = []) : string
     {
         return $this->format->get('js_object')->format($data, $quote, $dont_quote_array);
     }

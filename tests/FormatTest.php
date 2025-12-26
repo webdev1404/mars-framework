@@ -53,9 +53,9 @@ final class FormatTest extends Base
 
     public function testJsArray()
     {
-        $this->assertSame($this->app->format->jsArray(['foo' => "b'ar", 'faz' => 'baz', 'zzz' => 123]), "['b\'ar','baz','123']");
-        $this->assertSame($this->app->format->jsArray(['foo' => "b'ar", 'faz' => 'baz', 'zzz' => 123], false), "[b\\'ar,baz,123]");
-        $this->assertSame($this->app->format->jsArray(['foo' => "b'ar", 'faz' => 'baz', 'zzz' => 123], true, ['zzz']), "['b\'ar','baz',123]");
+        $this->assertSame($this->app->format->jsArray(['foo' => "b'ar", 'faz' => 'baz', 'zzz' => 123]), "['b\\u0027ar','baz','123']");
+        $this->assertSame($this->app->format->jsArray(['foo' => "b'ar", 'faz' => 'baz', 'zzz' => 123], false), "[b\\u0027ar,baz,123]");
+        $this->assertSame($this->app->format->jsArray(['foo' => "b'ar", 'faz' => 'baz', 'zzz' => 123], true, ['zzz']), "['b\\u0027ar','baz',123]");
     }
 
     public function testJsObject()

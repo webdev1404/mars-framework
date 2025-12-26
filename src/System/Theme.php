@@ -40,6 +40,7 @@ class Theme extends BaseTheme
 
             if ($this->parent_name) {
                 $this->parent = new BaseTheme($this->parent_name, [], $this->app);
+                $this->parent->boot();
             }
 
             return $this->parent;
@@ -57,18 +58,8 @@ class Theme extends BaseTheme
         }
 
         parent::__construct($app->config->theme->name, [], $app);
-    }
 
-    /**
-     * Prepares the theme
-     */
-    public function prepare()
-    {
-        if (!$this->parent) {
-            return;
-        }
-
-        $this->parent->init();
+        $this->boot();
     }
 
     /**

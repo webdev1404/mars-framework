@@ -47,6 +47,6 @@ class Password extends Rule
             return false;
         }
 
-        return $this->app->plugins->filter('validate_password', true, $password, $min, $max, $this);
+        return $this->app->plugins->filter('validate.password', true, $password, $min, $max, $this);
     }
 }

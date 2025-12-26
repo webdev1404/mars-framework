@@ -43,7 +43,7 @@ class Templates extends Cache
 
         $name = implode('-', $parts);
 
-        return md5($name) . '.php';
+        return hash('sha256', $name) . '.php';
     }
 
     /**

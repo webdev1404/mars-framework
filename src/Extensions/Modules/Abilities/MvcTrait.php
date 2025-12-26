@@ -13,7 +13,7 @@ use Mars\Mvc\View;
 
 /**
  * The Extension's MVC Trait
- * Trait implementing the MVC patter for extensions
+ * Trait implementing the MVC pattern for extensions
  */
 trait MvcTrait
 {
@@ -38,7 +38,7 @@ trait MvcTrait
     /**
      * Loads the controller and returns the instance
      * @param string $controller The name of the controller
-     * @param array $allowed_controllers Array with the allowed controler names
+     * @param array $allowed_controllers Array with the allowed controller names
      * @return Controller The controller object
      */
     public function getController(string $controller = '', array $allowed_controllers = []) : Controller
@@ -59,7 +59,7 @@ trait MvcTrait
 
         $controller = new $class_name($this, $this->app);
 
-        $controller = $this->app->plugins->filter('get_controller', $controller, $class_name, $this);
+        $controller = $this->app->plugins->filter('mvc.controller.get', $controller, $class_name, $this);
 
         return $controller;
     }
@@ -82,7 +82,7 @@ trait MvcTrait
 
         $model = new $class_name($this->app, $controller);
 
-        $model = $this->app->plugins->filter('get_model', $model, $class_name, $this);
+        $model = $this->app->plugins->filter('mvc.model.get', $model, $class_name, $this);
 
         return $model;
     }
@@ -105,7 +105,7 @@ trait MvcTrait
 
         $view = new $class_name($this->app, $controller);
 
-        $view = $this->app->plugins->filter('get_view', $view, $class_name, $this);
+        $view = $this->app->plugins->filter('mvc.view.get', $view, $class_name, $this);
 
         return $view;
     }

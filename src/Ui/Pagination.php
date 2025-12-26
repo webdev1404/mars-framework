@@ -120,7 +120,7 @@ class Pagination
 
         $links = $this->getLinks();
 
-        $links = $this->app->plugins->filter('ui_pagination_get', $links, $this);
+        $links = $this->app->plugins->filter('ui.pagination.links', $links, $this);
 
         return $this->getHtml($links);
     }

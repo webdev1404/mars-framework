@@ -28,7 +28,7 @@ class Domain extends Base implements LocalizationInterface
             throw new \Exception('Cannot detect the language code from the domain because the HTTP_HOST server variable is empty.');
         }
 
-        $code = array_find_key($this->app->config->localization->urls, function($url) use ($host) {
+        $code = array_find_key($this->app->config->localization->urls, function ($url) use ($host) {
             return $this->app->url->getHost($url) == $host;
         });
 
@@ -42,7 +42,7 @@ class Domain extends Base implements LocalizationInterface
     /**
      * @see \Mars\Localization\LocalizationInterface::getUrl()
      * {@inheritdoc}
-     */    
+     */
     public function getUrl(string $code) : string
     {
         return $this->app->config->localization->urls[$code] ?? $this->app->config->url->base;

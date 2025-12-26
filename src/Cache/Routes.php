@@ -16,7 +16,7 @@ use Mars\Cache\Cacheable\CacheableInterface;
 class Routes extends Data
 {
     /**
-     * @var string $driver The used driver
+     * @var string $driver_name The used driver
      */
     protected string $driver_name {
         get => $this->app->config->cache->routes_driver ?? $this->app->config->cache->driver;
@@ -40,7 +40,7 @@ class Routes extends Data
      * @return array The list of hashes
      */
     public function getHashes(string $method, string $language, string $prefix) : array
-    {        
+    {
         if (!$this->exists('routes-cached') || $this->app->development || $this->app->config->development->routes) {
             $this->cache();
         }

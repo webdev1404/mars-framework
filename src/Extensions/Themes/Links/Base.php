@@ -14,7 +14,7 @@ use Mars\Extensions\Themes\Theme;
  * The Theme's Links Base Class
  * @package Mars
  */
-abstract class Link
+abstract class Base
 {
     use Kernel;
     
@@ -24,8 +24,8 @@ abstract class Link
     protected Theme $theme;
 
     /**
-     * Builds the Url object
-     * @param Theme $theme The theme the url is assigned to
+     * Builds the Link object
+     * @param Theme $theme The theme the link is assigned to
      * @param App $app The app object
      */
     public function __construct(Theme $theme, App $app)

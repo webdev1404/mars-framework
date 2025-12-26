@@ -17,7 +17,7 @@ class Escape
     use Kernel;
 
     /**
-     * Converts special chars. to html entitites
+     * Converts special chars. to html entities
      * @param string $value The value to escape
      * @return string The escaped value
      */
@@ -31,28 +31,7 @@ class Escape
     }
 
     /**
-     * Double escapes a value
-     * @param string $value The value to escape
-     * @param bool $nl2br If true, will apply nl2br to value
-     * @return string The double escaped value
-     */
-    public function htmlx2(?string $value, bool $nl2br = true) : string
-    {
-        if ($value === null) {
-            return '';
-        }
-        
-        $value = $this->html($this->html($value));
-
-        if ($nl2br) {
-            return nl2br($value);
-        }
-
-        return $value;
-    }
-
-    /**
-     * Escapes text meant to be written as javascript code, when embeding it with html. Eg: <a href="" onclick="<code>">
+     * Escapes text meant to be written as javascript code, when embedding it with html. Eg: <a href="" onclick="<code>">
      * @param string $value The value to escape
      * @return string The escaped value
      */
@@ -68,7 +47,12 @@ class Escape
      */
     public function jsString(string $value) : string
     {
-        return str_replace(['\\', "'", '"', "\n", "\r"], ['\\\\', "\\'", '\\"', '', ''], $value);
+        $json = json_encode($value, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT);
+        if ($json === false) {
+            return '';
+        }
+
+        return substr($json, 1, -1);
     }
 
     /**

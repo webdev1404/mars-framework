@@ -51,17 +51,17 @@ class Response implements \Stringable
     }
 
     /**
-     * @var string $body The body
+     * @var ?string $body The body. If the request failed, it will be null
      */
-    public string $body {
-        get => is_bool($this->result) ? '' : $this->result;
+    public ?string $body {
+        get => $this->result === false ? null : $this->result;
     }
 
     /**
      * @var int $error_no The generated error number, if any
      */
-    public string $error_no {
-        get => $this->result === false ? curl_errno($this->ch) : '';
+    public int $error_no {
+        get => $this->result === false ? curl_errno($this->ch) : 0;
     }
 
     /**
@@ -98,7 +98,7 @@ class Response implements \Stringable
 
     /**
      * Builds the curl result object
-     * @param CurlHandle $ch The curl chandle
+     * @param CurlHandle $ch The curl handle
      * @param string|bool $result The curl result
      * @param App $app The app object
      */
@@ -115,7 +115,7 @@ class Response implements \Stringable
      */
     public function __toString() : string
     {
-        return $this->body;
+        return $this->body ?? '';
     }
 
     /**
@@ -124,28 +124,36 @@ class Response implements \Stringable
      */
     public function ok() : bool
     {
-        if ($this->error || $this->code != 200) {
-            return false;
+        if (!$this->error && $this->code >= 200 && $this->code < 300) {
+            return true;
         }
 
-        return true;
+        return false;
     }
 
     /**
      * Returns the generated response
-     * @return string
+     * @return ?string The response body or null if the request failed
      */
-    public function get() : string
+    public function get() : ?string
     {
+        if (!$this->ok()) {
+            return null;
+        }
+
         return $this->body;
     }
 
     /**
      * Returns the generated response as json code
-     * @return mixed
+     * @return mixed The json decoded response or null if the request failed
      */
     public function getJson() : mixed
     {
+        if (!$this->ok() || $this->body === null) {
+            return null;
+        }
+
         return $this->app->json->decode($this->body);
     }
 }

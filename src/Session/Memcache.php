@@ -6,47 +6,47 @@
 
 namespace Mars\Session;
 
-use Mars\App;
-use Mars\App\Kernel;
-
 /**
  * The Memcache Session Class
  * Session driver which uses the memcache
  */
-class Memcache implements SessionInterface, \SessionHandlerInterface, \SessionUpdateTimestampHandlerInterface
+class Memcache extends Base implements \SessionHandlerInterface, \SessionUpdateTimestampHandlerInterface
 {
-    use Kernel;
-
     /**
      * @var int $lifetime The session's lifetime
      */
-    protected int $lifetime = 0;
+    protected int $lifetime {
+        get {
+            if (isset($this->lifetime)) {
+                return $this->lifetime;
+            }
+
+            $this->lifetime = ini_get('session.gc_maxlifetime');
+
+            return $this->lifetime;
+        }
+    }
 
     /**
-     * Builds the Memcache Session driver
-     * @param App $app The app object
+     * @see SessionInterface::start()
      */
-    public function __construct(App $app)
+    public function start()
     {
-        $this->app = $app;
-
         if (!$this->app->memcache->enabled) {
             throw new \Exception('Memcache must be enabled to be able to use the session memcache driver');
         }
 
-        $this->lifetime = ini_get('session.gc_maxlifetime');
-
         session_set_save_handler($this);
+
+        session_start();
     }
 
     /**
      * Initialize the session
      * @see \SessionHandler::open()
-     * @param string $save_path The save path
-     * @param string $session_name The session name
-     * @return bool
+     * {@inheritdoc}
      */
-    public function open(string $save_path, string $session_name) : bool
+    public function open(string $path, string $name) : bool
     {
         return true;
     }
@@ -54,7 +54,7 @@ class Memcache implements SessionInterface, \SessionHandlerInterface, \SessionUp
     /**
      * Closes the session
      * @see \SessionHandler::close()
-     * @return bool
+     * {@inheritdoc}
      */
     public function close() : bool
     {
@@ -64,38 +64,31 @@ class Memcache implements SessionInterface, \SessionHandlerInterface, \SessionUp
     /**
      * Reads the session data
      * @see \SessionHandler::read()
-     * @param string $id The session id
-     * @return string|false
+     * {@inheritdoc}
      */
-    public function read($id) : string|false
+    public function read(string $id) : string|false
     {
         $data = $this->app->memcache->get("session-{$id}");
-        if (!$data) {
-            return '';
-        }
-
-        return $data;
+        
+        return $data ?? '';
     }
 
     /**
      * Writes the session data
      * @see \SessionHandler::write()
-     * @param string $id The session id
-     * @param string $data The data
-     * @return bool
+     * {@inheritdoc}
      */
-    public function write($id, $data) :  bool
+    public function write(string $id, string $data) :  bool
     {
         return $this->app->memcache->set("session-{$id}", $data, false, $this->lifetime);
     }
 
     /**
-     * Destroy the session data
+     * Destroys the session data
      * @see \SessionHandler::destroy()
-     * @param string $id The session id
-     * @return bool
+     * {@inheritdoc}
      */
-    public function destroy($id) : bool
+    public function destroy(string $id) : bool
     {
         return $this->app->memcache->delete("session-{$id}");
     }
@@ -103,21 +96,18 @@ class Memcache implements SessionInterface, \SessionHandlerInterface, \SessionUp
     /**
      * Deletes expired sessions
      * @see \SessionHandler::gc()
-     * @param int $maxlifetime The max lifetime
-     * @return int|false
+     * {@inheritdoc}
      */
-    public function gc($maxlifetime) : int|false
+    public function gc(int $maxlifetime) : int|false
     {
-        return true;
+        return 0;
     }
 
     /**
-     * Checks if a session identifier already exists or not
-     * @see \SessionUpdateTimestampHandlerInterface::valideId()
-     * @param string $id The session id
-     * @return bool
+     * @see \SessionUpdateTimestampHandlerInterface::validateId()
+     * {@inheritdoc}
      */
-    public function validateId($id) : bool
+    public function validateId(string $id) : bool
     {
         return $this->app->memcache->exists("session-{$id}");
     }
@@ -125,14 +115,10 @@ class Memcache implements SessionInterface, \SessionHandlerInterface, \SessionUp
     /**
      * Updates the timestamp of a session when its data didn't change
      * @see \SessionUpdateTimestampHandlerInterface::updateTimestamp()
-     * @param string $id The session id
-     * @param string $data The data
-     * @return bool
+     * {@inheritdoc}
      */
     public function updateTimestamp(string $id, string $data) : bool
     {
-        $this->write($id, $data);
-
-        return true;
+        return $this->write($id, $data);
     }
 }

@@ -14,7 +14,7 @@ final class JsonTest extends Base
     public function testEncode()
     {
         $str = $this->app->json->encode(null);
-        $this->assertSame($str, '');
+        $this->assertSame($str, 'null');
 
         $str = $this->app->json->encode($this->data);
         $this->assertSame($str, $this->expected);
@@ -22,9 +22,6 @@ final class JsonTest extends Base
 
     public function testDecode()
     {
-        $data = $this->app->json->decode('');
-        $this->assertSame($data, '');
-
         $data = $this->app->json->decode($this->expected);
         $this->assertSame($data, $this->data);
     }

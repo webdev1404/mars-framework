@@ -29,7 +29,7 @@ class Minifier
     ];
 
     /**
-     * @var Handlers $minifiers The screens handlers
+     * @var Handlers $minifiers The minifier handlers
      */
     public protected(set) Handlers $minifiers {
         get {
@@ -68,7 +68,7 @@ class Minifier
     }
 
     /**
-     * Minifies css code
+     * Minifies javascript code
      * @param string $code The code to minify
      * @return string The minified code
      */

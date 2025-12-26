@@ -20,7 +20,7 @@ class File
     use Kernel;
 
     /**
-     * Check that the filname [file/folder] doesn't contain invalid chars. and is located in the right path. Throws a fatal error for an invalid filename
+     * Check that the filename [file/folder] doesn't contain invalid chars. and is located in the right path. Throws a fatal error for an invalid filename
      * @param string $filename The filename
      * @return static
      * @throws Exception if the filename is not valid
@@ -169,7 +169,7 @@ class File
 
     /**
      * Returns the prefix of a file
-     * @param string $file The name of the file
+     * @param string $filename The name of the file
      * @param int $chars The number of chars of the returned prefix
      * @return string
      */
@@ -197,13 +197,13 @@ class File
      */
     public function isImage(string $filename): bool
     {
-        return new FileObj($filename)->isImage($filename);
+        return new FileObj($filename)->isImage();
     }
 
     /**
      * Generates a random file name
      * @param string $extension The extension of the file, if any
-     * @return FileObj A random filename
+     * @return string A random filename
      */
     public function getRandom(string $extension = '') : string
     {
@@ -250,7 +250,7 @@ class File
      * @param string $filename The filename
      * @param string $content The content to write
      * @param bool $append If true will append the data to the file rather than create the file
-     * @return bool Returns the number of written bytes
+     * @return int Returns the number of written bytes
      * @throws Exception if the file can't be written
      */
     public function write(string $filename, string $content, bool $append = false) : int
@@ -260,7 +260,7 @@ class File
 
     /**
      * Deletes a file
-     * @param string filename The filename to delete
+     * @param string $filename The filename to delete
      * @return static
      * @throws Exception if the file can't be deleted
      */
@@ -303,7 +303,7 @@ class File
      */
     public function promptForDownload(string $filename, string $output_name = '')
     {
-        $this->app->plugins->run('file_prompt_for_download', $filename, $output_name, $this);
+        $this->app->plugins->run('file.prompt.for.download', $filename, $output_name, $this);
 
         $f = fopen($filename, 'r');
         if ($f === false) {
@@ -319,7 +319,7 @@ class File
         header('Content-Length: ' . $size);
         header('Content-Disposition: attachment; filename="' . $this->app->filter->filename($output_name) . '"');
 
-        while ($data = fread($f, 4096)) {
+        while ($data = fread($f, 65536)) {
             echo $data;
         }
 

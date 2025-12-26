@@ -45,13 +45,19 @@ trait LanguagesTrait
     /**
      * Registers a language file for the extension
      * @param string $key The key of the language
-     * @param string $file The file to register
+     * @param string $file The filename (without extension) to register
      * @return static
      */
-    public function registerLanguage(string $key, string $file) : static
+    public function registerLanguageFile(string $key, string $file) : static
     {
         $filenames = [];
         $file = $file . '.php';
+
+        //check if we have the default language file
+        $lang_file = $file;
+        if (isset($this->language_files[$lang_file])) {
+            $filenames[] = $this->languages_path . '/' . $lang_file;
+        }
 
         if ($this->app->lang->fallback) {
             //check if the fallback language file exists
@@ -69,6 +75,7 @@ trait LanguagesTrait
             }
         }
 
+        //check if we have the language file for the current language
         $lang_file = $this->app->lang->name . '/' . $file;
         if (isset($this->language_files[$lang_file])) {
             $filenames[] = $this->languages_path . '/' . $lang_file;

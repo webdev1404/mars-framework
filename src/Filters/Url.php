@@ -12,7 +12,7 @@ namespace Mars\Filters;
 class Url extends Filter
 {
     /**
-     * @see \Mars\Filters\Filter::url()
+     * @see \Mars\Filter::url()
      */
     public function filter(string $url) : string
     {

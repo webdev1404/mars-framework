@@ -12,19 +12,14 @@ namespace Mars\Filters;
 class Html extends Filter
 {
     /**
-     * @see \Mars\Filters\Filter::html()
+     * @see \Mars\Filter::html()
      */
     public function filter(string $html, ?string $allowed_elements = null, ?string $allowed_attributes = null, string $encoding = 'UTF-8') : string
     {
-        if ($allowed_elements === null) {
-            $allowed_elements = $allowed_elements = $this->app->config->html->allowed_elements;
-        }
-        if ($allowed_attributes === null) {
-            $allowed_attributes = $this->app->config->html->allowed_attributes;
-        }
-
+        $allowed_elements ??= $this->app->config->html->allowed_elements;
+        $allowed_attributes ??= $this->app->config->html->allowed_attributes;
+ 
         $config = \HTMLPurifier_Config::createDefault();
-
         $config->set('Core.Encoding', $encoding);
         $config->set('HTML.Doctype', 'HTML 4.01 Transitional');
         $config->set('AutoFormat.RemoveEmpty', true);
@@ -39,11 +34,11 @@ class Html extends Filter
             $config->set('HTML.AllowedAttributes', $allowed_attributes);
         }
 
-        $this->app->plugins->run('filters_html_filter_config', $config, $allowed_attributes, $allowed_elements, $this);
+        $this->app->plugins->run('filter.html.config', $config, $allowed_attributes, $allowed_elements, $this);
 
         $purifier = new \HTMLPurifier($config);
         $html = $purifier->purify($html);
 
-        return $this->app->plugins->filter('filters_html_filter', $html, $this);
+        return $this->app->plugins->filter('filter.html', $html, $this);
     }
 }

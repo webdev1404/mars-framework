@@ -112,10 +112,11 @@ abstract class Base
      */
     public function getNameFile(string $name) : string
     {
-        if (!str_contains($name, '.')) {
+        $dot_pos = strpos($name, '.');
+        if ($dot_pos === false) {
             return 'global';
         }
 
-        return substr($name, strpos($name, '.') + 1);
+        return substr($name, 0, $dot_pos);
     }
 }

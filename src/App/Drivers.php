@@ -12,7 +12,7 @@ use Mars\Data\MapTrait;
 
 /**
  * The Driver Class
- * Encapsulates a list of suported drivers
+ * Encapsulates a list of supported drivers
  */
 class Drivers implements \Countable, \IteratorAggregate
 {
@@ -30,7 +30,7 @@ class Drivers implements \Countable, \IteratorAggregate
     protected string $config_key = '';
 
     /**
-     * @var array $list The list of tags
+     * @var array $list The list of drivers
      */
     protected array $list = [];
     

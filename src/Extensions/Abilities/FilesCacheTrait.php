@@ -29,36 +29,35 @@ trait FilesCacheTrait
 
     /**
      * Returns the list of existing files in the specified directory
-     * @param string $dir The directory to scan for files
      * @return array The list of existing files
      */
     protected function getCachedFiles() : array
     {
         $cache_filename = static::$type . '-' . $this->name . '-files';
 
-        $files = $this->app->cache->get($cache_filename);
+        $files = $this->app->cache->data->get($cache_filename);
 
         // Force files scan if we are in development mode
         if ($this->development) {
             $files = null;
         }
 
-        if ($files === null) {
-            $files = [];
+        if ($files !== null) {
+            return $files;
+        }
 
-
-            foreach (static::CACHE_DIRS as $name) {
-                $dir = $this->path . '/' . $name;
-                if (!is_dir($dir)) {
-                    continue;
-                }
-
-                $files[$name] = $this->app->dir->getFiles($dir, true, false);
-                $files[$name] = $this->app->array->flip($files[$name]);
+        $files = [];
+        foreach (static::CACHE_DIRS as $name) {
+            $dir = $this->path . '/' . $name;
+            if (!is_dir($dir)) {
+                continue;
             }
 
-            $this->app->cache->set($cache_filename, $files);
+            $files[$name] = $this->app->dir->getFiles($dir, true, false);
+            $files[$name] = $this->app->array->flip($files[$name]);
         }
+
+        $this->app->cache->data->set($cache_filename, $files);
 
         return $files;
     }

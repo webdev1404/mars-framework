@@ -5,6 +5,7 @@
 */
 
 namespace Mars\Localization;
+
 /**
  * The Localization Driver Interface
  */

@@ -23,23 +23,23 @@ class Debug
     {
         echo '<div id="debug-info">';
 
-        $this->app->plugins->run('debug_output_step1', $this);
+        $this->app->plugins->run('debug.output.step1', $this);
 
         $this->outputInfo();
         $this->outputExecutionTime();
 
-        $this->app->plugins->run('debug_output_step2', $this);
+        $this->app->plugins->run('debug.output.step2', $this);
         
         $this->outputPlugins();
         $this->outputDbQueries();
 
-        $this->app->plugins->run('debug_output_step3', $this);
+        $this->app->plugins->run('debug.output.step3', $this);
 
         $this->outputLoadedTemplates();
         $this->outputOpcacheInfo();
         $this->outputPreloadInfo();
 
-        $this->app->plugins->run('debug_output_step4', $this);
+        $this->app->plugins->run('debug.output.step4', $this);
 
         echo '</div>';
     }
@@ -145,38 +145,43 @@ class Debug
     public function outputOpcacheInfo()
     {
         $info = opcache_get_status(true);
-
+        if (!$info) {
+            return;
+        }
+        
         echo '<table class="grid debug-grid debug-grid-opcache">';
         echo '<tr><th colspan="3">Opcache Info</th></tr>';
         echo '<tr><td><strong>Enabled</strong></td><td>' . ($info['opcache_enabled'] ? 'Yes' : 'No') . '</td></tr>';
 
-        if ($info['opcache_enabled']) {
-            $files = get_included_files();
-            $cached_files = $info['scripts'];
-
-            $uncached_files = [];
-            foreach ($files as $file) {
-                if (isset($cached_files[$file])) {
-                    continue;
-                }
-
-                $uncached_files[] = $this->app->file->getRel($file);
-            }
-
-            $from_cache = count($files) - count($uncached_files);
-            $from_disk = count($uncached_files);
-
-            echo '<tr><td><strong>Cached Scripts</strong></td><td>' . $info['opcache_statistics']['num_cached_scripts'] . '</td></tr>';
-            echo '<tr><td><strong>Cache Hits</strong></td><td>' . $info['opcache_statistics']['hits'] . '</td></tr>';
-            echo '<tr><td><strong>Cache Misses</strong></td><td>' . $info['opcache_statistics']['misses'] . '</td></tr>';
-            echo '<tr><td><strong>Memory: Used</strong></td><td>' . $this->app->format->filesize($info['memory_usage']['used_memory']) . '</td></tr>';
-            echo '<tr><td><strong>Memory: Free</strong></td><td>' . $this->app->format->filesize($info['memory_usage']['free_memory']) . '</td></tr>';
-            echo '<tr><td><strong>Memory: Wasted</strong></td><td>' . $this->app->format->filesize($info['memory_usage']['wasted_memory']) . '</td></tr>';
-            echo '<tr><td><strong>Total Files</strong></td><td>' . count($files) . '</td></tr>';
-            echo '<tr><td><strong>From Cache</strong></td><td>' . $from_cache . '</td></tr>';
-            echo '<tr><td><strong>From Disk</strong></td><td>' . $from_disk . '</td></tr>';
+        if (!$info['opcache_enabled']) {
+            echo '</table><br><br>';
+            return;
         }
 
+        $files = get_included_files();
+        $cached_files = $info['scripts'];
+
+        $uncached_files = [];
+        foreach ($files as $file) {
+            if (isset($cached_files[$file])) {
+                continue;
+            }
+
+            $uncached_files[] = $file;
+        }
+
+        $from_cache = count($files) - count($uncached_files);
+        $from_disk = count($uncached_files);
+
+        echo '<tr><td><strong>Cached Scripts</strong></td><td>' . $info['opcache_statistics']['num_cached_scripts'] . '</td></tr>';
+        echo '<tr><td><strong>Cache Hits</strong></td><td>' . $info['opcache_statistics']['hits'] . '</td></tr>';
+        echo '<tr><td><strong>Cache Misses</strong></td><td>' . $info['opcache_statistics']['misses'] . '</td></tr>';
+        echo '<tr><td><strong>Memory: Used</strong></td><td>' . $this->app->format->filesize($info['memory_usage']['used_memory']) . '</td></tr>';
+        echo '<tr><td><strong>Memory: Free</strong></td><td>' . $this->app->format->filesize($info['memory_usage']['free_memory']) . '</td></tr>';
+        echo '<tr><td><strong>Memory: Wasted</strong></td><td>' . $this->app->format->filesize($info['memory_usage']['wasted_memory']) . '</td></tr>';
+        echo '<tr><td><strong>Total Files</strong></td><td>' . count($files) . '</td></tr>';
+        echo '<tr><td><strong>From Cache</strong></td><td>' . $from_cache . '</td></tr>';
+        echo '<tr><td><strong>From Disk</strong></td><td>' . $from_disk . '</td></tr>';
         echo '</table><br><br>';
 
         if ($uncached_files) {
@@ -192,6 +197,9 @@ class Debug
     public function outputPreloadInfo()
     {
         $info = opcache_get_status(true);
+        if (!$info) {
+            return;
+        }
 
         echo '<table class="grid debug-grid preload-grid">';
         echo '<tr><th colspan="3">Preload Info</th></tr>';
@@ -208,100 +216,5 @@ class Debug
         }
 
         echo '</table><br><br>';
-    }
-
-    /**
-     * Outputs the backtrace
-     * @param int $options The backtrace options. By default, the args are not printed. Set $options to 0 for the args to be shown
-     */
-    public static function backtrace(int $options = DEBUG_BACKTRACE_IGNORE_ARGS)
-    {
-        echo '<pre>';
-        \debug_print_backtrace($options);
-        die;
-    }
-
-    /**
-     * Starts a trace
-     * Xdebug must be available
-     * @param string $filename The filename where to save the trace
-     * @param bool $show_params If true,will include the params
-     * @param int $params The params count
-     */
-    public static function startTrace(string $filename, bool $show_params = true, int $params = 6)
-    {
-        if ($show_params) {
-            ini_set('xdebug.collect_params', $params);
-        }
-
-        \xdebug_start_trace($filename);
-    }
-
-    /**
-     * Stops a trace
-     * Xdebug must be available
-     */
-    public static function stopTrace()
-    {
-        \xdebug_stop_trace();
-    }
-
-    /**
-     * Starts the code coverage. Should be used in pair with getCoverage
-     * Xdebug must be available
-     */
-    public static function startCoverage()
-    {
-        \xdebug_start_code_coverage();
-    }
-
-    /**
-     * Ends the code coverage. Should be used in pair with startCoverage
-     * Xdebug must be available
-     * @param bool $die If true, will call die after the data is printed
-     */
-    public static function getCoverage(bool $die = false)
-    {
-        \var_dump(\xdebug_get_code_coverage());
-
-        if ($die) {
-            die;
-        }
-    }
-
-    /**
-     * Dumps the function stack
-     * Xdebug must be available
-     * @param bool $die If true, will call die after the data is printed
-     */
-    public static function getFunctionStack(bool $die = false)
-    {
-        \var_dump(\xdebug_get_function_stack());
-
-        if ($die) {
-            die;
-        }
-    }
-
-    /**
-     * Prints the function stack
-     * Xdebug must be available
-     */
-    public static function printFunctionStack()
-    {
-        \xdebug_get_function_stack();
-    }
-
-    /**
-     * Dumps the headers
-     * Xdebug must be available
-     * @param bool $die If true, will call die after the data is printed
-     */
-    public static function headers(bool $die = false)
-    {
-        \var_dump(\xdebug_get_headers());
-        if ($die) {
-            die;
-        }
     }
 }

@@ -37,6 +37,6 @@ class Url extends Rule
             return false;
         }
 
-        return $this->app->plugins->filter('validate_url', true, $value, $this);
+        return $this->app->plugins->filter('validate.url', true, $value, $this);
     }
 }

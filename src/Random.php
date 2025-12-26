@@ -20,7 +20,7 @@ class Random
     /**
      * @var Randomizer $randomizer The randomizer object
      */
-    protected Randomizer $randomizer {
+    public protected(set) Randomizer $randomizer {
         get {
             if (isset($this->randomizer)) {
                 return $this->randomizer;
@@ -39,7 +39,7 @@ class Random
      */
     public function getString(int $max = 32) : string
     {
-        $bytes = ceil($max / 2);
+        $bytes = (int) ceil($max / 2);
         $str = bin2hex($this->randomizer->getBytes($bytes));
 
         return substr($str, 0, $max);
@@ -58,9 +58,9 @@ class Random
 
     /**
      * Returns a random float
-     * @param int $min Lowest value to be returned
-     * @param int $max Highest value to be returned
-     * @return int A random number
+     * @param float $min Lowest value to be returned
+     * @param float $max Highest value to be returned
+     * @return float A random number
      */
     public function getFloat(float $min, float $max) : float
     {

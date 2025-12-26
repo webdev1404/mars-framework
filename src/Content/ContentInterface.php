@@ -13,6 +13,7 @@ interface ContentInterface
 {
     /**
      * Outputs the route's content
+     * @param array $vars Variables to pass to the content
      */
-    public function output(array $params = []);
+    public function output(array $vars = []);
 }

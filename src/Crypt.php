@@ -21,7 +21,7 @@ class Crypt
     /**
      * @var array $supported_drivers The supported drivers
      */
-    protected array $supported_drivers = [
+    public protected(set) array $supported_drivers = [
         'openssl' => \Mars\Crypt\OpenSSL::class,
         'sodium' => \Mars\Crypt\Sodium::class
     ];
@@ -57,7 +57,7 @@ class Crypt
     }
 
     /**
-     * @var array $keys Secret keys used to identify the site
+     * @var array $keys Secret keys used for data encryption and decryption
      */
     protected array $keys {
         get {
@@ -67,10 +67,10 @@ class Crypt
 
             $this->keys = $this->app->config->crypt->keys;
             if (!$this->keys) {
-                throw new \Exception('No crypt keys defined in the configuration');
+                throw new \Exception('No crypt.keys defined in the configuration. Please add encryption keys to your configuration file.');
             }
             if (array_is_list($this->keys)) {
-                throw new \Exception('The crypt_keys config option must be an associative array');
+                throw new \Exception('The crypt.keys config option must be an associative array');
             }
 
             return $this->keys;
@@ -94,11 +94,6 @@ class Crypt
             }
 
             $this->key = $this->keys[$this->key_index];
-            if ($this->app->config->crypt->driver == 'sodium') {
-                if (strlen($this->key) != SODIUM_CRYPTO_SECRETBOX_KEYBYTES) {
-                    throw new \Exception('The crypt key must be ' . SODIUM_CRYPTO_SECRETBOX_KEYBYTES . ' bytes long for the sodium driver');
-                }
-            }
 
             return $this->key;
         }
@@ -108,6 +103,7 @@ class Crypt
      * Encrypts the given data
      * @param mixed $data The data to encrypt
      * @return string The encrypted data
+     * @throws \Exception If encryption fails
      */
     public function encrypt(mixed $data): string
     {
@@ -117,21 +113,22 @@ class Crypt
             $data = serialize($data);
         }
 
-        [$iv, $ciphertext] = $this->driver->encrypt($data, $this->key);
+        [$iv, $ciphertext] = $this->driver->encrypt($this->key, $data);
         
         $parts = [$this->key_index, $data_type, $iv, $ciphertext];
 
-        return implode('::', $parts);
+        return implode(':::', $parts);
     }
 
     /**
      * Decrypts the given data
-     * @param mixed $data The data to decrypt
-     * @return mixed The decrypted data. If unable to decrypt, returns null
+     * @param string $data The data to decrypt
+     * @return mixed The decrypted data
+     * @throws \Exception If decryption fails
      */
-    public function decrypt(mixed $data): mixed
+    public function decrypt(string $data): mixed
     {
-        $parts = explode('::', $data);
+        $parts = explode(':::', $data);
         if (count($parts) != 4) {
             return null;
         }
@@ -142,7 +139,11 @@ class Crypt
             return null;
         }
 
-        $string = $this->driver->decrypt($this->key, $parts[2], $parts[3]);
+        $string = $this->driver->decrypt($key, $parts[2], $parts[3]);
+        if ($string === null) {
+            return null;
+        }
+
         if ($parts[1] == 'o') {
             $string = unserialize($string);
         }

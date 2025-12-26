@@ -25,11 +25,7 @@ trait ListTrait
      */
     public function exists(string $value) : bool
     {
-        if (array_search($value, $this->{static::$property}) === false) {
-            return false;
-        }
-
-        return true;
+        return in_array($value, $this->{static::$property});
     }
 
     /**
@@ -42,9 +38,9 @@ trait ListTrait
 
     /**
      * Returns the first element
-     * @return string The alert
+     * @return mixed The first element or empty string if the list is empty
      */
-    public function getFirst()
+    public function getFirst() : mixed
     {
         if (!$this->{static::$property}) {
             return '';
@@ -55,15 +51,15 @@ trait ListTrait
 
     /**
      * Returns the last element
-     * @return string The alert
+     * @return mixed The last element or empty string if the list is empty
      */
-    public function getLast()
+    public function getLast() : mixed
     {
         if (!$this->{static::$property}) {
             return '';
         }
 
-        return end($this->{static::$property});
+        return array_last($this->{static::$property});
     }
 
     /**

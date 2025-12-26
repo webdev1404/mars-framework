@@ -47,20 +47,25 @@ trait Kernel
     /**
      * Unsets the app property when serializing
      */
-    public function __sleep()
+    public function __serialize(): array
     {
         $data = get_object_vars($this);
 
         unset($data['app']);
 
-        return array_keys($data);
+        return $data;
     }
 
     /**
      * Sets the app property when unserializing
+     * @param array $data The data to unserialize
      */
-    public function __wakeup()
+    public function __unserialize(array $data): void
     {
-        $this->app = null;
+        foreach ($data as $key => $value) {
+            $this->$key = $value;
+        }
+
+        $this->app = App::obj();
     }
 }

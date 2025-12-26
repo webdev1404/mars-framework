@@ -1,13 +1,13 @@
 <?php
 /**
-* The Cachable PHP Driver
+* The Cacheable PHP Driver
 * @package Mars
 */
 
 namespace Mars\Cache\Cacheable;
 
 /**
- * The Cachable PHP Driver
+ * The Cacheable PHP Driver
  * Driver which stores on disk the cached resources as PHP files
  */
 class Php extends File

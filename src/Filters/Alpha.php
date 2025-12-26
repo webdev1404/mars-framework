@@ -12,7 +12,7 @@ namespace Mars\Filters;
 class Alpha extends Filter
 {
     /**
-     * @see \Mars\Filters\Filter::alpha()
+     * @see \Mars\Filter::alpha()
      */
     public function filter(string $value, bool $space = false) : string
     {

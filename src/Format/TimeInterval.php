@@ -51,37 +51,37 @@ class TimeInterval
 
         if ($interval['weeks']) {
             if ($interval['weeks'] == 1) {
-                $result[] = $interval['weeks'] . $separator1 . App::__('week');
+                $result[] = $interval['weeks'] . $separator1 . App::__('time.week');
             } else {
-                $result[] = $interval['weeks'] . $separator1 . App::__('weeks');
+                $result[] = $interval['weeks'] . $separator1 . App::__('time.weeks');
             }
         }
         if ($interval['days']) {
             if ($interval['days'] == 1) {
-                $result[] = $interval['days'] . $separator1 . App::__('day');
+                $result[] = $interval['days'] . $separator1 . App::__('time.day');
             } else {
-                $result[] = $interval['days'] . $separator1 . App::__('days');
+                $result[] = $interval['days'] . $separator1 . App::__('time.days');
             }
         }
         if ($interval['hours']) {
             if ($interval['hours'] == 1) {
-                $result[] = $interval['hours'] . $separator1 . App::__('hour');
+                $result[] = $interval['hours'] . $separator1 . App::__('time.hour');
             } else {
-                $result[] = $interval['hours'] . $separator1 . App::__('hours');
+                $result[] = $interval['hours'] . $separator1 . App::__('time.hours');
             }
         }
         if ($interval['minutes']) {
             if ($interval['minutes'] == 1) {
-                $result[] = $interval['minutes'] . $separator1 . App::__('minute');
+                $result[] = $interval['minutes'] . $separator1 . App::__('time.minute');
             } else {
-                $result[] = $interval['minutes'] . $separator1 . App::__('minutes');
+                $result[] = $interval['minutes'] . $separator1 . App::__('time.minutes');
             }
         }
         if ($interval['seconds']) {
             if ($interval['seconds'] == 1) {
-                $result[] = $interval['seconds'] . $separator1 . App::__('second');
+                $result[] = $interval['seconds'] . $separator1 . App::__('time.second');
             } else {
-                $result[] = $interval['seconds'] . $separator1 . App::__('seconds');
+                $result[] = $interval['seconds'] . $separator1 . App::__('time.seconds');
             }
         }
 

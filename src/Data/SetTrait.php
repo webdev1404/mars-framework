@@ -21,7 +21,7 @@ trait SetTrait
     public function exists(string $value) : bool
     {
         foreach ($this->{static::$property} as $type => $values) {
-            if (array_search($value, $values) !== false) {
+            if (in_array($value, $values)) {
                 return true;
             }
         }
@@ -70,7 +70,6 @@ trait SetTrait
 
             return $this;
         }
-
 
         foreach ($this->{static::$property} as $key => $list_values) {
             $this->{static::$property}[$key] = $this->app->array->remove($list_values, $values);

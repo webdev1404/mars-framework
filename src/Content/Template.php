@@ -12,8 +12,12 @@ namespace Mars\Content;
  */
 class Template extends Content implements ContentInterface
 {
-    public function output(array $params = [])
+    /**
+     * Outputs a html template from the theme's templates folder
+     * @param array $vars Variables to pass to the template
+     */
+    public function output(array $vars = [])
     {
-        echo $this->app->theme->getTemplate($this->name);
+        echo $this->app->theme->getTemplate($this->name, $vars);
     }
 }

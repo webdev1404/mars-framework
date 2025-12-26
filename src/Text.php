@@ -25,7 +25,7 @@ class Text
     ];
 
     /**
-     * @var Handlers $handlers The operations object
+     * @var Handlers $operations The operations object
      */
     public protected(set) Handlers $operations {
         get {
@@ -99,6 +99,6 @@ class Text
 
         $text = $parser->parse($text, $parse_links, $parse_nofollow);
 
-        return $this->app->plugins->filter('text_parse', $text, $parse_links, $parse_nofollow, $this);
+        return $this->app->plugins->filter('text.parse', $text, $parse_links, $parse_nofollow, $this);
     }
 }

@@ -35,7 +35,7 @@ class Path extends Base implements LocalizationInterface
     /**
      * @see \Mars\Localization\LocalizationInterface::getUrl()
      * {@inheritdoc}
-     */    
+     */
     public function getUrl(string $code) : string
     {
         if ($code == $this->app->lang->default_code) {

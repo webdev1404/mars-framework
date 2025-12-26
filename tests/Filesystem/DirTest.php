@@ -102,10 +102,12 @@ final class DirTest extends Base
     public function testDirContains()
     {
         $dir = new Dir('/var/www');
-        $this->assertFalse($dir->contains('/var/www'));
-        $this->assertTrue($dir->contains('/var/www/myfilename.jpg'));
-        $this->assertTrue($dir->contains('/var/www/qqq/myfilename.jpg'));
-        $this->assertFalse($dir->contains('/var/temp/myfilename.jpg'));
+        $this->assertFalse($dir->contains('/var/www', false));
+        $this->assertTrue($dir->contains('/var/www/myfilename.jpg', false));
+        $this->assertTrue($dir->contains('/var/www/qqq/myfilename.jpg', false));
+        $this->assertFalse($dir->contains('/var/temp/myfilename.jpg', false));
+
+        $this->assertFalse($dir->contains('/var/www/myfilename.jpg'));
     }
 
     public function testGetDirsAndFiles()

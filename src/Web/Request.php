@@ -28,7 +28,7 @@ class Request
     public bool $follow_location = true;
 
     /**
-     * @var bool $show_headers If true,the headers will be also returned
+     * @var bool $show_headers If true, the headers will be also returned
      */
     public bool $show_headers = false;
 
@@ -141,16 +141,7 @@ class Request
     {
         $result = curl_exec($ch);
 
-        if (!$result) {
-            $error = curl_error($ch);
-            $errno = curl_errno($ch);
-
-            throw new \Exception("Curl error: {$error} ({$errno})");
-        }
-
-        $response = new Response($ch, $result, $this->app);
-
-        return $response;
+        return new Response($ch, $result, $this->app);
     }
 
     /**
@@ -243,12 +234,12 @@ class Request
     }
 
     /**
-     * Returns the contents of the file. If the file exists, if returns it's content. If the file doesn't exist, it will download it with a get request
+     * Returns the contents of the file. If the file exists, it returns its content. If the file doesn't exist, it will download it with a get request
      * @param string $url The url to fetch
      * @param string $filename The local filename under which the file will be stored
      * @param array $options Curl options, if any
      * @return string The file's content
-     * @throws Exception if the file can't be written
+     * @throws \Exception If the file can't be written or read
      */
     public function getFileContent(string $url, string $filename, array $options = []) : string
     {

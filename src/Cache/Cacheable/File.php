@@ -1,6 +1,6 @@
 <?php
 /**
-* The Cachable File Driver
+* The Cacheable File Driver
 * @package Mars
 */
 
@@ -10,7 +10,7 @@ use Mars\Cache\Cacheable\CacheableInterface;
 use Mars\Filesystem\IsFileTrait;
 
 /**
- * The Cachable File Driver
+ * The Cacheable File Driver
  * Driver which stores on disk the cached resources
  */
 class File extends Base implements CacheableInterface
@@ -68,9 +68,9 @@ class File extends Base implements CacheableInterface
      * @see CacheableInterface::create()
      * {@inheritdoc}
      */
-    public function create(string $filename)
+    public function create(string $filename) : bool
     {
-        $this->set($filename, '', false);
+        return $this->set($filename, '', false);
     }
 
     /**

@@ -22,7 +22,7 @@ class Memcache
     /**
      * @var array $supported_drivers The supported drivers
      */
-    protected array $supported_drivers = [
+    public protected(set) array $supported_drivers = [
         'redis' => \Mars\Memcache\Redis::class,
         'memcached' => \Mars\Memcache\Memcached::class
     ];
@@ -93,7 +93,7 @@ class Memcache
 
             $this->key = $this->app->config->memcache->key;
             if (!$this->key && $this->enabled) {
-                throw new \Exception('The memcache_key config option must be set if memcache is enabled');
+                throw new \Exception('The memcache.key config option must be set if memcache is enabled');
             }
 
             return $this->key;
@@ -117,7 +117,7 @@ class Memcache
     protected function check()
     {
         if (!$this->enabled) {
-            throw new \Exception('Memcache must be enabled to be able to use it. Please check the \'memcache_enable\' config option.');
+            throw new \Exception('Memcache must be enabled to be able to use it. Please check the \'memcache.enable\' config option.');
         }
     }
 
@@ -191,10 +191,9 @@ class Memcache
     }
 
     /**
-     * Delets $key from the memcache
+     * Deletes $key from the memcache
      * @param string $key The key
-     * @return mixed The value for $key
-     * @return bool
+     * @return bool True if the key was deleted, false otherwise
      */
     public function delete(string $key) : bool
     {
@@ -261,7 +260,7 @@ class Memcache
             unset($keys[$key_index]);
         }
 
-        $this->set("{$type}-all-keys", json_encode($keys));
+        $this->set("{$type}-all-keys", json_encode(array_values($keys)));
 
         return $this;
     }
@@ -278,6 +277,11 @@ class Memcache
         return $this;
     }
 
+    /**
+     * Deletes all data of a certain type
+     * @param string $type The type of the keys
+     * @return static
+     */
     public function deleteData(string $type) : static
     {
         $keys = $this->getKeys($type);

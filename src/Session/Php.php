@@ -6,35 +6,34 @@
 
 namespace Mars\Session;
 
-use Mars\App;
-use Mars\App\Kernel;
-
 /**
  * The Php Session Class
  * Session driver which uses the default php implementation
  */
-class Php implements SessionInterface
+class Php extends Base
 {
-    use Kernel;
-
     /**
-     * Builds the Php Session driver
-     * @param App $app The app object
+     * @see SessionInterface::start()
      */
-    public function __construct(App $app)
+    public function start()
     {
-        $this->app = $app;
-
         if ($this->app->config->session->save_path) {
             session_save_path($this->app->config->session->save_path);
-        }
-
-        if ($this->app->config->session->cookie->path || $this->app->config->session->cookie->domain) {
-            session_set_cookie_params(0, $this->app->config->session->cookie->path, $this->app->config->session->cookie->domain);
         }
 
         if ($this->app->config->session->name) {
             session_name($this->app->config->session->name);
         }
+
+        session_set_cookie_params([
+            'lifetime' => $this->app->config->session->cookie->lifetime ?? 0,
+            'path'     => $this->app->config->session->cookie->path,
+            'domain'   => $this->app->config->session->cookie->domain,
+            'secure'   => $this->app->config->session->cookie->secure,
+            'httponly' => $this->app->config->session->cookie->httponly ?? true,
+            'samesite' => $this->app->config->session->cookie->samesite,
+        ]);
+
+        session_start();
     }
 }

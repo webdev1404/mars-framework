@@ -1,6 +1,6 @@
 <?php
 /**
-* The Cachable File Driver
+* The Cacheable Base Driver
 * @package Mars
 */
 
@@ -10,7 +10,7 @@ use Mars\App;
 use Mars\App\Kernel;
 
 /**
- * The Cachable File Driver
+ * The Cacheable Base Driver
  * Driver which stores on disk the cached resources
  */
 abstract class Base
@@ -29,7 +29,7 @@ abstract class Base
 
     /**
      * Constructor
-     * @param bool $files_cache_use_use Whether to use existing files or not
+     * @param bool $files_cache_use Whether to use existing files or not
      * @param string $type The type of keys used to store the cached resources
      * @param App $app The app object
      */

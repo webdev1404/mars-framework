@@ -9,6 +9,7 @@ namespace Mars;
 use Mars\App\Kernel;
 use Mars\App\Drivers;
 use Mars\Devices\DeviceInterface;
+use Mars\Devices\Type;
 
 /**
  * The Device Class
@@ -26,11 +27,6 @@ class Device
     ];
 
     /**
-     * @var array $devices Array listing the supported devices
-     */
-    public protected(set) array $devices = ['desktop', 'tablet', 'smartphone'];
-
-    /**
      * @var Drivers $drivers The drivers object
      */
     public protected(set) Drivers $drivers {
@@ -46,43 +42,39 @@ class Device
     }
 
     /**
-     * @var string $device The device type. Eg: desktop/tablet/smartphone
+     * @var Type $device The device type. Eg: desktop/tablet/smartphone
      */
-    public protected(set) string $device {
+    public protected(set) Type $device {
         get {
             if (isset($this->device)) {
                 return $this->device;
             }
 
-            $this->device = 'desktop';
+            $this->device = Type::Desktop;
             if ($this->app->is_cli) {
                 return $this->device;
             }
+
             if ($this->app->config->development->device) {
-                $this->device = $this->app->config->development->device;
-                return $this->device;
-            }
-
-            $device = $this->app->session->get('device');
-            if ($device !== null) {
-                $this->device = $device;
+                $this->device = Type::from($this->app->config->development->device);
 
                 return $this->device;
             }
 
-            //do we get the device name from varnish?
-            if (isset($_SERVER['X-Device'])) {
-                if (in_array($_SERVER['X-Device'], $this->devices)) {
-                    $this->device = $_SERVER['X-Device'];
-                }
+            $session_device = $this->app->session->get('device');
+            if ($session_device) {
+                $this->device = Type::tryFrom($session_device) ?? Type::Desktop;
+
+                return $this->device;
             }
 
-            if (!$this->device) {
-                $driver = $this->drivers->get($this->app->config->device->driver);
-                $this->device = $driver->get();
+            if (!empty($_SERVER['X-Device'])) {
+                $this->device = Type::tryFrom($_SERVER['X-Device']) ?? Type::Desktop;
+            } else {
+                $this->device = $this->drivers->get($this->app->config->device->driver)->get();
             }
 
-            $this->app->session->set('device', $this->device);
+            $this->app->session->set('device', $this->device->value);
 
             return $this->device;
         }
@@ -97,7 +89,7 @@ class Device
                 return $this->is_desktop;
             }
 
-            $this->is_desktop = $this->device == 'desktop';
+            $this->is_desktop = $this->device == Type::Desktop;
 
             return $this->is_desktop;
         }
@@ -112,7 +104,7 @@ class Device
                 return $this->is_mobile;
             }
 
-            $this->is_mobile = $this->device == 'tablet' || $this->device == 'smartphone';
+            $this->is_mobile = $this->device == Type::Tablet || $this->device == Type::Smartphone;
 
             return $this->is_mobile;
         }
@@ -127,7 +119,7 @@ class Device
                 return $this->is_tablet;
             }
 
-            $this->is_tablet = $this->device == 'tablet';
+            $this->is_tablet = $this->device == Type::Tablet;
 
             return $this->is_tablet;
         }
@@ -142,7 +134,7 @@ class Device
                 return $this->is_smartphone;
             }
 
-            $this->is_smartphone = $this->device == 'smartphone';
+            $this->is_smartphone = $this->device == Type::Smartphone;
 
             return $this->is_smartphone;
         }

@@ -54,7 +54,7 @@ class GlobalParser extends Params
             case 'meta-robots':
                 return "<?php \$this->app->document->meta->set('robots', {$value}) ?>";
             default:
-                return $this->app->plugins->filter('theme_global_get', $name, $value, $this);
+                return $this->app->plugins->filter('theme.global.get', $name, $value, $this);
         }
     }
 }

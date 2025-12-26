@@ -25,7 +25,7 @@ abstract class Content
     /**
      * Builds the Content object
      * @param string $name The name of the page/template etc..
-     * @param App $app The app object
+     * @param App|null $app The app object
      */
     public function __construct(string $name, ?App $app = null)
     {

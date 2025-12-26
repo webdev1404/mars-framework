@@ -20,7 +20,7 @@ class Exception extends \Exception
      * Constructs a new Exception object
      * @param string $message The exception message
      * @param string $type The type of the exception
-     * @param int $code The exception cod
+     * @param int $code The exception code
      * @param \Throwable|null $previous The previous exception
      */
     public function __construct(string $message = '', string $type = '', int $code = 0, ?\Throwable $previous = null)

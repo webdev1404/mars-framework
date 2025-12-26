@@ -112,6 +112,10 @@ class Config extends Container
      */
     protected function cache()
     {
+        if ($this->development->enable) {
+            return;
+        }
+        
         $properties = $this->_app->object->getProperties($this);
 
         $content = "<?php\n\nreturn " . var_export($properties, true) . ";";
@@ -133,7 +137,7 @@ class Config extends Container
             $parts = explode($separator, $key);
             $ref = &$tree;
 
-            foreach ($parts as $i => $part) {
+            foreach ($parts as $part) {
                 $ref[$part] ??= [];
 
                 $ref = &$ref[$part];
@@ -242,8 +246,7 @@ class Config extends Container
 
     /**
      * Loads the config settings from a module's config file
-     * @param string $path The module path
-     * @param string $file The file
+     * @param string $filename The filename
      * @return static
      */
     public function loadModule(string $filename) : static

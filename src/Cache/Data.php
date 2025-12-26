@@ -13,7 +13,7 @@ namespace Mars\Cache;
 class Data extends Cacheable
 {
     /**
-     * @var string $driver The used driver
+     * @var string $driver_name The used driver
      */
     protected string $driver_name {
         get => $this->app->config->cache->data_driver ?? $this->app->config->cache->driver;
@@ -32,5 +32,8 @@ class Data extends Cacheable
     /**
      * @var array $driver_params The parameters to pass to the driver constructor
      */
-    protected array $driver_params = [true, 'cacheable_data'];
+    protected array $driver_params = [
+        true,               // use files cache
+        'cacheable_data',   // driver type
+    ];
 }

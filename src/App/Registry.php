@@ -26,9 +26,9 @@ trait Registry
      * Sets a registry value
      * @param string $key The registry key
      * @param mixed $data The data
-     * @return $this
+     * @return static
      */
-    public function set(string $key, $data)
+    public function set(string $key, mixed $data) : static
     {
         $this->data_array[$key] = $data;
 
@@ -65,7 +65,7 @@ trait Registry
                 return $this->instances[$key];
             }
 
-            $this->instances[$key] = $this->data_array[$key](static::$instance);
+            $this->instances[$key] = $this->data_array[$key]($this);
             
             return $this->instances[$key];
         }
@@ -75,6 +75,8 @@ trait Registry
 
     /**
      * Magic method to get a registry value
+     * @param string $key The registry key
+     * @return mixed
      */
     public function __get(string $key)
     {

@@ -29,7 +29,7 @@ class Module extends Extension implements ContentInterface
     use TemplatesTrait;
 
     /**
-     * @const array DIR The locations of the used extensions subdirs
+     * @const array DIRS The locations of the used extensions subdirs
      */
     public const array DIRS = [
         'assets' => 'assets',
@@ -51,6 +51,11 @@ class Module extends Extension implements ContentInterface
      * @const array CACHE_DIRS The dirs to be cached
      */
     public const array CACHE_DIRS = ['config', 'languages', 'templates'];
+
+    /**
+     * @var array $route_params The route params passed to the module, if any
+     */
+    public protected(set) array $route_params = [];
 
     /**
      * @internal
@@ -80,6 +85,8 @@ class Module extends Extension implements ContentInterface
      */
     public function output(array $params = [])
     {
+        $this->route_params = $params;
+
         $this->app->lang->saveLocalKeys();
         
         parent::output();
@@ -91,14 +98,17 @@ class Module extends Extension implements ContentInterface
     }
 
     /**
-     * Loads and executes the block controller
+     * Loads and executes the module controller
      */
     public function execute()
     {
         [$controller, $method] = $this->getAction();
+        if (!$controller) {
+            throw new \Exception("No controller defined for module {$this->name}");
+        }
 
         $controller = $this->getController($controller);
-        $controller->dispatch($method);
+        $controller->dispatch($method, $this->route_params);
     }
 
     /**
@@ -107,15 +117,45 @@ class Module extends Extension implements ContentInterface
      */
     protected function getAction() : array
     {
-        $controller = '';
-        $method = '';
-
         $action = $this->params['action'] ?? '';
-        if ($action) {
-            $parts = explode('@', $action);
-            $controller = $parts[0] ?? '';
-            $method = $parts[1] ?? '';
+        if (!$action) {
+            return [null, null];
         }
+
+        if (is_array($action)) {
+            //convert the action array keys to lowercase, in case the request method was provided in uppercase
+            $action = array_combine(array_map('strtolower', array_keys($action)), array_values($action));
+            $method = $this->app->request->method;
+            
+            $my_action = $action[$method] ?? null;
+            if ($my_action) {
+                return $this->getControllerAndMethod($my_action);
+            }
+            //fallback to 'get' method, if an action for the current method is not defined
+            if ($method != 'get') {
+                $my_action = $action['get'] ?? null;
+                if ($my_action) {
+                    return $this->getControllerAndMethod($my_action);
+                }
+            }
+
+        } else {
+            return $this->getControllerAndMethod($action);
+        }
+
+        return [null, null];
+    }
+
+    /**
+     * Gets the controller and method to be executed
+     * @param string $action The action string
+     * @return array An array with the controller name and method to be called
+     */
+    protected function getControllerAndMethod(string $action) : array
+    {
+        $parts = explode('@', $action);
+        $controller = $parts[0] ?? null;
+        $method = $parts[1] ?? null;
 
         return [$controller, $method];
     }

@@ -30,7 +30,7 @@ class ObjectType
         if (is_string($class)) {
             $object = new $class(...$args);
         } elseif (is_callable($class)) {
-            $object = $class($args);
+            $object = $class(...$args);
         } else {
             $object = (object)$class;
         }

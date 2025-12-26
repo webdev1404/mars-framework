@@ -83,7 +83,7 @@ class Log
      * Callback for set_error_handler
      * @internal
      */
-    public function handleError(int $no, string $str, string $file, int $line) : bool
+    public function handleError(int $errno, string $str, string $file, int $line) : bool
     {
         ob_start();
         debug_print_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
@@ -98,12 +98,13 @@ class Log
      * Logs a string by using a basic format
      * @param string $type The log type. Eg: error,warning,info. Any string can be used as type
      * @param string $str The string to log
-     * @param string $file The file in which the logging occured Shold be __FILE__
-     * @param string $line The line where the logging occured. Should be __LINE__
+     * @param string $file The file in which the logging occurred Should be __FILE__
+     * @param int $line The line where the logging occurred. Should be __LINE__
      * @param bool $extended If true, will log extended data
      * @param string $trace log trace, if any
+     * @return static
      */
-    public function log(string $type, string $str, string $file = '', string $line = '', bool $extended = false, string $trace = '')
+    public function log(string $type, string $str, string $file = '', int $line = 0, bool $extended = false, string $trace = '') : static
     {
         if (!isset($this->handles[$type])) {
             $this->open($type);
@@ -127,6 +128,8 @@ class Log
         $text.= "--------------------------------------------------------------------\n\n";
 
         fwrite($this->handles[$type], $text);
+
+        return $this;
     }
 
     /**
@@ -156,69 +159,70 @@ class Log
     /**
      * Logs an error
      * @param string $str The string to log
-     * @param string $file The file in which the logging occured Shold be __FILE__
-     * @param string $line The line where the logging occured. Should be __LINE__
-     * @return $this
+     * @param string $file The file in which the logging occurred Should be __FILE__
+     * @param int $line The line where the logging occurred. Should be __LINE__
+     * @return static
      */
-    public function error(string $str, string $file = '', string $line = '')
+    public function error(string $str, string $file = '', int $line = 0) : static
     {
-        $this->log('errors', $str, $file, $line, true);
+        return $this->log('errors', $str, $file, $line, true);
     }
 
     /**
      * Logs an exception
-     * @param \Exceptin $e The exception to log
+     * @param \Exception $e The exception to log
+     * @return static
      */
-    public function exception(\Error|\Exception|Exception $e)
+    public function exception(\Error|\Exception|Exception $e) : static
     {
-        $this->log('errors', $e->getMessage(), $e->getFile(), $e->getLine(), true, $e->getTraceAsString());
+        return $this->log('errors', $e->getMessage(), $e->getFile(), $e->getLine(), true, $e->getTraceAsString());
     }
 
     /**
      * Logs a message
      * @param string $str The string to log
-     * @param string $file The file in which the logging occured Shold be __FILE__
-     * @param string $line The line where the logging occured. Should be __LINE__
-     * @return $this
+     * @param string $file The file in which the logging occurred Should be __FILE__
+     * @param int $line The line where the logging occurred. Should be __LINE__
+     * @return static
      */
-    public function message(string $str, string $file = '', string $line = '')
+    public function message(string $str, string $file = '', int $line = 0) : static
     {
-        $this->log('messages', $str, $file, $line);
+        return $this->log('messages', $str, $file, $line);
     }
 
     /**
      * Logs a warning
      * @param string $str The string to log
-     * @param string $file The file in which the logging occured Shold be __FILE__
-     * @param string $line The line where the logging occured. Should be __LINE__
-     * @return $this
+     * @param string $file The file in which the logging occurred Should be __FILE__
+     * @param int $line The line where the logging occurred. Should be __LINE__
+     * @return static
      */
-    public function warning(string $str, string $file = '', string $line = '')
+    public function warning(string $str, string $file = '', int $line = 0) : static
     {
-        $this->log('warnings', $str, $file, $line);
+        return $this->log('warnings', $str, $file, $line);
     }
 
     /**
      * Logs an info
      * @param string $str The string to log
-     * @param string $file The file in which the logging occured Shold be __FILE__
-     * @param string $line The line where the logging occured. Should be __LINE__
-     * @return $this
+     * @param string $file The file in which the logging occurred Should be __FILE__
+     * @param int $line The line where the logging occurred. Should be __LINE__
+     * @return static
      */
-    public function info(string $str, string $file = '', string $line = '')
+    public function info(string $str, string $file = '', int $line = 0) : static
     {
-        $this->log('info', $str, $file, $line);
+        return $this->log('info', $str, $file, $line);
     }
 
     /**
-     * Logs a a system message
+     * Logs a system message
      * @param string $str The string to log
-     * @param string $file The file in which the logging occured Shold be __FILE__
-     * @param string $line The line where the logging occured. Should be __LINE__
-     * @return $this
+     * @param string $file The file in which the logging occurred Should be __FILE__
+     * @param int $line The line where the logging occurred. Should be __LINE__
+     * @return static
      */
-    public function system(string $str, string $file = '', string $line = '')
+    public function system(string $str, string $file = '', int $line = 0) : static
     {
-        $this->log('system', $str, $file, $line);
+        return $this->log('system', $str, $file, $line);
     }
 }

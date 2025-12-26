@@ -58,7 +58,7 @@ class Mail
 
     /**
      * Sends a mail
-     * @param string|array $to The adress(es) where the mail will be sent
+     * @param string|array $to The address(es) where the mail will be sent
      * @param string $subject The subject of the mail
      * @param string $message The body of the mail
      * @param array $options The options of the mail, if any
@@ -68,11 +68,15 @@ class Mail
      */
     public function send(string|array $to, string $subject, string $message, array $options = [], array $attachments = [], string|array $bcc = [])
     {
-        $this->app->plugins->run('mail_send', $to, $subject, $message, $options, $attachments, $bcc, $this);
+        $this->app->plugins->run('mail.send', $to, $subject, $message, $options, $attachments, $bcc, $this);
 
         $is_html = $options['is_html'] ?? true;
         $from = $options['from'] ?? $this->app->config->mail->from;
         $from_name = $options['from_name'] ?? $this->app->config->mail->from_name;
+        if (!$from_name) {
+            $from_name = $this->app->config->site->name;
+        }
+
         $reply_to = $options['reply_to'] ?? '';
         $reply_to_name = $options['reply_to_name'] ?? '';
 
@@ -95,17 +99,17 @@ class Mail
 
             $this->driver->send();
 
-            $this->app->plugins->run('mail_sent', $to, $subject, $message, $options, $attachments, $bcc, $this);
+            $this->app->plugins->run('mail.send.success', $to, $subject, $message, $options, $attachments, $bcc, $this);
         } catch (\Exception $e) {
-            $this->app->plugins->run('mail_send_error', $e, $to, $subject, $message, $options, $attachments, $bcc, $this);
+            $this->app->plugins->run('mail.send.error', $e, $to, $subject, $message, $options, $attachments, $bcc, $this);
 
-            throw new \Exception(App::__('error.mail.send', ['{ERROR}' => $e->getMessage()]));
+            throw new \Exception(App::__('error.mail.send', ['{ERROR}' => $e->getMessage()]), 0, $e);
         }
     }
 
     /**
      * Sends a mail using a template
-     * @param string|array $to The adress(es) where the mail will be sent
+     * @param string|array $to The address(es) where the mail will be sent
      * @param string $subject The subject of the mail
      * @param string $template The template to use as the body of the mail
      * @param array $vars Vars to add as template vars

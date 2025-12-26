@@ -50,9 +50,19 @@ abstract class View
     }
 
     /**
-     * @var string $template The name of the template which will be rendered when render() is called
+     * @var string $root The root folder used to load templates from
      */
-    public protected(set) string $template = '';
+    public protected(set) string $root {
+        get {
+            if (isset($this->root)) {
+                return $this->root;
+            }
+
+            $this->root = strtolower($this->controller->name) . '/';
+
+            return $this->root;
+        }
+    }
 
     /**
      * @var string $path The controller's parents's dir. Alias for $this->parent->path
@@ -74,7 +84,7 @@ abstract class View
     public string $assets_url {
         get => $this->controller->assets_url;
     }
-    
+
     /**
      * @var Extension $parent The parent extension
      */
@@ -206,18 +216,6 @@ abstract class View
     }
 
     /**
-     * Sets the title of the current page
-     * @param string $title The title
-     * @return static
-     */
-    protected function setTitle(string $title) : static
-    {
-        $this->app->title->set($title);
-
-        return $this;
-    }
-
-    /**
      * Renders a template.
      * @param string $method The method to render. If not set, the current method will be used
      * @param array $vars Vars to pass to the template, if any
@@ -251,19 +249,13 @@ abstract class View
             } elseif (is_string($ret)) {
                 return $ret;
             }
-        } else {
-            return null;
         }
 
         if (!$template) {
             $template = $this->getTemplateName($method);
         }
 
-        //add the view's public properties as theme vars
-        $this->app->theme->addVars(get_object_vars($this));
-        $this->app->theme->addVar('view', $this);
-
-        return $this->parent->getTemplate($template, $vars);
+        return $this->getTemplate($template, $vars);
     }
 
     /**
@@ -278,7 +270,7 @@ abstract class View
             $method = $this->default_method;
         }
 
-        if(str_contains($method, '::')) {
+        if (str_contains($method, '::')) {
             //has __METHOD__ format
             $method = substr($method, strrpos($method, '::') + 2);
         }
@@ -287,32 +279,13 @@ abstract class View
     }
 
     /**
-     * Returns the contents of a language template
-     * @param string $dir The directory where the template is located
-     * @param string $template The name of the template to load. If not set, the method's name will be used
-     * @param array $vars Vars to pass to the template, if any
-     * @return string The contents of the template
+     * Returns the vars to be passed to the template
+     * @param array $vars The initial vars
+     * @return array The vars
      */
-    public function getLanguageTemplate(string $dir, string $template = '', array $vars = []) : ?string
+    protected function getVars(array $vars) : array
     {
-        $this->app->theme->addVars(get_object_vars($this));
-        $this->app->theme->addVar('view', $this);
-
-        return $this->parent->getLanguageTemplate($dir, $template, $vars);
-    }
-
-    /**
-     * Returns the contents of a module template
-     * @param string $template The name of the template to load
-     * @param array $vars Vars to pass to the template, if any
-     * @return string The contents of the template
-     */
-    protected function getModuleTemplate(string $template, array $vars = []) : ?string
-    {
-        $this->app->theme->addVars(get_object_vars($this));
-        $this->app->theme->addVar('view', $this);
-
-        return $this->parent->module->getTemplate($template, $vars);
+        return array_merge(['view' => $this, 'model' => $this->model], $vars);
     }
 
     /**
@@ -322,10 +295,6 @@ abstract class View
      */
     protected function getTemplateName(string $method) : string
     {
-        if ($this->template) {
-            return $this->template;
-        }
-
         $template = preg_replace('/([A-Z])/', '-$1', $method);
         $template = strtolower($template);
 
@@ -333,15 +302,40 @@ abstract class View
     }
 
     /**
-     * Sets the name of the template to render
-     * @param string $template The name of the template
-     * @return static
+     * Returns the contents of a template
+     * @param string $template The name of the template to load
+     * @param array $vars Vars to pass to the template, if any
+     * @return string|null The contents of the template or null if the template doesn't exist
      */
-    protected function setTemplateName(string $template) : static
+    public function getTemplate(string $template, array $vars = []) : ?string
     {
-        $this->template = $template;
+        return $this->parent->getTemplate($this->root . $template, $this->getVars($vars));
+    }
 
-        return $this;
+    /**
+     * Returns the contents of a language template
+     * @param string $dir The directory where the template is located
+     * @param string $template The name of the template to load. If not set, the method's name will be used
+     * @param array $vars Vars to pass to the template, if any
+     * @return string|null The contents of the template or null if the template doesn't exist
+     */
+    public function getLanguageTemplate(string $dir, string $template, array $vars = []) : ?string
+    {
+        return $this->parent->getLanguageTemplate($this->root . $dir, $template, $this->getVars($vars));
+    }
+
+    /**
+     * Returns the contents of an email template
+     * @param string $template The name of the template to load
+     * @param array $vars Vars to pass to the template, if any
+     * @param string|null $dir The directory where the template is located. If not set, 'emails' will be used
+     * @return string|null The contents of the template or null if the template doesn't exist
+     */
+    public function getEmailTemplate(string $template, array $vars = [], ?string $dir = null) : ?string
+    {
+        $dir = $dir ?? 'emails';
+
+        return nl2br($this->getLanguageTemplate($dir, $template, $vars));
     }
 
     /**

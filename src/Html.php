@@ -58,7 +58,7 @@ class Html
     ];
 
     /**
-     * @var Handlers $handlers The tags object
+     * @var Handlers $tags The tags object
      */
     public protected(set) Handlers $tags {
         get {
@@ -84,7 +84,7 @@ class Html
         try {
             return $this->tags->get($type)->html($text, $attributes);
         } catch (\Exception $e) {
-            throw new \Exception("Invalid html tag {$type}");
+            throw new \Exception("Invalid html tag {$type}: " . $e->getMessage(), 0, $e);
         }
     }
 
@@ -132,7 +132,7 @@ class Html
      * @param string $url The image's url
      * @param int $width The image's width
      * @param int $height The image's height
-     * @param alt $alt The alt attribute.If empty it will be determined from the basename of the source
+     * @param string $alt The alt attribute.If empty it will be determined from the basename of the source
      * @param array $attributes The image's attributes
      * @return string The html code
      */
@@ -160,7 +160,7 @@ class Html
      * @param array $source_images Array listing the source images in the format [['url' => <url>, 'min' => <min_width>, 'max' => 'max_width']]. Both min and max can be specified, or just one of it
      * @param int $width The image's width
      * @param int $height The image's height
-     * @param alt $alt The alt attribute.If empty it will be determined from the basename of the source
+     * @param string $alt The alt attribute.If empty it will be determined from the basename of the source
      * @param array $attributes The image's attributes
      * @return string The html code
      */
@@ -189,7 +189,7 @@ class Html
     /**
      * Creates a link
      * @param string $url The link's url
-     * @param string $text The link text.If empty $url will be displayed insteed
+     * @param string $text The link text. If empty $url will be displayed instead
      * @param array $attributes The link's attributes
      * @return string The html code
      */
@@ -215,7 +215,7 @@ class Html
 
     /**
      * Creates a div
-     * @param string $text The paragraph's text
+     * @param string $text The div's content
      * @return string The html code
      */
     public function div(string $text, array $attributes = []) : string
@@ -272,10 +272,10 @@ class Html
     /**
      * Returns checked if $value is found in $array
      * @param string $value The value to look for
-     * @param array $array The arrach to search for the value
+     * @param array $array The array to search for the value
      * @return string
      */
-    public function checkedInArray($value, array $array) : string
+    public function checkedInArray(string $value, array $array) : string
     {
         return $this->checked(in_array($value, $array));
     }
@@ -291,7 +291,7 @@ class Html
     }
 
     /**
-     * Returns style="display:none" if $hidden is true, empty if false
+     * Returns hidden if $hidden is true, empty if false
      * @param bool $hidden The hidden flag
      * @return string
      */
@@ -354,7 +354,7 @@ class Html
      * @param array $columns The form's columns
      * @param array $attributes The form's attributes
      * @param array $classes The form's classes for fields, columns, etc
-     * @param null|array|Input $data
+     * @param null|array|Input $data The form data used to populate field values; may be null for an empty form, an associative array keyed by field name, or an Input instance providing the values
      */
     public function form(string $url, array $fields, array $columns, array $attributes = [], array $classes = [], null|array|Input $data = null) : string
     {
@@ -403,8 +403,8 @@ class Html
 
     /**
      * Builds an email input field
-     * @param string $name The name of the hidden field
-     * @param string $value The value of the hidden field
+     * @param string $name The name of the email field
+     * @param string $value The value of the email field
      * @param string $placeholder Placeholder text
      * @param bool $required If true, this is a required field
      * @param array $attributes Extra attributes in the format name => value
@@ -417,8 +417,8 @@ class Html
 
     /**
      * Builds a password input field
-     * @param string $name The name of the hidden field
-     * @param string $value The value of the hidden field
+     * @param string $name The name of the password field
+     * @param string $value The value of the password field
      * @param bool $required If true, this is a required field
      * @param array $attributes Extra attributes in the format name => value
      * @return string The html code
@@ -430,8 +430,8 @@ class Html
 
     /**
      * Builds a phone input field
-     * @param string $name The name of the hidden field
-     * @param string $value The value of the hidden field
+     * @param string $name The name of the phone field
+     * @param string $value The value of the phone field
      * @param string $placeholder Placeholder text
      * @param bool $required If true, this is a required field
      * @param array $attributes Extra attributes in the format name => value
@@ -491,7 +491,7 @@ class Html
      * @param array $attributes Extra attributes in the format name => value
      * @return string The html code
      */
-    public function checkbox(string $name, string $label = '', string $value = '1', bool $checked = true, array $attributes = []) : string
+    public function checkbox(string $name, string $label = '', string $value = '1', bool $checked = false, array $attributes = []) : string
     {
         $attributes = ['name' => $name, 'value' => $value, 'checked' => $checked, 'label' => $label] + $attributes;
 
@@ -507,7 +507,7 @@ class Html
      * @param array $attributes Extra attributes in the format name => value
      * @return string The html code
      */
-    public function radio(string $name, string $label = '', string $value = '1', bool $checked = true, array $attributes = []) : string
+    public function radio(string $name, string $label = '', string $value = '1', bool $checked = false, array $attributes = []) : string
     {
         $attributes = ['name' => $name, 'value' => $value, 'checked' => $checked, 'label' => $label] + $attributes;
 
@@ -556,7 +556,7 @@ class Html
      * @param string $name The name of the select control
      * @param array $options Array containing the options [$name=>$value]. If $value is an array the first element will be the actual value. The second is a bool value determining if the field is an optgroup rather than a option
      * @param string|array $selected The name of the option that should be selected [string or array if $multiple =  true]
-     * @param bool $required If true,it will be a required control
+     * @param bool $required If true, it will be a required control
      * @param array $attributes Extra attributes in the format name => value
      * @param bool $multiple If true multiple options can be selected
      * @return string The html code
@@ -645,6 +645,6 @@ class Html
         //don't cache the pages where the csrf token is shown
         $this->app->cache->pages->can_cache = false;
 
-        return $this->hidden($this->app->config->html->csrf_name, $this->app->session->token);
+        return $this->hidden($this->app->config->html->csrf_name, $this->app->session->token, ['class' => $this->app->config->html->csrf_name, 'id' => '']);
     }
 }

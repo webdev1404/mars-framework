@@ -43,13 +43,13 @@ class Cache
     public protected(set) Javascript $javascript;
 
     /**
-     * @var Page Data $data The Data Cache object
+     * @var Data $data The Data Cache object
      */
     #[LazyLoadProperty]
     public protected(set) Data $data;
 
     /**
-     * @var Page $page The Page Cache object
+     * @var Pages $pages The Page Cache object
      */
     #[LazyLoadProperty]
     public protected(set) Pages $pages;
@@ -86,7 +86,7 @@ class Cache
     }
 
     /**
-     * Sets The value of a cached value
+     * Sets the value of a cached value
      * @param string $name The name
      * @param mixed $value The value
      */

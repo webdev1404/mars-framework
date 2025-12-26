@@ -17,12 +17,12 @@ class Filename extends Filter
     protected int $max_chars = 300;
 
     /**
-     * @see \Mars\Filters\Filter::filename()
+     * @see \Mars\Filter::filename()
      */
     public function filter(string $filename) : string
     {
         $filename = basename(trim($filename));
-        if (strlen($filename > $this->max_chars)) {
+        if (strlen($filename) > $this->max_chars) {
             $filename = $this->cutFilename($filename);
         }
 
@@ -42,14 +42,14 @@ class Filename extends Filter
         //replace spaces with dashes
         $filename = str_replace(' ', '-', $filename);
 
-        return $this->app->plugins->filter('filters_filename_filter', $filename);
+        return $this->app->plugins->filter('filter.filename', $filename);
     }
 
-    /*
-    * Will cut filename to $max_chars
-    * @param string $filename The filename
-    * @return string
-    */
+    /**
+     * Will cut filename to $max_chars
+     * @param string $filename The filename
+     * @return string
+     */
     protected function cutFilename(string $filename) : string
     {
         $name = substr($this->app->file->getStem($filename), 0, $this->max_chars);

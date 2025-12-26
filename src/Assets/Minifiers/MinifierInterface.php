@@ -12,7 +12,7 @@ namespace Mars\Assets\Minifiers;
 interface MinifierInterface
 {
     /**
-     * Minifiers the content
+     * Minifies the content
      * @param string $content The content to minify
      * @return string The minified content
      */

@@ -21,7 +21,7 @@ class Template
     /**
      * @var array $supported_drivers The supported drivers
      */
-    protected array $supported_drivers = [
+    public protected(set) array $supported_drivers = [
         'mars' => \Mars\Themes\Templates\Mars::class
     ];
 
@@ -101,7 +101,7 @@ class Template
 
         $content = $this->getContent($filename, $cache_name, $vars);
 
-        return $this->app->plugins->filter('template_get', $content, $template, $vars, $type, $this);
+        return $this->app->plugins->filter('template.get', $content, $template, $vars, $type, $this);
     }
 
     /**
@@ -119,7 +119,7 @@ class Template
 
         $content = $this->getContent($filename, $cache_file, $vars, $params, $development);
 
-        return $this->app->plugins->filter('template_get_from_filename', $content, $filename, $vars, $type, $this);
+        return $this->app->plugins->filter('template.get.from.filename', $content, $filename, $vars, $type, $this);
     }
 
     /**
@@ -154,7 +154,7 @@ class Template
 
         $content = $this->incorporate($cache_name, $vars);
 
-        $content = $this->app->plugins->filter('template_get_content', $content, $filename, $cache_name, $vars, $this);
+        $content = $this->app->plugins->filter('template.get.content', $content, $filename, $cache_name, $vars, $this);
 
         return $content;
     }

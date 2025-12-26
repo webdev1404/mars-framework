@@ -4,7 +4,7 @@
 * @package Mars
 */
 
-namespace Mars\Db\Sql\Drivers;
+namespace Mars\Db;
 
 /**
  * The SQL Driver Interface
@@ -45,21 +45,21 @@ interface SqlInterface
 
     /**
      * Builds the VALUES part of an INSERT query
-     * @param array $values The data to insert in the column => value format. If value is an array it will be inserted as it is. Usefull if a mysql function needs to be called (EG: NOW() )
+     * @param array $values The data to insert in the column => value format. If value is an array it will be inserted as it is. Useful if a mysql function needs to be called (EG: NOW() )
      * @return string
      */
     public function values(array $values) : string;
 
     /**
      * Builds the VALUES part of an INSERT query for multiple rows
-     * @param array $values_list The data to insert in the column => value format. If value is an array it will be inserted as it is. Usefull if a mysql function needs to be called (EG: NOW() )
+     * @param array $values_list The data to insert in the column => value format. If value is an array it will be inserted as it is. Useful if a mysql function needs to be called (EG: NOW() )
      * @return string
      */
     public function valuesMulti(array $values_list) : string;
 
     /**
      * Builds the SET part of an UPDATE query
-     * @param array $values The data to update in the column => value format. If value is an array it will be inserted as it is. Usefull if a mysql function needs to be called (EG: NOW() )
+     * @param array $values The data to update in the column => value format. If value is an array it will be inserted as it is. Useful if a mysql function needs to be called (EG: NOW() )
      * @return string
      */
     public function set(array $values) : string;
@@ -81,7 +81,6 @@ interface SqlInterface
     /**
      * Adds the FROM clause.
      * @param string $table The table.
-     * @param string $alias The alias of the table, if any.
      * @return string
      */
     public function from(string $table) : string;
@@ -89,7 +88,6 @@ interface SqlInterface
     /**
      * Adds a JOIN clause
      * @param string $table The table to join
-     * @param string $alias The alias of the table, if any
      * @param string $using The column used in the USING part, if any
      * @param string $on Custom SQL to add in the ON part of the join clause, if $using is empty
      * @return string
@@ -99,7 +97,6 @@ interface SqlInterface
     /**
      * Adds a LEFT JOIN clause
      * @param string $table The table to join
-     * @param string $alias The alias of the table, if any
      * @param string $using The column used in the USING part, if any
      * @param string $on Custom SQL to add in the ON part of the join clause, if $using is empty
      * @return string
@@ -109,7 +106,6 @@ interface SqlInterface
     /**
      * Adds a RIGHT JOIN clause
      * @param string $table The table to join
-     * @param string $alias The alias of the table, if any
      * @param string $using The column used in the USING part, if any
      * @param string $on Custom SQL to add in the ON part of the join clause, if $using is empty
      * @return string
@@ -119,7 +115,6 @@ interface SqlInterface
     /**
      * Adds a INNER JOIN clause
      * @param string $table The table to join
-     * @param string $alias The alias of the table, if any
      * @param string $using The column used in the USING part, if any
      * @param string $on Custom SQL to add in the ON part of the join clause, if $using is empty
      * @return string
@@ -129,10 +124,10 @@ interface SqlInterface
     /**
      * Adds a WHERE clause
      * @param array $where The where conditions. The format must be: column => value or column => [p1, p2, p3] or column => ['operator' => '>', 'value' => 10, 'function' => UNIX_TIMESTAMP]
-     * @param string $delimitator The delimitator to use between the conditions
+     * @param string $delimiter The delimiter to use between the conditions
      * @return string
      */
-    public function where(array $where, string $delimitator = 'AND') : string;
+    public function where(array $where, string $delimiter = 'AND') : string;
 
     /**
      * Returns a WHERE IN(...) clause
@@ -157,10 +152,10 @@ interface SqlInterface
     /**
      * Builds a HAVING clause
      * @param array $having The having conditions. The format must be: function => value or function => ['operator' => '>', 'value' => 10]
-     * @param string $delimitator The delimitator to use between parts. By default AND is used.
+     * @param string $delimiter The delimiter to use between parts. By default AND is used.
      * @return string
      */
-    public function having(array $having, string $delimitator = 'AND') : string;
+    public function having(array $having, string $delimiter = 'AND') : string;
 
     /**
      * Returns an ORDER BY clause
@@ -180,7 +175,8 @@ interface SqlInterface
     /**
      * Returns a LIMIT clause
      * @param int $count The number of items
-     * @param int int The offset, if any
+     * @param int $offset The offset, if any
+     * @return string
      */
     public function limit(int $count, ?int $offset = null) : string;
 

@@ -39,7 +39,7 @@ class SpecialParser
             case '@csrf':
                 return '<?= $app->html->csrf() ?>';
             default:
-                return $this->app->plugins->filter('theme_special_get', $name, $this);
+                return $this->app->plugins->filter('theme.special.get', $name, $this);
         }
     }
 }

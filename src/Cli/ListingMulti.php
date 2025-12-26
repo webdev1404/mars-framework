@@ -16,7 +16,7 @@ class ListingMulti extends Listing
      * Prints a list, with multiple sections
      * @param array $data The data to print
      * @param array $colors The colors to use
-     * @param array $paddings_right The number of left chars to apply, if any
+     * @param array $paddings_right The number of right chars to apply, if any
      * @param array $paddings_left The number of left chars to apply, if any
      */
     public function print(array $data, array $colors = [], array $paddings_right = [], array $paddings_left = [])

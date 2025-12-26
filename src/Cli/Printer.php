@@ -36,7 +36,7 @@ abstract class Printer
                 }
 
                 $padding_right = $paddings_right[$i] ?? $this->padding_right;
-                $length = strlen($item) + $padding_right;
+                $length = mb_strlen($item) + $padding_right;
 
                 if ($length > $max[$i]) {
                     $max[$i] = $length;

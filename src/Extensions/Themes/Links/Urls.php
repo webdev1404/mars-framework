@@ -6,17 +6,17 @@
 
 namespace Mars\Extensions\Themes\Links;
 
-use Mars\Document\Links\Urls;
+use Mars\Document\Links\Urls as DocumentUrls;
 
 /**
  * The Base Class for the theme document elements
  */
-abstract class Url extends Link
+abstract class Urls extends Base
 {
     /**
-     * @var Urls $url The urls object
+     * @var DocumentUrls $urls The urls object
      */
-    protected Urls $url;
+    protected DocumentUrls $urls;
 
     /**
      * @var string $assets_dir The assets directory where the theme assets are stored
@@ -47,7 +47,7 @@ abstract class Url extends Link
     {
         $url = $this->assets_url . '/' . $url;
 
-        return $this->url->getUrl($url);
+        return $this->urls->getUrl($url);
     }
 
     /**
@@ -59,7 +59,7 @@ abstract class Url extends Link
     {
         $url = $this->assets_url . '/' . $url;
 
-        $this->url->outputLink($url, $attributes);
+        $this->urls->outputLink($url, $attributes);
     }
 
     /**
@@ -68,7 +68,7 @@ abstract class Url extends Link
      */
     public function outputCode(string $code)
     {
-        $this->url->outputCode($code);
+        $this->urls->outputCode($code);
     }
 
     /**
@@ -79,7 +79,7 @@ abstract class Url extends Link
     {
         $urls = $this->getUrls($urls);
 
-        $this->url->load($urls, $type, $priority, $preload, $attributes);
+        $this->urls->load($urls, $type, $priority, $preload, $attributes);
 
         return $this;
     }
@@ -92,7 +92,7 @@ abstract class Url extends Link
     {
         $urls = $this->getUrls($urls);
 
-        $this->url->unload($urls);
+        $this->urls->unload($urls);
 
         return $this;
     }
@@ -105,7 +105,7 @@ abstract class Url extends Link
     {
         $urls = $this->getUrls($urls);
 
-        $this->url->preload($urls, $add_version);
+        $this->urls->preload($urls, $add_version);
 
         return $this;
     }
@@ -118,7 +118,7 @@ abstract class Url extends Link
     {
         $urls = $this->getUrls($urls);
 
-        $this->url->unloadPreload($urls);
+        $this->urls->unloadPreload($urls);
 
         return $this;
     }
@@ -131,7 +131,7 @@ abstract class Url extends Link
     {
         $urls = $this->getUrls($urls);
 
-        $this->url->prefetch($urls, $add_version);
+        $this->urls->prefetch($urls, $add_version);
 
         return $this;
     }
@@ -144,7 +144,7 @@ abstract class Url extends Link
     {
         $urls = $this->getUrls($urls);
 
-        $this->url->unloadPrefetch($urls);
+        $this->urls->unloadPrefetch($urls);
 
         return $this;
     }

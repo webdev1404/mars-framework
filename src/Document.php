@@ -22,8 +22,8 @@ use Mars\Document\Tags\Favicon;
 use Mars\Document\Tags\Title;
 
 /**
- * The Device Class
- * Encapsulates the user's device
+ * The Document Class
+ * Encapsulates the html document
  */
 class Document
 {
@@ -103,7 +103,7 @@ class Document
     public Favicon $favicon;
 
     /**
-     * Builds the device object
+     * Builds the document object
      * @param App $app The app object
      */
     public function __construct(App $app)

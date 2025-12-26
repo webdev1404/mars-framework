@@ -12,9 +12,9 @@ namespace Mars\Devices;
 interface DeviceInterface
 {
     /**
-     * Returns the device's type: desktop,tablet,smartphone
-     * @param string $useragent The useragent. If empty, the user's useragent is used
-     * @return string
+     * Returns the device's type
+     * @param ?string $useragent The useragent. If null, the user's useragent is used
+     * @return Type
      */
-    public function get(string $useragent = '') : string;
+    public function get(?string $useragent = null) : Type;
 }

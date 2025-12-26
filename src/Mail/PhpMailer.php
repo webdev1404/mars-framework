@@ -31,7 +31,7 @@ class PhpMailer implements MailInterface
             $this->handle->setLanguage('en', $this->app->vendor_path . '/phpmailer/phpmailer/language/');
             $this->handle->CharSet = 'UTF-8';
 
-            if ($this->app->config->mail->smtp) {
+            if ($this->app->config->mail->smtp->enable) {
                 $this->handle->isSMTP();
                 $this->handle->Host = $this->app->config->mail->smtp->host;
                 $this->handle->Port = $this->app->config->mail->smtp->port;

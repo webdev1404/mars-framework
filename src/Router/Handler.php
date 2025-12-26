@@ -80,7 +80,7 @@ class Handler
     }
 
     /**
-     * Returns the route 
+     * Returns the route
      * @param string $hash The hash of the route
      * @param array $route The route data
      * @param array $params The route parameters
