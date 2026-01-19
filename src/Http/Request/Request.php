@@ -10,7 +10,7 @@ use Mars\App;
 
 /**
  * The REQUEST Request Class
- * Handles the $_POST interactions
+ * Handles the $_REQUEST interactions (including $_GET, $_POST, and $_COOKIE)
  */
 class Request extends Input
 {

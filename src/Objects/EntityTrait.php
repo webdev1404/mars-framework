@@ -77,7 +77,7 @@ trait EntityTrait
             return $this;
         }
 
-        foreach ($data as $name => $val) {
+        foreach ($data as $name => $value) {
             $name = trim($name);
 
             if (static::$frozen_fields && in_array($name, static::$frozen_fields)) {
@@ -88,7 +88,7 @@ trait EntityTrait
                 continue;
             }
 
-            $this->$name = $val;
+            $this->$name = $value;
         }
 
         return $this;
@@ -143,18 +143,17 @@ trait EntityTrait
     /**
      * Binds the data from $data to the entity's properties
      * @param array|object $data The data to bind. If empty, the $_POST data is used
-     * @param array $ignore_properties Array listing the properties from $data which shouldn't be included in the returned result
-     * @param string $ignore_value If $ignore_value is not null, any values which equals $ignore_value won't be included in the returned result
-     * @param array $properties Array listing the properties which should be bound. If empty, all properties of the object are bound
+     * @param array $ignore_properties Array listing the properties from $data which shouldn't be bound to the object
+     * @param string $ignore_value If $ignore_value is not null, any values which equal $ignore_value won't be bound to the object
+     * @param array|null $properties Array listing the properties which should be bound. If empty, all properties of the object are bound
      * @return $this
      */
     public function bind(array|object $data = [], ?array $ignore_properties = null, ?string $ignore_value = null, ?array $properties = null) : static
     {
-        $properties = null;
         $data = $data ? $this->app->array->get($data) : $this->app->request->post->getAll();
-        $properties ??= $this->app->object->getProperties($this, true);
+        $properties ??= array_keys($this->app->object->getProperties($this, true));
 
-        foreach ($properties as $key => $value) {
+        foreach ($properties as $key) {
             if (!isset($data[$key])) {
                 continue;
             }
@@ -179,14 +178,14 @@ trait EntityTrait
 
     /**
      * Binds the data from $data to the object's properties
-     * @param array $allowed_properties Array listing the properties which should be bound
+     * @param array $properties Array listing the properties which should be bound
      * @param array|object $data The data to bind
-     * @param string $ignore_value If $ignore_value is not null, any values which equals $ignore_value won't be included in the returned result
+     * @param string $ignore_value If $ignore_value is not null, any values which equal $ignore_value won't be bound to the object
      * @return $this
      */
-    public function bindList(array $allowed_properties, array|object $data = [], ?string $ignore_value = null) : static
+    public function bindList(array $properties, array|object $data = [], ?string $ignore_value = null) : static
     {
-        return $this->bind($data, null, $ignore_value, $allowed_properties);
+        return $this->bind($data, null, $ignore_value, $properties);
     }
 
     /**

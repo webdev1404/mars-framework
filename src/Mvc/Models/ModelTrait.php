@@ -24,7 +24,7 @@ trait ModelTrait
      */
     #[HiddenProperty]
     protected ?Extension $parent {
-        get => $this->controller->parent ?? null;
+        get => $this->controller?->parent ?? null;
     }
 
     /**
@@ -50,7 +50,7 @@ trait ModelTrait
     }
 
     /**
-     * Inits the model. Method which can be overriden in custom models to init properties etc..
+     * Inits the model. Method which can be overridden in custom models to init properties etc.
      */
     protected function init()
     {

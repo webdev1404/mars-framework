@@ -20,7 +20,7 @@ class Message
     /**
      * Outputs the message screen
      * @param string $text The message's text
-     * @param string $title The message's title, if any
+     * @param string|null $title The message's title, if any
      */
     public function output(string $text, ?string $title = null)
     {

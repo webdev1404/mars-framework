@@ -13,7 +13,7 @@ interface ResponseInterface
 {
     /**
      * Outputs $content
-     * @param $content The content to output
+     * @param mixed $content The content to output
      */
-    public function output($content);
+    public function output(mixed $content);
 }

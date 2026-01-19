@@ -8,29 +8,41 @@ namespace Mars\Images;
 
 use GdImage;
 use Mars\App;
-use Mars\App\Kernel;
 
 /**
  * The Base Image Class
  */
-abstract class Image
+abstract class Image extends \Mars\Image implements ImageInterface
 {
-    use Kernel;
-
     /**
-     * @var string $filename The image's filename
+     * @var bool $valid If true, the image is valid
      */
-    protected string $filename = '';
+    public protected(set) bool $valid {
+        get {
+            if (isset($this->valid)) {
+                return $this->valid;
+            }
+
+            $this->valid = false;
+            if ($this->exists) {
+                if ($this->dimensions && $this->type == $this->mime_type) {
+                    $this->valid = true;
+                }
+            }
+
+            return $this->valid;
+        }
+    }
 
     /**
      * @var string $mime_type The image's mime type
      */
-    protected $mime_type = '';
+    protected string $mime_type = '';
 
     /**
      * @var int $quality The image quality of the resulting images
      */
-    protected int $quality = 80;
+    protected int $quality = 100;
 
     /**
      * @var bool $optimize If true, the images will be optimized when processed/uploaded
@@ -48,79 +60,11 @@ abstract class Image
      * @see ImageInterface::__construct()
      * {@inheritdoc}
      */
-    public function __construct(string $filename, App $app)
+    public function __construct(string $filename, string $open_basedir = '', ?App $app = null)
     {
-        $this->filename = $filename;
+        parent::__construct($filename, $open_basedir);
+
         $this->app = $app;
-    }
-
-    /**
-     * @see ImageInterface::isValid()
-     * {@inheritdoc}
-     */
-    public function isValid() : bool
-    {
-        if (!is_file($this->filename)) {
-            throw new \Exception("Image does not exist: {$this->filename}");
-        }
-
-        $finfo = \finfo_open(FILEINFO_MIME_TYPE);
-        $mime_type = \finfo_file($finfo, $this->filename);
-
-        return $mime_type == $this->mime_type;
-    }
-
-    /**
-     * @see ImageInterface::getSize()
-     * {@inheritdoc}
-     */
-    public function getSize() : array
-    {
-        $info = getimagesize($this->filename);
-        if (!$info) {
-            throw new \Exception("Unable to get the size of image: {$this->filename}");
-        }
-
-        return [$info[0], $info[1]];
-    }
-
-    /**
-     * @see ImageInterface::getWidth()
-     * {@inheritdoc}
-     */
-    public function getWidth(): int
-    {
-        $info = getimagesize($this->filename);
-        if (!$info) {
-            throw new \Exception("Unable to get the size of image: {$this->filename}");
-        }
-
-        return $info[0];
-    }
-
-    /**
-     * @see ImageInterface::getHeight()
-     * {@inheritdoc}
-     */
-    public function getHeight(): int
-    {
-        $info = getimagesize($this->filename);
-        if (!$info) {
-            throw new \Exception("Unable to get the size of image: {$this->filename}");
-        }
-
-        return $info[1];
-    }
-
-    /**
-     * @see ImageInterface::getRatio()
-     * {@inheritdoc}
-     */
-    public function getRatio() : float
-    {
-        [$width, $height] = $this->getSize();
-
-        return $width / $height;
     }
 
     /**
@@ -136,10 +80,10 @@ abstract class Image
      * @see ImageInterface::optimize()
      * {@inheritdoc}
      */
-    public function optimize() : bool
+    public function optimize() : static
     {
         if (!$this->optimize || !$this->optimize_command) {
-            return false;
+            return $this;
         }
 
         $filename = escapeshellarg($this->filename);
@@ -147,10 +91,10 @@ abstract class Image
 
         exec($command, $output, $result_code);
 
-        if ($result_code == 0) {
-            return true;
+        if ($result_code !== 0) {
+            throw new \Exception("Unable to optimize image {$this->filename}");
         }
 
-        return false;
+        return $this;
     }
 }

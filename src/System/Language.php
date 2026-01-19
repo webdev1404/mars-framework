@@ -315,7 +315,7 @@ class Language extends BaseLanguage
      */
     public function register(string $key, string|array $filename) : static
     {
-        $filenames = $this->app->array->get($filename);
+        $filenames = (array)$filename;
 
         if (isset($this->registered_keys[$key])) {
             $this->registered_keys[$key] = array_merge($this->registered_keys[$key], $filenames);
@@ -381,6 +381,8 @@ class Language extends BaseLanguage
      */
     public function loadFilename(string $key, string $filename) : static
     {
+        $app = $this->app;
+        
         $strings = include($filename);
 
         if (isset($this->strings[$key])) {
@@ -443,45 +445,52 @@ class Language extends BaseLanguage
 
     /**
      * Returns a language string
-     * @param string $string The string as defined in the languages file
+     * @param string|array $string The string as defined in the languages file. If an array is passed, the first found string will be returned
      * @param array $replace Array with key & values to be used for to search & replace, if any
-     * @param string $key The key to use for the loaded strings
      * @return string The language string
      */
-    public function get(string $string, array $replace = [], $key = '') : string
+    public function get(string|array $string, array $replace = []) : string
     {
-        $keys = [];
+        $strings = (array)$string;
         $found_string = '';
-        $index = strpos($string, '.');
+
+        foreach ($strings as $string) {
+            $index = strpos($string, '.');
     
-        if ($index === false) {
-            //no dot in the key. Search for the string in the specified local keys
-            foreach ($this->local_keys as $key) {
+            if ($index === false) {
+                //no dot in the key. Search for the string in the specified local keys
+                foreach ($this->local_keys as $key) {
+                    if (!isset($this->strings[$key])) {
+                        $this->load($key);
+                    }
+
+                    $found_string = $this->strings[$key][$string] ?? '';
+                    if ($found_string) {
+                        break;
+                    }
+                }
+            } else {
+                //we have a dot in the key. Search for the string in the specified file
+                $key = substr($string, 0, $index);
+                $string_key = substr($string, $index + 1);
+
                 if (!isset($this->strings[$key])) {
-                    $this->load($key);
+                    if (!isset($this->loaded_keys[$key])) {
+                        $this->load($key);
+                    }
                 }
 
-                $found_string = $this->strings[$key][$string] ?? '';
-                if ($found_string) {
-                    break;
-                }
+                $found_string = $this->strings[$key][$string_key] ?? '';
             }
 
-            if (!$found_string) {
-                $found_string = $string;
+            if ($found_string) {
+                break;
             }
-        } else {
-            //we have a dot in the key. Search for the string in the specified file
-            $key = substr($string, 0, $index);
-            $string_key = substr($string, $index + 1);
+        }
 
-            if (!isset($this->strings[$key])) {
-                if (!isset($this->loaded_keys[$key])) {
-                    $this->load($key);
-                }
-            }
-
-            $found_string = $this->strings[$key][$string_key] ?? $string;
+        //set the first string as found string, if none was found
+        if (!$found_string) {
+            $found_string = array_first($strings);
         }
 
         if ($replace) {

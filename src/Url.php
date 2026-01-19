@@ -287,7 +287,7 @@ class Url implements \Stringable
      */
     public function get(string|array $parts, array $params = [], bool $encode = true, bool $remove_empty_params = true) : static
     {
-        $parts = array_filter($this->app->array->get($parts));
+        $parts = array_filter((array)$parts);
         if (!$parts && !$params) {
             return clone $this;
         }

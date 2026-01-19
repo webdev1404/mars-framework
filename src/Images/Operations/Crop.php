@@ -16,10 +16,16 @@ class Crop extends Operation
      * @param int $width The width of the cropped image
      * @param int $height The height of the cropped image
      * @param array $options Options, if any
+     * @throws \Exception
      */
     public function process(int $width, int $height, array $options = [])
     {
-        [$source_width, $source_height] = $this->source->getSize();
+        if (!$this->source->valid) {
+            throw new \Exception("Source image {$this->source->filename} is not valid. It either does not exist or is not a valid image.");
+        }
+
+        $source_width = $this->source->width;
+        $source_height = $this->source->height;
         $ratio = $width / $height;
 
         $source_x = 0;
@@ -54,5 +60,9 @@ class Crop extends Operation
         }
 
         $this->copyResampled((int) $width, (int) $height, (int) $crop_width, (int) $crop_height, (int)$source_x, (int)$source_y, (int) $width, (int) $height, 0, 0, false, $options);
+
+        if (!is_file($this->destination->filename)) {
+            throw new \Exception("Failed to create image {$this->destination->filename}");
+        }
     }
 }

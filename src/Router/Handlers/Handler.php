@@ -1,6 +1,6 @@
 <?php
 /**
- * The Page Route Handler Class
+ * The Base Route Handler Class
  * @package Mars
  */
 namespace Mars\Router\Handlers;
@@ -8,8 +8,8 @@ namespace Mars\Router\Handlers;
 use Mars\App\Kernel;
 
 /**
- * The Page Route Handler Class
- * Handles page routes
+ * The Base Route Handler Class
+ * Base class for all route handlers
  */
 abstract class Handler
 {

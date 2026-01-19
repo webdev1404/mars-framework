@@ -21,7 +21,7 @@ class Json implements ResponseInterface
      * @see ResponseInterface::output()
      * {@inheritdoc}
      */
-    public function output($content)
+    public function output(mixed $content)
     {
         header('Content-Type: application/json', true);
 

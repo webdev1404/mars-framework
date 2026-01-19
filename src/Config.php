@@ -179,21 +179,27 @@ class Config extends Container
     /**
      * Reads the config settings from the specified $file and returns it
      * @param string $file The file
-     * @return array
+     * @param bool $once Whether to use require_once
+     * @return bool|array The config settings or true if the file is already loaded
      */
-    public function read(string $file) : array
+    public function read(string $file, bool $once = false) : bool|array
     {
-        return $this->readFilename($this->_app->config_path . '/' . $file);
+        return $this->readFilename($this->_app->config_path . '/' . $file, $once);
     }
 
     /**
      * Reads the config settings from the specified $filename and returns it
      * @param string $filename The filename
-     * @return array
+     * @param bool $once Whether to use require_once
+     * @return bool|array The config settings or true if the file is already loaded
      */
-    public function readFilename(string $filename) : array
+    public function readFilename(string $filename, bool $once = false) : bool|array
     {
         $app = $this->_app;
+
+        if ($once) {
+            return require_once($filename);
+        }
 
         return require($filename);
     }
@@ -237,7 +243,10 @@ class Config extends Container
      */
     public function loadFilename(string $filename) : static
     {
-        $settings = $this->readFilename($filename);
+        $settings = $this->readFilename($filename, true);
+        if ($settings === true) {
+            return $this;
+        }
 
         $this->assign($this->getTree($settings));
 
@@ -266,7 +275,7 @@ class Config extends Container
     {
         if ($this->development->enable) {
             $this->document->css->version = time();
-            $this->document->javascript->version = time();
+            $this->document->js->version = time();
         }
 
         if ($this->debug->ips) {

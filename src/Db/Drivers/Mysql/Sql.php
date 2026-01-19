@@ -4,9 +4,9 @@
 * @package Mars
 */
 
-namespace Mars\Db\Mysql;
+namespace Mars\Db\Drivers\Mysql;
 
-use Mars\Db\Sql\Base;
+use Mars\Db\Drivers\Sql as Base;
 
 /**
  * The MySql SQL Builder Class.

@@ -111,7 +111,7 @@ class VariablesParser
     /**
      * Breaks the $var variable into parts: value/modifiers
      * @param string $var The variable to break
-     * @return array $modifiers The modifiers
+     * @return array $modifiers The value and modifiers
      */
     protected function breakVariable(string $var) : array
     {
@@ -196,7 +196,8 @@ class VariablesParser
 
     /**
      * Replaces all variables in a string
-     * @param string The string
+     * @param string $str The string
+     * @param bool $add_brackets Whether to wrap variables in curly brackets
      * @return string The string with the replaced vars
      */
     public function replaceVariables(string $str, bool $add_brackets = false) : string
@@ -217,7 +218,8 @@ class VariablesParser
 
     /**
      * Replaces all language strings in a string
-     * @param string The string
+     * @param string $str The string
+     * @param bool $add_brackets Whether to wrap variables in curly brackets
      * @return string The string with the replaced lang strings
      */
     public function replaceLanguageStrings(string $str, bool $add_brackets = false) : string
@@ -247,7 +249,7 @@ class VariablesParser
      */
     protected function applyModifiers(string $value, array $modifiers, bool $apply_escape = true) : string
     {
-        //add the de modifier, or the escape modifier, if required
+        //add the modifier, or the escape modifier, if required
         if ($this->canEscapeModifiers($modifiers, $apply_escape)) {
             $modifiers[] = 'html';
         }
@@ -313,9 +315,9 @@ class VariablesParser
      * Builds the modifiers functions
      * @param string $value The value
      * @param array $list The list of functions
-     * @return string The modifiers functions string
+     * @return string The built modifiers
      */
-    protected function buildModifiers($value, array $list) : string
+    protected function buildModifiers(string $value, array $list) : string
     {
         if (!$list) {
             return $value;

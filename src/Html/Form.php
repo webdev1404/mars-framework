@@ -128,7 +128,7 @@ class Form extends Tag
 
     /**
      * Returns the form's fields
-     * @return string The form's columns
+     * @return string The form's fields
      */
     protected function getFields() : string
     {
@@ -136,7 +136,7 @@ class Form extends Tag
         $fields_rendered = [];
 
         //get the fields assigned to columns
-        foreach ($this->columns as $name => $fields) {
+        foreach ($this->columns as $fields) {
             $col_count_class = $this->classes['form-column-prefix'] . count($fields);
 
             $html.= $this->app->html->tags->get('div')->open(['class' => "{$this->classes['form-column']} {$col_count_class}"]);
@@ -283,7 +283,7 @@ class Form extends Tag
 
     /**
      * Returns the field's html
-     * @param FormInputInterface $obj The field
+     * @param Tag $obj The field
      * @param array $attributes The field's attributes
      * @return string The field's html
      */
@@ -303,15 +303,15 @@ class Form extends Tag
      */
     protected function getInputValue(FormInputInterface $obj, string $name, array $attributes) : null|string|array
     {
-        //if the value is fixed, like for example for hidden fields, return the value attribute iregardless of the post data
+        //if the value is fixed, like for example for hidden fields, return the value attribute regardless of the post data
         if (!empty($obj::$value_fixed) || !empty($attributes['value_fixed'])) {
             return $attributes[$obj->getValueAttribute()] ?? null;
         }
 
         $value = $this->getInputValueFromData($name);
 
-        //check if the value is set in on allowed values list
-        if ($obj->isAllowedValues($value, $attributes)) {
+        //check if the value is set in the allowed values list
+        if ($obj->isAllowedValue($value, $attributes)) {
             return $value;
         }
     
@@ -321,7 +321,7 @@ class Form extends Tag
     /**
      * Returns the value of an input field, from data
      * @param string $name The name of the field
-     * @return string The value of the field
+     * @return string|array The value of the field
      */
     protected function getInputValueFromData(string $name) : string|array
     {

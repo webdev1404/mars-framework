@@ -15,7 +15,7 @@ use Mars\App;
 class Env extends Input
 {
     /**
-     * Builds the Server Request object
+     * Constructs the Env object handling $_ENV interactions
      * @param App $app The app object
      */
     public function __construct(App $app)

@@ -20,10 +20,10 @@ class Min extends Rule
     /**
      * Validates the min value of a number
      * @param string $value The value
-     * @param int $min The minimum value
+     * @param float $min The minimum value
      * @return bool
      */
-    public function isValid(string $value, ?int $min = null) : bool
+    public function isValid(string $value, ?float $min = null) : bool
     {
         if ($min === null) {
             throw new \Exception("The 'min' validation rule must have the minimum number specified. Eg: min:5");

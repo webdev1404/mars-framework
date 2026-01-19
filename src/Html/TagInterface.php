@@ -1,13 +1,13 @@
 <?php
 /**
-* The Html Interface
+* The Tag Interface
 * @package Mars
 */
 
 namespace Mars\Html;
 
 /**
- * The Html Interface
+ * The Tag Interface
  */
 interface TagInterface
 {

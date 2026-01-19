@@ -17,7 +17,7 @@ class Javascript extends Urls
      * {@inheritdoc}
      */
     public string $version {
-        get => $this->app->config->document->javascript->version;
+        get => $this->app->config->document->js->version;
     }
 
     /**
@@ -30,7 +30,7 @@ class Javascript extends Urls
      * @see Urls::$preload_config_key
      * {@inheritdoc}
      */
-    public protected(set) string $preload_config_key = 'javascript';
+    public protected(set) string $preload_config_key = 'js';
 
     /**
      * @see Urls::outputLink()
@@ -42,7 +42,7 @@ class Javascript extends Urls
             $url = $this->getUrl($url);
         }
 
-        echo '<script type="text/javascript" src="' . $this->app->escape->html($url) . '"' . $this->app->html->getAttributes($attributes) . '></script>' . "\n";
+        echo '<script src="' . $this->app->escape->html($url) . '"' . $this->app->html->getAttributes($attributes) . '></script>' . "\n";
     }
 
     /**
@@ -51,7 +51,7 @@ class Javascript extends Urls
      */
     public function outputCode(string $code)
     {
-        echo '<script type="text/javascript"' . $this->getNonce() . '>' . "\n";
+        echo '<script' . $this->getNonce() . '>' . "\n";
         echo $code . "\n";
         echo '</script>' . "\n";
     }

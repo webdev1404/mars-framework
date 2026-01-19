@@ -1,6 +1,6 @@
 <?php
 /**
-* The Foreach Hander
+* The Foreach Handler
 * @package Mars
 */
 
@@ -9,7 +9,7 @@ namespace Mars\Themes\Templates\Mars;
 use Mars\App\Kernel;
 
 /**
- * The Foreach Hander
+ * The Foreach Handler
  */
 class ForeachParser
 {

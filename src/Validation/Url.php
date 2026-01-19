@@ -23,13 +23,10 @@ class Url extends Rule
      */
     public function isValid(string $value) : bool
     {
-        $url = strtolower($value);
+        $scheme = parse_url($value, PHP_URL_SCHEME);
+        $blocked_schemes = ['ssh', 'ftp', 'mailto'];
 
-        if (str_starts_with($url, 'ssh://')) {
-            return false;
-        } elseif (str_starts_with($url, 'ftp://')) {
-            return false;
-        } elseif (str_starts_with($url, 'mailto:')) {
+        if ($scheme && in_array(strtolower($scheme), $blocked_schemes)) {
             return false;
         }
 

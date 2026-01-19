@@ -18,11 +18,10 @@ class Mars implements TemplateInterface
     use Kernel;
     
     /**
-     * @var array $supported_structures The list of supported parsers
+     * @var array $supported_parsers The list of supported parsers
      */
     protected array $supported_parsers = [
         'data' => \Mars\Themes\Templates\Mars\DataParser::class,
-        'global' => \Mars\Themes\Templates\Mars\GlobalParser::class,
         'templates' => \Mars\Themes\Templates\Mars\TemplatesParser::class,
         'include' => \Mars\Themes\Templates\Mars\IncludeParser::class,
         'variables_raw' => \Mars\Themes\Templates\Mars\VariablesRawParser::class,
@@ -33,7 +32,7 @@ class Mars implements TemplateInterface
     ];
 
     /**
-     * @var Handlers $handlers The parsers object
+     * @var Handlers $parsers The parsers object
      */
     public protected(set) Handlers $parsers {
         get {

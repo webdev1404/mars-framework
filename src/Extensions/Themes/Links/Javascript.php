@@ -19,7 +19,7 @@ class Javascript extends Urls
      * @internal
      */
     protected DocumentUrls $urls {
-        get => $this->app->document->javascript;
+        get => $this->app->document->js;
     }
 
     /**

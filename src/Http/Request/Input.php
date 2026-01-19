@@ -18,7 +18,7 @@ abstract class Input
 
     /**
      * The data to read from
-     * @param array $data
+     * @var array $data
      */
     public array $data = [];
 
@@ -44,12 +44,16 @@ abstract class Input
     public function get(string $name, mixed $default_value = '', string $filter = '', bool $is_array = false, bool $trim = true) : mixed
     {
         $value = $this->data[$name] ?? null;
-        if (!$value) {
+        if ($value === null) {
             $value = $default_value;
         }
         
         if ($is_array) {
             $value = (array)$value;
+        } else {
+            if (is_array($value)) {
+                $value = array_first($value);
+            }
         }
 
         if ($trim) {
@@ -61,6 +65,18 @@ abstract class Input
         }
 
         return $value;
+    }
+
+    /**
+     * Returns the value of a variable as a string
+     * @param string $name The name of the variable
+     * @param int $default_value The default value to return if the variable is not set
+     * @param bool $is_array Whether the value should be returned as an array
+     * @return int|array The value
+     */
+    public function getString(string $name, ?string $default_value = '', bool $is_array = false) : null|string|array
+    {
+        return  $this->get($name, $default_value, 'string', $is_array);
     }
 
     /**
@@ -112,7 +128,7 @@ abstract class Input
     public function getFromArray(string $name, string $key, mixed $default_value = '', string $filter = '', bool $trim = true) : mixed
     {
         $value = $this->data[$name][$key] ?? null;
-        if (!$value) {
+        if ($value === null) {
             $value = $default_value;
         }
 
@@ -176,7 +192,7 @@ abstract class Input
      * @param mixed $value The value
      * @return static
      */
-    public function set(string $name, $value) : static
+    public function set(string $name, mixed $value) : static
     {
         $this->data[$name] = $value;
 
@@ -227,7 +243,7 @@ abstract class Input
 
             $filter = $filters[$key] ?? '';
 
-            $value = $value = $this->get($index, '', $filter, in_array($index, $array_fields));
+            $value = $this->get($index, '', $filter, in_array($index, $array_fields));
 
             if ($is_array) {
                 $fill[$key] = $value;

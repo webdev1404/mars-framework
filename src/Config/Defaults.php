@@ -37,6 +37,22 @@ class Defaults
         'site.public_path' => '',
 
 
+        // string The prefix of the <title> tag
+        'document.title.prefix' => '',
+
+        // string The suffix of the <title> tag
+        'document.title.suffix' => '',
+
+        // string The separator of the title parts
+        'document.title.separator' => ' - ',
+
+        // string The version of the css files
+        'document.css.version' => '1.0.0',
+
+        // string The version of the javascript files
+        'document.js.version' => '1.0.0',
+
+
         // bool Set to true to display errors, false to hide them
         'errors.display' => false,
 
@@ -104,6 +120,8 @@ class Defaults
             'themes' => false,
             'plugins' => false,
             'modules' => false,
+            'libraries.css' => false,
+            'libraries.js' => false,
         ],
 
         // string Will use this value as device, if specified. Valid values: 'desktop', 'tablet', 'smartphone'
@@ -167,16 +185,28 @@ class Defaults
         'cache.hash' => 'sha256',
 
         // string|null The driver used for data caching. If null, will use cache.driver
-        'cache.data_driver' => null,
+        'cache.data.driver' => 'php',
 
         // string|null The driver used for routes caching. If null, will use cache.driver
-        'cache.routes_driver' => null,
+        'cache.routes.driver' => 'php',
+
+        // string|null The driver used for storage caching. If null, will use cache.driver
+        'cache.storage.driver' => null,
+        
+        // bool If true, will use subdirectories for storage caching
+        'cache.storage.subdirs' => true,
+
+        // int The number of subdirectory levels for storage caching
+        'cache.storage.subdir_levels' => 2,
+
+        // int The length of the subdirectory names for storage caching
+        'cache.storage.subdir_length' => 3,
 
         // bool If true, will enable the page cache functionality
         'cache.page.enable' => false,
 
         // string The driver used for page caching. Supported options: file, memcache
-        'cache.page.driver' => 'file',
+        'cache.page.driver' => null,
 
         // int The value - in hours - of the Expires header
         'cache.page.expire_hours' => 24,
@@ -246,7 +276,7 @@ class Defaults
             // The css urls to preload
             'css' => [],
             // The javascript urls to preload
-            'javascript' => [],
+            'js' => [],
             // The fonts urls to preload
             'fonts' => [],
             // The images urls to preload
@@ -317,7 +347,7 @@ class Defaults
         'session.cookie.lifetime' => null,
 
         // string|null The path of the session cookie
-        'session.cookie.path' => null,
+        'session.cookie.path' => '/',
 
         // string|null The domain of the session cookie
         'session.cookie.domain' => null,
@@ -333,7 +363,7 @@ class Defaults
 
 
         // string The crypt driver. Supported options: openssl, sodium
-        'crypt.driver' => 'sodium',
+        'crypt.driver' => 'openssl',
 
         // array The secret keys used for encryption. The key in use is the last one in the list. Indexes must be strings. For sodium the key must be 32 chars long
         'crypt.keys' => [],
@@ -341,6 +371,16 @@ class Defaults
 
         // string The serializer driver. Supported options: php, json, igbinary
         'serializer.driver' => 'php',
+
+
+        // bool If true, will enable the throttle functionality
+        'throttle.enable' => true,
+
+        // int The max number of attempts allowed within the block duration
+        'throttle.max_attempts' => 10,
+
+        // int The duration, in seconds, for which the key will be blocked after reaching the max attempts
+        'throttle.block_duration' => 3600,
 
 
         // bool If true, will enable the captcha functionality
@@ -379,22 +419,6 @@ class Defaults
 
         // bool If true, will automatically load all the pages from the app/pages folders as routes
         'routes.pages_autoload' => true,
-
-
-        // string The prefix of the <title> tag
-        'document.title.prefix' => '',
-
-        // string The suffix of the <title> tag
-        'document.title.suffix' => '',
-
-        // string The separator of the title parts
-        'document.title.separator' => ' - ',
-
-        // string The version of the css files
-        'document.css.version' => '1.0.0',
-
-        // string The version of the javascript files
-        'document.javascript.version' => '1.0.0',
 
 
         // string The name of the CSRF hidden field

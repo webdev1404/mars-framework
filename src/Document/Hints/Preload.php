@@ -25,7 +25,7 @@ class Preload
     /**
      * @var array $preload_list The list with the items which can be preloaded
      */
-    protected array $list = ['css', 'javascript', 'fonts', 'images'];
+    protected array $list = ['css', 'js', 'fonts', 'images'];
 
     /**
      * @var array $types The types of the urls which can be preloaded and the object which will handle it
@@ -33,8 +33,9 @@ class Preload
     protected array $types = [
         'css' => 'css',
         'style' => 'css',
-        'javascript' => 'javascript',
-        'script' => 'javascript',
+        'js' => 'js',
+        'javascript' => 'js',
+        'script' => 'js',
         'images' => 'images',
         'image' => 'images',
         'font' => 'fonts',
@@ -44,7 +45,7 @@ class Preload
     /**
      * Adds an url to the preload list
      * @param string|array $url The url(s) to load
-     * @param string $type The type of the url [css|javascript|fonts|images]
+     * @param string $type The type of the url [css|js|fonts|images]
      * @param int $priority The url's output priority. The higher, the better
      * @param array $attributes The attributes of the url, if any
      * @return static
@@ -66,7 +67,7 @@ class Preload
     /**
      * Unloads an url from the preload list
      * @param string|array $url The url(s) to unload
-     * @param string $type The type of the url [css|javascript|fonts|images]
+     * @param string $type The type of the url [css|js|fonts|images]
      * @return static
      * @throws \Exception
      */

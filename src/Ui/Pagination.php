@@ -23,7 +23,7 @@ class Pagination
     protected string $base_url = '';
 
     /**
-     * @var int $current_paget The current page
+     * @var int $current_page The current page
      */
     protected int $current_page {
         get {
@@ -61,7 +61,7 @@ class Pagination
     protected int $total_items = 0;
 
     /**
-     * @var int $pagination_items_per_page The number of items that should be displayed on each page
+     * @var int $items_per_page The number of items that should be displayed on each page
      */
     protected int $items_per_page = 0;
 
@@ -100,12 +100,11 @@ class Pagination
      */
     public function __construct(string $base_url, int $items_per_page, int $total_items, int $max_links, App $app)
     {
-        $this->app = $app;
-
         $this->base_url = $base_url;
         $this->items_per_page = $items_per_page;
         $this->total_items = $total_items;
         $this->max_links = $max_links;
+        $this->app = $app;
     }
 
     /**
@@ -127,7 +126,8 @@ class Pagination
 
     /**
      * Returns the pagination html code
-     * @return string
+     * @param array $links The pagination links
+     * @return string The html code
      */
     protected function getHtml(array $links) : string
     {
@@ -140,15 +140,13 @@ class Pagination
             $html.= $this->app->html->a($link['url'], $link['title'], ['class' => $link['class']]) . "\n";
         }
 
-        $html.= '</div' . "\n";
+        $html.= '</div>' . "\n";
 
         return $html;
     }
 
     /**
      * Returns the pagination links
-     * @param int $start The start page
-     * @param int $end The end page
      * @return array
      */
     public function getLinks() : array
@@ -181,9 +179,9 @@ class Pagination
         $end = 1;
 
         if ($this->max_links && $this->max_links < $this->total_pages) {
-            $exlinks = floor($this->max_links / 2);
-            $start = $this->current_page - $exlinks;
-            $end = $this->current_page + $exlinks;
+            $visible_links = floor($this->max_links / 2);
+            $start = $this->current_page - $visible_links;
+            $end = $this->current_page + $visible_links;
 
             if (!($this->max_links % 2)) {
                 $start++;

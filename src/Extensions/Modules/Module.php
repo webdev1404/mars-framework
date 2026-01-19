@@ -34,17 +34,17 @@ class Module extends Extension implements ContentInterface
     public const array DIRS = [
         'assets' => 'assets',
         'bin' => 'bin',
-        'blocks' => 'blocks',
         'config' => 'config',
-        'controllers' => 'controllers',
+        'controllers' => 'Controllers',
         'languages' => 'languages',
         'pages' => 'pages',
         'plugins' => 'plugins',
-        'models' => 'models',
+        'models' => 'Models',
         'routes' => 'routes',
         'templates' => 'templates',
-        'setup' => 'setup',
-        'views' => 'views'
+        'src' => 'src',
+        'setup' => 'Setup',
+        'views' => 'Views'
     ];
 
     /**

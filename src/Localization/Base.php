@@ -47,7 +47,7 @@ class Base
     }
 
     /**
-     * @see \Mars\Languages\LanguageInterface::getRequestUri()
+     * @see \Mars\Localization\LocalizationInterface::getRequestUri()
      * {@inheritdoc}
      */
     public function getRequestUri() : ?string

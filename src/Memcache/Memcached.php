@@ -24,7 +24,7 @@ class Memcached implements MemcacheInterface
     public function connect(string $host, string $port)
     {
         if (!extension_loaded('memcached')) {
-            throw new \Exception("The memcached extension isn't available on this server. Either install it or disable it's use by changing 'memcache_enable' to false in config.php");
+            throw new \Exception("The memcached extension isn't available on this server. Either install it or disable its use by changing 'memcache_enable' to false in config.php");
         }
 
         $this->handle = new \Memcached;
@@ -70,7 +70,7 @@ class Memcached implements MemcacheInterface
     public function get(string $key)
     {
         $value = $this->handle->get($key);
-        if (!$value) {
+        if ($value === false) {
             return null;
         }
 

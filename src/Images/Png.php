@@ -7,7 +7,6 @@
 namespace Mars\Images;
 
 use GdImage;
-use Mars\App;
 
 /**
  * The Png Image Class
@@ -15,20 +14,22 @@ use Mars\App;
 class Png extends Image implements ImageInterface
 {
     /**
-     * @var string $mime_type The image's mime type
+     * @internal
      */
-    protected $mime_type = 'image/png';
+    protected string $mime_type = 'image/png';
 
     /**
-     * ImageInterface::__construct()
-     * {@inheritdoc}
+     * @internal
      */
-    public function __construct(string $filename, App $app)
-    {
-        parent::__construct($filename, $app);
+    protected int $quality {
+        get => $this->app->config->image->png->quality;
+    }
 
-        $this->quality = $this->app->config->image->png->quality;
-        $this->optimize_command = $this->app->config->image->png->optimize_command;
+    /**
+     * @internal
+     */
+    protected string $optimize_command {
+        get => $this->app->config->image->png->optimize_command;
     }
 
     /**

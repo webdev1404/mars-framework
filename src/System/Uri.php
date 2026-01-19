@@ -33,7 +33,7 @@ class Uri implements \Stringable
     }
 
     /**
-     * @var array $parts_full The parts of the full request uri, splitted by '/'
+     * @var array $parts_full The parts of the full request uri, split by '/'
      */
     public protected(set) array $parts_full {
         get {
@@ -63,7 +63,7 @@ class Uri implements \Stringable
     }
 
     /**
-     * @var array $parts The parts of the request uri, splitted by '/'
+     * @var array $parts The parts of the request uri, split by '/'
      */
     public protected(set) array $parts {
         get {
@@ -303,9 +303,9 @@ class Uri implements \Stringable
     }
 
     /**
-     * Builds an url by appendding the $parts to $base_url
+     * Builds an url by appending the $parts to $base_url
      * @param string $base_url The base url
-     * @param array $parts Array with the parts to append to base_url
+     * @param string|array $parts Array with the parts to append to base_url
      * @param array $params Array with the query parameters
      * @param bool $encode If true, it will encode the parts using rawurlencode
      * @param bool $remove_empty_params If true, it will remove empty parameters
@@ -319,9 +319,9 @@ class Uri implements \Stringable
     /**
      * Builds an url, by adding the params to the query string
      * @param string $base_url The base url
-     * @param array $params Array containing the values to be appended. Specified as name = >value
+     * @param array $params Array containing the values to be appended. Specified as name => value
      * @param bool $remove_empty_params If true, will not add empty_params
-     * @return static Returns a new url instance
+     * @return Url Returns a new url instance
      */
     public function add(string $base_url, array $params, bool $remove_empty_params = true) : Url
     {
@@ -332,7 +332,7 @@ class Uri implements \Stringable
      * Returns the url of a route
      * @param string $name The name of the route
      * @param array $replace Array with the values to replace in the route
-     * @return Url|null Returns the url of the route, or null if the route does
+     * @return Url|null Returns the url of the route, or null if the route does not exist
      */
     public function route(string $name, array $replace = []) : ?Url
     {

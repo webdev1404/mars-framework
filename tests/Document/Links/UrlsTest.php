@@ -30,16 +30,16 @@ final class UrlsTest extends Base
         $this->assertSame($this->app->document->css->get('invalidlocation'), []);
     }
 
-    public function testJavascript()
+    public function testJs()
     {
-        $this->app->document->javascript->load('https://mydomain/js/script-1.css', 'head', 100);
-        $this->app->document->javascript->load('https://mydomain/js/script-2.css', 'head', 200);
+        $this->app->document->js->load('https://mydomain/js/script-1.css', 'head', 100);
+        $this->app->document->js->load('https://mydomain/js/script-2.css', 'head', 200);
 
-        $this->assertSame($this->app->document->javascript->get('head'), [
+        $this->assertSame($this->app->document->js->get('head'), [
             'https://mydomain/js/script-2.css' => ['url' => 'https://mydomain/js/script-2.css', 'priority' => 200, 'attributes' => [], 'is_local' => false],
             'https://mydomain/js/script-1.css' => ['url' => 'https://mydomain/js/script-1.css', 'priority' => 100, 'attributes' => [], 'is_local' => false],
         ]);
 
-        $this->assertSame($this->app->document->javascript->get('invalidlocation'), []);
+        $this->assertSame($this->app->document->js->get('invalidlocation'), []);
     }
 }

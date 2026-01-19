@@ -6,7 +6,7 @@
 
 namespace Mars\Mvc;
 
-use Mars\MVC\Models\Items;
+use Mars\Mvc\Models\Items;
 
 /**
  * The Model Class

@@ -24,7 +24,7 @@ class Redis implements MemcacheInterface
     public function connect(string $host, string $port)
     {
         if (!class_exists('\\Redis')) {
-            throw new \Exception("The redis extension isn't available on this server. Either install it or disable it's use by changing 'memcache_enable' to false in config.php");
+            throw new \Exception("The redis extension isn't available on this server. Either install it or disable its use by changing 'memcache_enable' to false in config.php");
         }
 
         $this->handle = new \Redis;
@@ -53,13 +53,13 @@ class Redis implements MemcacheInterface
      */
     public function add(string $key, $value, int $expires = 0) : bool
     {
-        $ret = $this->handle->set($key, serialize($value));
+        $result = $this->handle->set($key, serialize($value));
 
         if ($expires) {
             $this->handle->expireAt($key, time() + $expires);
         }
 
-        return $ret;
+        return $result;
     }
 
     /**
@@ -78,7 +78,7 @@ class Redis implements MemcacheInterface
     public function get(string $key)
     {
         $value = $this->handle->get($key);
-        if (!$value) {
+        if ($value === false) {
             return null;
         }
 
@@ -91,11 +91,7 @@ class Redis implements MemcacheInterface
      */
     public function exists(string $key) : bool
     {
-        if (!$this->handle->exists($key)) {
-            return false;
-        } else {
-            return true;
-        }
+        return (bool) $this->handle->exists($key);
     }
 
     /**

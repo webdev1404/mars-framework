@@ -76,7 +76,7 @@ class Plugins extends BasePlugins
     public protected(set) array $exec_time = [];
 
     /**
-     * @var array $total_time The total execution time. Set only if debug is enabled
+     * @var float $total_time The total execution time. Set only if debug is enabled
      */
     public protected(set) float $total_time = 0;
 
@@ -192,12 +192,12 @@ class Plugins extends BasePlugins
     {
         $time = $this->app->timer->stop('plugin_run');
 
-        $this->total_time+= $time;
+        $this->total_time += $time;
 
         $this->exec_time[$name] = $this->exec_time[$name] ?? 0;
         $this->hooks_exec_time[$hook] = $this->hooks_exec_time[$hook] ?? 0;
 
-        $this->exec_time[$name]+= $time;
+        $this->exec_time[$name] += $time;
         $this->hooks_exec_time[$hook] += $time;
     }
 }

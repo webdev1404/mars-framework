@@ -19,7 +19,7 @@ class Preconnect
     use ListTrait;
 
     /**
-     * @var array $urls Array with all the urls to preload
+     * @var array $urls Array with all the urls to preconnect
      */
     protected array $urls = [];
 

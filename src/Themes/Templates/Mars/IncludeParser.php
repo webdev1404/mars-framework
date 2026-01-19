@@ -39,7 +39,7 @@ class IncludeParser
     {
         $template = trim($value, ' \'"');
         if (!$template) {
-            throw new \Exception("Empty template name in {% template %} construct");
+            throw new \Exception("Empty template name in @include() construct");
         }
 
         $template_filename = dirname($filename) . '/' . $template . '.php';

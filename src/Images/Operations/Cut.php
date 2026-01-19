@@ -20,11 +20,17 @@ class Cut extends Operation
      * @param int $width The width of the resulting image. If 0, the image will have the same width as $cut_width
      * @param int $height The height of the resulting image. If 0 the image will have the same height as $cut_height
      * @param array $options Options, if any
+     * @throws \Exception
      */
     public function process(int $cut_width, int $cut_height, int $cut_x, int $cut_y, int $width, int $height, array $options = [])
     {
-        [$source_width, $source_height] = $this->source->getSize();
-        $source_ratio = $this->source->getRatio();
+        if (!$this->source->valid) {
+            throw new \Exception("Source image {$this->source->filename} is not valid. It either does not exist or is not a valid image.");
+        }
+
+        $source_width = $this->source->width;
+        $source_height = $this->source->height;
+        $source_ratio = $this->source->ratio;
 
         if (!$cut_width) {
             $cut_width = $source_width - $cut_x;
@@ -51,7 +57,6 @@ class Cut extends Operation
 
         $destination_x = 0;
         $destination_y = 0;
-        $ratio = $cut_width / $cut_height;
 
         if (!$width && !$height) {
             $width = $cut_width;
@@ -71,5 +76,9 @@ class Cut extends Operation
         }
 
         $this->copyResampled((int) $width, (int) $height, (int) $cut_width, (int) $cut_height, $cut_x, $cut_y, (int) $cut_width, (int) $cut_height, (int)$destination_x, (int)$destination_y, true, $options);
+
+        if (!is_file($this->destination->filename)) {
+            throw new \Exception("Failed to create image {$this->destination->filename}");
+        }
     }
 }

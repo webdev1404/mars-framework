@@ -4,9 +4,9 @@
 * @package Mars
 */
 
-namespace Mars\Db\Mysql;
+namespace Mars\Db\Drivers\Mysql;
 
-use Mars\Db\Pdo;
+use Mars\Db\Drivers\Pdo;
 
 /**
  * The Mysql Database Driver

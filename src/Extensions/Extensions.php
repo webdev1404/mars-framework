@@ -18,14 +18,19 @@ abstract class Extensions
     use Kernel;
 
     /**
-     * @var array|null $list_enabled The list of enabled extensions of this type
+     * @var bool $list_use_all If true, all found extensions are considered enabled
      */
-    protected static ?array $list_enabled = null;
+    protected static bool $list_use_all = false;
 
     /**
      * @var array|null $list_all The list of available extensions of this type
      */
     protected static ?array $list_all = null;
+
+    /**
+     * @var array|null $list_enabled The list of enabled extensions of this type
+     */
+    protected static ?array $list_enabled = null;
 
     /**
      * @var string $list_config_file The config file where the enabled extensions are listed
@@ -152,9 +157,7 @@ abstract class Extensions
             return static::$list_all;
         }
 
-        $cache_filename = static::$instance_class::getBaseDir() . '-extensions-list-all';
-
-        static::$list_all = $this->getList($use_cache, $cache_filename, function () {
+        static::$list_all = $this->getList($use_cache, 'all', function () {
             return $this->readAll();
         });
 
@@ -168,6 +171,10 @@ abstract class Extensions
      */
     public function getAvailable(bool $use_cache = true): array
     {
+        if (static::$list_use_all) {
+            return [];
+        }
+
         $list_enabled = $this->getEnabled($use_cache);
         $list_all = $this->getAll($use_cache);
 
@@ -181,13 +188,15 @@ abstract class Extensions
      */
     public function getEnabled(bool $use_cache = true): array
     {
+        if (static::$list_use_all) {
+            return $this->getAll($use_cache);
+        }
+
         if ($use_cache && static::$list_enabled !== null) {
             return static::$list_enabled;
         }
 
-        $cache_filename = static::$instance_class::getBaseDir() . '-extensions-list-enabled';
-
-        static::$list_enabled = $this->getList($use_cache, $cache_filename, function () {
+        static::$list_enabled = $this->getList($use_cache, 'enabled', function () {
             $list_all = $this->getAll();
 
             if (static::$list_config_file) {
@@ -210,14 +219,26 @@ abstract class Extensions
     }
 
     /**
+     * Generates the cache filename for the specified list type
+     * @param string $type The type of the list (all, enabled, etc.)
+     * @return string The cache filename
+     */
+    protected function getCacheFilename(string $type): string
+    {
+        return str_replace('/', '-', static::$instance_class::getBaseDir()) . '-extensions-list-' . $type;
+    }
+
+    /**
      * Gets the list of extensions, using the cache if available
      * @param bool $use_cache If true, the cache will be used
-     * @param string $cache_filename The cache filename
+     * @param string $type The type of the list (all, enabled, etc.)
      * @param callable $get The function to call to get the list if not in cache
      * @return array The list of extensions
      */
-    protected function getList(bool $use_cache, string $cache_filename, callable $get) : array
+    protected function getList(bool $use_cache, string $type, callable $get) : array
     {
+        $cache_filename = $this->getCacheFilename($type);
+
         $list = $this->app->cache->data->get($cache_filename);
 
         // If we are in development mode, we always read the list from the filesystem
@@ -270,7 +291,6 @@ abstract class Extensions
 
         foreach ($dirs as $key => $dir) {
             $info_file = $dir . '/info.php';
-
             if (!is_file($info_file)) {
                 unset($dirs[$key]);
             }
@@ -447,7 +467,7 @@ abstract class Extensions
      */
     protected function getSetupManager(string $name) : ?object
     {
-        $setup_file = $this->getPath($name) . '/' . static::$instance_class::DIRS['setup'] . '/Setup.php';
+        $setup_file = $this->getPath($name) . '/' . static::$instance_class::DIRS['src'] . '/' . static::$instance_class::DIRS['setup'] . '/Setup.php';
         if (!is_file($setup_file)) {
             return null;
         }

@@ -22,8 +22,8 @@ class IntVal extends FloatVal
     /**
      * Validates that value is a integer
      * @param string $value The value
-     * @param int $min The minimum value, if any
-     * @param int $max The maximum value, if any
+     * @param ?int $min The minimum value, if any
+     * @param ?int $max The maximum value, if any
      * @return bool
      */
     public function isValid(string $value, ?float $min = 0, ?float $max = null) : bool

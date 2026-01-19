@@ -15,15 +15,43 @@ use Mars\Extensions\Modules\Modules as BaseModules;
 class Modules extends BaseModules
 {
     /**
+     * @var array $instances The instances of the loaded modules
+     */
+    protected array $instances = [];
+
+    /**
+     * Returns a new module instance
+     * @param string $name The name of the module
+     * @param array $params Optional parameters to pass to the module constructor
+     * @return Module The module
+     */
+    public function get(string $name, array $params = [], bool $use_cache = true) : Module
+    {
+        if (!$use_cache) {
+            return new static::$instance_class($name, $params, $this->app);
+        }
+
+        $key = $name;
+        if ($params) {
+            $key .= ':' . md5(serialize($params));
+        }
+        if (isset($this->instances[$key])) {
+            return $this->instances[$key];
+        }
+
+        $this->instances[$key] = new static::$instance_class($name, $params, $this->app);
+
+        return $this->instances[$key];
+    }
+
+    /**
      * Boots the enabled modules
      */
     public function boot()
     {
-        $app = $this->app;
-
         $list = $this->getBootList();
         foreach ($list as $name) {
-            $module = $this->get($name);
+            $module = $this->get($name, use_cache: false);
             $module->boot();
         }
     }
@@ -47,7 +75,7 @@ class Modules extends BaseModules
         $list = [];
         $modules = $this->getEnabled();
 
-        foreach ($modules as $name =>$module) {
+        foreach ($modules as $name => $module) {
             $boot_filename = $module . '/boot.php';
             if (is_file($boot_filename)) {
                 $list[] = $name;

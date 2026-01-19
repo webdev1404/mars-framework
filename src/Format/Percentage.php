@@ -14,7 +14,7 @@ class Percentage
     /**
      * @see \Mars\Format::percentage()
      */
-    public function format(float|array $number, float $total, int $decimals = 4) : float|array
+    public function format(float $number, float $total, int $decimals = 4) : float
     {
         if (!$number || !$total) {
             return 0;

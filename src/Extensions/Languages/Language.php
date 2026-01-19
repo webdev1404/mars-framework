@@ -25,7 +25,8 @@ class Language extends Extension
         'assets' => 'assets',
         'files' => 'files',
         'templates' => 'templates',
-        'setup' => 'setup',
+        'src' => 'src',
+        'setup' => 'Setup',
     ];
 
     /**

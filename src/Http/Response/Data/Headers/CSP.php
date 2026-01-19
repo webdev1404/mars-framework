@@ -23,7 +23,7 @@ class CSP
      */
     protected array $document_assets = [
         'style-src' => 'css',
-        'script-src' => 'javascript',
+        'script-src' => 'js',
         'font-src' => 'fonts',
         'img-src' => 'images',
     ];
@@ -61,7 +61,7 @@ class CSP
             }
         }
 
-        //add noonce
+        //add nonce
         if ($this->app->config->http->response->headers->csp->use_nonce) {
             $nonce = $this->app->nonce;
 
@@ -115,7 +115,7 @@ class CSP
             }
         }
 
-        $default = $this->defaults[$name] ?? '';
+        $default = $this->app->config->http->response->headers->csp->defaults[$name] ?? '';
         if (!$external_urls) {
             return $default;
         }

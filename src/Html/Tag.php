@@ -32,7 +32,7 @@ class Tag implements TagInterface
     protected static string $newline = "\n";
 
     /**
-     * @var string $always_close If true, the tag will always be closed
+     * @var bool $always_close If true, the tag will always be closed
      */
     protected static bool $always_close = true;
 
@@ -42,7 +42,7 @@ class Tag implements TagInterface
     protected static array $properties = [];
 
     /**
-     * @var array $empty_properties List with the attributes that will be added even if empty
+     * @var array $empty_attributes List with the attributes that will be added even if empty
      */
     protected static array $empty_attributes = [];
 
@@ -82,9 +82,9 @@ class Tag implements TagInterface
         } else {
             $html = '<' . static::$tag . $attributes . '>';
             if (static::$always_close) {
-                $html.= '</' . static::$tag . '>';
+                $html .= '</' . static::$tag . '>';
             }
-            $html.= static::$newline;
+            $html .= static::$newline;
 
             return $html;
         }
@@ -103,7 +103,7 @@ class Tag implements TagInterface
     }
 
     /**
-     * Generates an id attribute, if one doesn't already exists
+     * Generates an id attribute, if one doesn't already exist
      * @param array $attributes The attributes in the format name => value
      * @return array The attributes, including the id field
      */

@@ -1,13 +1,13 @@
 <?php
 /**
-* The Date Validator Class
+* The Time Validator Class
 * @package Mars
 */
 
 namespace Mars\Validation;
 
 /**
- * The Date Validator Class
+ * The Time Validator Class
  */
 class Time extends Datetime
 {

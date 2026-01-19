@@ -24,7 +24,7 @@ class Db
      * @var array $supported_drivers The supported drivers
      */
     public protected(set) array $supported_drivers = [
-        'mysql' => \Mars\Db\Mysql\Driver::class
+        'mysql' => \Mars\Db\Drivers\Mysql\Driver::class
     ];
 
     /**

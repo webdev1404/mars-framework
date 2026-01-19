@@ -15,19 +15,15 @@ use Mars\App;
 class Webp extends Image implements ImageInterface
 {
     /**
-     * @var string $mime_type The image's mime type
+     * @internal
      */
-    protected $mime_type = 'image/webp';
+    protected string $mime_type = 'image/webp';
 
     /**
-     * ImageInterface::__construct()
-     * {@inheritdoc}
+     * @internal
      */
-    public function __construct(string $filename, App $app)
-    {
-        parent::__construct($filename, $app);
-
-        $this->quality = $this->app->config->image->webp->quality;
+    protected int $quality {
+        get => $this->app->config->image->webp->quality;
     }
 
     /**

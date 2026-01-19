@@ -4,14 +4,14 @@
 * @package Mars
 */
 
-namespace Mars\Db\Sql;
+namespace Mars\Db\Drivers;
 
 use Mars\Db\SqlInterface;
 
 /**
  * The Sql Builder Base Class.
  */
-abstract class Base implements SqlInterface
+abstract class Sql implements SqlInterface
 {
     /**
      * @var array $params The params to use in prepared statements

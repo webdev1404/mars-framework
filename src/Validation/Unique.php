@@ -19,8 +19,9 @@ class Unique extends Rule
     /**
      * Validates that a value is unique in a table
      * @param string $value The value
-     * @param string $table The name of the table
-     * @param string $column The name of the column
+     * @param ?string $table The name of the table
+     * @param ?string $column The name of the column
+     * @param ?string $error Custom error message
      * @return bool
      */
     public function isValid(string $value, ?string $table = null, ?string $column = 'id', ?string $error = null) : bool

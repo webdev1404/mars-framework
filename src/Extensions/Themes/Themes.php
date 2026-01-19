@@ -16,7 +16,7 @@ class Themes extends Extensions
     /**
      * @internal
      */
-    protected static ?array $list_enabled = null;
+    protected static bool $list_use_all = true;
 
     /**
      * @internal
@@ -26,25 +26,5 @@ class Themes extends Extensions
     /**
      * @internal
      */
-    protected static string $list_config_file = '';
-
-    /**
-     * @internal
-     */
     protected static string $instance_class = Theme::class;
-
-    /**
-     * @see Extensions::getEnabled()
-     * {@inheritdoc}
-     */
-    public function getEnabled(bool $use_cache = true): array
-    {
-        if (static::$list_enabled !== null) {
-            return static::$list_enabled;
-        }
-
-        static::$list_enabled = $this->getAll($use_cache);
-
-        return static::$list_enabled;
-    }
 }

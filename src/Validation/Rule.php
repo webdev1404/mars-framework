@@ -34,11 +34,7 @@ abstract class Rule
      */
     public function validate(string $value, ...$params) : bool
     {
-        if ($this->isValid($value, ...$params)) {
-            return true;
-        }
-
-        return false;
+        return $this->isValid($value, ...$params);
     }
 
     /**

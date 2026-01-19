@@ -27,7 +27,10 @@ class Container
             } elseif (!is_array($value)) {
                 $this->$key = $value;
             } else {
-                $this->$key = new self;
+                if (!isset($this->$key)) {
+                    $this->$key = new self;
+                }
+                
                 $this->$key->assign($value);
             }
         }

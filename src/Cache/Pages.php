@@ -34,7 +34,7 @@ class Pages extends Cacheable
      * @var string $driver_name The name of the driver to use
      */
     protected string $driver_name {
-        get => $this->app->config->cache->page->driver;
+        get => $this->app->config->cache->page->driver ?? $this->app->config->cache->driver;
     }
 
     /**

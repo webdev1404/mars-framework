@@ -19,7 +19,7 @@ class Routes extends Data
      * @var string $driver_name The used driver
      */
     protected string $driver_name {
-        get => $this->app->config->cache->routes_driver ?? $this->app->config->cache->driver;
+        get => $this->app->config->cache->routes->driver ?? $this->app->config->cache->driver;
     }
 
     /**

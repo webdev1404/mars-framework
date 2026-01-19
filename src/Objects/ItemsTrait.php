@@ -47,19 +47,6 @@ trait ItemsTrait
     }
 
     /**
-     * Unsets the app & db property when serializing
-     */
-    public function __sleep()
-    {
-        $data = get_object_vars($this);
-
-        unset($data['app']);
-        unset($data['db']);
-
-        return array_keys($data);
-    }
-
-    /**
      * Returns the table name
      * @return string
      */
@@ -120,8 +107,8 @@ trait ItemsTrait
     {
         $this->data = [];
 
-        $data = $this->db->readQuery($sql)->fetchAll(true);
-        $this->set($data);
+        $rows = $this->db->readQuery($sql)->fetchAll(true);
+        $this->set($rows);
 
         return $this;
     }
@@ -139,7 +126,7 @@ trait ItemsTrait
     }
 
     /**
-     * Loads a set of objects based on the based data. These keys might be specififed: where, order_by, order, limit, limit_offset
+     * Loads a set of objects based on the data. These keys might be specified: where, order_by, order
      * @param array $data The data used to build the sql object from
      * @return static
      */

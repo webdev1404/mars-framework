@@ -7,7 +7,6 @@
 namespace Mars\Router\Loaders;
 
 use Mars\Extensions\Modules\Module;
-use Mars\Extensions\Modules\Modules;
 
 /**
  * The Files Loader Class
@@ -38,14 +37,12 @@ class Files extends Loader
 
     /**
      * Returns the list of dirs from where to build page routes
-     * @return array The list of of dirs
+     * @return array The list of dirs
      */
     protected function getDirsList() : array
     {
         $dirs = [];
-
-        $modules = new Modules($this->app);
-        foreach ($modules->getEnabled() as $module_path) {
+        foreach ($this->app->modules->getEnabled() as $module_path) {
             $module_dir = $module_path . '/' . Module::DIRS['routes'];
             if (is_dir($module_dir)) {
                 $dirs[] = $module_dir;
@@ -238,7 +235,7 @@ class Files extends Loader
      */
     public function remove(string|array $routes, string|array|null $languages = '*', string|array $methods = []) : static
     {
-        $routes_list = $this->app->array->get($routes);
+        $routes_list = (array)$routes;
         $methods = $this->getMethods($methods);
 
         foreach ($routes_list as $route_lang => $route) {
@@ -253,7 +250,7 @@ class Files extends Loader
 
             foreach ($methods as $method) {
                 foreach ($languages as $language) {
-                    $this->unloadHash($method, $language, $route, $prefix, $hash);
+                    $this->unloadHash($method, $language, $prefix, $hash);
                 }
             }
         }
@@ -290,8 +287,7 @@ class Files extends Loader
      */
     protected function addHashes(string|array $routes, string|callable|array|null $actions, string|array|null $languages, string|array $methods, string $type, array $data = [], string $name = '') : void
     {
-        $hashes = [];
-        $routes_list = $this->app->array->get($routes);
+        $routes_list = (array)$routes;
         $methods = $this->getMethods($methods);
 
         foreach ($routes_list as $route_lang => $route) {
@@ -431,7 +427,7 @@ class Files extends Loader
             return $this->app->lang->codes;
         }
         
-        $languages = $this->app->array->get($languages);
+        $languages = (array)$languages;
 
         return array_intersect($languages, $this->app->lang->codes);
     }

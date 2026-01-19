@@ -39,7 +39,7 @@ class TemplatesParser
     {
         $template = trim($value, ' \'"');
         if (!$template) {
-            throw new \Exception("Empty template name in {% template %} construct");
+            throw new \Exception("Empty template name in @template() construct");
         }
 
         $filename = $this->app->theme->template->getFilename($template);

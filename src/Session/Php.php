@@ -17,6 +17,10 @@ class Php extends Base
      */
     public function start()
     {
+        if (session_status() == PHP_SESSION_ACTIVE) {
+            return;
+        }
+
         if ($this->app->config->session->save_path) {
             session_save_path($this->app->config->session->save_path);
         }
@@ -30,7 +34,7 @@ class Php extends Base
             'path'     => $this->app->config->session->cookie->path,
             'domain'   => $this->app->config->session->cookie->domain,
             'secure'   => $this->app->config->session->cookie->secure,
-            'httponly' => $this->app->config->session->cookie->httponly ?? true,
+            'httponly' => $this->app->config->session->cookie->httponly,
             'samesite' => $this->app->config->session->cookie->samesite,
         ]);
 

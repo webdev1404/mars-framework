@@ -1,6 +1,6 @@
 <?php
 /**
-* The If Hander
+* The If Handler
 * @package Mars
 */
 
@@ -9,7 +9,7 @@ namespace Mars\Themes\Templates\Mars;
 use Mars\App\Kernel;
 
 /**
- * The If Hander
+ * The If Handler
  */
 class IfParser
 {
@@ -37,8 +37,8 @@ class IfParser
     }
 
     /**
-     * Returns an if condition from $match
-     * @param array $match Callback match
+     * Returns an if condition from $value
+     * @param string $value Callback value
      * @return string
      */
     protected function getCondition(string $value) : string

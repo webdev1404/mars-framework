@@ -38,13 +38,18 @@ abstract class Params
         return $value;
     }
 
+    /**
+     * Gets a variable's value
+     * @param string $value The value
+     * @param string $delim The delimiter
+     * @return string The parsed value
+     */
     protected function getValue(string $value, string $delim) : string
     {
         $value = $this->getName($value, $delim);
      
-        $add_brackets = $delim ? true : false;
         $vars = new VariablesParser($this->app);
-        $value = $vars->replaceAll($value, $add_brackets);
+        $value = $vars->replaceAll($value, (bool)$delim);
 
         if ($delim) {
             $value = '"' . $value . '"';

@@ -1,13 +1,13 @@
 <?php
 /**
-* The Integer Validator Class
+* The Float Validator Class
 * @package Mars
 */
 
 namespace Mars\Validation;
 
 /**
- * The Integer Validator Class
+ * The Float Validator Class
  * Validates that value is a float
  */
 class FloatVal extends Rule
@@ -25,10 +25,10 @@ class FloatVal extends Rule
     ];
 
     /**
-     * Validates that value is a integer
+     * Validates that value is a float
      * @param string $value The value
-     * @param float $min The minimum value, if any
-     * @param float $max The maximum value, if any
+     * @param ?float $min The minimum value, if any
+     * @param ?float $max The maximum value, if any
      * @return bool
      */
     public function isValid(string $value, ?float $min = 0, ?float $max = null) : bool
@@ -38,6 +38,10 @@ class FloatVal extends Rule
 
     /**
      * Validates the value
+     * @param mixed $value The value
+     * @param ?float $min The minimum value, if any
+     * @param ?float $max The maximum value, if any
+     * @param int $type The filter type
      * @return bool Returns true if the value is valid
      */
     protected function isValidValue(mixed $value, ?float $min, ?float $max, int $type) : bool
@@ -59,8 +63,8 @@ class FloatVal extends Rule
     /**
      * Validates the minimum and maximum values
      * @param float $value The value to validate
-     * @param float $min The minimum value, if any
-     * @param float $max The maximum value, if any
+     * @param ?float $min The minimum value, if any
+     * @param ?float $max The maximum value, if any
      * @return bool Returns true if the value is within the min and max range
      */
     protected function isValidMinMax($value, ?float $min = null, ?float $max = null) : bool

@@ -40,9 +40,10 @@ class Picture extends Tag
 
     /**
      * Returns the html code of the source images
+     * @param array $images The images
      * @return string
      */
-    protected function getImages($images) : string
+    protected function getImages(array $images) : string
     {
         $html = '';
         foreach ($images as $image) {

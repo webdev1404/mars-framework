@@ -327,7 +327,7 @@ class Filter
      */
     public function remove(array $values, string|array $remove) : array
     {
-        return array_diff($values, $this->app->array->get($remove));
+        return array_diff($values, (array)$remove);
     }
 
     /**

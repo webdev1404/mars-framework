@@ -28,6 +28,8 @@ class Required extends Rule
     /**
      * Validates that a value is not empty
      * @param string $value The value
+     * @param int|null $min The minimum length, if any
+     * @param int|null $max The maximum length, if any
      * @return bool
      */
     public function isValid(string $value, ?int $min = null, ?int $max = null) : bool

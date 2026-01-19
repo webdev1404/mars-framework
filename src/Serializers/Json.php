@@ -7,7 +7,7 @@
 namespace Mars\Serializers;
 
 /**
- * The JSON Driver Interface
+ * The JSON Serializer Class
  */
 class Json implements SerializerInterface
 {

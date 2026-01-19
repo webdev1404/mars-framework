@@ -13,6 +13,7 @@ use Mars\Cache\Javascript;
 use Mars\Cache\Data;
 use Mars\Cache\Pages;
 use Mars\Cache\Routes;
+use Mars\Cache\Storage;
 use Mars\Cache\Templates;
 
 /**
@@ -37,10 +38,10 @@ class Cache
     public protected(set) Css $css;
 
     /**
-     * @var Javascript $javascript The Javascript Cache object
+     * @var Javascript $js The Javascript Cache object
      */
     #[LazyLoadProperty]
-    public protected(set) Javascript $javascript;
+    public protected(set) Javascript $js;
 
     /**
      * @var Data $data The Data Cache object
@@ -59,6 +60,12 @@ class Cache
      */
     #[LazyLoadProperty]
     public protected(set) Routes $routes;
+
+    /**
+     * @var Storage $storage The Storage Cache object
+     */
+    #[LazyLoadProperty]
+    public protected(set) Storage $storage;
 
     /**
      * @var Templates $templates The Templates Cache object
@@ -82,7 +89,7 @@ class Cache
      */
     public function get(string $name) : mixed
     {
-        return $this->data->get($name);
+        return $this->storage->get($name);
     }
 
     /**
@@ -92,7 +99,7 @@ class Cache
      */
     public function set(string $name, mixed $value) : static
     {
-        $this->data->set($name, $value);
+        $this->storage->set($name, $value);
 
         return $this;
     }
@@ -103,7 +110,7 @@ class Cache
      */
     public function delete(string $name) : static
     {
-        $this->data->delete($name);
+        $this->storage->delete($name);
 
         return $this;
     }

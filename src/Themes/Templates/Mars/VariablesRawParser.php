@@ -27,7 +27,7 @@ class VariablesRawParser extends VariablesParser
     }
 
     /**
-     * {inheritdoc}
+     * {@inheritdoc}
      */
     protected function applyModifiers(string $value, array $modifiers, bool $apply_escape = true) : string
     {

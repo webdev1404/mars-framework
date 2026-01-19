@@ -7,7 +7,7 @@
 namespace Mars\Serializers;
 
 /**
- * The PHP Driver Interface
+ * The PHP Serializer Class
  */
 class Php implements SerializerInterface
 {

@@ -40,6 +40,10 @@ abstract class Base implements SessionInterface
      */
     public function start()
     {
+        if (session_status() == PHP_SESSION_ACTIVE) {
+            return;
+        }
+        
         session_start();
     }
 

@@ -24,7 +24,7 @@ abstract class Listing extends Tag
      * @see TagInterface::html()
      * {@inheritdoc}
      */
-    public function html(string $text = '', array $attributes = [], array $items = []) : string
+    public function html(string $text = '', array $attributes = []) : string
     {
         $html = $this->open($this->getAttributes($attributes));
         $html.= $this->getItems($attributes['items']);

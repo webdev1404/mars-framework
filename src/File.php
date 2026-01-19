@@ -22,7 +22,7 @@ class File implements \Stringable
     public protected(set) string $filename = '';
 
     /**
-     * @var Dir|null The directory of the file. Will be null if the file has no parent dir
+     * @var Dir|null $dir The directory of the file. Will be null if the file has no parent dir
      */
     public protected(set) ?Dir $dir {
         get {
@@ -114,7 +114,7 @@ class File implements \Stringable
     }
 
     /**
-     * @var string The file extension, in lowercase
+     * @var string $extension The file extension, in lowercase
      */
     public protected(set) string $extension {
         get {
@@ -129,24 +129,48 @@ class File implements \Stringable
     }
 
     /**
-     * @var bool|string The MIME type of the file
+     * @var bool|string|null $type The MIME type of the file
      */
-    public bool|string $type {
-        get => mime_content_type($this->filename);
+    public protected(set) bool|string|null $type {
+        get {
+            if (isset($this->type)) {
+                return $this->type;
+            }
+
+            $this->type = $this->exists ? mime_content_type($this->filename) : false;
+
+            return $this->type;
+        }
     }
 
     /**
-     * @var bool|int The size of the file
+     * @var bool|int|null $size The size of the file
      */
-    public bool|int $size {
-        get => filesize($this->filename);
+    public bool|int|null $size {
+        get {
+            if (isset($this->size)) {
+                return $this->size;
+            }
+
+            $this->size = $this->exists ? filesize($this->filename) : false;
+
+            return $this->size;
+        }
     }
 
     /**
-     * @var bool True if the file exists
+     * @var ?bool $exists True if the file exists
      */
-    public bool $exists {
-        get => is_file($this->filename);
+    public protected(set) ?bool $exists {
+        get {
+            if (isset($this->exists)) {
+                return $this->exists;
+            }
+
+            $this->exists = is_file($this->filename);
+
+            return $this->exists;
+        }
     }
 
     /**
@@ -194,7 +218,7 @@ class File implements \Stringable
         }
 
         $dir = ($this->app->config->security->open_basedir === true) ? $this->app->base_path : $this->app->config->security->open_basedir;
-        $dirs = $this->app->array->get($dir);
+        $dirs = (array)$dir;
 
         array_walk($dirs, function (&$item) {
             $item = new Dir($item);
@@ -351,16 +375,6 @@ class File implements \Stringable
     }
 
     /**
-     * Determines if the file is an image, based on extension.
-     * It only checks the extension, use $app->image->isValid to check if the file is really an image
-     * @return bool
-     */
-    public function isImage(): bool
-    {
-        return in_array($this->extension, Image::EXTENSIONS);
-    }
-
-    /**
      * Reads the content of the file
      * @return string The contents of the file
      * @throws Exception if the file can't be read
@@ -402,6 +416,10 @@ class File implements \Stringable
             throw new \Exception(App::__('error.file.write', ['{FILE}' => $this->filename]));
         }
 
+        $this->exists = true;
+        $this->size = null;
+        $this->type = null;
+
         return $bytes;
     }
 
@@ -423,6 +441,10 @@ class File implements \Stringable
         if (unlink($this->filename) === false) {
             throw new \Exception(App::__('error.file.delete', ['{FILE}' => $this->filename]));
         }
+
+        $this->exists = false;
+        $this->size = false;
+        $this->type = false;
 
         return null;
     }

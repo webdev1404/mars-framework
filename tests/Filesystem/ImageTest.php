@@ -2,29 +2,33 @@
 
 use Mars\Image;
 
-include_once(__DIR__ . '/Base.php');
+include_once(dirname(__DIR__) . '/Base.php');
 
 /**
  * @ignore
  */
 final class ImageTest extends Base
 {
-    protected $images_dir = __DIR__ . '/data/images/';
+    protected $images_dir = '';
+
+    public function setUp(): void
+    {
+        parent::setUp();
+
+        $this->images_dir = dirname(__DIR__) . '/data/images/';
+    }
 
     public function testUnsupported()
     {
-        $this->expectException(\Exception::class);
-
-        $this->app->image->getWidth('image.xxx');
+        $this->assertSame($this->app->image->getWidth('image.xxx'), 0);
     }
 
     public function testJpg()
     {
         $image_filename = $this->images_dir . 'image.jpg';
-
         $this->assertFalse($this->app->image->isValid($this->images_dir . 'invalid-image.jpg'));
         $this->assertTrue($this->app->image->isValid($image_filename));
-        $this->assertSame($this->app->image->getSize($image_filename), [1280, 853]);
+        $this->assertSame($this->app->image->getDimensions($image_filename), [1280, 853]);
         $this->assertSame($this->app->image->getWidth($image_filename), 1280);
         $this->assertSame($this->app->image->getHeight($image_filename), 853);
 
@@ -34,7 +38,7 @@ final class ImageTest extends Base
 
         $this->assertTrue(is_file($image_filename_resized));
         $this->assertTrue($this->app->image->isValid($image_filename_resized));
-        $this->assertSame($this->app->image->getSize($image_filename_resized), [400, 200]);
+        $this->assertSame($this->app->image->getDimensions($image_filename_resized), [400, 200]);
         unlink($image_filename_resized);
 
         //resize - by width
@@ -42,7 +46,7 @@ final class ImageTest extends Base
 
         $this->assertTrue(is_file($image_filename_resized));
         $this->assertTrue($this->app->image->isValid($image_filename_resized));
-        $this->assertSame($this->app->image->getSize($image_filename_resized), [400, (int) (400 / $this->app->image->getRatio($image_filename))]);
+        $this->assertSame($this->app->image->getDimensions($image_filename_resized), [400, (int) (400 / $this->app->image->getRatio($image_filename))]);
         unlink($image_filename_resized);
 
         //resize - by height
@@ -50,7 +54,7 @@ final class ImageTest extends Base
 
         $this->assertTrue(is_file($image_filename_resized));
         $this->assertTrue($this->app->image->isValid($image_filename_resized));
-        $this->assertSame($this->app->image->getSize($image_filename_resized), [(int) (400 * $this->app->image->getRatio($image_filename)), 400]);
+        $this->assertSame($this->app->image->getDimensions($image_filename_resized), [(int) (400 * $this->app->image->getRatio($image_filename)), 400]);
         unlink($image_filename_resized);
 
 
@@ -60,14 +64,14 @@ final class ImageTest extends Base
 
         $this->assertTrue(is_file($image_filename_cropped));
         $this->assertTrue($this->app->image->isValid($image_filename_cropped));
-        $this->assertSame($this->app->image->getSize($image_filename_cropped), [400, 200]);
+        $this->assertSame($this->app->image->getDimensions($image_filename_cropped), [400, 200]);
         unlink($image_filename_cropped);
 
         $this->app->image->crop($image_filename, $image_filename_cropped, 200, 400);
         
         $this->assertTrue(is_file($image_filename_cropped));
         $this->assertTrue($this->app->image->isValid($image_filename_cropped));
-        $this->assertSame($this->app->image->getSize($image_filename_cropped), [200, 400]);
+        $this->assertSame($this->app->image->getDimensions($image_filename_cropped), [200, 400]);
         unlink($image_filename_cropped);
 
 
@@ -77,14 +81,14 @@ final class ImageTest extends Base
 
         $this->assertTrue(is_file($image_filename_cut));
         $this->assertTrue($this->app->image->isValid($image_filename_cut));
-        $this->assertSame($this->app->image->getSize($image_filename_cut), [400, 200]);
+        $this->assertSame($this->app->image->getDimensions($image_filename_cut), [400, 200]);
         unlink($image_filename_cut);
 
         $this->app->image->cut($image_filename, $image_filename_cut, 200, 400);
 
         $this->assertTrue(is_file($image_filename_cut));
         $this->assertTrue($this->app->image->isValid($image_filename_cut));
-        $this->assertSame($this->app->image->getSize($image_filename_cut), [200, 400]);
+        $this->assertSame($this->app->image->getDimensions($image_filename_cut), [200, 400]);
         unlink($image_filename_cut);
 
 

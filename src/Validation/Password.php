@@ -16,17 +16,29 @@ class Password extends Rule
      */
     public string $error = 'validate.password';
 
+    /**
+     * {@inheritdoc}
+     */
     public array $errors = [
         'min_max' => 'validate.password.length',
         'chars' => 'validate.password.chars',
     ];
 
+    /**
+     * @var int $min The minimum password length
+     */
     protected int $min = 6;
+
+    /**
+     * @var int $max The maximum password length
+     */
     protected int $max = 100;
 
     /**
      * Validates a password
      * @param string $password The password
+     * @param int|null $min The minimum length
+     * @param int|null $max The maximum length
      * @return bool
      */
     public function isValid(string $password, ?int $min = null, ?int $max = null) : bool
@@ -34,8 +46,7 @@ class Password extends Rule
         $min ??= $this->min;
         $max ??= $this->max;
 
-        $password = trim($password);
-        if (!$password) {
+        if ($password === '') {
             return false;
         }
 

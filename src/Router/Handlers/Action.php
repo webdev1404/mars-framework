@@ -1,6 +1,6 @@
 <?php
 /**
- * The Template Route Handler Class
+ * The Action Route Handler Class
  * @package Mars
  */
 namespace Mars\Router\Handlers;

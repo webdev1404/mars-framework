@@ -29,7 +29,7 @@ class Recaptcha3 implements CaptchaInterface
             throw new \Exception('The reCAPTCHA v3 configuration is incomplete. Please set both captcha.recaptcha.site_key and captcha.recaptcha.secret_key in your configuration.');
         }
 
-        $this->app->document->javascript->load('https://www.google.com/recaptcha/api.js?render=' . urlencode($this->app->config->captcha->recaptcha->site_key));
+        $this->app->document->js->load('https://www.google.com/recaptcha/api.js?render=' . urlencode($this->app->config->captcha->recaptcha->site_key));
     }
 
     /**

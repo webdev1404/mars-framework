@@ -9,7 +9,7 @@ namespace Mars\Images\Operations;
 use GdImage;
 use Mars\App;
 use Mars\App\Kernel;
-use Mars\Images\ImageInterface;
+use Mars\Images\Image;
 
 /**
  * The Base Image Operations Class
@@ -19,22 +19,22 @@ abstract class Operation
     use Kernel;
 
     /**
-     * @var ImageInterface $source The source image
+     * @var Image $source The source image
      */
-    protected ImageInterface $source;
+    protected Image $source;
 
     /**
-     * @var ImageInterface $destination The destination image
+     * @var Image $destination The destination image
      */
-    protected ImageInterface $destination;
+    protected Image $destination;
 
     /**
      * Builds the Image Operations object
-     * @param ImageInterface $source The source image
-     * @param ImageInterface $destination The destination image
+     * @param Image $source The source image
+     * @param Image $destination The destination image
      * @param App $app The app object
      */
-    public function __construct(ImageInterface $source, ImageInterface $destination, App $app)
+    public function __construct(Image $source, Image $destination, App $app)
     {
         $this->app = $app;
         $this->source = $source;
@@ -81,11 +81,11 @@ abstract class Operation
 
         //fill the image with the chosen background
         if ($fill) {
-            $bc = $this->htmlToRgb($options['background_color'] ?? $this->app->config->image->background_color);
+            $background_color = $this->htmlToRgb($options['background_color'] ?? $this->app->config->image->background_color);
 
-            imagefill($destination, 0, 0, imagecolorallocate($destination, $bc[0], $bc[1], $bc[2]));
+            imagefill($destination, 0, 0, imagecolorallocate($destination, $background_color[0], $background_color[1], $background_color[2]));
         }
-
+        
         imagecopyresampled($destination, $source, $destination_x, $destination_y, $source_x, $source_y, $destination_width, $destination_height, $source_width, $source_height);
 
         $this->destination->save($destination);

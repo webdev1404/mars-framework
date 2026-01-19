@@ -20,6 +20,16 @@ class File
     use Kernel;
 
     /**
+     * Returns a File object
+     * @param string $filename The filename
+     * @return \Mars\File The File object
+     */
+    protected function getObj(string $filename) : FileObj
+    {
+        return new FileObj($filename);
+    }
+
+    /**
      * Check that the filename [file/folder] doesn't contain invalid chars. and is located in the right path. Throws a fatal error for an invalid filename
      * @param string $filename The filename
      * @return static
@@ -27,7 +37,7 @@ class File
      */
     public function check(string $filename) : static
     {
-        new FileObj($filename)->check();
+        $this->getObj($filename)->check();
 
         return $this;
     }
@@ -53,7 +63,7 @@ class File
      */
     public function get(string $filename) : FileObj
     {
-        return new FileObj($filename);
+        return $this->getObj($filename);
     }
 
     /**
@@ -63,7 +73,7 @@ class File
      */
     public function getDir(string $filename) : ?DirObj
     {
-        return new FileObj($filename)->dir;
+        return $this->getObj($filename)->dir;
     }
 
     /**
@@ -71,7 +81,7 @@ class File
      */
     public function getPath(string $filename) : ?DirObj
     {
-        return new FileObj($filename)->path;
+        return $this->getObj($filename)->path;
     }
 
     /**
@@ -81,7 +91,7 @@ class File
      */
     public function getStem(string $filename) : string
     {
-        return new FileObj($filename)->stem;
+        return $this->getObj($filename)->stem;
     }
 
     /**
@@ -91,7 +101,7 @@ class File
      */
     public function getFullStem(string $filename) : string
     {
-        return new FileObj($filename)->full_stem;
+        return $this->getObj($filename)->full_stem;
     }
 
     /**
@@ -101,27 +111,27 @@ class File
      */
     public function getName(string $filename) : string
     {
-        return new FileObj($filename)->name;
+        return $this->getObj($filename)->name;
     }
 
     /**
      * Returns the mime type of a file
      * @param string $filename The filename
-     * @return string The mime type of the file
+     * @return bool|string The mime type of the file
      */
-    public function getType(string $filename) : string
+    public function getType(string $filename) : bool|string
     {
-        return new FileObj($filename)->type;
+        return $this->getObj($filename)->type;
     }
 
     /**
      * Returns the size of a file
      * @param string $filename The filename
-     * @return int
+     * @return bool|int
      */
-    public function getSize(string $filename) : int
+    public function getSize(string $filename) : bool|int
     {
-        return new FileObj($filename)->size;
+        return $this->getObj($filename)->size;
     }
 
     /**
@@ -131,7 +141,7 @@ class File
      */
     public function exists(string $filename) : bool
     {
-        return new FileObj($filename)->exists;
+        return $this->getObj($filename)->exists;
     }
 
     /**
@@ -142,7 +152,7 @@ class File
      */
     public function getExtension(string $filename, bool $add_dot = false) : string
     {
-        return new FileObj($filename)->getExtension($add_dot);
+        return $this->getObj($filename)->getExtension($add_dot);
     }
 
     /**
@@ -153,7 +163,7 @@ class File
      */
     public function addExtension(string $filename, string $extension) : string
     {
-        return new FileObj($filename)->addExtension($extension);
+        return $this->getObj($filename)->addExtension($extension);
     }
 
     /**
@@ -164,7 +174,7 @@ class File
      */
     public function getRel(string $filename, string $path = '') : string
     {
-        return new FileObj($filename)->getRel($path);
+        return $this->getObj($filename)->getRel($path);
     }
 
     /**
@@ -175,7 +185,7 @@ class File
      */
     public function getPrefix(string $filename, int $chars = 4) : string
     {
-        return new FileObj($filename)->getPrefix($chars);
+        return $this->getObj($filename)->getPrefix($chars);
     }
 
     /**
@@ -186,18 +196,7 @@ class File
      */
     public function append(string $filename, string $append) : FileObj
     {
-        return new FileObj($filename)->append($append);
-    }
-
-    /**
-     * Determines if $filename is an image, based on extension.
-     * It only checks the extension, use $app->image->isValid to check if the file is really an image
-     * @param string $filename The filename
-     * @return bool
-     */
-    public function isImage(string $filename): bool
-    {
-        return new FileObj($filename)->isImage();
+        return $this->getObj($filename)->append($append);
     }
 
     /**
@@ -209,7 +208,7 @@ class File
     {
         $filename = $this->app->random->getString();
         
-        return new FileObj($filename)->addExtension($extension);
+        return $this->getObj($filename)->addExtension($extension);
     }
 
     /**
@@ -242,7 +241,7 @@ class File
      */
     public function read(string $filename) : string
     {
-        return new FileObj($filename)->read();
+        return $this->getObj($filename)->read();
     }
 
     /**
@@ -255,7 +254,7 @@ class File
      */
     public function write(string $filename, string $content, bool $append = false) : int
     {
-        return new FileObj($filename)->write($content, $append);
+        return $this->getObj($filename)->write($content, $append);
     }
 
     /**
@@ -266,7 +265,7 @@ class File
      */
     public function delete(string $filename) : static
     {
-        new FileObj($filename)->delete();
+        $this->getObj($filename)->delete();
 
         return $this;
     }
@@ -280,7 +279,7 @@ class File
      */
     public function copy(string $source_filename, string $destination_filename) : FileObj
     {
-        return new FileObj($source_filename)->copy($destination_filename);
+        return $this->getObj($source_filename)->copy($destination_filename);
     }
 
     /**
@@ -292,7 +291,7 @@ class File
      */
     public function move(string $source_filename, string $destination_filename) : FileObj
     {
-        return new FileObj($source_filename)->move($destination_filename);
+        return $this->getObj($source_filename)->move($destination_filename);
     }
 
     /**

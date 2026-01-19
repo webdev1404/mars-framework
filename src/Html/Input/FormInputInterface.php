@@ -29,5 +29,5 @@ interface FormInputInterface
      * @param array $attributes The attributes of the input
      * @return bool
      */
-    public function isAllowedValues(string|array $value, array $attributes) : bool;
+    public function isAllowedValue(string|array $value, array $attributes) : bool;
 }

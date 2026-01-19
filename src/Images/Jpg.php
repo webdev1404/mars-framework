@@ -7,7 +7,6 @@
 namespace Mars\Images;
 
 use GdImage;
-use Mars\App;
 
 /**
  * The Jpeg Image Class
@@ -15,34 +14,36 @@ use Mars\App;
 class Jpg extends Image implements ImageInterface
 {
     /**
-     * @var string $mime_type The image's mime type
+     * @internal
      */
-    protected $mime_type = 'image/jpeg';
+    protected string $mime_type = 'image/jpeg';
 
     /**
-     * @see ImageInterface::__construct()
-     * {@inheritdoc}
+     * @internal
      */
-    public function __construct(string $filename, App $app)
-    {
-        parent::__construct($filename, $app);
+    protected int $quality {
+        get => $this->app->config->image->jpg->quality;
+    }
 
-        $this->quality = $this->app->config->image->jpg->quality;
-        $this->optimize_command = $this->app->config->image->jpg->optimize_command;
+    /**
+     * @internal
+     */
+    protected string $optimize_command {
+        get => $this->app->config->image->jpg->optimize_command;
     }
 
     /**
      * @see ImageInterface::optimize()
      * {@inheritdoc}
      */
-    public function optimize() : bool
+    public function optimize() : static
     {
-        $ret = parent::optimize();
+        parent::optimize();
 
-        //jpegoptim will reset the file's permissions. Set it to 744
-        chmod($this->filename, 0744);
+        //jpegoptim will reset the file's permissions. Set it to 644
+        chmod($this->filename, 0644);
 
-        return $ret;
+        return $this;
     }
 
     /**

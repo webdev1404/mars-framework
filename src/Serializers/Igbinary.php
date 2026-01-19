@@ -7,7 +7,7 @@
 namespace Mars\Serializers;
 
 /**
- * The Igbinary Driver Interface
+ * The Igbinary Serializer Class
  */
 class Igbinary implements SerializerInterface
 {

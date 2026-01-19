@@ -37,10 +37,10 @@ class Document
     public Css $css;
 
     /**
-     * @var Javascript $javascript The javascript object
+     * @var Javascript $js The javascript object
      */
     #[LazyLoadProperty]
-    public Javascript $javascript;
+    public Javascript $js;
 
     /**
      * @var Fonts $fonts The fonts object
@@ -146,6 +146,6 @@ class Document
     protected function outputUrls(string $location)
     {
         $this->css->output($location);
-        $this->javascript->output($location);
+        $this->js->output($location);
     }
 }

@@ -65,7 +65,7 @@ abstract class View
     }
 
     /**
-     * @var string $path The controller's parents's dir. Alias for $this->parent->path
+     * @var string $path The controller's parent's dir. Alias for $this->parent->path
      */
     public string $path {
         get => $this->controller->path;
@@ -172,7 +172,7 @@ abstract class View
     }
 
     /**
-     * @var Text $uri Alias for $this->app->text
+     * @var Text $text Alias for $this->app->text
      */
     #[HiddenProperty]
     protected Text $text {
@@ -189,10 +189,10 @@ abstract class View
 
     /**
      * Builds the View
-     * @param Controller $controller The controller the view belongs to
      * @param App $app the app object
+     * @param Controller $controller The controller the view belongs to
      */
-    public function __construct(App $app, ?Controller $controller = null)
+    public function __construct(App $app, Controller $controller)
     {
         $this->app = $app;
         $this->controller = $controller;
@@ -201,7 +201,7 @@ abstract class View
     }
 
     /**
-     * Inits the view. Method which can be overriden in custom views to init properties etc..
+     * Inits the view. Method which can be overridden in custom views to init properties etc.
      */
     protected function init()
     {

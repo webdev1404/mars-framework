@@ -75,7 +75,7 @@ class Data
      * @param callable $callback The callback function
      * @return mixed The mapped value or array of mapped values
      */
-    public function map($value, callable $callback)
+    public function map(mixed $value, callable $callback) : mixed
     {
         if (is_array($value)) {
             return array_map($callback, $value);

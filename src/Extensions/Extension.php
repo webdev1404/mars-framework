@@ -23,7 +23,7 @@ abstract class Extension
      */
     public const array DIRS = [
         'assets' => 'assets',
-        'setup' => 'setup',
+        'setup' => 'Setup',
     ];
 
     /**
@@ -150,7 +150,7 @@ abstract class Extension
                 return $this->development;
             }
 
-            $this->development = $this->app->development ? true : $this->app->config->development->extensions[static::$base_dir] ?? false;
+            $this->development = $this->app->development ? true : $this->app->config->development->extensions[static::$development_config_key ?? static::$base_dir] ?? false;
 
             return $this->development;
         }
@@ -210,6 +210,11 @@ abstract class Extension
      * @var string $base_namespace The base namespace for this type of extension
      */
     protected static string $base_namespace = '';
+
+    /**
+     * @var string $development_config_key The config key used to store the development mode for this extension
+     */
+    protected static ?string $development_config_key = null;
 
     /**
      * Builds the extension

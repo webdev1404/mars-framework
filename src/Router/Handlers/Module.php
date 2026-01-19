@@ -6,8 +6,8 @@
 namespace Mars\Router\Handlers;
 
 /**
- * The Page Route Handler Class
- * Handles page routes
+ * The Module Route Handler Class
+ * Handles module routes
  */
 class Module extends Handler
 {
@@ -19,6 +19,6 @@ class Module extends Handler
     {
         $data['params']['action'] = $data['action'];
 
-        return new \Mars\Extensions\Modules\Module($data['name'], $data['params'], $this->app);
+        return $this->app->modules->get($data['name'], $data['params']);
     }
 }

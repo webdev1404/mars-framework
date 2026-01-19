@@ -6,7 +6,7 @@
 
 namespace Mars\Images\Operations;
 
-use Mars\Images\ImageInterface;
+use Mars\Images\Image;
 
 /**
  * The Watermark Operation Image Class
@@ -14,19 +14,20 @@ use Mars\Images\ImageInterface;
 class Watermark extends Operation
 {
     /**
-     * Cuts a section from an image
-     * @param int $cut_width The width of the cut section
-     * @param int $cut_height The height of the cut section
-     * @param int $cut_x The x point from where the cut should start
-     * @param int $cut_y The y point from where the cut should start
-     * @param int $width The width of the resulting image. If 0, the image will have the same width as $cut_width
-     * @param int $height The height of the resulting image. If 0 the image will have the same height as $cut_height
+     * Applies a text watermark
+     * @param string $text The watermark text
      * @param int $position The position of the watermark text. Matches the 1-9 keys of the numpad. 1:bottom-left; 5:middle center; 9:top-right
      * @param array $options Options, if any
+     * @throws \Exception
      */
     public function applyText(string $text, int $position, array $options = [])
     {
-        [$source_width, $source_height] = $this->source->getSize();
+        if (!$this->source->valid) {
+            throw new \Exception("Source image {$this->source->filename} is not valid. It either does not exist or is not a valid image.");
+        }
+
+        $source_width = $this->source->width;
+        $source_height = $this->source->height;
 
         $source = $this->source->open();
         $destination = $this->destination->create($source_width, $source_height, $source);
@@ -47,7 +48,6 @@ class Watermark extends Operation
 
         //draw the background
         if ($options['background']) {
-            $pos = $this->getPosition($text_width + 2 * $options['padding_left'], $text_height + 2 * $options['padding_top'], $source_width, $source_height, $options['margin_left'], $options['margin_top'], $position);
             $bc = $this->htmlToRgb($options['background']);
 
             imagefilledrectangle($destination, $pos[0], $pos[1], $pos[0] + $text_width + 2 * $options['padding_left'], $pos[1] + $text_height + 2 * $options['padding_top'], imagecolorallocatealpha($destination, $bc[0], $bc[1], $bc[2], $options['opacity']));
@@ -63,46 +63,53 @@ class Watermark extends Operation
 
         $this->destination->save($destination);
 
-        imagedestroy($source);
-        imagedestroy($destination);
+        if (!is_file($this->destination->filename)) {
+            throw new \Exception("Failed to create image {$this->destination->filename}");
+        }
     }
 
     /**
      * Applies a watermark image
-     * @param ImageInterface $watermark_image The watermark image
+     * @param Image $watermark The watermark image
      * @param int $position The position of the watermark text. Matches the 1-9 keys of the numpad. 1:bottom-left; 5:middle center; 9:top-right
      * @param array $options Options, if any
+     * @throws \Exception
      */
-    public function applyImage(ImageInterface $watermark_image, int $position = 3, array $options = [])
+    public function applyImage(Image $watermark, int $position = 3, array $options = [])
     {
-        $has_opacity = $options['opacity'] ?? false;
+        if (!$this->source->valid) {
+            throw new \Exception("Source image {$this->source->filename} is not valid. It either does not exist or is not a valid image.");
+        }
+        if (!$watermark->valid) {
+            throw new \Exception("Watermark image {$watermark->filename} is not valid. It either does not exist or is not a valid image.");
+        }
 
-        [$source_width, $source_height] = $this->source->getSize();
-
-        $size = $this->source->getSize();
-        $watermark_size = $watermark_image->getSize();
+        $source_width = $this->source->width;
+        $source_height = $this->source->height;
+        $watermark_width = $watermark->width;
+        $watermark_height = $watermark->height;
 
         $source = $this->source->open();
         $destination = $this->destination->create($source_width, $source_height, $source);
-        $watermark = $watermark_image->open();
+        $watermark_image = $watermark->open();
         $options = $this->getOptions($options);
 
-        $pos = $this->getPosition($watermark_size[0], $watermark_size[1], $size[0], $size[1], $options['margin_left'], $options['margin_top'], $position);
+        $pos = $this->getPosition($watermark_width, $watermark_height, $source_width, $source_height, $options['margin_left'], $options['margin_top'], $position);
 
         imagecopy($destination, $source, 0, 0, 0, 0, $source_width, $source_height);
 
-        if ($has_opacity) {
-            //todo; figure out how why the transparent areas of the watermark image are rendered as black
-            imagecopymerge($destination, $watermark, $pos[0], $pos[1], 0, 0, $watermark_size[0], $watermark_size[1], $options['opacity']);
+        if ($options['opacity']) {
+            //todo; figure out why the transparent areas of the watermark image are rendered as black
+            imagecopymerge($destination, $watermark_image, $pos[0], $pos[1], 0, 0, $watermark_width, $watermark_height, $options['opacity']);
         } else {
-            imagecopy($destination, $watermark, $pos[0], $pos[1], 0, 0, $watermark_size[0], $watermark_size[1]);
+            imagecopy($destination, $watermark_image, $pos[0], $pos[1], 0, 0, $watermark_width, $watermark_height);
         }
 
         $this->destination->save($destination);
 
-        imagedestroy($source);
-        imagedestroy($destination);
-        imagedestroy($watermark);
+        if (!is_file($this->destination->filename)) {
+            throw new \Exception("Failed to create image {$this->destination->filename}");
+        }
     }
 
     /**
@@ -112,17 +119,17 @@ class Watermark extends Operation
      */
     protected function getOptions(array $options) : array
     {
-        $options['background'] ??= $this->app->config->image_watermark_background;
-        $options['opacity'] ??= $this->app->config->image_watermark_opacity;
-        $options['text_ttf'] ??= $this->app->config->image_watermark_text_ttf;
-        $options['text_color'] ??= $this->app->config->image_watermark_text_color;
-        $options['text_font'] ??= $this->app->config->image_watermark_text_font;
-        $options['text_size'] ??= $this->app->config->image_watermark_text_size;
-        $options['text_angle'] ??= $this->app->config->image_watermark_text_angle;
-        $options['padding_left'] ??= $this->app->config->image_watermark_padding_left;
-        $options['padding_top'] ??= $this->app->config->image_watermark_padding_top;
-        $options['margin_left'] ??= $this->app->config->image_watermark_margin_left;
-        $options['margin_top'] ??= $this->app->config->image_watermark_margin_top;
+        $options['background'] ??= $this->app->config->image->watermark->background;
+        $options['opacity'] ??= $this->app->config->image->watermark->opacity;
+        $options['text_ttf'] ??= $this->app->config->image->watermark->text->ttf;
+        $options['text_color'] ??= $this->app->config->image->watermark->text->color;
+        $options['text_font'] ??= $this->app->config->image->watermark->text->font;
+        $options['text_size'] ??= $this->app->config->image->watermark->text->size;
+        $options['text_angle'] ??= $this->app->config->image->watermark->text->angle;
+        $options['padding_left'] ??= $this->app->config->image->watermark->padding->left;
+        $options['padding_top'] ??= $this->app->config->image->watermark->padding->top;
+        $options['margin_left'] ??= $this->app->config->image->watermark->margin->left;
+        $options['margin_top'] ??= $this->app->config->image->watermark->margin->top;
 
         return $options;
     }
@@ -141,7 +148,6 @@ class Watermark extends Operation
     protected function getPosition(int $watermark_width, int $watermark_height, int $image_width, int $image_height, int $margin_left, int $margin_top, int $position) : array
     {
         $pos = [];
-
         switch ($position) {
             case 1:
                 $pos = [$margin_left, $image_height - $margin_top - $watermark_height];

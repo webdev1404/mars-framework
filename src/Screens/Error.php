@@ -20,7 +20,7 @@ class Error
     /**
      * Outputs the error screen
      * @param string $text The error's text
-     * @param string $title The error's title, if any
+     * @param ?string $title The error's title, if any
      */
     public function output(string $text, ?string $title = null)
     {

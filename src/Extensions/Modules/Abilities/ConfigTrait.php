@@ -13,11 +13,23 @@ namespace Mars\Extensions\Modules\Abilities;
 trait ConfigTrait
 {
     /**
+     * @var array $loaded_configs List of already loaded config files
+     */
+    protected array $loaded_configs = [];
+
+    /**
      * Loads the config settings from the specified $file.
      * @param string $file The file name (without the .php extension)
      */
     public function loadConfig(string $file)
     {
+        if (isset($this->loaded_configs[$file])) {
+            var_dump($file);
+            return;
+        }
+
+        $this->loaded_configs[$file] = true;
+        
         $file = $file . '.php';
         
         //load the config file from the module's config dir

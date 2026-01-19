@@ -15,7 +15,7 @@ interface MemcacheInterface
      * Connects to the memcache server
      * @param string $host The host
      * @param string $port The port
-     * @throws Exception if the connection can't be established
+     * @throws \Exception if the connection can't be established
      */
     public function connect(string $host, string $port);
 
@@ -25,7 +25,7 @@ interface MemcacheInterface
     public function disconnect();
 
     /**
-     * Adds a $key, if it doesn't already exists
+     * Adds a $key, if it doesn't already exist
      * @param string $key The key
      * @param mixed $value The value
      * @param int $expires The number of seconds after which the data will expire
@@ -34,7 +34,7 @@ interface MemcacheInterface
     public function add(string $key, $value, int $expires = 0) : bool;
 
     /**
-     * Adds a $key. If a key with the same name exists, it's value is overwritten
+     * Adds a $key. If a key with the same name exists, its value is overwritten
      * @param string $key The key
      * @param mixed $value The value
      * @param int $expires The number of seconds after which the data will expire

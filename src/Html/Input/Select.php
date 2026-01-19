@@ -18,7 +18,7 @@ class Select extends Tag implements FormInputInterface
     use FormInputTrait;
 
     /**
-     * @var string $type The tag's type
+     * @var string $tag The tag's type
      */
     public protected(set) static string $tag = 'select';
 
@@ -69,7 +69,7 @@ class Select extends Tag implements FormInputInterface
     /**
      * {@inheritdoc}
      */
-    public function isAllowedValues(string|array $value, array $attributes) : bool
+    public function isAllowedValue(string|array $value, array $attributes) : bool
     {
         $value = (array)$value;
         $values = $attributes['options'] ?? [];

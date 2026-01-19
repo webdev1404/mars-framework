@@ -13,7 +13,7 @@ interface MailInterface
 {
     /**
      * Sets the recipient(s) of the email
-     * @param string|array $to The adress(es) where the mail will be sent
+     * @param string|array $to The address(es) where the mail will be sent
      */
     public function setRecipient(string|array $to);
 
@@ -39,7 +39,7 @@ interface MailInterface
 
     /**
      * Sets the From fields of the email
-     * @param string $from The email adress from which the email will be send
+     * @param string $from The email address from which the email will be sent
      * @param string $from_name The from name field of the email
      */
     public function setFrom(string $from, string $from_name = '');
@@ -59,7 +59,7 @@ interface MailInterface
 
     /**
      * Sends the email
-     * @throws Exception
+     * @throws \Exception
      */
     public function send();
 }

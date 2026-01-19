@@ -45,7 +45,7 @@ class Preload
             if (!$urls) {
                 continue;
             }
-            
+
             foreach ($urls as $url) {
                 header("Link: <{$url}>; rel=preload; as={$type}", false);
             }

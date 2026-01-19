@@ -12,23 +12,26 @@ namespace Mars\Format;
 class Filesize
 {
     /**
+     * @var int $kb_threshold The KB threshold
+     */
+    protected int $kb_threshold = 768;
+
+    /**
      * @see \Mars\Format::filesize()
      */
-    public function format(int|float|array $bytes, int $digits = 2) : string|array
+    public function format(int|float $bytes, int $digits = 2) : string
     {
-        $gb_limit = 1024 * 768;
+        $kilobytes = $bytes / 1024;
 
-        $bytes = $bytes / 1024;
+        $mb_limit = 1024 * $this->kb_threshold;
 
-        if ($bytes > $gb_limit) {
-            return round($bytes / 1024 / 1024, $digits) . ' GB';
+        if ($kilobytes > $mb_limit) {
+            return round($kilobytes / 1024 / 1024, $digits) . ' GB';
         } else {
-            $kb_limit = 768;
-
-            if ($bytes > $kb_limit) {
-                return round($bytes / 1024, $digits) . ' MB';
+            if ($kilobytes > $this->kb_threshold) {
+                return round($kilobytes / 1024, $digits) . ' MB';
             } else {
-                return round($bytes, $digits) . ' KB';
+                return round($kilobytes, $digits) . ' KB';
             }
         }
     }

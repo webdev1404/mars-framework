@@ -85,13 +85,4 @@ final class FileTest extends Base
         $this->expectException(\Exception::class);
         (new File('php://input'))->checkForInvalidChars();
     }
-
-    public function testFileClassIsImage()
-    {
-        $file = new File('image.jpg');
-        $this->assertTrue($file->isImage());
-
-        $file2 = new File('document.txt');
-        $this->assertFalse($file2->isImage());
-    }
 }

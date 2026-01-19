@@ -35,12 +35,16 @@ class Cookies extends Input
      */
     public function get(string $name, mixed $default_value = '', string $filter = '', bool $is_array = false, bool $trim = true, bool $decode = true) : mixed
     {
-        if ($decode) {
-            $value = $this->data[$name] ?? '';
+        if (!isset($this->data[$name])) {
+            return $default_value;
+        }
 
-            if ($value) {
-                return $this->app->json->decode($value);
+        if ($decode) {
+            if ($this->data[$name]) {
+                return $this->app->json->decode($this->data[$name]);
             }
+
+            return $default_value;
         }
 
         return parent::get($name, $default_value, $filter, $is_array, $trim);

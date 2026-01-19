@@ -47,7 +47,7 @@ class Headers
     protected static string $property = 'list';
 
     /**
-     * Builds the Cookie Request object
+     * Builds the Headers Response object
      * @param App $app The app object
      */
     public function __construct(App $app)

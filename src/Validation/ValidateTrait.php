@@ -74,7 +74,7 @@ trait ValidateTrait
      */
     protected function getValidationRulesToSkip() : array
     {
-        return $this->validation_rules_to_skip ?? [];
+        return $this->validation_rules_to_skip;
     }
 
     /**

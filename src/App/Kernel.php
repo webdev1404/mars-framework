@@ -39,9 +39,7 @@ trait Kernel
      */
     public function __construct(?App $app = null)
     {
-        if ($app) {
-            $this->app = $app;
-        }
+        $this->app = $app;
     }
 
     /**

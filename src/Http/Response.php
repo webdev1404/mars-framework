@@ -25,7 +25,7 @@ class Response
     use Lazyload;
 
     /**
-     * @var array $supported_$responses The supported $responses types
+     * @var array $supported_responses The supported responses types
      */
     protected array $supported_responses = [
         'json' => \Mars\Http\Response\Json::class,

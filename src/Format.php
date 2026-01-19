@@ -24,9 +24,7 @@ class Format
     public protected(set) array $supported_formats = [
         'percentage' => \Mars\Format\Percentage::class,
         'filesize' => \Mars\Format\Filesize::class,
-        'time_interval' => \Mars\Format\TimeInterval::class,
-        'js_array' => \Mars\Format\JsArray::class,
-        'js_object' => \Mars\Format\JsObject::class,
+        'time_interval' => \Mars\Format\TimeInterval::class
     ];
 
     /**
@@ -162,38 +160,14 @@ class Format
     /**
      * Formats a time interval. It returns the number of weeks, days, hours, minutes, seconds it contains. Eg: 90 = 1 minute, 30 seconds
      * @param int|array $seconds The number of seconds
-     * @param string $separator1 The separator between the numeric value and the word. Eg: separator = : the result will be 2:weeks etc.
-     * @param string $separator2 The separator from the end of a value. Eg: separator = , result = 2 weeks, 3 days.
+     * @param string $unit_separator The separator between the numeric value and the word. Eg: separator = : the result will be 2:weeks etc.
+     * @param string $part_separator The separator between parts Eg: separator = , result = 2 weeks, 3 days.
      * @return string|array The formatted value
      */
-    public function timeInterval(int|array $seconds, string $separator1 = ' ', string $separator2 = ', ') : string|array
+    public function timeInterval(int|array $seconds, string $unit_separator = ' ', string $part_separator = ', ') : string|array
     {
-        return $this->app->data->map($seconds, function ($seconds) use ($separator1, $separator2) {
-            return $this->format->get('time_interval')->format($seconds, $separator1, $separator2);
+        return $this->app->data->map($seconds, function ($seconds) use ($unit_separator, $part_separator) {
+            return $this->format->get('time_interval')->format($seconds, $unit_separator, $part_separator);
         });
-    }
-
-    /**
-     * Returns a javascript array from $data
-     * @param array $data The data to convert to a javascript array
-     * @param bool $quote If true will put quotes around the array's elements
-     * @param array $dont_quote_array If $quote is true, will NOT quote the elements with the keys found in this array
-     * @return string The javascript array
-     */
-    public function jsArray(array $data, bool $quote = true, array $dont_quote_array = []) : string
-    {
-        return $this->format->get('js_array')->format($data, $quote, $dont_quote_array);
-    }
-
-    /**
-     * Returns a javascript object from $data
-     * @param array|object $data The data to convert to a javascript object
-     * @param bool $quote If true will put quotes around the array's elements
-     * @param array $dont_quote_array If $quote is true, will NOT quote the elements with the keys found in this array
-     * @return string The javascript object
-     */
-    public function jsObject(array|object $data, bool $quote = true, array $dont_quote_array = []) : string
-    {
-        return $this->format->get('js_object')->format($data, $quote, $dont_quote_array);
     }
 }

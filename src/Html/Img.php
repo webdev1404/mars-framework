@@ -36,7 +36,7 @@ class Img extends Tag
         if (empty($attributes['alt'])) {
             $attributes['alt'] = basename($attributes['src'] ?? '');
         }
-        
+
         return parent::html($text, $attributes);
     }
 }

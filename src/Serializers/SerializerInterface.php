@@ -7,7 +7,7 @@
 namespace Mars\Serializers;
 
 /**
- * The Database Driver Interface
+ * The Serializer Interface
  */
 interface SerializerInterface
 {

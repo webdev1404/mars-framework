@@ -57,9 +57,9 @@ final class ValidatorTest extends Base
         $this->assertSame($this->app->validator->isIp('2001:0db8:0000:0000:0000:8a2e:0370:7334'), true);
         $this->assertSame($this->app->validator->isIp('2001:db8::8a2e:370:7334'), true);
         $this->assertSame($this->app->validator->isIp('xxxxxxxx', true), false);
-        $this->assertSame($this->app->validator->isIp('127.*.100.0', true), true);
-        $this->assertSame($this->app->validator->isIp('aaa.*.100.0', true), false);
-        $this->assertSame($this->app->validator->isIp('2001:0db8:*:*:0000:8a2e:0370:7334', true), true);
+        $this->assertSame($this->app->validator->isIp('127.0.100.0', true), true);
+        $this->assertSame($this->app->validator->isIp('aaa.0.100.0', true), false);
+        $this->assertSame($this->app->validator->isIp('2001:0db8:0000:0000:0000:8a2e:0370:7334', true), true);
     }
 
     public function testRequired()

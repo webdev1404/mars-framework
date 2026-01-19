@@ -57,9 +57,9 @@ abstract class Base
      * Returns a formatted datetime
      * @param int|string|\DateTime $datetime The datetime
      * @param string|null $format The format. If null, the default format will be used
-     * @return string|null The formatted datetime
+     * @return int|string|null The formatted datetime
      */
-    public function get(int|string|DateTime $datetime, ?string $format = null) : string|null
+    public function get(int|string|DateTime $datetime, ?string $format = null) : int|string|null
     {
         if (!$datetime) {
             return $this->default_value;
@@ -75,7 +75,7 @@ abstract class Base
      * @param int $units The number of time units to add
      * @param string $type The interval type: days/months/weeks/years
      * @param int|string|DateTime $datetime The datetime. If 0, the current time will be used
-     * @return DateTime The new date
+     * @return string The new date
      */
     public function add(int $units, string $type, int|string|DateTime $datetime = 0) : string
     {
@@ -86,10 +86,10 @@ abstract class Base
 
     /**
      * Subtracts from $datetime a certain number of days/months/weeks/years
-     * @param int $units The number of time units to  subtract
+     * @param int $units The number of time units to subtract
      * @param string $type The interval type: days/months/weeks/years
      * @param int|string|DateTime $datetime The datetime. If 0, the current time will be used
-     * @return DateTime The new date
+     * @return string The new date
      */
     public function sub(int $units, string $type, int|string|DateTime $datetime = 0) : string
     {

@@ -15,6 +15,7 @@ interface TemplateInterface
      * Parses the content, as a template
      * @param string $content The content
      * @param array $params Params to pass to the parser
+     * @return string The parsed content
      */
     public function parse(string $content, array $params) : string;
 }

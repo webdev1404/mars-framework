@@ -21,6 +21,7 @@ use Mars\Extensions\Themes\Links\Images;
 use Mars\Extensions\Abilities\FilesCacheTrait;
 use Mars\Extensions\Abilities\LanguagesTrait;
 use Mars\Themes\Template;
+use Mars\System\Libraries;
 
 /**
  * The Theme Class
@@ -42,7 +43,8 @@ class Theme extends Extension
         'js' => 'js',
         'languages' => 'languages',
         'templates' => 'templates',
-        'setup' => 'setup',
+        'src' => 'src',
+        'setup' => 'Setup',
     ];
 
     /**
@@ -73,10 +75,10 @@ class Theme extends Extension
     public Css $css;
 
     /**
-     * @var Javascript $javascript The javascript object
+     * @var Javascript $js The javascript object
      */
     #[LazyLoadProperty]
-    public Javascript $javascript;
+    public Javascript $js;
 
     /**
      * @var Favicon $favicon The favicon object
@@ -95,6 +97,14 @@ class Theme extends Extension
      */
     #[LazyLoadProperty]
     public Images $images;
+
+    /**
+     * @var Libraries $libraries The libraries object
+     */
+    #[HiddenProperty]
+    public Libraries $libraries {
+        get => $this->app->libraries;
+    }
 
     /**
      * @var Template $template The engine used to parse the template
@@ -568,9 +578,9 @@ class Theme extends Extension
      * Outputs javascript inline code
      * @param string $code The js code to output
      */
-    public function outputJavascriptCode(string $code)
+    public function outputJsCode(string $code)
     {
-        $this->javascript->outputCode($code);
+        $this->js->outputCode($code);
     }
 
     /**

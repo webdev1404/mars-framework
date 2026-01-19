@@ -16,7 +16,7 @@ class Data extends Cacheable
      * @var string $driver_name The used driver
      */
     protected string $driver_name {
-        get => $this->app->config->cache->data_driver ?? $this->app->config->cache->driver;
+        get => $this->app->config->cache->data->driver ?? $this->app->config->cache->driver;
     }
 
     /**

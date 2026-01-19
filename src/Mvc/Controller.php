@@ -98,7 +98,7 @@ abstract class Controller extends \stdClass
     public protected(set) string $current_method = '';
 
     /**
-     * @var string $path The controller's parents's dir. Alias for $this->parent->path
+     * @var string $path The controller's parent's dir. Alias for $this->parent->path
      */
     public protected(set) string $path {
         get {
@@ -391,7 +391,7 @@ abstract class Controller extends \stdClass
         $content = ob_get_clean();
 
         //if the request is json, send the return data as json
-        $is_json = ($this->accept_json && $this->app->request->is_json) ? true : false;
+        $is_json = $this->accept_json && $this->app->request->is_json;
         if ($is_json) {
             $this->sendJson($ret, $content);
             return;
@@ -434,9 +434,8 @@ abstract class Controller extends \stdClass
     /**
      * Calls a method of the controller
      * @param string $method The name of the method
-     * @return mixed Returns whatever $method returns
      * @param array $params Params to be passed to the method, if any
-     * @return mixed
+     * @return mixed Returns whatever $method returns
      */
     protected function call(string $method, array $params = [])
     {
@@ -481,5 +480,23 @@ abstract class Controller extends \stdClass
     public function loadLanguage(?string $file = null)
     {
         $this->parent->loadLanguage($file ?? strtolower($this->name));
+    }
+
+    /**
+     * Checks if the request can post data, based on throttle settings
+     * @param string|null $key The throttle key. If null, no throttling is applied
+     * @param int|null $max_attempts The max attempts allowed within the duration. If null, no throttling is applied
+     * @param int|null $duration The duration in seconds for which the attempts are counted. If null, no throttling is applied
+     * @param bool $all Whether to throttle all post requests with the same key. If false, $app->throttle->hit() needs to be called manually
+     * @param bool $add_ip Whether to append the user's IP to the key
+     * @return bool True if the request can post, false otherwise
+     */
+    public function canPost(?string $key = null, ?int $max_attempts = null, ?int $duration = null, bool $all = true, bool $add_ip = true) : bool
+    {
+        if ($key && $add_ip) {
+            $key .= '-' . $this->app->ip;
+        }
+
+        return $this->request->canPost($key, $max_attempts, $duration, $all);
     }
 }

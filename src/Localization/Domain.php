@@ -22,14 +22,13 @@ class Domain extends Base implements LocalizationInterface
             throw new \Exception('Localization urls are not configured. It must be specified in the \'localization_urls\' config value.');
         }
 
-        $host = $_SERVER['HTTP_HOST'] ?? '';
-        $host = trim($host);
+        $host = trim($_SERVER['HTTP_HOST'] ?? '');
         if (!$host) {
             throw new \Exception('Cannot detect the language code from the domain because the HTTP_HOST server variable is empty.');
         }
 
         $code = array_find_key($this->app->config->localization->urls, function ($url) use ($host) {
-            return $this->app->url->getHost($url) == $host;
+            return $this->app->url->getHost($url) === $host;
         });
 
         if (!$code || !isset($this->app->lang->codes_list[$code])) {

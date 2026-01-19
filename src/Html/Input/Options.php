@@ -45,15 +45,15 @@ class Options extends Tag
             if (is_array($text)) {
                 $optgroup = new Optgroup($this->app);
 
-                $html.= $optgroup->open(['label' => $value]);
-                $html.= $this->getOptions($text, $selected);
-                $html.= $optgroup->close();
+                $html .= $optgroup->open(['label' => $value]);
+                $html .= $this->getOptions($text, $selected);
+                $html .= $optgroup->close();
             } else {
                 if ($is_list) {
                     $value = $text;
                 }
 
-                $html.= parent::html($text, ['value' => $value, 'selected' => in_array($value, $selected)], true);
+                $html .= parent::html($text, ['value' => $value, 'selected' => in_array($value, $selected)], true);
             }
         }
 

@@ -57,11 +57,10 @@ abstract class Loader extends Base
      * Unloads a hash
      * @param string $method The request method
      * @param string $language The language code
-     * @param string $route The route
      * @param string $prefix The route's prefix
      * @param string $hash The hash to unload
      */
-    protected function unloadHash(string $method, string $language, string $route, string $prefix, string $hash)
+    protected function unloadHash(string $method, string $language, string $prefix, string $hash)
     {
         unset($this->routes->hashes[$method][$language][$prefix][$hash]);
     }

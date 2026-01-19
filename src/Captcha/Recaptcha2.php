@@ -29,7 +29,7 @@ class Recaptcha2 implements CaptchaInterface
             throw new \Exception('The reCAPTCHA v2 configuration is incomplete. Please set both captcha.recaptcha.site_key and captcha.recaptcha.secret_key in your configuration.');
         }
 
-        $this->app->document->javascript->load('https://www.google.com/recaptcha/api.js');
+        $this->app->document->js->load('https://www.google.com/recaptcha/api.js');
     }
 
     /**

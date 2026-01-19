@@ -135,7 +135,7 @@ class Request
      * Executes the curl session and returns the result
      * @param \CurlHandle $ch The curl handler
      * @return Response The response
-     * @throws Exception if an error occurs
+     * @throws \Exception if an error occurs
      */
     protected function exec($ch) : Response
     {
@@ -205,7 +205,7 @@ class Request
      * @param array $options Curl options, if any
      * @param bool $download_if_exists If false, the file won't be downloaded, if it already exists
      * @return Response The response. If the file exists and $download_if_exists = false, it will return true
-     * @throws Exception if the file can't be written
+     * @throws \Exception if the file can't be written
      */
     public function getFile(string $url, string $filename, array $options = [], bool $download_if_exists = true) : bool|Response
     {
@@ -238,10 +238,10 @@ class Request
      * @param string $url The url to fetch
      * @param string $filename The local filename under which the file will be stored
      * @param array $options Curl options, if any
-     * @return string The file's content
+     * @return bool|string The file's content or false on failure
      * @throws \Exception If the file can't be written or read
      */
-    public function getFileContent(string $url, string $filename, array $options = []) : string
+    public function getFileContent(string $url, string $filename, array $options = []) : bool|string
     {
         if (!is_file($filename)) {
             $this->getFile($url, $filename, $options);

@@ -25,7 +25,7 @@ class Timezone
 
     /**
      * Builds the timezone
-     * Sets the default timezone to UTC
+     * Sets the default timezone
      * @param App $app The app object
      */
     public function __construct(App $app)

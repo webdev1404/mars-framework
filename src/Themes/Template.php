@@ -88,7 +88,7 @@ class Template
     }
 
     /**
-     * Loads a template from the theme's templates dir and returns it's content
+     * Loads a template from the theme's templates dir and returns its content
      * @param string $template The name of the template
      * @param array $vars Vars to pass to the template, if any
      * @param string $type The template's type, if any
@@ -105,7 +105,7 @@ class Template
     }
 
     /**
-     * Loads a template and returns it's content
+     * Loads a template and returns its content
      * @param string $filename The filename of the template
      * @param array $vars Vars to pass to the template, if any
      * @param string $type The template's type, if any
@@ -140,7 +140,7 @@ class Template
     /**
      * Returns the contents of a template
      * @param string $filename The filename from where the template will be loaded
-     * @param string $cache_file The name used to cache the template
+     * @param string $cache_name The name used to cache the template
      * @param array $vars Vars to pass to the template, if any
      * @param array $params Params to pass to the parser
      * @param bool $development If true, won't cache the template
@@ -191,10 +191,10 @@ class Template
     }
 
     /**
-     * Includes a template and returns it's content
+     * Includes a template and returns the template content
      * @param string $cache_name The name of the cached template
      * @param array $vars Vars to pass to the template, if any
-     * @return string The template's content
+     * @return string The template content
      */
     protected function incorporate(string $cache_name, array $vars = []) : string
     {

@@ -19,12 +19,13 @@ class Pattern extends Rule
     /**
      * Validates that $value matches a pattern
      * @param string $value The value
-     * @param int $max The maximum value
+     * @param ?string $pattern The pattern
+     * @param ?string $error The error message key to use, if any
      * @return bool
      */
     public function isValid(string $value, ?string $pattern = null, ?string $error = null) : bool
     {
-        if ($pattern == null) {
+        if ($pattern === null) {
             throw new \Exception("The 'pattern' validation rule must have the pattern specified. Eg: pattern:/[a-Z0-9]*/");
         }
 

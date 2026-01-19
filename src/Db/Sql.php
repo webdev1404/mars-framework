@@ -23,7 +23,7 @@ class Sql implements \Stringable
      * @var array $supported_drivers The supported drivers
      */
     public protected(set) array $supported_drivers = [
-        'mysql' => \Mars\Db\Mysql\Sql::class
+        'mysql' => \Mars\Db\Drivers\Mysql\Sql::class
     ];
 
     /**

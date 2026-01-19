@@ -16,25 +16,30 @@ class Text extends Rule
      */
     public string $error = '';
 
+    /**
+     * {@inheritdoc}
+     */
     public array $errors = [
         'min' => 'validate.text.min',
         'max' => 'validate.text.max',
     ];
 
     /**
-     * Validates that a value is not empty
+     * Validates that a value is not empty and length is within min and max limits
      * @param string $value The value
+     * @param int|null $min The minimum length
+     * @param int|null $max The maximum length
      * @return bool
      */
     public function isValid(string $value, ?int $min = null, ?int $max = null) : bool
     {
+        $length = mb_strlen(trim($value));
+
         if (!$min && !$max) {
-            return true;
+            return $length > 0;
         }
 
         $this->error_replacements = ['{MIN}' => $min, '{MAX}' => $max];
-
-        $length = mb_strlen($value);
 
         $min ??= 0;
         if ($max) {

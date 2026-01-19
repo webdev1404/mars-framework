@@ -16,10 +16,10 @@ class TimeInterval
     /**
      * @see \Mars\Format::timeInterval()
      */
-    public function format(int|array $seconds, string $separator1 = ' ', string $separator2 = ', ') : string|array
+    public function format(int $seconds, string $unit_separator = ' ', string $part_separator = ', ') : string
     {
-        if (!$seconds || $seconds < 0) {
-            return '0 ' . App::__('second');
+        if (!$seconds) {
+            return '0 ' . App::__('time.seconds');
         }
 
         $interval = ['seconds' => 0, 'minutes' => 0, 'hours' => 0, 'days' => 0, 'weeks' => 0];
@@ -30,15 +30,15 @@ class TimeInterval
             ///compute the minutes
             $interval['minutes'] = floor($seconds / 60);
             $interval['seconds'] = $seconds % 60;
-            if ($interval['minutes'] > 60) {
+            if ($interval['minutes'] >= 60) {
                 ///compute the hours
                 $interval['hours'] = floor($interval['minutes'] / 60);
                 $interval['minutes'] = $interval['minutes'] % 60;
-                if ($interval['hours'] > 24) {
+                if ($interval['hours'] >= 24) {
                     ///compute the days
                     $interval['days'] = floor($interval['hours'] / 24);
                     $interval['hours'] = $interval['hours'] % 24;
-                    if ($interval['days'] > 7) {
+                    if ($interval['days'] >= 7) {
                         ///compute the weeks
                         $interval['weeks'] = floor($interval['days'] / 7);
                         $interval['days'] = $interval['days'] % 7;
@@ -51,40 +51,40 @@ class TimeInterval
 
         if ($interval['weeks']) {
             if ($interval['weeks'] == 1) {
-                $result[] = $interval['weeks'] . $separator1 . App::__('time.week');
+                $result[] = $interval['weeks'] . $unit_separator . App::__('time.week');
             } else {
-                $result[] = $interval['weeks'] . $separator1 . App::__('time.weeks');
+                $result[] = $interval['weeks'] . $unit_separator . App::__('time.weeks');
             }
         }
         if ($interval['days']) {
             if ($interval['days'] == 1) {
-                $result[] = $interval['days'] . $separator1 . App::__('time.day');
+                $result[] = $interval['days'] . $unit_separator . App::__('time.day');
             } else {
-                $result[] = $interval['days'] . $separator1 . App::__('time.days');
+                $result[] = $interval['days'] . $unit_separator . App::__('time.days');
             }
         }
         if ($interval['hours']) {
             if ($interval['hours'] == 1) {
-                $result[] = $interval['hours'] . $separator1 . App::__('time.hour');
+                $result[] = $interval['hours'] . $unit_separator . App::__('time.hour');
             } else {
-                $result[] = $interval['hours'] . $separator1 . App::__('time.hours');
+                $result[] = $interval['hours'] . $unit_separator . App::__('time.hours');
             }
         }
         if ($interval['minutes']) {
             if ($interval['minutes'] == 1) {
-                $result[] = $interval['minutes'] . $separator1 . App::__('time.minute');
+                $result[] = $interval['minutes'] . $unit_separator . App::__('time.minute');
             } else {
-                $result[] = $interval['minutes'] . $separator1 . App::__('time.minutes');
+                $result[] = $interval['minutes'] . $unit_separator . App::__('time.minutes');
             }
         }
         if ($interval['seconds']) {
             if ($interval['seconds'] == 1) {
-                $result[] = $interval['seconds'] . $separator1 . App::__('time.second');
+                $result[] = $interval['seconds'] . $unit_separator . App::__('time.second');
             } else {
-                $result[] = $interval['seconds'] . $separator1 . App::__('time.seconds');
+                $result[] = $interval['seconds'] . $unit_separator . App::__('time.seconds');
             }
         }
 
-        return implode($separator2, $result);
+        return implode($part_separator, $result);
     }
 }

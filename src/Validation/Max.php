@@ -20,10 +20,10 @@ class Max extends Rule
     /**
      * Validates the max value of a number
      * @param string $value The value
-     * @param int $max The maximum value
+     * @param ?float $max The maximum value
      * @return bool
      */
-    public function isValid(string $value, ?int $max = null) : bool
+    public function isValid(string $value, ?float $max = null) : bool
     {
         if ($max === null) {
             throw new \Exception("The 'max' validation rule must have the maximum number specified. Eg: max:5");

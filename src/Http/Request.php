@@ -142,7 +142,7 @@ class Request
 
             $this->is_json = false;
             if (isset($_SERVER['HTTP_ACCEPT'])) {
-                if (strpos($_SERVER['HTTP_ACCEPT'], 'application/json') !== false) {
+                if (str_contains($_SERVER['HTTP_ACCEPT'], 'application/json')) {
                     $this->is_json = true;
                 }
             }
@@ -166,8 +166,8 @@ class Request
      * Returns the value of a variable from either $_GET or $_POST
      * Shorthand for $this->request->get()
      * @param string $name The name of the variable
-     * @param string $filter The filter to apply to the value, if any. See class Filter for a list of filters
      * @param mixed $default_value The default value to return if the variable is not set
+     * @param string $filter The filter to apply to the value, if any. See class Filter for a list of filters
      * @param bool $is_array Whether the value should be returned as an array
      * @param bool $trim Whether to trim the value
      * @return mixed The value
@@ -264,9 +264,13 @@ class Request
 
     /**
      * Returns true if the request passes the post check
+     * @param string|null $key The throttle key to use for throttling, if any
+     * @param int|null $max_attempts The maximum number of allowed attempts for throttling
+     * @param int|null $duration The block duration in seconds for throttling
+     * @param bool $all Whether to throttle all post requests with the same key. If false, $app->throttle->hit() needs to be called manually
      * @return bool True if the request is a post and the CSRF token is valid
      */
-    public function canPost() : bool
+    public function canPost(?string $key = null, ?int $max_attempts = null, ?int $duration = null, bool $all = true) : bool
     {
         if (!$this->is_post) {
             $this->app->errors->add(App::__('error.request.not_post'));
@@ -274,9 +278,21 @@ class Request
         }
 
         $token = $this->post->get($this->app->config->html->csrf_name);
-        if (!$token || $token != $this->app->session->token) {
+        if (!$token || !hash_equals($token, $this->app->session->token)) {
             $this->app->errors->add(App::__('error.request.invalid_csrf'));
             return false;
+        }
+
+        if ($key && $max_attempts && $duration) {
+            if ($this->app->throttle->isBlocked($key, $max_attempts, $duration)) {
+                $this->app->errors->add(App::__('error.request.throttled'));
+
+                return false;
+            }
+
+            if ($all) {
+                $this->app->throttle->hit($key);
+            }
         }
 
         return true;
@@ -331,7 +347,7 @@ class Request
      */
     public function getOrder(string $order_param = 'order') : string
     {
-        $order_param = $order_param ?? $this->app->config->request->order->param;
+        $order_param = $order_param ?: $this->app->config->request->order->param;
 
         $order = strtolower($this->request->get($order_param));
 

@@ -4,7 +4,9 @@
 * @package Mars
 */
 
-namespace Mars\Db;
+namespace Mars\Db\Drivers;
+
+use Mars\Db\DbInterface;
 
 /**
  * The PDO Database Driver

@@ -20,7 +20,7 @@ class Html implements ResponseInterface
      * @see ResponseInterface::output()
      * {@inheritdoc}
      */
-    public function output($content)
+    public function output(mixed $content)
     {
         echo $content;
     }

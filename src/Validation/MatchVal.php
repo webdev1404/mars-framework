@@ -19,6 +19,7 @@ class MatchVal extends Rule
     /**
      * Validates a match
      * @param string $value The value to match
+     * @param ?string $match The value to match against
      * @return bool
      */
     public function isValid(string $value, ?string $match = null) : bool

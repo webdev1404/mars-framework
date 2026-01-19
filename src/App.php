@@ -16,6 +16,7 @@ use Mars\Assets\Minifier;
 use Mars\Db\Sql;
 use Mars\Filesystem\Dir;
 use Mars\Filesystem\File;
+use Mars\Filesystem\Image;
 use Mars\Http\Request;
 use Mars\Http\Response;
 use Mars\Data\Types\ArrayType;
@@ -27,6 +28,7 @@ use Mars\Time\Time;
 use Mars\Time\Timestamp;
 use Mars\Time\Timezone;
 use Mars\System\Language;
+use Mars\System\Libraries;
 use Mars\System\Plugins;
 use Mars\System\Modules;
 use Mars\System\Theme;
@@ -184,6 +186,12 @@ class App
      */
     #[LazyLoadProperty]
     public Language $lang;
+
+    /**
+     * @var Libraries $libraries The libraries object
+     */
+    #[LazyLoadProperty]
+    public Libraries $libraries;
 
     /**
      * @var Log $log The log object
@@ -346,6 +354,12 @@ class App
      */
     #[LazyLoadProperty]
     public Theme $theme;
+
+    /**
+     * @var Throttle $throttle The throttle object
+     */
+    #[LazyLoadProperty]
+    public Throttle $throttle;
 
     /**
      * @var Ui $ui The ui object
@@ -1003,12 +1017,12 @@ class App
     /**
      * Returns a language string
      * Alias for $app->lang->get()
-     * @see \Mars\Extensions\Language::get()
+     * @see \Mars\System\Language::get()
      * {@inheritdoc}
      */
-    public static function __(string $str, array $replace = [], string $key = '') : string
+    public static function __(string|array $str, array $replace = []) : string
     {
-        return static::$instance->lang->get($str, $replace, $key);
+        return static::$instance->lang->get($str, $replace);
     }
 
     /**

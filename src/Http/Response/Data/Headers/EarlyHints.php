@@ -20,7 +20,7 @@ use Mars\Http\Response\Data\Headers\EarlyHints\Preconnect;
 class EarlyHints
 {
     use Kernel;
-    use Lazyload;
+    use LazyLoad;
     
     /**
      * @var Preload $preload The Preload object
@@ -59,11 +59,14 @@ class EarlyHints
         $this->preconnect->set($this->app->config->hints->early_hints->list['preconnect'] ?? []);
 
         if ($this->preload->count() || $this->preconnect->count()) {
-            header("HTTP/1.1 103 Early Hints");
+            header('HTTP/' . $this->app->protocol . ' 103 Early Hints');
 
             $this->preload->send();
             $this->preconnect->send();
 
+            if (ob_get_level() > 0) {
+                ob_flush();
+            }
             flush();
         }
     }

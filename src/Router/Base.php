@@ -93,16 +93,11 @@ abstract class Base
      */
     protected function getMethods(string|array $method) : array
     {
-        $methods = [];
         if (!$method) {
             return static::ALLOWED_METHODS;
         }
 
-        $methods = $this->app->array->get($method);
-
-        $methods = array_map('strtolower', $methods);
-
-        return $methods;
+        return array_map('strtolower', (array)$method);
     }
 
     /**

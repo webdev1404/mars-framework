@@ -34,7 +34,7 @@ trait EntitiesTrait
      */
     public function getClass() : string
     {
-        return static::$class ?? '';
+        return static::$class ?? '\StdClass';
     }
 
     /**

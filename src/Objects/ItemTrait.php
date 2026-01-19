@@ -9,7 +9,7 @@ namespace Mars\Objects;
 use Mars\App;
 use Mars\HiddenProperty;
 use Mars\Db;
-use Mars\Db\Sql\Sql;
+use Mars\Db\Sql;
 
 /**
  * The Item Trait
@@ -41,7 +41,7 @@ trait ItemTrait
 
     /**
      * Builds an item
-     * @param mixed $data If data is an int, will load the data with id = data from the database. If string will load the data with name = data. If an array or oject, will assume the array contains the object's data. If null, will load the defaults
+     * @param mixed $data If data is an int, will load the data with id = data from the database. If string will load the data with name = data. If an array or object, will assume the array contains the object's data. If null, will load the defaults
      * @param App $app The app object
      */
     public function __construct($data = 0, ?App $app = null)
@@ -49,26 +49,12 @@ trait ItemTrait
         $this->app = $app;
 
         $table = $this->getTable();
-        $id_field = $this->getIdField();
         if (!$table) {
             throw new \Exception('The $table static property of class ' . get_class($this) . ' is not set!');
         }
 
         $this->setId(0);
         $this->load($data);
-    }
-
-    /**
-     * Unsets the app & db property when serializing
-     */
-    public function __sleep()
-    {
-        $data = get_object_vars($this);
-
-        unset($data['app']);
-        unset($data['db']);
-
-        return array_keys($data);
     }
 
     /**
@@ -148,8 +134,7 @@ trait ItemTrait
 
     /**
      * Loads an object
-     * @param mixed $data If data is an int, will load the data with id = data from the database. If string will load the data with name = data. If an array or oject, will assume the array contains the object's data. If null, will load the defaults
-     * @param bool $reload If true, will reload the object even if it's already loaded
+     * @param mixed $data If data is an int, will load the data with id = data from the database. If string will load the data with name = data. If an array or object, will assume the array contains the object's data. If null, will load the defaults
      * @return static
      */
     public function load(mixed $data = null, bool $reload = false) : static
@@ -229,7 +214,7 @@ trait ItemTrait
     /**
      * Returns the row from the database, based on id
      * @param int $id The id to return the data for
-     * @return object The row, or null on failure
+     * @return ?object The row, or null on failure
      */
     public function getRowById(int $id) : ?object
     {
@@ -239,7 +224,7 @@ trait ItemTrait
     /**
      * Returns the row from the database, based on name
      * @param string $name The name to return the data for
-     * @return object The row, or null on failure
+     * @return ?object The row, or null on failure
      */
     public function getRowByName(string $name) : ?object
     {
@@ -247,7 +232,7 @@ trait ItemTrait
     }
 
     /**
-     * Loads an objects using a sql query
+     * Loads an object using a sql query
      * @param string|Sql $sql The sql code used to load the object
      * @return static
      */
@@ -277,6 +262,20 @@ trait ItemTrait
     }
 
     /**
+     * Child classes can implement this method to process the object when it's inserted
+     */
+    protected function processInsert()
+    {
+    }
+
+    /**
+     * Child classes can implement this method to process the object when it's updated
+     */
+    protected function processUpdate()
+    {
+    }
+
+    /**
      * Returns the default data
      * @return array
      */
@@ -297,6 +296,7 @@ trait ItemTrait
      */
     public function insert() : int
     {
+        $this->processInsert();
         $this->process();
 
         if (!$this->validate()) {
@@ -312,10 +312,11 @@ trait ItemTrait
 
     /**
      * Updates the object
-     * @return bool Returns true if the update operation was succesfull
+     * @return int Returns the id of the updated item
      */
     public function update() : int
     {
+        $this->processUpdate();
         $this->process();
 
         if (!$this->validate()) {
@@ -324,12 +325,12 @@ trait ItemTrait
 
         $this->db->updateById($this->getTable(), $this->getData(), $this->getId(), $this->getIdField());
 
-        return $this->id;
+        return $this->getId();
     }
 
     /**
      * Saves the data to the db. Calls insert if the id of the object is 0, update otherwise
-     * @return int The id of the newly inserted item
+     * @return int The id of the inserted/updated item
      */
     public function save() : int
     {
@@ -401,13 +402,13 @@ trait ItemTrait
      * @see \Mars\Objects\EntityTrait::bindList()
      * {@inheritdoc}
      */
-    public function bindList(array $allowed_columns, array|object $data = [], ?string $ignore_value = null) : static
+    public function bindList(array $properties, array|object $data = [], ?string $ignore_value = null) : static
     {
         if (!$this->loaded) {
             $this->load();
         }
 
-        return parent::bind($data, null, $ignore_value, $allowed_columns);
+        return parent::bind($data, null, $ignore_value, $properties);
     }
 
     /**
@@ -473,7 +474,7 @@ trait ItemTrait
     /**
      * Flips the current value with the original value
      * @param string|array $properties The name of the properties to flip
-     * @return $this
+     * @return static
      */
     public function flip(string|array $properties) : static
     {
@@ -484,11 +485,11 @@ trait ItemTrait
                 continue;
             }
 
-            $val = $this->original[$property];
+            $value = $this->original[$property];
 
             $this->original[$property] = $this->$property;
 
-            $this->$property = $val;
+            $this->$property = $value;
         }
 
         return $this;

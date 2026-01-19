@@ -39,7 +39,7 @@ class Cookies
     }
 
     /**
-     * @var string $secure If true the cookies will only be sent over secure connections.
+     * @var bool $secure If true the cookies will only be sent over secure connections.
      */
     protected bool $secure {
         get => $this->app->config->cookie->secure;
@@ -53,18 +53,26 @@ class Cookies
     }
 
     /**
+     * @var string $samesite The SameSite attribute for the cookie
+     */
+    public string $samesite {
+        get => $this->app->config->cookie->samesite;
+    }
+
+    /**
      * Sets a cookie. The data is first encoded using json encode
      * @param string $name The name of the cookie
      * @param mixed $data The data to be written
-     * @param int $expires The expiration date. If null, $this->cookie_expires is used
-     * @param string $path The path in which the cookie is valid. If null, $this->cookie_path is used
-     * @param string $domain The domain in which the cookie is valid. If null, $this->cookie_domain is used
+     * @param int $expires The expiration date. If null, $this->expires is used
+     * @param string $path The path in which the cookie is valid. If null, $this->path is used
+     * @param string $domain The domain in which the cookie is valid. If null, $this->domain is used
      * @param bool $secure If true, the cookie will only be set over a https connection
-     * @param bool $httponly If true the cookie is accesible only over http and not with javascript
+     * @param bool $httponly If true the cookie is accessible only over http and not with javascript
+     * @param string|null $samesite The SameSite attribute for the cookie
      * @param bool $encode If true will encode the data
      * @return static
      */
-    public function set(string $name, $data, ?int $expires = null, ?string $path = null, ?string $domain = null, ?bool $secure = null, ?bool $httponly = null, bool $encode = true) : static
+    public function set(string $name, $data, ?int $expires = null, ?string $path = null, ?string $domain = null, ?bool $secure = null, ?bool $httponly = null, ?string $samesite = null, bool $encode = true) : static
     {
         if ($encode) {
             $data = $this->app->json->encode($data);
@@ -75,8 +83,18 @@ class Cookies
         $domain = $domain ?? $this->domain;
         $secure = $secure ?? $this->secure;
         $httponly = $httponly ?? $this->httponly;
+        $samesite = $samesite ?? $this->samesite;
 
-        setcookie($name, $data, $expires, $path, $domain, $secure, $httponly);
+        $options = [
+            'expires' => $expires,
+            'path' => $path,
+            'domain' => $domain,
+            'secure' => $secure,
+            'httponly' => $httponly,
+            'samesite' => $samesite,
+        ];
+
+        setcookie($name, $data, $options);
 
         return $this;
     }
@@ -84,16 +102,31 @@ class Cookies
     /**
      * Deletes a cookie
      * @param string $name The name of the cookie
-     * @param string $path The path in which the cookie is valid. If null, $this->cookie_path is used
-     * @param string $domain The domain in which the cookie is valid. If null, $this->cookie_domain is used
+     * @param string $path The path in which the cookie is valid. If null, $this->path is used
+     * @param string $domain The domain in which the cookie is valid. If null, $this->domain is used
+     * @param bool $secure If true, the cookie will only be set over a https connection
+     * @param bool $httponly If true the cookie is accessible only over http and not with javascript
+     * @param string|null $samesite The SameSite attribute for the cookie
      * @return static
      */
-    public function unset(string $name, ?string $path = null, ?string $domain = null) : static
+    public function unset(string $name, ?string $path = null, ?string $domain = null, ?bool $secure = null, ?bool $httponly = null, ?string $samesite = null) : static
     {
         $path = $path ?? $this->path;
         $domain = $domain ?? $this->domain;
+        $secure = $secure ?? $this->secure;
+        $httponly = $httponly ?? $this->httponly;
+        $samesite = $samesite ?? $this->samesite;
 
-        setcookie($name, '', 0, $path, $domain);
+        $options = [
+            'expires' => time() - 3600,
+            'path' => $path,
+            'domain' => $domain,
+            'secure' => $secure,
+            'httponly' => $httponly,
+            'samesite' => $samesite,
+        ];
+
+        setcookie($name, '', $options);
 
         return $this;
     }

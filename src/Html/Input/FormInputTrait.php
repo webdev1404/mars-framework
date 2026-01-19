@@ -13,7 +13,7 @@ trait FormInputTrait
 {
     /**
      * {@inheritdoc}
-     * @see FormInputInterface::getValueAttribute()
+     * @see FormInputInterface::getNameAttribute()
      */
     public function getNameAttribute() : string
     {
@@ -31,9 +31,9 @@ trait FormInputTrait
 
     /**
      * {@inheritdoc}
-     * @see FormInputInterface::getAllowedValues()
+     * @see FormInputInterface::isAllowedValue()
      */
-    public function isAllowedValues(string|array $value, array $attributes) : bool
+    public function isAllowedValue(string|array $value, array $attributes) : bool
     {
         return true;
     }

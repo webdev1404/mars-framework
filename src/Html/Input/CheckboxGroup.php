@@ -60,7 +60,7 @@ class CheckboxGroup extends Tag implements FormInputInterface
                 unset($input_attributes['id']);
             }
 
-            $html.= $input->html('', ['value' => $value, 'checked' => $is_checked, 'label' => $label] + $this->getAttributes($input_attributes));
+            $html .= $input->html('', ['value' => $value, 'checked' => $is_checked, 'label' => $label] + $this->getAttributes($input_attributes));
         }
 
         return $html;
@@ -93,7 +93,7 @@ class CheckboxGroup extends Tag implements FormInputInterface
     /**
      * {@inheritdoc}
      */
-    public function isAllowedValues(string|array $value, array $attributes) : bool
+    public function isAllowedValue(string|array $value, array $attributes) : bool
     {
         $value = (array)$value;
         $values = $attributes['values'] ?? [];
