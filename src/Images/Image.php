@@ -58,7 +58,7 @@ abstract class Image extends \Mars\Image implements ImageInterface
 
     /**
      * @see ImageInterface::__construct()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function __construct(string $filename, string $open_basedir = '', ?App $app = null)
     {
@@ -69,7 +69,7 @@ abstract class Image extends \Mars\Image implements ImageInterface
 
     /**
      * @see ImageInterface::create()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function create(int $width, int $height, GdImage $source) : GdImage
     {
@@ -78,7 +78,7 @@ abstract class Image extends \Mars\Image implements ImageInterface
 
     /**
      * @see ImageInterface::optimize()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function optimize() : static
     {

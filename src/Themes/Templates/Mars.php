@@ -59,7 +59,7 @@ class Mars implements TemplateInterface
 
     /**
      * @see \Mars\Templates\TemplateInterface::parse()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function parse(string $content, array $params) : string
     {

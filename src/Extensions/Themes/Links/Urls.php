@@ -73,7 +73,7 @@ abstract class Urls extends Base
 
     /**
      * @see Urls::load()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function load(string|array $urls, string $type = 'head', int $priority = 100, bool $preload = false, array $attributes = []) : static
     {
@@ -86,7 +86,7 @@ abstract class Urls extends Base
 
     /**
      * @see Urls::unload()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function unload(string|array $urls) : static
     {
@@ -99,7 +99,7 @@ abstract class Urls extends Base
 
     /**
      * @see Urls::preload()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function preload(string|array $urls, bool $add_version = false) : static
     {
@@ -112,7 +112,7 @@ abstract class Urls extends Base
 
     /**
      * @see Urls::unloadPreload()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function unloadPreload(string|array $urls) : static
     {
@@ -125,7 +125,7 @@ abstract class Urls extends Base
 
     /**
      * @see Urls::prefetch()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function prefetch(string|array $urls, bool $add_version = true) : static
     {
@@ -138,7 +138,7 @@ abstract class Urls extends Base
 
     /**
      * @see Urls::unloadPrefetch()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function unloadPrefetch(string|array $urls) : static
     {

@@ -243,22 +243,29 @@ class Url implements \Stringable
     }
 
     /**
-     * Returns the local filename from a local url
+     * Returns a local file from a local url
      * !!!!Use with caution!!!!
-     * @return string The local filename. If the url is not local, it will return an empty string
+     * @param ?string $open_basedir The open_basedir restriction, if any
+     * @param bool $is_link If true, the filename the url points to is a symbolic link
+     * @return File|null The local file. If the url is not local, or valid,  it will return null
      * @throws \Exception If the file contains invalid characters or is not inside the open_basedir paths
      */
-    public function getLocalFilename() : string
+    public function getLocalFile(?string $open_basedir = null) : ?File
     {
-        $filename = '';
-        if ($this->is_local) {
-            $filename = $this->app->base_path . '/' . $this->path;
-            $filename = preg_replace('/[\/\\\]+/', '/', $filename);
-
-            $this->app->file->check($filename);
+        if (!$this->is_valid || !$this->is_local) {
+            return null;
         }
 
-        return $filename;
+        $filename = $this->app->public_path . '/' . $this->path;
+        $filename = preg_replace('/[\/\\\]+/', '/', $filename);
+
+        try {
+            $this->app->file->check($filename, $open_basedir);
+        } catch (\Exception $e) {
+            return null;
+        }
+
+        return new File($filename);
     }
 
     /**

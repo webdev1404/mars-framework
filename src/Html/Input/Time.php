@@ -13,7 +13,7 @@ namespace Mars\Html\Input;
 class Time extends Input
 {
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     protected static string $type = 'time';
 }

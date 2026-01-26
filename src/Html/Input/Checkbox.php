@@ -16,18 +16,18 @@ use Mars\Html\Label;
 class Checkbox extends Input
 {
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     protected static string $type = 'checkbox';
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     protected static array $properties = ['label'];
 
     /**
      * @see TagInterface::html()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function html(string $text = '', array $attributes = []) : string
     {

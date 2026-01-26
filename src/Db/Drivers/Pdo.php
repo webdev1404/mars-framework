@@ -25,7 +25,7 @@ abstract class Pdo implements DbInterface
 
     /**
      * @see DbInterface::connect()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function connect(string $hostname, string $port, #[\SensitiveParameter] string $username, #[\SensitiveParameter] string $password, string $database, bool $persistent, string $charset)
     {
@@ -41,7 +41,7 @@ abstract class Pdo implements DbInterface
 
     /**
      * @see DbInterface::disconnect()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function disconnect()
     {
@@ -52,7 +52,7 @@ abstract class Pdo implements DbInterface
 
     /**
      * @see DbInterface::getIterator()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getIterator($result) : \Iterator
     {
@@ -61,7 +61,7 @@ abstract class Pdo implements DbInterface
 
     /**
      * @see DbInterface::quote()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function quote(string $string) : string
     {
@@ -70,7 +70,7 @@ abstract class Pdo implements DbInterface
     
     /**
      * @see DbInterface::beginTransaction()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function beginTransaction()
     {
@@ -79,7 +79,7 @@ abstract class Pdo implements DbInterface
     
     /**
      * @see DbInterface::commit()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function commit()
     {
@@ -88,7 +88,7 @@ abstract class Pdo implements DbInterface
     
     /**
      * @see DbInterface::rollback()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function rollback()
     {
@@ -97,7 +97,7 @@ abstract class Pdo implements DbInterface
 
     /**
      * @see DbInterface::query()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function query(string $sql, array $params = []) : ?object
     {
@@ -135,7 +135,7 @@ abstract class Pdo implements DbInterface
 
     /**
      * @see DbInterface::free()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function free(object $result)
     {
@@ -144,7 +144,7 @@ abstract class Pdo implements DbInterface
 
     /**
      * @see DbInterface::lastId()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function lastId() : int
     {
@@ -153,7 +153,7 @@ abstract class Pdo implements DbInterface
 
     /**
      * @see DbInterface::affectedRows()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function affectedRows() : int
     {
@@ -162,7 +162,7 @@ abstract class Pdo implements DbInterface
 
     /**
      * @see DbInterface::numRows()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function numRows(object $result) : int
     {
@@ -171,7 +171,7 @@ abstract class Pdo implements DbInterface
 
     /**
      * @see DbInterface::fetchArray()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function fetchArray(object $result) : ?array
     {
@@ -180,7 +180,7 @@ abstract class Pdo implements DbInterface
 
     /**
      * @see DbInterface::fetchRow()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function fetchRow(object $result) : ?array
     {
@@ -189,7 +189,7 @@ abstract class Pdo implements DbInterface
 
     /**
      * @see DbInterface::fetchObject()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function fetchObject(object $result, string $class_name = '') : ?object
     {
@@ -202,7 +202,7 @@ abstract class Pdo implements DbInterface
     
     /**
      * @see DbInterface::fetchColumn()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function fetchColumn(object $result, int $column = 0) : ?string
     {
@@ -211,7 +211,7 @@ abstract class Pdo implements DbInterface
 
     /**
      * @see DbInterface::fetchAll()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function fetchAll(object $result, bool|string $class_name = '') : array
     {
@@ -228,7 +228,7 @@ abstract class Pdo implements DbInterface
     
     /**
      * @see DbInterface::fetchAllFromColumn()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function fetchAllFromColumn(object $result, int $column = 0) : array
     {

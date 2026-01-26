@@ -18,7 +18,7 @@ class CheckboxGroup extends Tag implements FormInputInterface
     use FormInputTrait;
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     protected static array $properties = ['values', 'checked'];
 
@@ -36,7 +36,7 @@ class CheckboxGroup extends Tag implements FormInputInterface
 
     /**
      * @see TagInterface::html()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function html(string $text = '', array $attributes = []) : string
     {
@@ -91,7 +91,7 @@ class CheckboxGroup extends Tag implements FormInputInterface
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function isAllowedValue(string|array $value, array $attributes) : bool
     {

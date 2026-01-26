@@ -273,11 +273,6 @@ class Config extends Container
      */
     protected function normalize()
     {
-        if ($this->development->enable) {
-            $this->document->css->version = time();
-            $this->document->js->version = time();
-        }
-
         if ($this->debug->ips) {
             if (in_array($this->_app->ip, $this->debug->ips)) {
                 $this->debug->enable = true;

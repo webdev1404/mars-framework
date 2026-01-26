@@ -57,7 +57,7 @@ trait ModelTrait
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      * @see \Mars\Validation\ValidateTrait::validate()
      */
     public function validate(array|object $data = []) : bool

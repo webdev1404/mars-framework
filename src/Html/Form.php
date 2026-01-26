@@ -19,7 +19,7 @@ use Mars\Http\Request\Input;
 class Form extends Tag
 {
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     protected static string $tag = 'form';
 
@@ -108,7 +108,7 @@ class Form extends Tag
 
     /**
      * @see TagInterface::get()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function html(string $url = '', array $attributes = []) : string
     {

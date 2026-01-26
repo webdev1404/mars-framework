@@ -13,12 +13,12 @@ namespace Mars\Html;
 class A extends Tag
 {
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     protected static string $tag = 'a';
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     protected static string $newline = '';
 }

@@ -7,6 +7,7 @@
 namespace Mars\Extensions\Libraries;
 
 use Mars\Extensions\Extension;
+use Mars\Document;
 
 /**
  * The Library Class
@@ -14,6 +15,20 @@ use Mars\Extensions\Extension;
  */
 abstract class Library extends Extension
 {
+    /**
+     * @var Document $document The document object
+     */
+    public Document $document {
+        get => $this->app->document;
+    }
+
+    /**
+     * @var string $assets_path The path to the library assets
+     */
+    public protected(set) string $assets_path {
+        get => $this->path;
+    }
+    
     /**
      * Boots the library
      */

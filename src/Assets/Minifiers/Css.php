@@ -13,7 +13,7 @@ class Css implements MinifierInterface
 {
     /**
      * @see MinifierInterface::minify()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function minify(string $content) : string
     {

@@ -15,7 +15,7 @@ use Mars\Html\Tag;
 class RadioGroup extends CheckboxGroup
 {
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     protected function getInput() : Tag
     {

@@ -35,12 +35,12 @@ class Select extends Tag implements FormInputInterface
     protected static string $value_attribute = 'selected';
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     protected static array $properties = ['options', 'selected'];
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function open(array $attributes = []) : string
     {
@@ -52,7 +52,7 @@ class Select extends Tag implements FormInputInterface
 
     /**
      * @see TagInterface::html()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function html(string $text = '', array $attributes = []) : string
     {
@@ -67,7 +67,7 @@ class Select extends Tag implements FormInputInterface
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function isAllowedValue(string|array $value, array $attributes) : bool
     {

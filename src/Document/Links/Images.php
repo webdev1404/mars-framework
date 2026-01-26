@@ -14,13 +14,13 @@ class Images extends Urls
 {
     /**
      * @see Urls::$type
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public protected(set) string $type = 'image';
 
     /**
      * @see Urls::$preload_config_key
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public protected(set) string $preload_config_key = 'images';
 

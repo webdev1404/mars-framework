@@ -12,12 +12,12 @@ namespace Mars\Validation;
 class Password extends Rule
 {
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public string $error = 'validate.password';
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public array $errors = [
         'min_max' => 'validate.password.length',

@@ -32,11 +32,17 @@ class Json
     /**
      * Encodes data
      * @param mixed $data The data to encode
+     * @param bool $nice If true, the encoded string will be pretty printed
      * @return string The encoded string
      */
-    public function encode($data) : string
+    public function encode($data, bool $nice = false) : string
     {
-        return json_encode($data, JSON_THROW_ON_ERROR);
+        $flags = JSON_THROW_ON_ERROR;
+        if ($nice) {
+            $flags |= JSON_PRETTY_PRINT;
+        }
+
+        return json_encode($data, $flags);
     }
 
     /**

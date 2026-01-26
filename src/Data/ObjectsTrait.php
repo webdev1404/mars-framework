@@ -103,7 +103,7 @@ trait ObjectsTrait
 
     /**
      * @see MapTrait::remove()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function remove(string $name) : static
     {

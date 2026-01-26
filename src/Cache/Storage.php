@@ -13,7 +13,8 @@ namespace Mars\Cache;
 class Storage extends Cacheable
 {
     /**
-     * @var string $driver_name The used driver
+     * @see Cacheable::$driver_name
+     * {@inheritDoc}
      */
     protected string $driver_name {
         get {
@@ -31,22 +32,25 @@ class Storage extends Cacheable
     }
 
     /**
-     * @var string $dir The dir where the data will be cached
-     */
-    protected string $dir = 'storage';
-
-    /**
-     * @var bool $can_hash Whether to hash the filename or not
-     */
-    protected bool $can_hash = true;
-
-    /**
-     * @var array $driver_params The parameters to pass to the driver constructor
+     * @see Cacheable::$driver_params
+     * {@inheritDoc}
      */
     protected array $driver_params = [
         false,                // use files cache
         'cacheable_storage',   // driver type
     ];
+
+    /**
+     * @see Cache::$dir
+     * {@inheritDoc}
+     */
+    public protected(set) string $dir = 'storage';
+
+    /**
+     * @see Cacheable::$can_hash
+     * {@inheritDoc}
+     */
+    protected bool $can_hash = true;
 
     /**
      * Sets the value of a cached value

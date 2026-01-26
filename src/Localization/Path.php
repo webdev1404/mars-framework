@@ -34,7 +34,7 @@ class Path extends Base implements LocalizationInterface
 
     /**
      * @see \Mars\Localization\LocalizationInterface::getUrl()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getUrl(string $code) : string
     {
@@ -47,7 +47,7 @@ class Path extends Base implements LocalizationInterface
 
     /**
      * @see \Mars\Localization\LocalizationInterface::getRequestUri()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getRequestUri() : ?string
     {

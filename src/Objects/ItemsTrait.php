@@ -183,7 +183,7 @@ trait ItemsTrait
 
     /**
      * @see \Mars\Entities::getObject()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getObject(array|object $data) : Entity
     {

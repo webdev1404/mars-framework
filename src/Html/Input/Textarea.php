@@ -18,7 +18,7 @@ class Textarea extends Tag implements FormInputInterface
     use FormInputTrait;
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     protected static string $tag = 'textarea';
 
@@ -35,13 +35,13 @@ class Textarea extends Tag implements FormInputInterface
     protected static string $value_attribute = 'value';
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     protected static array $properties = ['value'];
 
     /**
      * @see TagInterface::html()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function html(string $text = '', array $attributes = []) : string
     {

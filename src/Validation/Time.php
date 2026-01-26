@@ -12,13 +12,13 @@ namespace Mars\Validation;
 class Time extends Datetime
 {
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public string $error = 'validate.time';
 
     /**
      * @see DateTime::isValid()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function isValid(string $value, ?string $format = null, ?string $format_desc = null) : bool
     {

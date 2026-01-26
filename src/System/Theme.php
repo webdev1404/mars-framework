@@ -64,7 +64,7 @@ class Theme extends BaseTheme
 
     /**
      * @see BaseTheme::getTemplateFilename()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getTemplateFilename(string $template) : ?string
     {
@@ -86,7 +86,7 @@ class Theme extends BaseTheme
 
     /**
      * @see BaseTheme::getTemplateFromFilename()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getTemplateFromFilename(string $filename, ?string $filename_rel = null, array $vars = [], string $type = 'template', array $params = [], bool $development = false) : string
     {

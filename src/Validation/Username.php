@@ -12,7 +12,7 @@ namespace Mars\Validation;
 class Username extends Rule
 {
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public string $error = 'validate.username';
 

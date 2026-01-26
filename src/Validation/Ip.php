@@ -12,7 +12,7 @@ namespace Mars\Validation;
 class Ip extends Rule
 {
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public string $error = 'validate.ip';
 

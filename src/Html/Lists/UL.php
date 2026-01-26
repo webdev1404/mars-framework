@@ -13,7 +13,7 @@ namespace Mars\Html\Lists;
 class UL extends Listing
 {
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     protected static string $tag = 'ul';
 }

@@ -1018,7 +1018,7 @@ class App
      * Returns a language string
      * Alias for $app->lang->get()
      * @see \Mars\System\Language::get()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public static function __(string|array $str, array $replace = []) : string
     {

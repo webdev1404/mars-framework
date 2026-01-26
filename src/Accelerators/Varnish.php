@@ -18,7 +18,7 @@ class Varnish implements AcceleratorInterface
 
     /**
      * AcceleratorInterface::delete()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function delete(string $url) : bool
     {
@@ -29,7 +29,7 @@ class Varnish implements AcceleratorInterface
 
     /**
      * AcceleratorInterface::deleteByPattern()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function deleteByPattern(string $pattern) : bool
     {
@@ -40,7 +40,7 @@ class Varnish implements AcceleratorInterface
 
     /**
      * AcceleratorInterface::deleteAll()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function deleteAll() : bool
     {

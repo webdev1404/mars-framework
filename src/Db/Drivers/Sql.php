@@ -40,7 +40,7 @@ abstract class Sql implements SqlInterface
 
     /**
      * @see SqlInterface::start()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function start()
     {
@@ -136,7 +136,7 @@ abstract class Sql implements SqlInterface
 
     /**
      * @see SqlInterface::insert()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function insert(string $table) :string
     {
@@ -145,7 +145,7 @@ abstract class Sql implements SqlInterface
 
     /**
      * @see SqlInterface::update()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function update(string $table) : string
     {
@@ -154,7 +154,7 @@ abstract class Sql implements SqlInterface
 
     /**
      * @see SqlInterface::replace()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function replace(string $table) : string
     {
@@ -163,7 +163,7 @@ abstract class Sql implements SqlInterface
 
     /**
      * @see SqlInterface::delete()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function delete() : string
     {
@@ -172,7 +172,7 @@ abstract class Sql implements SqlInterface
 
     /**
      * @see SqlInterface::values()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function values(array $values) : string
     {
@@ -184,7 +184,7 @@ abstract class Sql implements SqlInterface
 
     /**
      * @see SqlInterface::valuesMulti()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function valuesMulti(array $values_list) : string
     {
@@ -250,7 +250,7 @@ abstract class Sql implements SqlInterface
 
     /**
      * @see SqlInterface::set()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function set(array $values) : string
     {
@@ -280,7 +280,7 @@ abstract class Sql implements SqlInterface
 
     /**
      * @see SqlInterface::select()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function select(string|array $cols = '*', string|array $extra = '') : string
     {
@@ -299,7 +299,7 @@ abstract class Sql implements SqlInterface
 
     /**
      * @see SqlInterface::selectCount()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function selectCount() : string
     {
@@ -322,7 +322,7 @@ abstract class Sql implements SqlInterface
 
     /**
      * @see SqlInterface::from()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function from(string $table) : string
     {
@@ -331,7 +331,7 @@ abstract class Sql implements SqlInterface
 
     /**
      * @see SqlInterface::join()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function join(string $table, string $using = '', string $on = '') : string
     {
@@ -340,7 +340,7 @@ abstract class Sql implements SqlInterface
 
     /**
      * @see SqlInterface::leftJoin()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function leftJoin(string $table, string $using = '', string $on = '') : string
     {
@@ -349,7 +349,7 @@ abstract class Sql implements SqlInterface
 
     /**
      * @see SqlInterface::rightJoin()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function rightJoin(string $table, string $using = '', string $on = '') : string
     {
@@ -358,7 +358,7 @@ abstract class Sql implements SqlInterface
 
     /**
      * @see SqlInterface::innerJoin()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function innerJoin(string $table, string $using = '', string $on = '') : string
     {
@@ -393,7 +393,7 @@ abstract class Sql implements SqlInterface
 
     /**
      * @see SqlInterface::where()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function where(array $where, string $delimitator = 'AND') : string
     {
@@ -421,7 +421,7 @@ abstract class Sql implements SqlInterface
 
     /**
      * @see SqlInterface::whereIn()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function whereIn(string $column, array $values) : string
     {
@@ -434,7 +434,7 @@ abstract class Sql implements SqlInterface
 
     /**
      * @see SqlInterface::and()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function and() : string
     {
@@ -443,7 +443,7 @@ abstract class Sql implements SqlInterface
 
     /**
      * @see SqlInterface::or()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function or() : string
     {
@@ -452,7 +452,7 @@ abstract class Sql implements SqlInterface
 
     /**
      * @see SqlInterface::having()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function having(array $having, string $delimitator = 'AND') : string
     {
@@ -563,7 +563,7 @@ abstract class Sql implements SqlInterface
 
     /**
      * @see SqlInterface::orderBy()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function orderBy(string $order_by, string $order = '') : string
     {
@@ -583,7 +583,7 @@ abstract class Sql implements SqlInterface
 
     /**
      * @see SqlInterface::groupBy()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function groupBy(string $group_by) : string
     {
@@ -592,7 +592,7 @@ abstract class Sql implements SqlInterface
 
     /**
      * @see SqlInterface::limit()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function limit(int $count, ?int $offset = null) : string
     {
@@ -610,7 +610,7 @@ abstract class Sql implements SqlInterface
 
     /**
      * @see SqlInterface::offset()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function offset(int $offset) : string
     {

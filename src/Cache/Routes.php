@@ -16,21 +16,27 @@ use Mars\Cache\Cacheable\CacheableInterface;
 class Routes extends Data
 {
     /**
-     * @var string $driver_name The used driver
+     * @see Cacheable::$driver_name
+     * {@inheritDoc}
      */
     protected string $driver_name {
         get => $this->app->config->cache->routes->driver ?? $this->app->config->cache->driver;
     }
 
     /**
-     * @var array $driver_params The parameters to pass to the driver constructor
+     * @see Cacheable::$driver_params
+     * {@inheritDoc}
      */
-    protected array $driver_params = [false, 'cacheable_routes'];
+    protected array $driver_params = [
+        false,               // use files cache
+        'cacheable_routes',   // driver type
+    ];
 
     /**
-     * @var string $dir The dir where the routes will be cached
+     * @see Cache::$dir
+     * {@inheritDoc}
      */
-    protected string $dir = 'routes';
+    public protected(set) string $dir = 'routes';
 
     /**
      * Returns the list of hashes which are cached for the prefix of a given route

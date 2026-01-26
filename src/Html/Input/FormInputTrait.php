@@ -12,7 +12,7 @@ namespace Mars\Html\Input;
 trait FormInputTrait
 {
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      * @see FormInputInterface::getNameAttribute()
      */
     public function getNameAttribute() : string
@@ -21,7 +21,7 @@ trait FormInputTrait
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      * @see FormInputInterface::getValueAttribute()
      */
     public function getValueAttribute() : string
@@ -30,7 +30,7 @@ trait FormInputTrait
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      * @see FormInputInterface::isAllowedValue()
      */
     public function isAllowedValue(string|array $value, array $attributes) : bool

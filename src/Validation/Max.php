@@ -13,7 +13,7 @@ namespace Mars\Validation;
 class Max extends Rule
 {
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public string $error = 'validate.float.max';
 

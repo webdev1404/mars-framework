@@ -41,7 +41,7 @@ class ListingMulti extends Listing
 
     /**
      * @see \Mars\Cli\Base::getMaxLength()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     protected function getMaxLength(array $data, array $paddings_right = []) : array
     {

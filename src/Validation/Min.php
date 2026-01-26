@@ -13,7 +13,7 @@ namespace Mars\Validation;
 class Min extends Rule
 {
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public string $error = 'validate.float.min';
 

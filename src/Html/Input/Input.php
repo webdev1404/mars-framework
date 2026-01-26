@@ -18,7 +18,7 @@ class Input extends Tag implements FormInputInterface
     use FormInputTrait;
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     protected static string $tag = 'input';
 
@@ -28,7 +28,7 @@ class Input extends Tag implements FormInputInterface
     protected static string $type = 'text';
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     protected static bool $always_close = false;
 
@@ -46,7 +46,7 @@ class Input extends Tag implements FormInputInterface
 
     /**
      * @see TagInterface::html()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function html(string $text = '', array $attributes = []) : string
     {

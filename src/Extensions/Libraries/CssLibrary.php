@@ -31,4 +31,3 @@ class CssLibrary extends Library
         get => $this->app->libraries->css;
     }
 }
-

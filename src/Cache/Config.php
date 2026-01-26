@@ -13,25 +13,23 @@ namespace Mars\Cache;
 class Config extends Data
 {
     /**
-     * @var string $driver_name The used driver
+     * @see Cacheable::$driver_name
+     * {@inheritDoc}
      */
     protected string $driver_name = 'php';
 
     /**
-     * @var string $dir The dir where the data will be cached
-     */
-    protected string $dir = 'config';
-
-    /**
-     * @var bool $can_hash Whether to hash the filename or not
-     */
-    protected bool $can_hash = false;
-
-    /**
-     * @var array $driver_params The parameters to pass to the driver constructor
+     * @see Cacheable::$driver_params
+     * {@inheritDoc}
      */
     protected array $driver_params = [
-        true,               // use files cache
+        false,              // use files cache
         'cacheable_config', // driver type
     ];
+
+    /**
+     * @see Cache::$dir
+     * {@inheritDoc}
+     */
+    public protected(set) string $dir = 'config';
 }

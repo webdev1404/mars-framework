@@ -13,9 +13,10 @@ namespace Mars\Cache;
 class Templates extends Cache
 {
     /**
-     * @var string $dir The dir where the templates will be cached
+     * @see Cache::$dir
+     * {@inheritDoc}
      */
-    protected string $dir = 'templates';
+    public protected(set) string $dir = 'templates';
 
     /**
      * Returns the filename of the cached template

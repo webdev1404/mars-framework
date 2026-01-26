@@ -18,7 +18,7 @@ class Html implements ResponseInterface
 
     /**
      * @see ResponseInterface::output()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function output(mixed $content)
     {

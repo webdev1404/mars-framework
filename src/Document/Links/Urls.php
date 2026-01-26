@@ -12,6 +12,7 @@ use Mars\App\LazyLoad;
 use Mars\LazyLoadProperty;
 use Mars\Document\Links\Hints\Preload;
 use Mars\Document\Links\Hints\Prefetch;
+use Mars\Assets\Asset;
 
 /**
  * The Document Urls Class
@@ -60,6 +61,33 @@ abstract class Urls
     public protected(set) Prefetch $prefetch;
 
     /**
+     * @var bool $minify Indicates whether the urls should be minified
+     */
+    protected bool $minify = false;
+
+    /**
+     * @var array $minify_exclude The urls to be excluded from minification
+     */
+    protected array $minify_exclude = [];
+
+    /**
+     * @var bool $combine Indicates whether the urls should be combined
+     */
+    protected bool $combine = false;
+
+    /**
+     * @var array $combine_exclude The urls to be excluded from combination
+     */
+    protected array $combine_exclude = [];
+
+    /**
+     * @var bool $development If true, we are in development mode
+     */
+    protected bool $development {
+        get => $this->app->config->development->enable;
+    }
+
+    /**
      * Outputs a link
      * @param string $url The url to output
      * @param array $attributes The attributes of the url, if any
@@ -89,6 +117,22 @@ abstract class Urls
                 $this->preload($urls);
             }
         }
+    }
+
+    /**
+     * Returns the version to be applied to the urls
+     * @param string $cache_file The cache file name where the version is stored
+     * @return string The version
+     */
+    protected function getVersion(string $cache_file) : string
+    {
+        $version = $this->app->cache->data->get($cache_file);
+        if ($version === null) {
+            $version = time();
+            $this->app->cache->data->set($cache_file, $version);
+        }
+
+        return $version;
     }
 
     /**
@@ -256,7 +300,15 @@ abstract class Urls
             $urls = $this->sort($urls);
         }
 
-        return $urls;
+        if (!$this->minify && !$this->combine) {
+            return $urls;
+        }
+
+        if ($this->development || !isset($this->asset)) {
+            return $urls;
+        }
+
+        return $this->asset->process($urls, $this->minify, $this->minify_exclude, $this->combine, $this->combine_exclude);
     }
 
     /**

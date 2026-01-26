@@ -13,18 +13,18 @@ namespace Mars\Html;
 class Picture extends Tag
 {
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     protected static string $tag = 'picture';
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     protected static array $properties = ['images'];
 
     /**
      * @see TagInterface::html()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function html(string $text = '', array $attributes = []) : string
     {

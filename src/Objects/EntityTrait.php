@@ -107,7 +107,7 @@ trait EntityTrait
     /**
      * Alias for set
      * @see \Mars\Entity::set
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function assign(array|object $data) : static
     {

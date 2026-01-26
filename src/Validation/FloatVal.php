@@ -13,7 +13,7 @@ namespace Mars\Validation;
 class FloatVal extends Rule
 {
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public string $error = '';
 

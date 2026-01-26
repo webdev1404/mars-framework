@@ -54,19 +54,19 @@ abstract class Cacheable extends Cache
     }
 
     /**
+     * @var string $driver_name The used driver
+     */
+    protected string $driver_name {
+        get => $this->app->config->cache->driver;
+    }
+
+    /**
      * @var array $driver_params The parameters to pass to the driver constructor
      */
     protected array $driver_params = [
         true,               // use files cache
         'cacheable',        // driver type
     ];
-
-    /**
-     * @var string $driver_name The used driver
-     */
-    protected string $driver_name {
-        get => $this->app->config->cache->driver;
-    }
 
     /**
      * @var bool $can_hash Whether to hash the filename or not
@@ -84,6 +84,11 @@ abstract class Cacheable extends Cache
      * @var bool $serialize Whether to serialize the data before storing
      */
     protected bool $serialize = true;
+
+    /**
+     * @var string $extension The cache file extension, if any
+     */
+    public protected(set) string $extension = '';
 
     /**
      * Gets a cached value
@@ -169,12 +174,16 @@ abstract class Cacheable extends Cache
      * @param string $name The name of the file
      * @return string
      */
-    protected function getName(string $name) : string
+    public function getName(string $name) : string
     {
-        if (!$this->can_hash) {
-            return $name;
+        if ($this->can_hash) {
+            $name = hash($this->hash, $name);
         }
 
-        return hash($this->hash, $name);
+        if ($this->extension) {
+            $name .= '.' . $this->extension;
+        }
+
+        return $name;
     }
 }

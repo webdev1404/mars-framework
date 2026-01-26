@@ -15,7 +15,7 @@ use Mars\Html\Tag;
 class Optgroup extends Tag
 {
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     protected static string $tag = 'optgroup';
 }

@@ -13,8 +13,6 @@ final class UrlsTest extends Base
     public function setUp() : void
     {
         parent::setUp();
-
-        $this->app->config->document->css->version = '123';
     }
 
     public function testCss()

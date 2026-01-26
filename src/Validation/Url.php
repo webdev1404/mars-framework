@@ -12,7 +12,7 @@ namespace Mars\Validation;
 class Url extends Rule
 {
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public string $error = 'validate.url';
 

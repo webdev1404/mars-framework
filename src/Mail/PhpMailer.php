@@ -49,7 +49,7 @@ class PhpMailer implements MailInterface
 
     /**
      * @see MailInterface::setRecipient()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function setRecipient(string|array $to)
     {
@@ -62,7 +62,7 @@ class PhpMailer implements MailInterface
 
     /**
      * @see MailInterface::setRecipientBcc()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function setRecipientBcc(string|array $to)
     {
@@ -75,7 +75,7 @@ class PhpMailer implements MailInterface
 
     /**
      * @see MailInterface::setSubject()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function setSubject(string $subject)
     {
@@ -84,7 +84,7 @@ class PhpMailer implements MailInterface
 
     /**
      * @see MailInterface::setBody()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function setBody(string $body, bool $is_html = true)
     {
@@ -94,7 +94,7 @@ class PhpMailer implements MailInterface
 
     /**
      * @see MailInterface::setFrom()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function setFrom(string $from, string $from_name = '')
     {
@@ -104,7 +104,7 @@ class PhpMailer implements MailInterface
 
     /**
      * @see MailInterface::setSender()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function setSender(string $reply_to, string $reply_to_name = '')
     {
@@ -113,7 +113,7 @@ class PhpMailer implements MailInterface
 
     /**
      * @see MailInterface::setAttachments()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function setAttachments(array $attachments)
     {
@@ -124,7 +124,7 @@ class PhpMailer implements MailInterface
 
     /**
      * @see MailInterface::send()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function send()
     {

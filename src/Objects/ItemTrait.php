@@ -86,7 +86,7 @@ trait ItemTrait
 
     /**
      * @see \Mars\Entity::add()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getId() : int
     {
@@ -119,7 +119,7 @@ trait ItemTrait
 
     /**
      * @see \Mars\Entity::set()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function set(array|object $data, bool $overwrite = true) : static
     {
@@ -379,7 +379,7 @@ trait ItemTrait
     /**
      * Binds the data from $data to the object's properties
      * @see \Mars\Objects\EntityTrait::bind()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function bind(array|object $data = [], ?array $ignore_columns = null, ?string $ignore_value = null, ?array $properties = null) : static
     {
@@ -400,7 +400,7 @@ trait ItemTrait
     /**
      * Binds the data from $data to the object's properties
      * @see \Mars\Objects\EntityTrait::bindList()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function bindList(array $properties, array|object $data = [], ?string $ignore_value = null) : static
     {

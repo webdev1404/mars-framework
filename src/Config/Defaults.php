@@ -46,12 +46,6 @@ class Defaults
         // string The separator of the title parts
         'document.title.separator' => ' - ',
 
-        // string The version of the css files
-        'document.css.version' => '1.0.0',
-
-        // string The version of the javascript files
-        'document.js.version' => '1.0.0',
-
 
         // bool Set to true to display errors, false to hide them
         'errors.display' => false,
@@ -130,6 +124,18 @@ class Defaults
         // bool If true, will reload the routes on each request
         'development.routes' => false,
 
+        // If true, will not minify or combine the css assets
+        'development.assets.css' => false,
+
+        // If true, will not minify or combine the javascript assets
+        'development.assets.js' => false,
+
+        // If true, will regenerated the processed css assets on each request
+        'development.assets.process.css' => false,
+
+        // If true, will regenerated the processed javascript assets on each request
+        'development.assets.process.js' => false,
+
         // bool Set to true to display errors, false to hide them, if development mode is enabled
         'development.errors.display' => true,
 
@@ -187,6 +193,9 @@ class Defaults
         // string|null The driver used for data caching. If null, will use cache.driver
         'cache.data.driver' => 'php',
 
+        // string|null The driver used for assets caching. If null, will use cache.driver
+        'cache.assets.driver' => 'php',
+
         // string|null The driver used for routes caching. If null, will use cache.driver
         'cache.routes.driver' => 'php',
 
@@ -213,6 +222,37 @@ class Defaults
 
         // bool If true will minify the cached content
         'cache.page.minify' => false,
+
+        // If true will exclude CSRF protected pages from page caching
+        'cache.page.exclude.csrf' => true,
+
+        // The urls to exclude from page caching
+        'cache.page.exclude.urls' => [],
+
+
+        // If true, will minify the css assets
+        'assets.css.minify.enable' => false,
+
+        // The css urls to exclude from minification
+        'assets.css.minify.exclude.urls' => [],
+
+        // If true, will combine the css assets
+        'assets.css.combine.enable' => false,
+
+        // The css urls to exclude from combination
+        'assets.css.combine.exclude.urls' => [],
+
+        // If true, will minify the js assets
+        'assets.js.minify.enable' => false,
+
+        // The js urls to exclude from minification
+        'assets.js.minify.exclude.urls' => [],
+
+        // If true, will combine the js assets
+        'assets.js.combine.enable' => false,
+
+        // The js urls to exclude from combination
+        'assets.js.combine.exclude.urls' => [],
 
 
         // string The driver used to send mail. Supported options: phpmailer

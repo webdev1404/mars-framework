@@ -38,7 +38,7 @@ class Plugins extends Extensions
 
     /**
      * @see Extensions::readAll()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     protected function readAll(): array
     {

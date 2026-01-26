@@ -13,27 +13,25 @@ namespace Mars\Cache;
 class Data extends Cacheable
 {
     /**
-     * @var string $driver_name The used driver
+     * @see Cacheable::$driver_name
+     * {@inheritDoc}
      */
     protected string $driver_name {
         get => $this->app->config->cache->data->driver ?? $this->app->config->cache->driver;
     }
 
     /**
-     * @var string $dir The dir where the data will be cached
-     */
-    protected string $dir = 'data';
-
-    /**
-     * @var bool $can_hash Whether to hash the filename or not
-     */
-    protected bool $can_hash = false;
-
-    /**
-     * @var array $driver_params The parameters to pass to the driver constructor
+     * @see Cacheable::$driver_params
+     * {@inheritDoc}
      */
     protected array $driver_params = [
         true,               // use files cache
         'cacheable_data',   // driver type
     ];
+
+    /**
+     * @see Cache::$dir
+     * {@inheritDoc}
+     */
+    public protected(set) string $dir = 'data';
 }

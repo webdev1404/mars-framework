@@ -18,7 +18,7 @@ class MobileDetect implements DeviceInterface
 
     /**
      * @see DeviceInterface::get()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function get(?string $useragent = null) : Type
     {

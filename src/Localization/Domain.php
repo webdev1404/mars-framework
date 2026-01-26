@@ -14,7 +14,7 @@ class Domain extends Base implements LocalizationInterface
 {
     /**
      * @see \Mars\Localization\LocalizationInterface::getCode()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getCode() : string
     {
@@ -40,7 +40,7 @@ class Domain extends Base implements LocalizationInterface
 
     /**
      * @see \Mars\Localization\LocalizationInterface::getUrl()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getUrl(string $code) : string
     {

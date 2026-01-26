@@ -105,7 +105,12 @@ abstract class Extension
                 return $this->assets_url;
             }
 
-            $this->assets_url = $this->app->assets_url . '/' . rawurlencode(static::$base_dir) . '/' . rawurlencode($this->name);
+            $this->assets_url = $this->app->assets_url . '/' . static::$base_dir . '/' . rawurlencode($this->name);
+
+            //check if the assets symlink exists, and create it if it doesn't
+            if ($this->canCreateAssetsSymlink()) {
+                $this->createAssetsSymlink();
+            }
 
             return $this->assets_url;
         }
@@ -125,6 +130,11 @@ abstract class Extension
             return $this->assets_target;
         }
     }
+
+    /**
+     * @var ?array $assets_dirs The existing assets dirs
+     */
+    protected static ?array $assets_dirs = null;
 
     /**
      * @var string $namespace The namespace of the extension
@@ -150,7 +160,18 @@ abstract class Extension
                 return $this->development;
             }
 
-            $this->development = $this->app->development ? true : $this->app->config->development->extensions[static::$development_config_key ?? static::$base_dir] ?? false;
+            $this->development = false;
+            if ($this->app->development) {
+                $this->development = true;
+            } else {
+                $development = $this->app->config->development->extensions[static::$development_config_key ?? static::$base_dir] ?? false;
+                if (is_array($development)) {
+                    // If an array is specified, check if this extension is in the array
+                    $this->development = in_array($this->name, $development);
+                } else {
+                    $this->development = (bool)$development;
+                }
+            }
 
             return $this->development;
         }
@@ -234,7 +255,7 @@ abstract class Extension
     }
 
     /**
-     * Includes the extension's boot file
+     * Includes the extension's boot fileau creat un model pentru o potențială invazie americană, un pas considerat obligatoriu din cauza “fixației lui Trump privind anexarea” țării vecine. Deși un astfel de atac “este foarte improbabil”, militarii au stabilit că armata SUA, mult mai mare, ar copleși în două zile forțele canadiene, dar o rezistență asimetrică ar face ocupația dificil de realizat.
      */
     public function boot()
     {
@@ -312,5 +333,41 @@ abstract class Extension
         $this->exec_time = $this->app->timer->stop('extension_output');
 
         return $output;
+    }
+
+    /**
+     * Determines if the assets dir exists in the public/assets folder
+     * @return bool True if the assets dir exists
+     */
+    protected function canCreateAssetsSymlink() : bool
+    {
+        if (static::$assets_dirs === null) {
+            static::$assets_dirs = $this->app->cache->data->get('assets-dirs');
+            if ($this->development) {
+                static::$assets_dirs = null;
+            }
+
+            if (static::$assets_dirs === null) {
+                static::$assets_dirs = $this->app->dir->get($this->app->assets_path, true, true);
+                $this->app->cache->data->set('assets-dirs', array_flip(static::$assets_dirs));
+            }
+        }
+
+        return isset(static::$assets_dirs[$this->assets_target]);
+    }
+
+    /**
+     * Creates the symlink for the assets folder
+     * @throws \Exception If the symlink could not be created
+     */
+    protected function createAssetsSymlink()
+    {
+        if (is_link($this->assets_target) || !is_dir($this->assets_path)) {
+            return;
+        }
+
+        if (!symlink($this->assets_path, $this->assets_target)) {
+            throw new \Exception("Could not create symlink from '{$this->assets_path}' to '{$this->assets_target}'");
+        }
     }
 }

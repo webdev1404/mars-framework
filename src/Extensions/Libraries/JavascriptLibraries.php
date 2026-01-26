@@ -27,4 +27,3 @@ class JavascriptLibraries extends Libraries
      */
     protected static string $instance_class = JavascriptLibrary::class;
 }
-

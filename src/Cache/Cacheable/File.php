@@ -29,7 +29,7 @@ class File extends Base implements CacheableInterface
 
     /**
      * @see CacheableInterface::get()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function get(string $filename, bool $unserialize) : mixed
     {
@@ -49,7 +49,7 @@ class File extends Base implements CacheableInterface
 
     /**
      * @see CacheableInterface::set()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function set(string $filename, mixed $content, bool $serialize) : bool
     {
@@ -66,7 +66,7 @@ class File extends Base implements CacheableInterface
 
     /**
      * @see CacheableInterface::create()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function create(string $filename) : bool
     {
@@ -75,7 +75,7 @@ class File extends Base implements CacheableInterface
 
     /**
      * @see CacheableInterface::exists()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function exists(string $filename) : bool
     {
@@ -86,7 +86,7 @@ class File extends Base implements CacheableInterface
 
     /**
      * @see CacheableInterface::getLastModified()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getLastModified(string $filename) : int
     {
@@ -101,7 +101,7 @@ class File extends Base implements CacheableInterface
 
     /**
      * @see CacheableInterface::delete()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function delete(string $filename) : bool
     {
@@ -115,7 +115,7 @@ class File extends Base implements CacheableInterface
 
     /**
      * @see CacheableInterface::clean()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function clean(string $dir)
     {

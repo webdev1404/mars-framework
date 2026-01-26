@@ -14,19 +14,19 @@ class Fonts extends Urls
 {
     /**
      * @see Urls::$type
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public protected(set) string $type = 'font';
 
     /**
      * @see Urls::$preload_config_key
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public protected(set) string $preload_config_key = 'fonts';
 
     /**
      * @see Urls::$crossorigin
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public protected(set) string $crossorigin = 'anonymous';
 

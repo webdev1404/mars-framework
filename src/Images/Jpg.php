@@ -34,7 +34,7 @@ class Jpg extends Image implements ImageInterface
 
     /**
      * @see ImageInterface::optimize()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function optimize() : static
     {
@@ -48,7 +48,7 @@ class Jpg extends Image implements ImageInterface
 
     /**
      * @see ImageInterface::open()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function open() : GdImage
     {
@@ -62,7 +62,7 @@ class Jpg extends Image implements ImageInterface
 
     /**
      * @see ImageInterface::save()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function save(GdImage $img)
     {

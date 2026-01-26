@@ -13,7 +13,7 @@ class Module extends Handler
 {
     /**
      * @see Handler::getRoute()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getRoute(string $hash, array $data)
     {

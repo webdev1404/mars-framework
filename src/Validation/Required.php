@@ -12,12 +12,12 @@ namespace Mars\Validation;
 class Required extends Rule
 {
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public string $error = '';
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public array $errors = [
         'required' => 'validate.required',

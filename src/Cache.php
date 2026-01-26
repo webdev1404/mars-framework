@@ -7,9 +7,12 @@
 namespace Mars;
 
 use Mars\App\LazyLoad;
+use Mars\Cache\Assets;
 use Mars\Cache\Config;
-use Mars\Cache\Css;
-use Mars\Cache\Javascript;
+use Mars\Cache\Assets\Lists\Css as CssList;
+use Mars\Cache\Assets\Lists\Javascript as JavascriptList;
+use Mars\Cache\Assets\Urls\Css;
+use Mars\Cache\Assets\Urls\Javascript;
 use Mars\Cache\Data;
 use Mars\Cache\Pages;
 use Mars\Cache\Routes;
@@ -30,6 +33,18 @@ class Cache
      */
     #[LazyLoadProperty]
     public protected(set) Config $config;
+
+    /**
+     * @var CssList $css_list The Css List Cache object
+     */
+    #[LazyLoadProperty]
+    public protected(set) CssList $css_list;
+
+    /**
+     * @var JavascriptList $js_list The Javascript List Cache object
+     */
+    #[LazyLoadProperty]
+    public protected(set) JavascriptList $js_list;
 
     /**
      * @var Css $css The Css Cache object

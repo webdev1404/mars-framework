@@ -13,7 +13,7 @@ namespace Mars\Html;
 class Div extends Tag
 {
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     protected static string $tag = 'div';
 }

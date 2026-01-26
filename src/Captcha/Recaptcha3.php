@@ -34,7 +34,7 @@ class Recaptcha3 implements CaptchaInterface
 
     /**
      * @see CaptchaInterface::check()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function check() : bool
     {
@@ -71,7 +71,7 @@ class Recaptcha3 implements CaptchaInterface
 
     /**
      * @see CaptchaInterface::output()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function output()
     {

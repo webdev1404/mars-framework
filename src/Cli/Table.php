@@ -144,7 +144,7 @@ class Table extends Printer
 
     /**
      * @see \Mars\Cli\Base::getMaxLength()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     protected function getMaxLength(array $data, array $paddings_right = [], array $paddings_left = []) : array
     {

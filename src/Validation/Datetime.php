@@ -14,7 +14,7 @@ use Mars\App;
 class Datetime extends Rule
 {
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public string $error = 'validate.datetime';
 

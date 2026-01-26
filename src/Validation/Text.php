@@ -12,12 +12,12 @@ namespace Mars\Validation;
 class Text extends Rule
 {
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public string $error = '';
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public array $errors = [
         'min' => 'validate.text.min',

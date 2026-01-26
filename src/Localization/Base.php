@@ -22,7 +22,7 @@ class Base
 
     /**
      * @see \Mars\Localization\LocalizationInterface::getCode()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getCode() : string
     {
@@ -39,7 +39,7 @@ class Base
 
     /**
      * @see \Mars\Localization\LocalizationInterface::getUrl()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getUrl(string $code) : string
     {
@@ -48,7 +48,7 @@ class Base
 
     /**
      * @see \Mars\Localization\LocalizationInterface::getRequestUri()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getRequestUri() : ?string
     {

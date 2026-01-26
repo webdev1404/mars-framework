@@ -12,7 +12,7 @@ namespace Mars\Validation;
 class Pattern extends Rule
 {
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public string $error = '';
 

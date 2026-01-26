@@ -6,7 +6,6 @@
 
 namespace Mars\Assets;
 
-use Mars\App;
 use Mars\App\Kernel;
 use Mars\App\Handlers;
 use Mars\Assets\Minifiers\MinifierInterface;

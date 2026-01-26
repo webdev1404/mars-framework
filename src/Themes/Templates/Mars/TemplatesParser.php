@@ -18,7 +18,7 @@ class TemplatesParser
 
     /**
      * @see \Mars\Themes\Templates\TemplateInterface::parse()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function parse(string $content, array $params = []) : string
     {

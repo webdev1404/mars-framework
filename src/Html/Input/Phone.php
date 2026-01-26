@@ -13,7 +13,7 @@ namespace Mars\Html\Input;
 class Phone extends Input
 {
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     protected static string $type = 'tel';
 }

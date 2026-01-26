@@ -15,7 +15,7 @@ class VariablesRawParser extends VariablesParser
 {
     /**
      * @see \Mars\Themes\Templates\TemplateInterface::parse()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function parse(string $content, array $params = []) : string
     {
@@ -27,7 +27,7 @@ class VariablesRawParser extends VariablesParser
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     protected function applyModifiers(string $value, array $modifiers, bool $apply_escape = true) : string
     {

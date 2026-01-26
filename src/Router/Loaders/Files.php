@@ -21,7 +21,7 @@ class Files extends Loader
 
     /**
      * @see Loader::load()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function load()
     {

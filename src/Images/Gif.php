@@ -27,7 +27,7 @@ class Gif extends Image implements ImageInterface
 
     /**
      * ImageInterface::open()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function open() : GdImage
     {
@@ -41,7 +41,7 @@ class Gif extends Image implements ImageInterface
 
     /**
      * ImageInterface::create()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function create(int $width, int $height, GdImage $source) : GdImage
     {
@@ -62,7 +62,7 @@ class Gif extends Image implements ImageInterface
 
     /**
      * ImageInterface::save()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function save(GdImage $img)
     {

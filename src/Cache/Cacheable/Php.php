@@ -14,7 +14,7 @@ class Php extends File
 {
     /**
      * @see File::getFilename()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     protected function getFilename(string $filename) : string
     {
@@ -23,7 +23,7 @@ class Php extends File
 
     /**
      * @see CacheableInterface::get()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function get(string $filename, bool $unserialize) : mixed
     {
@@ -38,7 +38,7 @@ class Php extends File
 
     /**
      * @see CacheableInterface::set()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function set(string $filename, mixed $content, bool $serialize) : bool
     {

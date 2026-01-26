@@ -16,18 +16,18 @@ use Mars\Html\TagInterface;
 class Options extends Tag
 {
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     protected static string $tag = 'option';
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     protected static array $empty_attributes = ['value'];
 
     /**
      * @see TagInterface::html()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function html(string $text = '', array $attributes = []) : string
     {

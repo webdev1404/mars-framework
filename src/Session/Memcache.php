@@ -44,7 +44,7 @@ class Memcache extends Base implements \SessionHandlerInterface, \SessionUpdateT
     /**
      * Initialize the session
      * @see \SessionHandler::open()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function open(string $path, string $name) : bool
     {
@@ -54,7 +54,7 @@ class Memcache extends Base implements \SessionHandlerInterface, \SessionUpdateT
     /**
      * Closes the session
      * @see \SessionHandler::close()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function close() : bool
     {
@@ -64,7 +64,7 @@ class Memcache extends Base implements \SessionHandlerInterface, \SessionUpdateT
     /**
      * Reads the session data
      * @see \SessionHandler::read()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function read(string $id) : string|false
     {
@@ -76,7 +76,7 @@ class Memcache extends Base implements \SessionHandlerInterface, \SessionUpdateT
     /**
      * Writes the session data
      * @see \SessionHandler::write()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function write(string $id, string $data) :  bool
     {
@@ -86,7 +86,7 @@ class Memcache extends Base implements \SessionHandlerInterface, \SessionUpdateT
     /**
      * Destroys the session data
      * @see \SessionHandler::destroy()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function destroy(string $id) : bool
     {
@@ -96,7 +96,7 @@ class Memcache extends Base implements \SessionHandlerInterface, \SessionUpdateT
     /**
      * Deletes expired sessions
      * @see \SessionHandler::gc()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function gc(int $maxlifetime) : int|false
     {
@@ -105,7 +105,7 @@ class Memcache extends Base implements \SessionHandlerInterface, \SessionUpdateT
 
     /**
      * @see \SessionUpdateTimestampHandlerInterface::validateId()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function validateId(string $id) : bool
     {
@@ -115,7 +115,7 @@ class Memcache extends Base implements \SessionHandlerInterface, \SessionUpdateT
     /**
      * Updates the timestamp of a session when its data didn't change
      * @see \SessionUpdateTimestampHandlerInterface::updateTimestamp()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function updateTimestamp(string $id, string $data) : bool
     {

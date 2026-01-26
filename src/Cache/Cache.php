@@ -20,12 +20,12 @@ abstract class Cache implements CacheInterface
     /**
      * @var string $dir The dir where the data will be cached
      */
-    protected string $dir = '';
+    public protected(set) string $dir = '';
 
     /**
      * @var string $path The folder where the data will be cached
      */
-    protected string $path {
+    public protected(set) string $path {
         get {
             if (isset($this->path)) {
                 return $this->path;

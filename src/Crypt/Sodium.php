@@ -14,7 +14,7 @@ class Sodium implements CryptInterface
 {
     /**
      * @see CryptInterface::encrypt()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function encrypt(string $key, string $data): array
     {
@@ -28,7 +28,7 @@ class Sodium implements CryptInterface
 
     /**
      * @see CryptInterface::decrypt()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function decrypt(string $key, string $nonce, string $data): string
     {

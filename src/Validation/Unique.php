@@ -12,7 +12,7 @@ namespace Mars\Validation;
 class Unique extends Rule
 {
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public string $error = '';
 

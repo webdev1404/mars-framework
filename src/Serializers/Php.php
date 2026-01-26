@@ -13,7 +13,7 @@ class Php implements SerializerInterface
 {
     /**
      * @see SerializerInterface::serialize()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function serialize($data) : string
     {
@@ -22,7 +22,7 @@ class Php implements SerializerInterface
 
     /**
      * @see SerializerInterface::unserialize()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function unserialize(string $data)
     {

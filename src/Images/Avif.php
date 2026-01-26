@@ -21,7 +21,7 @@ class Avif extends Image implements ImageInterface
 
     /**
      * @see ImageInterface::open()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function open() : GdImage
     {
@@ -35,7 +35,7 @@ class Avif extends Image implements ImageInterface
 
     /**
      * @see ImageInterface::save()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function save(GdImage $img)
     {

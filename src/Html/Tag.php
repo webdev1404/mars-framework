@@ -69,7 +69,7 @@ class Tag implements TagInterface
 
     /**
      * @see \Mars\Html\TagInterface::get()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function html(string $text = '', array $attributes = []) : string
     {

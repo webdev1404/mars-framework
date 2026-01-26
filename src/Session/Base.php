@@ -36,7 +36,7 @@ abstract class Base implements SessionInterface
 
     /**
      * @see SessionInterface::start()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function start()
     {
@@ -49,7 +49,7 @@ abstract class Base implements SessionInterface
 
     /**
      * @see SessionInterface::delete()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function delete()
     {
@@ -59,7 +59,7 @@ abstract class Base implements SessionInterface
 
     /**
      * @see SessionInterface::getId()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getId() : string
     {
@@ -68,7 +68,7 @@ abstract class Base implements SessionInterface
 
     /**
      * @see SessionInterface::regenerateId()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function regenerateId() : string
     {
@@ -79,7 +79,7 @@ abstract class Base implements SessionInterface
 
     /**
      * @see SessionInterface::isSet()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function isSet(string $name) : bool
     {
@@ -90,7 +90,7 @@ abstract class Base implements SessionInterface
 
     /**
      * @see SessionInterface::get()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function get(string $name, bool $unserialize = false, mixed $default = null) : mixed
     {
@@ -111,7 +111,7 @@ abstract class Base implements SessionInterface
 
     /**
      * @see SessionInterface::set()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function set(string $name, mixed $value, bool $serialize = false)
     {
@@ -128,7 +128,7 @@ abstract class Base implements SessionInterface
 
     /**
      * @see SessionInterface::unset()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function unset(string $name)
     {

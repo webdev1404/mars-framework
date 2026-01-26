@@ -13,7 +13,7 @@ namespace Mars\Validation;
 class Captcha extends Rule
 {
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public string $error = 'validate.captcha';
 

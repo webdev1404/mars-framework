@@ -44,7 +44,7 @@ class Db extends Base implements \SessionHandlerInterface, \SessionUpdateTimesta
     /**
      * Initialize the session
      * @see \SessionHandler::open()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function open(string $path, string $name) : bool
     {
@@ -54,7 +54,7 @@ class Db extends Base implements \SessionHandlerInterface, \SessionUpdateTimesta
     /**
      * Closes the session
      * @see \SessionHandler::close()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function close() : bool
     {
@@ -64,7 +64,7 @@ class Db extends Base implements \SessionHandlerInterface, \SessionUpdateTimesta
     /**
      * Reads the session data
      * @see \SessionHandler::read()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function read(string $id) : string|false
     {
@@ -76,7 +76,7 @@ class Db extends Base implements \SessionHandlerInterface, \SessionUpdateTimesta
     /**
      * Writes the session data
      * @see \SessionHandler::write()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function write(string $id, string $data) :  bool
     {
@@ -94,7 +94,7 @@ class Db extends Base implements \SessionHandlerInterface, \SessionUpdateTimesta
     /**
      * Destroys the session data
      * @see \SessionHandler::destroy()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function destroy(string $id) : bool
     {
@@ -106,7 +106,7 @@ class Db extends Base implements \SessionHandlerInterface, \SessionUpdateTimesta
     /**
      * Deletes expired sessions
      * @see \SessionHandler::gc()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function gc(int $maxlifetime) : int|false
     {
@@ -117,7 +117,7 @@ class Db extends Base implements \SessionHandlerInterface, \SessionUpdateTimesta
 
     /**
      * @see \SessionUpdateTimestampHandlerInterface::validateId()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function validateId(string $id) : bool
     {
@@ -127,7 +127,7 @@ class Db extends Base implements \SessionHandlerInterface, \SessionUpdateTimesta
     /**
      * Updates the timestamp of a session when its data didn't change
      * @see \SessionUpdateTimestampHandlerInterface::updateTimestamp()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function updateTimestamp(string $id, string $data) : bool
     {

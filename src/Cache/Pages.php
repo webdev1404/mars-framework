@@ -21,26 +21,33 @@ class Pages extends Cacheable
     public bool $can_cache = false;
 
     /**
-     * @var string $dir The dir where the page files will be cached
+     * @see Cache::$dir
+     * {@inheritDoc}
      */
-    protected string $dir = 'pages';
+    public protected(set) string $dir = 'pages';
 
     /**
-     * @var bool $can_hash Whether to hash the filename or not
+     * @see Cacheable::$can_hash
+     * {@inheritDoc}
      */
     protected bool $can_hash = true;
 
     /**
-     * @var string $driver_name The name of the driver to use
+     * @see Cacheable::$driver_name
+     * {@inheritDoc}
      */
     protected string $driver_name {
         get => $this->app->config->cache->page->driver ?? $this->app->config->cache->driver;
     }
 
     /**
-     * @var array $driver_params The parameters to pass to the driver constructor
+     * @see Cacheable::$driver_params
+     * {@inheritDoc}
      */
-    protected array $driver_params = [false, 'cacheable_pages'];
+    protected array $driver_params = [
+        false,               // use files cache
+        'cacheable_pages',   // driver type
+    ];
 
     /**
      * @var bool $minify True, if the output can be minified

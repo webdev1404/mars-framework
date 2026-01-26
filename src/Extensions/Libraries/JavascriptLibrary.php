@@ -36,4 +36,3 @@ class JavascriptLibrary extends Library
         get => $this->app->libraries->js;
     }
 }
-

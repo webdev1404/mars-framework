@@ -12,7 +12,7 @@ namespace Mars\Validation;
 class MatchVal extends Rule
 {
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public string $error = 'validate.match';
 

@@ -21,7 +21,7 @@ class Action extends Files
 
     /**
      * @see Handler::getRoute()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getRoute(string $hash, array $data)
     {
@@ -36,7 +36,7 @@ class Action extends Files
 
     /**
      * @see \Mars\Router\Loaders\Loader::loadHash()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     protected function loadHash(string $method, string $language, string $route, string $prefix, string $hash, string $type, array $data, null|string|callable|array $action)
     {
@@ -55,7 +55,7 @@ class Action extends Files
 
     /**
      * @see \Mars\Router\Loaders\Loader::loadName()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     protected function loadName(string $language, string $name, string $route)
     {

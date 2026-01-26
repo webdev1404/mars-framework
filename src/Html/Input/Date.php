@@ -13,7 +13,7 @@ namespace Mars\Html\Input;
 class Date extends Input
 {
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     protected static string $type = 'date';
 }

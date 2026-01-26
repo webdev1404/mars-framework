@@ -10,6 +10,7 @@ use Mars\App;
 use Mars\App\Kernel;
 use Mars\Dir as DirObj;
 use Mars\File as FileObj;
+use Mars\Url;
 
 /**
  * The File Class
@@ -31,13 +32,14 @@ class File
 
     /**
      * Check that the filename [file/folder] doesn't contain invalid chars. and is located in the right path. Throws a fatal error for an invalid filename
+     * @param ?string $open_basedir The open_basedir restriction, if any
      * @param string $filename The filename
      * @return static
      * @throws Exception if the filename is not valid
      */
-    public function check(string $filename) : static
+    public function check(string $filename, ?string $open_basedir = null) : static
     {
-        $this->getObj($filename)->check();
+        $this->getObj($filename)->check($open_basedir);
 
         return $this;
     }

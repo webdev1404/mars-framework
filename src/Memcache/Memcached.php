@@ -19,7 +19,7 @@ class Memcached implements MemcacheInterface
 
     /**
      * @see MemcacheInterface::connect()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function connect(string $host, string $port)
     {
@@ -36,7 +36,7 @@ class Memcached implements MemcacheInterface
 
     /**
      * @see MemcacheInterface::disconnect()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function disconnect()
     {
@@ -47,7 +47,7 @@ class Memcached implements MemcacheInterface
 
     /**
      * @see MemcacheInterface::add()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function add(string $key, $value, int $expires = 0) : bool
     {
@@ -56,7 +56,7 @@ class Memcached implements MemcacheInterface
 
     /**
      * @see MemcacheInterface::set()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function set(string $key, $value, int $expires = 0) : bool
     {
@@ -65,7 +65,7 @@ class Memcached implements MemcacheInterface
 
     /**
      * @see MemcacheInterface::get()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function get(string $key)
     {
@@ -79,7 +79,7 @@ class Memcached implements MemcacheInterface
 
     /**
      * @see MemcacheInterface::exists()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function exists(string $key) : bool
     {
@@ -92,7 +92,7 @@ class Memcached implements MemcacheInterface
 
     /**
      * @see MemcacheInterface::delete()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function delete(string $key) : bool
     {
@@ -101,7 +101,7 @@ class Memcached implements MemcacheInterface
 
     /**
      * @see MemcacheInterface::deleteAll()
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function deleteAll() : bool
     {

@@ -229,10 +229,11 @@ class File implements \Stringable
 
     /**
      * Check that the filename doesn't contain invalid chars. and is located in the right path. Throws a fatal error for an invalid filename
+     * @param ?string $open_basedir The open_basedir restriction, if any
      * @return static
      * @throws Exception if the filename is not valid
      */
-    public function check() : static
+    public function check(?string $open_basedir = null) : static
     {
         if (strlen(basename($this->filename)) > $this->app->config->files->max_chars) {
             throw new \Exception(App::__('error.file.invalid_maxchars', ['{FILE}' => $this->filename]));
@@ -240,7 +241,7 @@ class File implements \Stringable
 
         $this->checkForInvalidChars();
 
-        $open_basedirs = $this->getOpenBaseDirsList();
+        $open_basedirs = $open_basedir ? [new Dir($open_basedir)] : $this->getOpenBaseDirsList();
         if ($open_basedirs) {
             //The filename must be inside the secure dir. If it's not it will be treated as an invalid file
             if (!$this->realpath) {
@@ -248,8 +249,10 @@ class File implements \Stringable
             }
 
             $contains = false;
+            $is_link = $this->filename != $this->realpath;
+            $path = $is_link ? $this->filename : $this->realpath;
             foreach ($open_basedirs as $basedir) {
-                if ($basedir->contains($this->realpath)) {
+                if ($basedir->contains($path, !$is_link)) {
                     $contains = true;
                     break;
                 }
