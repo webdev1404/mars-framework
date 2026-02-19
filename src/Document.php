@@ -8,6 +8,7 @@ namespace Mars;
 
 use Mars\App\Kernel;
 use Mars\App\LazyLoad;
+use Mars\App\LazyLoadProperty;
 use Mars\Document\Links\Css;
 use Mars\Document\Links\Javascript;
 use Mars\Document\Links\Fonts;

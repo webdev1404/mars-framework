@@ -7,6 +7,7 @@
 namespace Mars;
 
 use Mars\App\LazyLoad;
+use Mars\App\LazyLoadProperty;
 use Mars\Router\Base;
 use Mars\Router\Loader;
 use Mars\Router\Handler;

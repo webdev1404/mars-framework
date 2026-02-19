@@ -19,9 +19,9 @@ class Accelerator
     use Kernel;
 
     /**
-     * @var array $supported_drivers The supported drivers
+     * @var array $drivers_list The supported drivers list
      */
-    public protected(set) array $supported_drivers = [
+    public protected(set) array $drivers_list = [
         'varnish' => \Mars\Accelerators\Varnish::class
     ];
 
@@ -41,7 +41,7 @@ class Accelerator
                 return $this->drivers;
             }
 
-            $this->drivers = new Drivers($this->supported_drivers, AcceleratorInterface::class, 'accelerators', $this->app);
+            $this->drivers = new Drivers($this->drivers_list, AcceleratorInterface::class, 'accelerators', $this->app);
 
             return $this->drivers;
         }

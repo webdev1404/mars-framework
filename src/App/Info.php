@@ -7,6 +7,14 @@
 namespace Mars\App;
 
 /**
+ * Attribute to mark properties which are hidden from the debug info
+ */
+#[\Attribute(\Attribute::TARGET_PROPERTY)]
+class HiddenProperty
+{
+}
+
+/**
  * The Info Trait
  * Removes properties which have the #[HiddenProperty] attribute set from the debug info
  */
@@ -23,7 +31,7 @@ trait Info
         $reflection = new \ReflectionClass($this);
         $properties = $reflection->getProperties();
         foreach ($properties as $property) {
-            $attributes = $property->getAttributes('Mars\HiddenProperty');
+            $attributes = $property->getAttributes('Mars\App\HiddenProperty');
             if (!empty($attributes)) {
                 $hidden[] = $property->getName();
             }
@@ -38,14 +46,4 @@ trait Info
 
         return $properties;
     }
-}
-
-namespace Mars;
-
-/**
- * Attribute to mark properties which are hidden from the debug info
- */
-#[\Attribute(\Attribute::TARGET_PROPERTY)]
-class HiddenProperty
-{
 }

@@ -201,6 +201,9 @@ class Defaults
 
         // string|null The driver used for storage caching. If null, will use cache.driver
         'cache.storage.driver' => null,
+
+        // The value - in hours - after which the cached storage data will expire
+        'cache.storage.expire_hours' => 48,
         
         // bool If true, will use subdirectories for storage caching
         'cache.storage.subdirs' => true,

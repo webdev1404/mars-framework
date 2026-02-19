@@ -20,9 +20,9 @@ class Mail
     use Kernel;
 
     /**
-     * @var array $supported_drivers The supported drivers
+     * @var array $drivers_list The supported drivers list
      */
-    public protected(set) array $supported_drivers = [
+    public protected(set) array $drivers_list = [
         'phpmailer' => \Mars\Mail\PhpMailer::class
     ];
 
@@ -35,7 +35,7 @@ class Mail
                 return $this->drivers;
             }
 
-            $this->drivers = new Drivers($this->supported_drivers, MailInterface::class, 'mail', $this->app);
+            $this->drivers = new Drivers($this->drivers_list, MailInterface::class, 'mail', $this->app);
 
             return $this->drivers;
         }

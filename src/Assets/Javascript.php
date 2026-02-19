@@ -51,7 +51,7 @@ class Javascript extends Asset
      * {@inheritDoc}
      */
     protected bool $development {
-        get => $this->app->config->development->assets->process->css;
+        get => $this->app->config->development->assets->process->js;
     }
 
     /**

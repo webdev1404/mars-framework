@@ -9,7 +9,7 @@ namespace Mars\System;
 use Mars\App;
 use Mars\App\Kernel;
 use Mars\App\LazyLoad;
-use Mars\LazyLoadProperty;
+use Mars\App\LazyLoadProperty;
 use Mars\Extensions\Libraries\CssLibraries as Css;
 use Mars\Extensions\Libraries\JavascriptLibraries as Javascript;
 

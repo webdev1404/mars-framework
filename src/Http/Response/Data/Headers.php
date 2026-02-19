@@ -9,7 +9,7 @@ namespace Mars\Http\Response\Data;
 use Mars\App;
 use Mars\App\Kernel;
 use Mars\App\Lazyload;
-use Mars\LazyLoadProperty;
+use Mars\App\LazyLoadProperty;
 use Mars\Data\MapTrait;
 use Mars\Http\Response\Data\Headers\EarlyHints;
 use Mars\Http\Response\Data\Headers\CSP;

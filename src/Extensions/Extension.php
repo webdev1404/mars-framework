@@ -349,7 +349,7 @@ abstract class Extension
 
             if (static::$assets_dirs === null) {
                 static::$assets_dirs = $this->app->dir->get($this->app->assets_path, true, true);
-                $this->app->cache->data->set('assets-dirs', array_flip(static::$assets_dirs));
+                $this->app->cache->data->set('assets-dirs', $this->app->array->flip(static::$assets_dirs));
             }
         }
 

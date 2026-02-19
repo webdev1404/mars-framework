@@ -8,7 +8,7 @@ namespace Mars\Mvc;
 
 use Mars\App;
 use Mars\App\Kernel;
-use Mars\HiddenProperty;
+use Mars\App\HiddenProperty;
 use Mars\Config;
 use Mars\Document;
 use Mars\Escape;

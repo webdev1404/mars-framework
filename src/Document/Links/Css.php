@@ -6,7 +6,7 @@
 
 namespace Mars\Document\Links;
 
-use Mars\LazyLoadProperty;
+use Mars\App\LazyLoadProperty;
 use Mars\Assets\Css as CssAsset;
 
 /**

@@ -7,9 +7,9 @@
 namespace Mars\Http;
 
 use Mars\App;
-use Mars\LazyLoadProperty;
 use Mars\App\Kernel;
 use Mars\App\LazyLoad;
+use Mars\App\LazyLoadProperty;
 use Mars\Http\Request\Input;
 use Mars\Http\Request\Get;
 use Mars\Http\Request\Post;

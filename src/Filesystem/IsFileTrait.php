@@ -94,6 +94,25 @@ trait IsFileTrait
     }
 
     /**
+     * Deletes the existing files cache file
+     * @param string $path The path where to look for the cache file
+     */
+    protected function deleteIsFileCache(string $path)
+    {
+        if (!$this->files_cache_use) {
+            return;
+        }
+
+        $cache_filename = $path . '/' . $this->files_cache_file;
+
+        if (is_file($cache_filename)) {
+            unlink($cache_filename);
+        }
+
+        $this->files_cache_list = null;
+    }
+
+    /**
      * Caches the existing files in a folder in a single file
      * @param string $path The path where to look for files
      */

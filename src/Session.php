@@ -19,9 +19,9 @@ class Session
     use Kernel;
 
     /**
-     * @var array $supported_drivers The supported drivers
+     * @var array $drivers_list The supported drivers list
      */
-    public protected(set) array $supported_drivers = [
+    public protected(set) array $drivers_list = [
         'php' => \Mars\Session\Php::class,
         'db' => \Mars\Session\Db::class,
         'memcache' => \Mars\Session\Memcache::class
@@ -36,7 +36,7 @@ class Session
                 return $this->drivers;
             }
 
-            $this->drivers = new Drivers($this->supported_drivers, SessionInterface::class, 'session', $this->app);
+            $this->drivers = new Drivers($this->drivers_list, SessionInterface::class, 'session', $this->app);
 
             return $this->drivers;
         }

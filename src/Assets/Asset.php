@@ -106,7 +106,7 @@ abstract class Asset
         foreach ($urls_list as &$url) {
             $file = new Url($url['url'])->getLocalFile($this->app->assets_path, true);
             if (!$file) {
-                throw new \Exception('Asset file not found for url: ' . $url['url']);
+                throw new \Exception('Asset file not found for url: ' . $url['url'] . ' in path: ' . $this->app->assets_path);
             }
 
             $url['filename'] = $file->filename;
@@ -194,6 +194,7 @@ abstract class Asset
         foreach ($urls_list as $url) {
             if (!$this->canCombine($url['original_url'], $combine_exclude)) {
                 $urls[] = $url;
+                continue;
             }
 
             $combined_urls[] = $url;
@@ -215,6 +216,12 @@ abstract class Asset
         return $urls;
     }
 
+    /**
+     * Checks whether the given url can be combined
+     * @param string $url The url to check
+     * @param array $combine_exclude The urls to exclude from combination
+     * @return bool True if can be combined, false otherwise
+     */
     protected function canCombine(string $url, array $combine_exclude) : bool
     {
         if (!$combine_exclude) {

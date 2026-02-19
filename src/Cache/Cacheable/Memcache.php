@@ -33,7 +33,7 @@ class Memcache extends Base implements CacheableInterface
         $filename = $this->getFilename($filename);
         
         $content = $this->app->memcache->get($filename);
-        if (!$content) {
+        if ($content === null) {
             return $content;
         }
 
@@ -105,7 +105,7 @@ class Memcache extends Base implements CacheableInterface
      * @see CacheableInterface::clean()
      * {@inheritDoc}
      */
-    public function clean(string $dir)
+    public function clean(string $dir, ?int $expire_hours = null)
     {
         $keys = $this->app->memcache->getKeys($this->type);
         if (!$keys) {
@@ -113,10 +113,30 @@ class Memcache extends Base implements CacheableInterface
         }
 
         foreach ($keys as $key) {
-            $this->app->memcache->delete($key);
-            $this->app->memcache->delete($key . '-last-modified');
+            if ($this->canCleanKey($key, $expire_hours)) {
+                $this->app->memcache->delete($key);
+                $this->app->memcache->delete($key . '-last-modified');
+            }
         }
 
         $this->app->memcache->deleteKeyEntry($this->type);
+    }
+
+    /**
+     * Determines if a key can be cleaned
+     * @param string $key The key
+     * @param int|null $expire_hours The expiration in hours
+     * @return bool True if can be cleaned, false otherwise
+     */
+    protected function canCleanKey(string $key, ?int $expire_hours) : bool
+    {
+        if (!$expire_hours) {
+            return true;
+        }
+
+        $cutoff = time() - ($expire_hours * 3600);
+        $last_modified = $this->app->memcache->get($key . '-last-modified');
+
+        return $last_modified < $cutoff;
     }
 }

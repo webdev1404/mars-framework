@@ -7,6 +7,7 @@
 namespace Mars;
 
 use Mars\App\LazyLoad;
+use Mars\App\LazyLoadProperty;
 use Mars\App\Registry;
 use Mars\Alerts\Errors;
 use Mars\Alerts\Info;

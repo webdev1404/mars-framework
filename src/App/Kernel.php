@@ -7,7 +7,6 @@
 namespace Mars\App;
 
 use Mars\App;
-use Mars\HiddenProperty;
 
 /**
  * The App Kernel Trait

@@ -16,9 +16,9 @@ use Mars\Cache\Cacheable\CacheableInterface;
 abstract class Cacheable extends Cache
 {
     /**
-     * @var array $supported_drivers The supported drivers
+     * @var array $drivers_list The supported drivers list
      */
-    public protected(set) array $supported_drivers = [
+    public protected(set) array $drivers_list = [
         'file' => \Mars\Cache\Cacheable\File::class,
         'php' => \Mars\Cache\Cacheable\Php::class,
         'memcache' => \Mars\Cache\Cacheable\Memcache::class,
@@ -33,7 +33,7 @@ abstract class Cacheable extends Cache
                 return $this->drivers;
             }
 
-            $this->drivers = new Drivers($this->supported_drivers, CacheableInterface::class, 'cacheable', $this->app);
+            $this->drivers = new Drivers($this->drivers_list, CacheableInterface::class, 'cacheable', $this->app);
 
             return $this->drivers;
         }

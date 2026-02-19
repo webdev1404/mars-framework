@@ -8,8 +8,8 @@ namespace Mars\Extensions\Themes;
 
 use Mars\App;
 use Mars\App\LazyLoad;
-use Mars\LazyLoadProperty;
-use Mars\HiddenProperty;
+use Mars\App\LazyLoadProperty;
+use Mars\App\HiddenProperty;
 use Mars\Document;
 use Mars\Extensions\Extension;
 use Mars\Extensions\Extensions;

@@ -7,9 +7,9 @@
 namespace Mars\Http;
 
 use Mars\App;
-use Mars\LazyLoadProperty;
 use Mars\App\Kernel;
 use Mars\App\Lazyload;
+use Mars\App\LazyLoadProperty;
 use Mars\App\Handlers;
 use Mars\Http\Response\ResponseInterface;
 use Mars\Http\Response\Data\Cookies;

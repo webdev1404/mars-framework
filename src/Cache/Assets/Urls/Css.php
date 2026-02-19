@@ -26,4 +26,17 @@ class Css extends Asset
      * {@inheritDoc}
      */
     public protected(set) string $extension = 'css';
+
+    /**
+     * @see Cacheable::clean()
+     * {@inheritDoc}
+     */
+    public function clean() : static
+    {
+        parent::clean();
+
+        $this->app->cache->data->delete('css-version');
+
+        return $this;
+    }
 }

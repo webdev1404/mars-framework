@@ -19,9 +19,9 @@ class Crypt
     use Kernel;
 
     /**
-     * @var array $supported_drivers The supported drivers
+     * @var array $drivers_list The supported drivers list
      */
-    public protected(set) array $supported_drivers = [
+    public protected(set) array $drivers_list = [
         'openssl' => \Mars\Crypt\OpenSSL::class,
         'sodium' => \Mars\Crypt\Sodium::class
     ];
@@ -35,7 +35,7 @@ class Crypt
                 return $this->drivers;
             }
 
-            $this->drivers = new Drivers($this->supported_drivers, CryptInterface::class, 'crypt', $this->app);
+            $this->drivers = new Drivers($this->drivers_list, CryptInterface::class, 'crypt', $this->app);
 
             return $this->drivers;
         }

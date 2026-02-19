@@ -9,7 +9,7 @@ namespace Mars\Http\Response\Data\Headers;
 use Mars\App;
 use Mars\App\Kernel;
 use Mars\App\LazyLoad;
-use Mars\LazyLoadProperty;
+use Mars\App\LazyLoadProperty;
 use Mars\Http\Response\Data\Headers\EarlyHints\Preload;
 use Mars\Http\Response\Data\Headers\EarlyHints\Preconnect;
 

@@ -13,22 +13,19 @@ namespace Mars\Cache;
 class Storage extends Cacheable
 {
     /**
+     * @var array $drivers_list The supported drivers list
+     */
+    public protected(set) array $drivers_list = [
+        'file' => \Mars\Cache\Cacheable\File::class,
+        'memcache' => \Mars\Cache\Cacheable\Memcache::class,
+    ];
+
+    /**
      * @see Cacheable::$driver_name
      * {@inheritDoc}
      */
     protected string $driver_name {
-        get {
-            if (isset($this->driver_name)) {
-                return $this->driver_name;
-            }
-
-            $this->driver_name = $this->app->config->cache->storage->driver ?? $this->app->config->cache->driver;
-            if ($this->driver_name != 'file' && $this->driver_name != 'memcache') {
-                throw new \Exception('The storage cache driver "' . $this->driver_name . '" is not supported. Supported drivers are: file, memcache');
-            }
-
-            return $this->driver_name;
-        }
+        get => $this->app->config->cache->storage->driver ?? $this->app->config->cache->driver;
     }
 
     /**
@@ -96,5 +93,15 @@ class Storage extends Cacheable
         $dir = implode('/', $subdirs);
 
         return $this->path . '/' . $dir . '/' . $name;
+    }
+
+    /**
+     * Cleans the cache
+     */
+    public function clean() : static
+    {
+        $this->driver->clean($this->path, $this->app->config->cache->storage->expire_hours);
+
+        return $this;
     }
 }

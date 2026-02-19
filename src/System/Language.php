@@ -42,9 +42,9 @@ class Language extends BaseLanguage
     protected array $loaded_keys = [];
 
     /**
-     * @var array $supported_drivers The supported drivers
+     * @var array $drivers_list The supported drivers list
      */
-    public protected(set) array $supported_drivers = [
+    public protected(set) array $drivers_list = [
         'cookie' => \Mars\Localization\Cookie::class,
         'domain' => \Mars\Localization\Domain::class,
         'path' => \Mars\Localization\Path::class,
@@ -59,7 +59,7 @@ class Language extends BaseLanguage
                 return $this->drivers;
             }
 
-            $this->drivers = new Drivers($this->supported_drivers, LocalizationInterface::class, 'localization', $this->app);
+            $this->drivers = new Drivers($this->drivers_list, LocalizationInterface::class, 'localization', $this->app);
 
             return $this->drivers;
         }

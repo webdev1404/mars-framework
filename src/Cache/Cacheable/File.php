@@ -107,6 +107,8 @@ class File extends Base implements CacheableInterface
     {
         $filename = $this->getFilename($filename);
         if ($this->isFile($filename)) {
+            $this->deleteIsFileCache(dirname($filename));
+
             return unlink($filename);
         }
 
@@ -117,8 +119,12 @@ class File extends Base implements CacheableInterface
      * @see CacheableInterface::clean()
      * {@inheritDoc}
      */
-    public function clean(string $dir)
+    public function clean(string $dir, ?int $expire_hours = null)
     {
-        $this->app->dir->clean($dir);
+        if (!$expire_hours) {
+            $this->app->dir->clean($dir);
+        } else {
+            $this->app->dir->cleanExpired($dir, time() - ($expire_hours * 3600));
+        }
     }
 }

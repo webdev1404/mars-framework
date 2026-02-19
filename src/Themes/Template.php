@@ -19,9 +19,9 @@ class Template
     use Kernel;
 
     /**
-     * @var array $supported_drivers The supported drivers
+     * @var array $drivers_list The supported drivers list
      */
-    public protected(set) array $supported_drivers = [
+    public protected(set) array $drivers_list = [
         'mars' => \Mars\Themes\Templates\Mars::class
     ];
 
@@ -34,7 +34,7 @@ class Template
                 return $this->drivers;
             }
 
-            $this->drivers = new Drivers($this->supported_drivers, TemplateInterface::class, 'templates', $this->app);
+            $this->drivers = new Drivers($this->drivers_list, TemplateInterface::class, 'templates', $this->app);
 
             return $this->drivers;
         }

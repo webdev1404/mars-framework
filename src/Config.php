@@ -6,8 +6,8 @@
 
 namespace Mars;
 
-use Mars\HiddenProperty;
 use Mars\App\Info;
+use Mars\App\HiddenProperty;
 use Mars\Config\Container;
 use Mars\Config\Defaults;
 use Mars\Config\ArrayResult;

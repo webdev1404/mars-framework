@@ -495,6 +495,8 @@ abstract class Extensions
         if (!is_link($extension->assets_target)) {
             throw new \Exception("Failed to create symlink for assets folder: {$extension->assets_target}");
         }
+
+        $this->app->cache->data->delete('assets-dirs');
     }
 
     /**
@@ -506,5 +508,7 @@ abstract class Extensions
         if (is_link($extension->assets_target)) {
             unlink($extension->assets_target);
         }
+        
+        $this->app->cache->data->delete('assets-dirs');
     }
 }

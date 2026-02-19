@@ -9,7 +9,7 @@ namespace Mars\Document\Links;
 use Mars\App;
 use Mars\App\Kernel;
 use Mars\App\LazyLoad;
-use Mars\LazyLoadProperty;
+use Mars\App\LazyLoadProperty;
 use Mars\Document\Links\Hints\Preload;
 use Mars\Document\Links\Hints\Prefetch;
 use Mars\Assets\Asset;

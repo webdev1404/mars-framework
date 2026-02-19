@@ -20,9 +20,9 @@ class Serializer
     use Kernel;
     
     /**
-     * @var array $supported_drivers The supported drivers
+     * @var array $drivers_list The supported drivers list
      */
-    public protected(set) array $supported_drivers = [
+    public protected(set) array $drivers_list = [
         'php' => \Mars\Serializers\Php::class,
         'json' => \Mars\Serializers\Json::class,
         'igbinary' => \Mars\Serializers\Igbinary::class,
@@ -37,7 +37,7 @@ class Serializer
                 return $this->drivers;
             }
 
-            $this->drivers = new Drivers($this->supported_drivers, SerializerInterface::class, 'serializer', $this->app);
+            $this->drivers = new Drivers($this->drivers_list, SerializerInterface::class, 'serializer', $this->app);
 
             return $this->drivers;
         }

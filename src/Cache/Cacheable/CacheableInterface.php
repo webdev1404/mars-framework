@@ -59,6 +59,7 @@ interface CacheableInterface
     /**
      * Deletes all keys from the cache
      * @param string $dir The directory to clean
+     * @param int|null $expire_hours The number of hours after which cached items expire. If null, will not consider expiration
      */
-    public function clean(string $dir);
+    public function clean(string $dir, ?int $expire_hours = null);
 }

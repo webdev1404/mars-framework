@@ -21,9 +21,9 @@ class Db
     use Kernel;
 
     /**
-     * @var array $supported_drivers The supported drivers
+     * @var array $drivers_list The supported drivers list
      */
-    public protected(set) array $supported_drivers = [
+    public protected(set) array $drivers_list = [
         'mysql' => \Mars\Db\Drivers\Mysql\Driver::class
     ];
 
@@ -36,7 +36,7 @@ class Db
                 return $this->drivers;
             }
 
-            $this->drivers = new Drivers($this->supported_drivers, DbInterface::class, 'db', $this->app);
+            $this->drivers = new Drivers($this->drivers_list, DbInterface::class, 'db', $this->app);
 
             return $this->drivers;
         }

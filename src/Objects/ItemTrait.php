@@ -7,7 +7,7 @@
 namespace Mars\Objects;
 
 use Mars\App;
-use Mars\HiddenProperty;
+use Mars\App\HiddenProperty;
 use Mars\Db;
 use Mars\Db\Sql;
 

@@ -19,9 +19,9 @@ class Captcha
     use Kernel;
     
     /**
-     * @var array $supported_drivers The supported drivers
+     * @var array $drivers_list The supported drivers list
      */
-    public protected(set) array $supported_drivers = [
+    public protected(set) array $drivers_list = [
         'recaptcha2' => \Mars\Captcha\Recaptcha2::class,
         'recaptcha3' => \Mars\Captcha\Recaptcha3::class
     ];
@@ -42,7 +42,7 @@ class Captcha
                 return $this->drivers;
             }
 
-            $this->drivers = new Drivers($this->supported_drivers, CaptchaInterface::class, 'captcha', $this->app);
+            $this->drivers = new Drivers($this->drivers_list, CaptchaInterface::class, 'captcha', $this->app);
 
             return $this->drivers;
         }

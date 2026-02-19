@@ -20,9 +20,9 @@ class Memcache
     use Kernel;
 
     /**
-     * @var array $supported_drivers The supported drivers
+     * @var array $drivers_list The supported drivers list
      */
-    public protected(set) array $supported_drivers = [
+    public protected(set) array $drivers_list = [
         'redis' => \Mars\Memcache\Redis::class,
         'memcached' => \Mars\Memcache\Memcached::class
     ];
@@ -43,7 +43,7 @@ class Memcache
                 return $this->drivers;
             }
 
-            $this->drivers = new Drivers($this->supported_drivers, MemcacheInterface::class, 'memcache', $this->app);
+            $this->drivers = new Drivers($this->drivers_list, MemcacheInterface::class, 'memcache', $this->app);
 
             return $this->drivers;
         }

@@ -9,6 +9,14 @@ namespace Mars\App;
 use Mars\App;
 
 /**
+ * Attribute to mark properties for lazy loading
+ */
+#[\Attribute(\Attribute::TARGET_PROPERTY)]
+class LazyLoadProperty
+{
+}
+
+/**
  * The LazyLoad Trait
  * Trait which offers lazy load capabilities.
  * Loads properties marked by the #[LazyLoadProperty] attribute using the ghost method
@@ -19,7 +27,7 @@ trait LazyLoad
      * The attribute used to mark the properties to be lazy loaded
      * @var string $lazyload_attribute
      */
-    protected static string $lazyload_attribute = 'Mars\LazyLoadProperty';
+    protected static string $lazyload_attribute = 'Mars\App\LazyLoadProperty';
 
     /**
      * The list of properties to be lazy loaded, with this passed as the first param to the constructor
@@ -89,14 +97,4 @@ trait LazyLoad
             });
         }
     }
-}
-
-namespace Mars;
-
-/**
- * Attribute to mark properties for lazy loading
- */
-#[\Attribute(\Attribute::TARGET_PROPERTY)]
-class LazyLoadProperty
-{
 }

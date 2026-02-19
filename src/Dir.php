@@ -547,7 +547,7 @@ class Dir implements \Stringable
         $iterator = $this->getIterator($this->path, flag: \RecursiveIteratorIterator::CHILD_FIRST);
         foreach ($iterator as $file) {
             if ($file->isFile()) {
-                if ($file->getCTime() <= $expires) {
+                if ($file->getMTime() <= $expires) {
                     if (!unlink($file->getPathname())) {
                         throw new \Exception(App::__('error.file_delete', ['{FILE}' => $file->getPathname()]));
                     }

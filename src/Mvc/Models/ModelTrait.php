@@ -7,8 +7,8 @@
 namespace Mars\Mvc\Models;
 
 use Mars\App;
+use Mars\App\HiddenProperty;
 use Mars\Config;
-use Mars\HiddenProperty;
 use Mars\Mvc\Controller;
 use Mars\System\Plugins;
 use Mars\Extensions\Extension;

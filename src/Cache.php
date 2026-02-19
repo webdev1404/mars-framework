@@ -7,6 +7,7 @@
 namespace Mars;
 
 use Mars\App\LazyLoad;
+use Mars\App\LazyLoadProperty;
 use Mars\Cache\Assets;
 use Mars\Cache\Config;
 use Mars\Cache\Assets\Lists\Css as CssList;

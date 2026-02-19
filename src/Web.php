@@ -8,6 +8,7 @@ namespace Mars;
 
 use Mars\App\Kernel;
 use Mars\App\LazyLoad;
+use Mars\App\LazyLoadProperty;
 use Mars\Web\Request;
 
 /**
