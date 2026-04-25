@@ -9,14 +9,7 @@ namespace Mars\Session;
 /**
  * The Db Session Class
  * Session driver which uses the database
- * The table must be created with the following SQL:
-CREATE TABLE `sessions` (
-    `id` VARCHAR(255) NOT NULL,
-    `data` text,
-    `timestamp` INT UNSIGNED NOT NULL,
-    PRIMARY KEY (`id`),
-    INDEX `timestamp_idx` (`timestamp`)
-);
+ * see file vendor/webdev1404/mars-framework/sql/session/db.sql for the required table structure
  */
 class Db extends Base implements \SessionHandlerInterface, \SessionUpdateTimestampHandlerInterface
 {

@@ -124,17 +124,11 @@ class Defaults
         // bool If true, will reload the routes on each request
         'development.routes' => false,
 
-        // If true, will not minify or combine the css assets
+        // If true, will always regenerate the version param for the assets urls, thus preventing caching
         'development.assets.css' => false,
 
-        // If true, will not minify or combine the javascript assets
+        // If true, will always regenerate the version param for the assets urls, thus preventing caching
         'development.assets.js' => false,
-
-        // If true, will regenerated the processed css assets on each request
-        'development.assets.process.css' => false,
-
-        // If true, will regenerated the processed javascript assets on each request
-        'development.assets.process.js' => false,
 
         // bool Set to true to display errors, false to hide them, if development mode is enabled
         'development.errors.display' => true,
@@ -233,6 +227,13 @@ class Defaults
         'cache.page.exclude.urls' => [],
 
 
+        // string The crypt driver. Supported options: openssl, sodium
+        'crypt.driver' => 'openssl',
+
+        // array The secret keys used for encryption. The key in use is the last one in the list. Indexes must be strings. For sodium the key must be 32 chars long
+        'crypt.keys' => [],
+
+
         // If true, will minify the css assets
         'assets.css.minify.enable' => false,
 
@@ -284,6 +285,22 @@ class Defaults
 
         // string The smtp secure connection. Supported options: tls, ssl
         'mail.smtp.secure' => '',
+
+
+        // bool If true, will enable the captcha functionality
+        'captcha.enable' => false,
+
+        // string The captcha driver. Supported options: recaptcha2, recaptcha3
+        'captcha.driver' => 'recaptcha3',
+
+        // string The recaptcha site key
+        'captcha.recaptcha.site_key' => '',
+
+        // string The recaptcha secret key
+        'captcha.recaptcha.secret_key' => '',
+
+        // float The minimum score required to consider the captcha valid (recaptcha3 only)
+        'captcha.recaptcha.min_score' => 0.5,
 
 
         // bool If the value is true the installation dir is used as the basedir. If array, will use the specified paths. If string, will use the specified path. If false, no limitation is applied
@@ -405,17 +422,6 @@ class Defaults
         'session.cookie.samesite' => null,
 
 
-        // string The crypt driver. Supported options: openssl, sodium
-        'crypt.driver' => 'openssl',
-
-        // array The secret keys used for encryption. The key in use is the last one in the list. Indexes must be strings. For sodium the key must be 32 chars long
-        'crypt.keys' => [],
-
-
-        // string The serializer driver. Supported options: php, json, igbinary
-        'serializer.driver' => 'php',
-
-
         // bool If true, will enable the throttle functionality
         'throttle.enable' => true,
 
@@ -424,22 +430,6 @@ class Defaults
 
         // int The duration, in seconds, for which the key will be blocked after reaching the max attempts
         'throttle.block_duration' => 3600,
-
-
-        // bool If true, will enable the captcha functionality
-        'captcha.enable' => false,
-
-        // string The captcha driver. Supported options: recaptcha2, recaptcha3
-        'captcha.driver' => 'recaptcha3',
-
-        // string The recaptcha site key
-        'captcha.recaptcha.site_key' => '',
-
-        // string The recaptcha secret key
-        'captcha.recaptcha.secret_key' => '',
-
-        // float The minimum score required to consider the captcha valid (recaptcha3 only)
-        'captcha.recaptcha.min_score' => 0.5,
 
 
         // bool If true, will enable the accelerators functionality
@@ -565,6 +555,10 @@ class Defaults
 
         // string The left/right margin of the watermark text
         'image.watermark.margin.left' => '30',
+
+
+        // string The serializer driver. Supported options: php, json, igbinary
+        'serializer.driver' => 'php',
 
 
         // array The drivers configuration

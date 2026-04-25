@@ -47,12 +47,10 @@ class Javascript extends Asset
     protected string $dir = 'js';
 
     /**
-     * @see Asset::$development
+     * @see Asset::$combine_split
      * {@inheritDoc}
      */
-    protected bool $development {
-        get => $this->app->config->development->assets->process->js;
-    }
+    protected bool $combine_split = true;
 
     /**
      * @see Asset::minify()

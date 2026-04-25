@@ -74,7 +74,7 @@ trait TemplatesTrait
      * @param array $vars Vars to pass to the template, if any
      * @return string The contents of the template
      */
-    public function getLanguageTemplate(string $dir, string $template, array $vars = []) : string
+    public function getTemplateByLanguage(string $dir, string $template, array $vars = []) : string
     {
         $file = $dir . '/' . $template . '.php';
         $rel_filename = $this->path_rel . '/' . $file;
@@ -86,7 +86,7 @@ trait TemplatesTrait
         }
 
         //check if we have a language-specific template in the extension's templates folder
-        $template_file = $this->getLanguageTemplateFile($dir, $template);
+        $template_file = $this->getTemplateFileByLanguage($dir, $template);
         if ($template_file) {
             $filename = $this->templates_path . '/' . $template_file;
             $rel_filename = $this->path_rel . '/' . $template_file;
@@ -98,12 +98,12 @@ trait TemplatesTrait
     }
 
     /**
-     * Returns the filename of a template in the current language
+     * Returns the filename of a template for the current language
      * @param string $dir The directory where the template is located
      * @param string $template The name of the template to load (without extension)
      * @return string|null The file of the language-specific template, or null if none was found
      */
-    protected function getLanguageTemplateFile(string $dir, string $template) : ?string
+    protected function getTemplateFileByLanguage(string $dir, string $template) : ?string
     {
         $file = $template . '.php';
         $template_file = $dir . '/' . $this->app->lang->name . '/' . $file;

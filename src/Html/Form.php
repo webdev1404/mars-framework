@@ -350,7 +350,7 @@ class Form extends Tag
     public function validate() : bool
     {
         if (!$this->app->validator->validate($this->getValidationData(), $this->getValidationRules())) {
-            $this->errors->add($this->app->validator->getErrors());
+            $this->errors = $this->app->validator->errors;
 
             return false;
         }

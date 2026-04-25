@@ -129,7 +129,7 @@ class Document
         $this->prefetch->output();
         $this->preconnect->output();
         
-        $this->outputUrls('head');
+        $this->outputLocation('head');
     }
 
     /**
@@ -137,16 +137,19 @@ class Document
      */
     public function outputFooter()
     {
-        $this->outputUrls('footer');
+        $this->outputLocation('footer');
     }
 
     /**
-     * Outputs the urls
+     * Outputs the urls and codes of a location
      * @param string $location The location of the url [head|footer]
      */
-    protected function outputUrls(string $location)
+    protected function outputLocation(string $location)
     {
-        $this->css->output($location);
         $this->js->output($location);
+        $this->js->outputCodes($location);
+
+        $this->css->output($location);
+        $this->css->outputCodes($location);
     }
 }

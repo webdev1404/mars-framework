@@ -96,17 +96,17 @@ class Javascript extends Urls
     /**
      * Loads a javascript module url
      * @param string|array $urls The url(s) to load. Will only load it once, no matter how many times the function is called with the same url
-     * @param string $type The type of the url [head|footer]
+     * @param string $location The location of the url [head|footer]
      * @param int $priority The url's output priority. The higher, the better
      * @param bool $preload If true, will output the url as a preload
      * @param array $attributes The attributes of the url, if any
      * @return static
      */
-    public function loadModule(string|array $urls, string $type = 'head', int $priority = 100, bool $preload = false, array $attributes = []) : static
+    public function loadModule(string|array $urls, string $location = 'head', int $priority = 100, bool $preload = false, array $attributes = []) : static
     {
         $attributes['type'] = 'module';
 
-        return $this->load($urls, $type, $priority, $preload, $attributes);
+        return $this->load($urls, $location, $priority, $preload, $attributes);
     }
 
     /**

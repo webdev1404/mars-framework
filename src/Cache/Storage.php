@@ -104,4 +104,14 @@ class Storage extends Cacheable
 
         return $this;
     }
+
+    /**
+     * Cleans the cache, expired or not
+     */
+    public function cleanAll() : static
+    {
+        $this->driver->clean($this->path);
+        
+        return $this;
+    }
 }

@@ -107,7 +107,7 @@ class Theme extends BaseTheme
     /**
      * @see LanguagesTrait::loadLanguage
      */
-    public function loadLanguage(string $file, string $key) : static
+    public function loadLanguage(string $file, ?string $key = null) : static
     {
         if ($this->parent) {
             $this->parent->loadLanguage($file, $key);

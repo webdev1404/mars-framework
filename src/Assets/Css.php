@@ -47,14 +47,6 @@ class Css extends Asset
     protected string $dir = 'css';
 
     /**
-     * @see Asset::$development
-     * {@inheritDoc}
-     */
-    protected bool $development {
-        get => $this->app->config->development->assets->process->css;
-    }
-
-    /**
      * @see Asset::minify()
      * {@inheritDoc}
      */

@@ -16,11 +16,17 @@ final class ErrorsTest extends Base
         $this->assertTrue($errors->ok());
 
         $errors->add('1st error');
-        $errors->add(['2nd error', '3rd error']);
+        $errors->add('2nd error');
+        $errors->add('3rd error');
+
         $this->assertFalse($errors->ok());
         $this->assertSame($errors->count(), 3);
-        $this->assertSame($errors->get(), ['1st error', '2nd error', '3rd error']);
-        $this->assertSame($errors->getFirst(), '1st error');
+        $this->assertSame($errors->get(), [
+            ['text' => '1st error', 'field' => '', 'code' => ''],
+            ['text' => '2nd error', 'field' => '', 'code' => ''],
+            ['text' => '3rd error', 'field' => '', 'code' => '']
+        ]);
+        $this->assertSame($errors->getFirst(), ['text' => '1st error', 'field' => '', 'code' => '']);
 
         $errors->reset();
         $this->assertTrue($errors->ok());
@@ -33,7 +39,7 @@ final class ErrorsTest extends Base
         $errors->add('Single error');
         $this->assertFalse($errors->ok());
         $this->assertSame($errors->count(), 1);
-        $this->assertSame($errors->getFirst(), 'Single error');
+        $this->assertSame($errors->getFirst(), ['text' => 'Single error', 'field' => '', 'code' => '']);
     }
 
     public function testAddMultipleErrors()

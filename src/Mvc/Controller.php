@@ -8,6 +8,8 @@ namespace Mars\Mvc;
 
 use Mars\App;
 use Mars\App\Kernel;
+use Mars\App\LazyLoad;
+use Mars\App\LazyLoadProperty;
 use Mars\App\HiddenProperty;
 use Mars\Config;
 use Mars\Hidden;
@@ -23,6 +25,7 @@ use Mars\Alerts\Messages;
 use Mars\Alerts\Info;
 use Mars\Alerts\Warnings;
 use Mars\Extensions\Extension;
+use Mars\Mvc\Controller\Email;
 
 /**
  * The Controller Class
@@ -31,6 +34,7 @@ use Mars\Extensions\Extension;
 abstract class Controller extends \stdClass
 {
     use Kernel;
+    use LazyLoad;
 
     /**
      * @var string $name The name of the controller
@@ -148,7 +152,12 @@ abstract class Controller extends \stdClass
     public protected(set) ?Extension $parent;
 
     /**
-     * @var object $model The model object
+     * @var bool $has_model Whether the controller has a model. If true, the model is automatically loaded and assigned to $this->model
+     */
+    public protected(set) bool $has_model = true;
+
+    /**
+     * @var ?object $model The model object
      */
     public protected(set) ?object $model {
         get {
@@ -253,6 +262,12 @@ abstract class Controller extends \stdClass
     }
 
     /**
+     * @var Email $email The email object
+     */
+    #[LazyLoadProperty]
+    protected Email $email;
+
+    /**
      * @var Errors $errors The errors object. Alias for $this->app->errors
      */
     protected Errors $errors {
@@ -281,6 +296,13 @@ abstract class Controller extends \stdClass
     }
 
     /**
+     * @internal
+     */
+    protected static array $lazyload_add_this = [
+       Email::class
+    ];
+
+    /**
      * Builds the controller
      * @param Extension $parent The parent extension
      * @param App $app The app object
@@ -289,6 +311,8 @@ abstract class Controller extends \stdClass
     {
         $this->parent = $parent;
         $this->app = $app;
+
+        $this->lazyLoad($this->app);
 
         $this->init();
     }
@@ -324,10 +348,14 @@ abstract class Controller extends \stdClass
     /**
      * Loads the model and returns the instance
      * @param string|null $model The name of the model
-     * @return object The model
+     * @return ?object The model
      */
-    public function getModel(?string $model = null) : object
+    public function getModel(?string $model = null) : ?object
     {
+        if (!$this->has_model) {
+            return null;
+        }
+
         return $this->parent->getModel($model ?? $this->name, $this);
     }
 
@@ -372,6 +400,11 @@ abstract class Controller extends \stdClass
                 call_user_func_array($this->$method, [$this]);
                 return;
             }
+        }
+
+        //check if the default method exists
+        if (!method_exists($this, $this->default_method)) {
+            throw new \Exception("Neither the '{$method}()' method nor the default method '{$this->default_method}()' exist in controller {$this->name}");
         }
 
         //call the default method
@@ -423,7 +456,9 @@ abstract class Controller extends \stdClass
         $data = [];
 
         if (is_bool($ret) || is_null($ret)) {
-            $data['content'] = $content;
+            if ($content) {
+                $data['content'] = $content;
+            }
         } else {
             $data['content'] = $ret;
         }
@@ -467,23 +502,31 @@ abstract class Controller extends \stdClass
     /**
      * Loads the config settings from a file
      * @param string|null $file The config file. If null, will load the file with the same name as the controller
+     * @return static
      */
     public function loadConfig(?string $file = null)
     {
         $this->parent->loadConfig($file ?? strtolower($this->name));
+
+        return $this;
     }
 
     /**
      * Loads the language strings from a file
      * @param string|null $file The language file. If null, will load the file with the same name as the controller
+     * @param string|null $key The key under which the language strings will be stored. If null, the strings will be stored without a key, so they can be accessed directly
+     * @return static
      */
-    public function loadLanguage(?string $file = null)
+    public function loadLanguage(?string $file = null, ?string $key = null)
     {
-        $this->parent->loadLanguage($file ?? strtolower($this->name));
+        $this->parent->loadLanguage($file ?? strtolower($this->name), $key);
+
+        return $this;
     }
 
     /**
      * Checks if the request can post data, based on throttle settings
+     * @param bool $captcha Whether to check the captcha, if enabled
      * @param string|null $key The throttle key. If null, no throttling is applied
      * @param int|null $max_attempts The max attempts allowed within the duration. If null, no throttling is applied
      * @param int|null $duration The duration in seconds for which the attempts are counted. If null, no throttling is applied
@@ -491,12 +534,12 @@ abstract class Controller extends \stdClass
      * @param bool $add_ip Whether to append the user's IP to the key
      * @return bool True if the request can post, false otherwise
      */
-    public function canPost(?string $key = null, ?int $max_attempts = null, ?int $duration = null, bool $all = true, bool $add_ip = true) : bool
+    public function canPost(bool $captcha = true, ?string $key = null, ?int $max_attempts = null, ?int $duration = null, bool $all = true, bool $add_ip = true) : bool
     {
         if ($key && $add_ip) {
             $key .= '-' . $this->app->ip;
         }
 
-        return $this->request->canPost($key, $max_attempts, $duration, $all);
+        return $this->request->canPost($captcha, $key, $max_attempts, $duration, $all);
     }
 }

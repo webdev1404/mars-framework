@@ -184,14 +184,14 @@ class Debug
         echo '<tr><td><strong>From Disk</strong></td><td>' . $from_disk . '</td></tr>';
         echo '</table><br><br>';
 
-        if ($uncached_files) {
+        /*if ($uncached_files) {
             echo '<table class="grid debug-grid debug-grid-opcache-uncached">';
             echo '<tr><th>Files Read From Disk</th></tr>';
             foreach ($uncached_files as $file) {
                 echo '<tr><td>' . $this->app->escape->html($file) . '</td></tr>';
             }
             echo '</table><br><br>';
-        }
+        }*/
     }
 
     public function outputPreloadInfo()

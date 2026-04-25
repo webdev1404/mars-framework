@@ -41,6 +41,11 @@ abstract class Asset
     protected string $dir = '';
 
     /**
+     * @var bool $combine_split If true, will split combined assets by checking the defer and async attributes
+     */
+    protected bool $combine_split = false;
+
+    /**
      * @var bool $development If true, we are in development mode
      */
     protected bool $development {
@@ -67,6 +72,7 @@ abstract class Asset
     {
         $cache_key = json_encode(['urls' => $urls, 'minify' => $minify, 'combine' => $combine]);
         $urls_list = $this->cache_list->get($cache_key);
+
         if ($this->development) {
             $urls_list = null;
         }
@@ -188,8 +194,8 @@ abstract class Asset
     protected function combine(array $urls_list, array $combine_exclude) : array
     {
         $urls = [];
-        $combined_urls = [];
-        $content = '';
+        $combined_data = ['regular' => [], 'defer' => [], 'async' => []];
+        $content_data = ['regular' => '', 'defer' => '', 'async' => ''];
 
         foreach ($urls_list as $url) {
             if (!$this->canCombine($url['original_url'], $combine_exclude)) {
@@ -197,23 +203,59 @@ abstract class Asset
                 continue;
             }
 
-            $combined_urls[] = $url;
-            $content .= $this->app->file->read($url['filename']) . "\n";
+            $type = $this->getCombinedType($url);
+
+            $combined_data[$type][] = $url;
+            $content_data[$type] .= $this->app->file->read($url['filename']) . "\n";
         }
 
-        if ($combined_urls) {
+        foreach ($combined_data as $type => $combined_urls) {
+            if (!$combined_urls) {
+                continue;
+            }
+
             $combined_key = json_encode($combined_urls);
 
-            $this->cache_url->set($combined_key, $content);
-            
+            $this->cache_url->set($combined_key, $content_data[$type]);
+
+            $attributes = [];
+            if ($type != 'regular') {
+                $attributes[$type] = true;
+            }
+
             $urls[] = [
                 'url' => $this->urls->getUrl($this->cache_url->url . '/' . $this->cache_url->getName($combined_key), true),
                 'is_local' => true,
-                'attributes' => []
+                'attributes' => $attributes
             ];
         }
 
         return $urls;
+    }
+
+    /**
+     * Gets the combined type for the given url
+     * @param array $url The url to get the type for
+     * @return string The combined type. It can be 'regular', 'defer' or 'async' based on the attributes of the url
+     */
+    protected function getCombinedType(array $url) : string
+    {
+        $key = 'regular';
+        if (!$this->combine_split) {
+            return $key;
+        }
+
+        $attributes = $url['attributes'] ?? [];
+        $defer = $attributes['defer'] ?? false;
+        $async = $attributes['async'] ?? false;
+        
+        if ($defer) {
+            $key = 'defer';
+        } elseif ($async) {
+            $key = 'async';
+        }
+
+        return $key;
     }
 
     /**

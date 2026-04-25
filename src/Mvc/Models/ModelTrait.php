@@ -57,21 +57,6 @@ trait ModelTrait
     }
 
     /**
-     * {@inheritDoc}
-     * @see \Mars\Validation\ValidateTrait::validate()
-     */
-    public function validate(array|object $data = []) : bool
-    {
-        if (!parent::validate($data)) {
-            $this->app->errors->add($this->errors);
-
-            return false;
-        }
-
-        return true;
-    }
-
-    /**
      * Alias for $this->app->lang->get()
      */
     protected function __(string $str, array $replace = [], string $prefix = '') : string

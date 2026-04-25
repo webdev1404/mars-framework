@@ -114,8 +114,7 @@ class Theme extends Extension
     public protected(set) Template $template;
 
     /**
-     * The list of properties to be lazy loaded, with this passed as the first param to the constructor
-     * @var array $lazyload_add_this
+     * @internal
      */
     protected static array $lazyload_add_this = [
        Css::class,

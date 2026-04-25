@@ -18,6 +18,11 @@ class Recaptcha3 implements CaptchaInterface
     use Kernel;
 
     /**
+     * @var bool $initialized Whether the captcha has been initialized
+     */
+    protected bool $initialized = false;
+
+    /**
      * Builds the recaptcha3 object
      * @param App $app The app object
      */
@@ -28,8 +33,21 @@ class Recaptcha3 implements CaptchaInterface
         if (!$this->app->config->captcha->recaptcha->site_key || !$this->app->config->captcha->recaptcha->secret_key) {
             throw new \Exception('The reCAPTCHA v3 configuration is incomplete. Please set both captcha.recaptcha.site_key and captcha.recaptcha.secret_key in your configuration.');
         }
+    }
 
-        $this->app->document->js->load('https://www.google.com/recaptcha/api.js?render=' . urlencode($this->app->config->captcha->recaptcha->site_key));
+    /**
+     * Initializes the captcha
+     */
+    protected function init()
+    {
+        if ($this->initialized) {
+            return;
+        }
+
+        $this->initialized = true;
+
+        $this->app->document->js->load($this->app->assets_url . '/framework/js/captcha/recaptcha3.js', attributes: ['defer' => true]);
+        $this->app->document->js->load('https://www.google.com/recaptcha/api.js?render=' . urlencode($this->app->config->captcha->recaptcha->site_key), attributes: ['defer' => true]);
     }
 
     /**
@@ -75,15 +93,15 @@ class Recaptcha3 implements CaptchaInterface
      */
     public function output()
     {
+        $this->init();
+
         $field_name = 'recaptcha3-token-' . $this->app->random->getString(32);
 
         echo $this->app->html->hidden('recaptcha3-token', '', ['id' => $field_name]);
         ?>
         <script>
-            grecaptcha.ready(function() {
-                grecaptcha.execute('<?php echo $this->app->escape->jsString($this->app->config->captcha->recaptcha->site_key); ?>', {action: 'submit'}).then(function(token) {
-                    document.getElementById('<?php echo $this->app->escape->jsString($field_name); ?>').value = token;
-                });
+            document.addEventListener('DOMContentLoaded', () => {
+                onloadRecaptcha3Callback('<?php echo $this->app->escape->jsString($field_name); ?>', '<?php echo $this->app->escape->jsString($this->app->config->captcha->recaptcha->site_key); ?>');
             });
         </script>
         <?php

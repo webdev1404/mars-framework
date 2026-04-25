@@ -24,7 +24,6 @@ trait ConfigTrait
     public function loadConfig(string $file)
     {
         if (isset($this->loaded_configs[$file])) {
-            var_dump($file);
             return;
         }
 

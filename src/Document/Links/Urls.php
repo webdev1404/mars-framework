@@ -49,6 +49,11 @@ abstract class Urls
     public protected(set) array $urls = [];
 
     /**
+     * @var array $codes Array with all the codes to be outputted
+     */
+    public protected(set) array $codes = [];
+
+    /**
      * @var Preload $preload The preload object
      */
     #[LazyLoadProperty]
@@ -138,13 +143,13 @@ abstract class Urls
     /**
      * Loads an url
      * @param string|array $urls The url(s) to load. Will only load it once, no matter how many times the function is called with the same url
-     * @param string $type The type of the url [head|footer]
+     * @param string $location The location of the url [head|footer]
      * @param int $priority The url's output priority. The higher, the better
      * @param bool $preload If true, will output the url as a preload
      * @param array $attributes The attributes of the url, if any
      * @return static
      */
-    public function load(string|array $urls, string $type = 'head', int $priority = 100, bool $preload = false, array $attributes = []) : static
+    public function load(string|array $urls, string $location = 'head', int $priority = 100, bool $preload = false, array $attributes = []) : static
     {
         $urls = (array)$urls;
 
@@ -156,13 +161,30 @@ abstract class Urls
                 $this->preload($full_url, false);
             }
 
-            $this->urls[$type][$url] = [
+            $this->urls[$location][$url] = [
                 'url' => $full_url,
                 'priority' => $priority,
                 'attributes' => $attributes,
                 'is_local' => $is_local,
             ];
         }
+
+        return $this;
+    }
+
+    /**
+     * Loads code to be outputted
+     * @param string $code The code to load
+     * @param string $location The location of the code [head|footer]
+     * @param int $priority The code's output priority. The higher, the better
+     * @return static
+     */
+    public function loadCode(string $code, string $location = 'head', int $priority = 100) : static
+    {
+        $this->codes[$location][] = [
+            'code' => $code,
+            'priority' => $priority,
+        ];
 
         return $this;
     }
@@ -214,9 +236,9 @@ abstract class Urls
         foreach ($urls as $url) {
             $this->unloadPreload($url);
 
-            foreach ($this->urls as $type => $urls_array) {
+            foreach ($this->urls as $location => $urls_array) {
                 if (isset($urls_array[$url])) {
-                    unset($this->urls[$type][$url]);
+                    unset($this->urls[$location][$url]);
                 }
             }
         }
@@ -288,13 +310,13 @@ abstract class Urls
    
     /**
      * Returns the list of urls
-     * @param string $type The type of the url [head|footer]
+     * @param string $location The location of the url [head|footer]
      * @param bool $sort If true, will sort the urls by priority
      * @return array
      */
-    public function get(string $type, bool $sort = true) : array
+    public function get(string $location, bool $sort = true) : array
     {
-        $urls = $this->urls[$type] ?? [];
+        $urls = $this->urls[$location] ?? [];
 
         if ($sort) {
             $urls = $this->sort($urls);
@@ -328,14 +350,32 @@ abstract class Urls
 
     /**
      * Outputs the urls
-     * @param string $type The type of the url [head|footer]
+     * @param string $location The location of the url [head|footer]
      */
-    public function output(string $type)
+    public function output(string $location)
     {
-        $urls = $this->get($type);
+        $urls = $this->get($location);
 
         foreach ($urls as $url => $data) {
             $this->outputLink($data['url'], $data['attributes'], false);
+        }
+    }
+
+    /**
+     * Outputs the codes
+     * @param string $location The location of the code [head|footer]
+     */
+    public function outputCodes(string $location)
+    {
+        $codes = $this->codes[$location] ?? [];
+        if (!$codes) {
+            return;
+        }
+
+        $codes = $this->sort($codes);
+
+        foreach ($codes as $code) {
+            $this->outputCode($code['code']);
         }
     }
 
@@ -345,7 +385,7 @@ abstract class Urls
      */
     public function getNonce() : string
     {
-        if (!$this->app->config->http->response->csp->enable || !$this->app->config->http->response->csp->use_nonce) {
+        if (!$this->app->config->http->response->headers->csp->enable || !$this->app->config->http->response->headers->csp->use_nonce) {
             return '';
             
         }

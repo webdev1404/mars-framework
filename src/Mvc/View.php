@@ -100,10 +100,10 @@ abstract class View
     protected Controller $controller;
 
     /**
-     * @var object $model The model
+     * @var ?object $model The model
      */
     #[HiddenProperty]
-    protected object $model {
+    protected ?object $model {
         get => $this->controller->model;
     }
 
@@ -319,23 +319,9 @@ abstract class View
      * @param array $vars Vars to pass to the template, if any
      * @return string|null The contents of the template or null if the template doesn't exist
      */
-    public function getLanguageTemplate(string $dir, string $template, array $vars = []) : ?string
+    public function getTemplateByLanguage(string $dir, string $template, array $vars = []) : ?string
     {
-        return $this->parent->getLanguageTemplate($this->root . $dir, $template, $this->getVars($vars));
-    }
-
-    /**
-     * Returns the contents of an email template
-     * @param string $template The name of the template to load
-     * @param array $vars Vars to pass to the template, if any
-     * @param string|null $dir The directory where the template is located. If not set, 'emails' will be used
-     * @return string|null The contents of the template or null if the template doesn't exist
-     */
-    public function getEmailTemplate(string $template, array $vars = [], ?string $dir = null) : ?string
-    {
-        $dir = $dir ?? 'emails';
-
-        return nl2br($this->getLanguageTemplate($dir, $template, $vars));
+        return $this->parent->getTemplateByLanguage($this->root . $dir, $template, $this->getVars($vars));
     }
 
     /**
@@ -360,15 +346,5 @@ abstract class View
         }
 
         return true;
-    }
-
-    /**
-     * Returns a data value.
-     * @param string $name The name of the data
-     * @return mixed The data value
-     */
-    public function getData(string $name)
-    {
-        return $this->app->theme->getData($name);
     }
 }

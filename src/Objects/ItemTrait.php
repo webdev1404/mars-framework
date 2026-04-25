@@ -112,7 +112,7 @@ trait ItemTrait
      * Determines if the object's id is set
      * @return bool
      */
-    public function is() : bool
+    public function exists() : bool
     {
         return (bool)$this->getId();
     }

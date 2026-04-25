@@ -39,7 +39,6 @@ class Validator
         'time' => \Mars\Validation\Time::class,
         'date' => \Mars\Validation\Date::class,
         'datetime' => \Mars\Validation\Datetime::class,
-        'captcha' => \Mars\Validation\Captcha::class,
         'username' => \Mars\Validation\Username::class,
         'password' => \Mars\Validation\Password::class
     ];
@@ -60,9 +59,19 @@ class Validator
     }
 
     /**
-     * @var array $errors The generated errors, if any, grouped by field
+     * @var Errors $errors The generated errors
      */
-    public protected(set) array $errors = [];
+    public protected(set) Errors $errors {
+        get {
+            if (isset($this->errors)) {
+                return $this->errors;
+            }
+
+            $this->errors = new Errors($this->app);
+
+            return $this->errors;
+        }
+    }
 
     /**
      * Checks a value against a validator
@@ -87,7 +96,7 @@ class Validator
     public function validate(array|object $data, array $rules, array $error_strings = [], array $skip_array = []) : bool
     {
         $ok = true;
-        $this->errors = [];
+        $this->errors->reset();
 
         $data = $this->app->array->get($data);
 
@@ -152,40 +161,17 @@ class Validator
      */
     protected function addError(string $rule, string $field, string $error_name, array $error_strings)
     {
-        $this->errors[$field] = $this->errors[$field] ?? [];
+        $error = '';
 
         //do we have in the $error_strings array a custom error for this rule & $field?
         if ($error_strings && isset($error_strings[$field][$rule])) {
-            $this->errors[$field][] = App::__($error_strings[$field][$rule]);
-
-            return;
+            $error = App::__($error_strings[$field][$rule]);
+        } else {
+            //use the rule's error
+            $error = $this->rules->get($rule)->getError($field, $error_name);
         }
-
-        //use the rule's error
-        $this->errors[$field][] = $this->rules->get($rule)->getError($field, $error_name);
-    }
-
-    /**
-     * Returns the errors
-     * @param bool $flat If true, merges the errors into a single error, with $separator between them
-     * @param string $separator The separator to use between errors if $flat is true
-     * @return array The errors
-     */
-    public function getErrors(bool $flat = true, string $separator = '<br>') : array
-    {
-        $errors = [];
-        foreach ($this->errors as $field => $field_errors) {
-
-            if ($flat) {
-                $errors[$field] = implode($separator, $field_errors);
-            } else {
-                foreach ($field_errors as $error) {
-                    $errors[] = $error;
-                }
-            }
-        }
-
-        return $errors;
+        
+        $this->errors->add($error, $field);
     }
 
     /**

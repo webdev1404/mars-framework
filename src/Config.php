@@ -31,7 +31,7 @@ class Config extends Container
     /**
      * List of files to load at startup
      */
-    protected $load_files = ['config.php', 'app.php'];
+    protected $load_files = ['config.php', 'app.php', 'development.php'];
 
     /**
      * @var string $cache_filename The cache filename

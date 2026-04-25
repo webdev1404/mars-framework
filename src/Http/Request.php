@@ -264,13 +264,14 @@ class Request
 
     /**
      * Returns true if the request passes the post check
+     * @param bool $captcha Whether to check the captcha, if enabled
      * @param string|null $key The throttle key to use for throttling, if any
      * @param int|null $max_attempts The maximum number of allowed attempts for throttling
      * @param int|null $duration The block duration in seconds for throttling
      * @param bool $all Whether to throttle all post requests with the same key. If false, $app->throttle->hit() needs to be called manually
      * @return bool True if the request is a post and the CSRF token is valid
      */
-    public function canPost(?string $key = null, ?int $max_attempts = null, ?int $duration = null, bool $all = true) : bool
+    public function canPost(bool $captcha = true, ?string $key = null, ?int $max_attempts = null, ?int $duration = null, bool $all = true) : bool
     {
         if (!$this->is_post) {
             $this->app->errors->add(App::__('error.request.not_post'));
@@ -283,7 +284,17 @@ class Request
             return false;
         }
 
-        if ($key && $max_attempts && $duration) {
+        if ($captcha && $this->app->config->captcha->enable) {
+            if (!$this->app->captcha->check()) {
+                $this->app->errors->add(App::__('error.request.invalid_captcha'));
+                return false;
+            }
+        }
+
+        if ($this->app->config->throttle->enable && $key) {
+            $max_attempts = $max_attempts ?? $this->app->config->throttle->max_attempts;
+            $duration = $duration ?? $this->app->config->throttle->block_duration;
+
             if ($this->app->throttle->isBlocked($key, $max_attempts, $duration)) {
                 $this->app->errors->add(App::__('error.request.throttled'));
 

@@ -49,8 +49,6 @@ final class ResponseTest extends Base
 
         $expected = [
             'success' => true,
-            'message' => '',
-            'error' => '',
             'data' => $content,
         ];
 

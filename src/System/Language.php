@@ -22,7 +22,7 @@ class Language extends BaseLanguage
     public array $strings = [];
 
     /**
-     * @var array $local_keys The keys where we're search for strings without a dot (local keys)
+     * @var array $local_keys The keys where we're search for strings without a colon (local keys)
      */
     protected array $local_keys = [];
 
@@ -328,11 +328,11 @@ class Language extends BaseLanguage
 
     /**
      * Registers a language file, from the language's files folder, to be loaded when the key is requested
-     * @param string $key The key of the language file
      * @param string $file The file to register
+     * @param string $key The key of the language file 
      * @return static
      */
-    public function registerFile(string $key, string $file) : static
+    public function registerFile(string $file, string $key) : static
     {
         $filenames = $this->findFilenames($file);
         if (!$filenames) {
@@ -455,10 +455,10 @@ class Language extends BaseLanguage
         $found_string = '';
 
         foreach ($strings as $string) {
-            $index = strpos($string, '.');
+            $index = strpos($string, ':');
     
             if ($index === false) {
-                //no dot in the key. Search for the string in the specified local keys
+                //no colon in the key. Search for the string in the specified local keys
                 foreach ($this->local_keys as $key) {
                     if (!isset($this->strings[$key])) {
                         $this->load($key);
@@ -470,7 +470,7 @@ class Language extends BaseLanguage
                     }
                 }
             } else {
-                //we have a dot in the key. Search for the string in the specified file
+                //we have a colon in the key. Search for the string in the specified file
                 $key = substr($string, 0, $index);
                 $string_key = substr($string, $index + 1);
 

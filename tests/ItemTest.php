@@ -57,13 +57,13 @@ final class ItemTest extends Base
         $this->assertSame($car->getId(), 10);
     }
 
-    public function testIs()
+    public function testExists()
     {
         $car = new Car;
-        $this->assertFalse($car->is());
+        $this->assertFalse($car->exists());
 
         $car->setId(10);
-        $this->assertTrue($car->is());
+        $this->assertTrue($car->exists());
     }
 
     public function testGetRowById()

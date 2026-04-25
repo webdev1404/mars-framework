@@ -83,7 +83,6 @@ trait LazyLoad
         foreach ($classes as $name => $class) {
             $reflector = new \ReflectionClass($class);
             $this->$name = $reflector->newLazyGhost(function ($ghost) use ($class, $app) {
-
                 $params = [$app];
 
                 //add this as the first param if class is listed in static::$lazyload_add_this

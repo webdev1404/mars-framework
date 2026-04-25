@@ -11,9 +11,9 @@ use Mars\Content\ContentInterface;
 use Mars\Extensions\Extension;
 use Mars\Extensions\Extensions;
 use Mars\Extensions\Abilities\FilesCacheTrait;
+use Mars\Extensions\Abilities\LanguagesTrait;
 use Mars\Extensions\Modules\Abilities\MvcTrait;
 use Mars\Extensions\Modules\Abilities\ConfigTrait;
-use Mars\Extensions\Modules\Abilities\LanguagesTrait;
 use Mars\Extensions\Modules\Abilities\TemplatesTrait;
 
 /**

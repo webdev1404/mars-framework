@@ -60,7 +60,7 @@ class Captcha
                 return $this->driver;
             }
 
-            $this->driver = $this->drivers->get($this->app->config->captcha_driver);
+            $this->driver = $this->drivers->get($this->app->config->captcha->driver);
 
             return $this->driver;
         }

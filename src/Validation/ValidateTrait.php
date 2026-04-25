@@ -58,12 +58,12 @@ trait ValidateTrait
 
     /**
      * Sets the validation rules
-     * @param array $validation_rules The rules
+     * @param string|array $validation_rules The rules
      * @return $this
      */
-    public function setValidationRules(array $validation_rules) : static
+    public function setValidationRules(string|array $validation_rules) : static
     {
-        $this->validation_rules_custom = $validation_rules;
+        $this->validation_rules_custom = (array) $validation_rules;
 
         return $this;
     }
@@ -79,12 +79,12 @@ trait ValidateTrait
 
     /**
      * Sets the validation rules to skip
-     * @param array $validation_rules_to_skip The rules to skip
+     * @param string|array $validation_rules_to_skip The rules to skip
      * @return $this
      */
-    protected function setValidationRulesToSkip(array $validation_rules_to_skip) : static
+    protected function setValidationRulesToSkip(string|array $validation_rules_to_skip) : static
     {
-        $this->validation_rules_to_skip = $validation_rules_to_skip;
+        $this->validation_rules_to_skip = (array) $validation_rules_to_skip;
 
         return $this;
     }
@@ -122,11 +122,12 @@ trait ValidateTrait
 
     /**
      * Skips rules from validation
-     * @param array $skip_rules Rules which will be skipped at validation
+     * @param string|array $skip_rules Rules which will be skipped at validation
      * @return static
      */
-    public function skipValidationRules(array $skip_rules): static
+    public function skipValidationRules(string|array $skip_rules): static
     {
+        $skip_rules = (array) $skip_rules;
         foreach ($skip_rules as $rule) {
             if (!in_array($rule, $this->validation_rules_to_skip)) {
                 $this->validation_rules_to_skip[] = $rule;
@@ -153,33 +154,11 @@ trait ValidateTrait
         }
 
         if (!$this->app->validator->validate($data, $rules, $this->getValidationErrorStrings(), $this->getValidationRulesToSkip())) {
-            $this->handleValidationErrors($this->app->validator->getErrors(false));
+            $this->errors = $this->app->validator->errors;
 
             return false;
         }
 
         return $this->app->plugins->filter('validate.after', true, $data, $this->errors, $this);
-    }
-
-    /**
-     * Returns the validation errors
-     * @return array The validation errors
-     */
-    public function getValidationErrors() : array
-    {
-        return $this->app->validator->getErrors();
-    }
-
-    /**
-     * Handles validation errors
-     * @param array $errors The errors to handle
-     */
-    public function handleValidationErrors(array $errors)
-    {
-        $this->errors->set($errors);
-
-        if ($this->app->request->is_json) {
-            $this->app->json->add('validation_errors', $this->app->validator->getErrors());
-        }
     }
 }
