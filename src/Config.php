@@ -285,8 +285,8 @@ class Config extends Container
      */
     protected function check()
     {
-        if (!$this->url->base) {
-            throw new \Exception("The url config option must be set");
+        if (!$this->url->base && !defined('MARS_SETUP')) {
+            throw new \Exception("The 'url.base' config option must be set in file 'config.php'. Either set it manually or run the setup script to set it automatically.");
         }
     }
 }

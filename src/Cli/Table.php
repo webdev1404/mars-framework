@@ -81,7 +81,7 @@ class Table extends Printer
             echo "|";
         }
 
-        $this->app->cli->printNewline();
+        $this->app->cli->printLn();
     }
 
     /**

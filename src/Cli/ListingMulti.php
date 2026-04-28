@@ -32,7 +32,7 @@ class ListingMulti extends Listing
             }
 
             if ($i < $count - 1) {
-                $this->app->cli->printNewline();
+                $this->app->cli->printLn();
             }
 
             $i++;

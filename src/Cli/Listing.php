@@ -53,7 +53,7 @@ class Listing extends Printer
             $this->app->cli->print($text, $color, false);
         }
 
-        $this->app->cli->printNewline();
+        $this->app->cli->printLn();
 
         return $this;
     }

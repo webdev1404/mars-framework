@@ -27,8 +27,7 @@ class FatalError
             die;
         }
 
-
-        $text = nl2br($this->app->escape->html($text));
+        echo nl2br($this->app->escape->html($text));
         die;
     }
 }

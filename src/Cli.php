@@ -35,7 +35,7 @@ class Cli
         'error' => '0;41',
         'warning' => '93',
         'notice' => '1;36',
-        'important' => '1;31',
+        'important' => '1;32',
         'header' => '0;33',
         'list_1' => '0;32',
         'list_2' => '0',
@@ -233,7 +233,7 @@ class Cli
      * Outputs a newline
      * @param int $times The number of newlines to print
      */
-    public function printNewline(int $times = 1)
+    public function printLn(int $times = 1)
     {
         echo str_repeat($this->newline, $times);
 
