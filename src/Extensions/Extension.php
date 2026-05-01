@@ -107,11 +107,6 @@ abstract class Extension
 
             $this->assets_url = $this->app->assets_url . '/' . static::$base_dir . '/' . rawurlencode($this->name);
 
-            //check if the assets symlink exists, and create it if it doesn't
-            if ($this->canCreateAssetsSymlink()) {
-                $this->createAssetsSymlink();
-            }
-
             return $this->assets_url;
         }
     }
@@ -333,41 +328,5 @@ abstract class Extension
         $this->exec_time = $this->app->timer->stop('extension_output');
 
         return $output;
-    }
-
-    /**
-     * Determines if the assets dir exists in the public/assets folder
-     * @return bool True if the assets dir exists
-     */
-    protected function canCreateAssetsSymlink() : bool
-    {
-        if (static::$assets_dirs === null) {
-            static::$assets_dirs = $this->app->cache->data->get('assets-dirs');
-            if ($this->development) {
-                static::$assets_dirs = null;
-            }
-
-            if (static::$assets_dirs === null) {
-                static::$assets_dirs = $this->app->dir->get($this->app->assets_path, true, true);
-                $this->app->cache->data->set('assets-dirs', $this->app->array->flip(static::$assets_dirs));
-            }
-        }
-
-        return isset(static::$assets_dirs[$this->assets_target]);
-    }
-
-    /**
-     * Creates the symlink for the assets folder
-     * @throws \Exception If the symlink could not be created
-     */
-    protected function createAssetsSymlink()
-    {
-        if (is_link($this->assets_target) || !is_dir($this->assets_path)) {
-            return;
-        }
-
-        if (!symlink($this->assets_path, $this->assets_target)) {
-            throw new \Exception("Could not create symlink from '{$this->assets_path}' to '{$this->assets_target}'");
-        }
     }
 }

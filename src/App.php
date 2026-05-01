@@ -29,7 +29,6 @@ use Mars\Time\Time;
 use Mars\Time\Timestamp;
 use Mars\Time\Timezone;
 use Mars\System\Language;
-use Mars\System\Libraries;
 use Mars\System\Plugins;
 use Mars\System\Modules;
 use Mars\System\Theme;
@@ -187,12 +186,6 @@ class App
      */
     #[LazyLoadProperty]
     public Language $lang;
-
-    /**
-     * @var Libraries $libraries The libraries object
-     */
-    #[LazyLoadProperty]
-    public Libraries $libraries;
 
     /**
      * @var Log $log The log object
@@ -596,11 +589,6 @@ class App
     public protected(set) string $cache_path;
 
     /**
-     * @var string $libraries_path The folder where the php libraries are stored
-     */
-    public protected(set) string $libraries_path;
-
-    /**
      * @var string $app_path The folder where the app files are stored
      */
     public protected(set) string $app_path;
@@ -719,7 +707,6 @@ class App
     public const array DIRS = [
         'app_path' => 'app',
         'config_path' => 'config',
-        'libraries_path' => 'libraries',
         'extensions_path' => 'extensions',
         'public_path' => 'public',
         'assets_path' => 'public/assets',

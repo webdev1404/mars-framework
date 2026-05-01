@@ -35,6 +35,7 @@ class Cli
         'error' => '0;41',
         'warning' => '93',
         'notice' => '1;36',
+        'success' => '0;32',
         'important' => '1;32',
         'header' => '0;33',
         'list_1' => '0;32',
@@ -351,6 +352,13 @@ class Cli
     public function notice(string $text) : static
     {
         $this->print($text, $this->colors['notice']);
+
+        return $this;
+    }
+
+    public function success(string $text) : static
+    {
+        $this->print($text, $this->colors['success']);
 
         return $this;
     }

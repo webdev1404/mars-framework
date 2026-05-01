@@ -21,7 +21,6 @@ use Mars\Extensions\Themes\Links\Images;
 use Mars\Extensions\Abilities\FilesCacheTrait;
 use Mars\Extensions\Abilities\LanguagesTrait;
 use Mars\Themes\Template;
-use Mars\System\Libraries;
 
 /**
  * The Theme Class
@@ -97,14 +96,6 @@ class Theme extends Extension
      */
     #[LazyLoadProperty]
     public Images $images;
-
-    /**
-     * @var Libraries $libraries The libraries object
-     */
-    #[HiddenProperty]
-    public Libraries $libraries {
-        get => $this->app->libraries;
-    }
 
     /**
      * @var Template $template The engine used to parse the template

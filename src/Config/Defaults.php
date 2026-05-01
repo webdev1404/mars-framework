@@ -113,9 +113,7 @@ class Defaults
             'languages' => false,
             'themes' => false,
             'plugins' => false,
-            'modules' => false,
-            'libraries.css' => false,
-            'libraries.js' => false,
+            'modules' => false
         ],
 
         // string Will use this value as device, if specified. Valid values: 'desktop', 'tablet', 'smartphone'
