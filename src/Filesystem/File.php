@@ -308,7 +308,7 @@ class File
 
         $f = fopen($filename, 'r');
         if ($f === false) {
-            throw new \Exception(App::__('error.file.read', ['{FILE}' => $filename]));
+            throw new \Exception(App::__('error:file.read', ['{FILE}' => $filename]));
         }
 
         $size = filesize($filename);

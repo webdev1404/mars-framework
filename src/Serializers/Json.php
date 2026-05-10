@@ -26,6 +26,6 @@ class Json implements SerializerInterface
      */
     public function unserialize(string $data)
     {
-        return \json_decode($data);
+        return \json_decode($data, true);
     }
 }

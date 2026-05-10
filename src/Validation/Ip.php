@@ -14,7 +14,7 @@ class Ip extends Rule
     /**
      * {@inheritDoc}
      */
-    public string $error = 'validate.ip';
+    public string $error = 'validate:ip';
 
     /**
      * Checks if $ip is a valid IP address

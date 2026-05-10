@@ -256,7 +256,9 @@ abstract class Extension
     {
         $app = $this->app;
 
-        include($this->path . '/boot.php');
+        if (is_file($this->path . '/boot.php')) {
+            include($this->path . '/boot.php');
+        }
     }
 
     /**

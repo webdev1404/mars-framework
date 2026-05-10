@@ -400,7 +400,7 @@ class Dir implements \Stringable
         $this->app->plugins->run('dir.create', $this);
 
         if (!mkdir($this->path, recursive: $recursive)) {
-            throw new \Exception(App::__('error.dir.create', ['{DIR}' => $this->path]));
+            throw new \Exception(App::__('error:dir.create', ['{DIR}' => $this->path]));
         }
         if ($permissions) {
             chmod($this->path, $permissions);
@@ -437,12 +437,12 @@ class Dir implements \Stringable
             if ($file->isDir()) {
                 if (!is_dir($target_file)) {
                     if (!mkdir($target_file)) {
-                        throw new \Exception(App::__('error.dir.create', ['{DIR}' => $target_file]));
+                        throw new \Exception(App::__('error:dir.create', ['{DIR}' => $target_file]));
                     }
                 }
             } else {
                 if (!copy($file->getPathname(), $target_file)) {
-                    throw new \Exception(App::__('error.file.copy', ['{SOURCE}' => $file->getPathname(), '{DESTINATION}' => $target_file]));
+                    throw new \Exception(App::__('error:file.copy', ['{SOURCE}' => $file->getPathname(), '{DESTINATION}' => $target_file]));
                 }
             }
         }
@@ -470,7 +470,7 @@ class Dir implements \Stringable
         $this->app->plugins->run('dir.move', $this, $destination);
 
         if (!rename($this->path, $destination->path)) {
-            throw new \Exception(App::__('error.dir.move', ['{SOURCE}' => $this->path, '{DESTINATION}' => $destination->path]));
+            throw new \Exception(App::__('error:dir.move', ['{SOURCE}' => $this->path, '{DESTINATION}' => $destination->path]));
         }
 
         return $destination;
@@ -496,18 +496,18 @@ class Dir implements \Stringable
         foreach ($iterator as $file) {
             if ($file->isDir()) {
                 if (!rmdir($file->getPathname())) {
-                    throw new \Exception(App::__('error.dir.delete', ['{DIR}' => $file->getPathname()]));
+                    throw new \Exception(App::__('error:dir.delete', ['{DIR}' => $file->getPathname()]));
                 }
             } else {
                 if (!unlink($file->getPathname())) {
-                    throw new \Exception(App::__('error.file_delete', ['{FILE}' => $file->getPathname()]));
+                    throw new \Exception(App::__('error:file.delete', ['{FILE}' => $file->getPathname()]));
                 }
             }
         }
 
         if ($delete_dir) {
             if (!rmdir($this->path)) {
-                throw new \Exception(App::__('error.dir.delete', ['{DIR}' => $this->path]));
+                throw new \Exception(App::__('error:dir.delete', ['{DIR}' => $this->path]));
             }
 
             return null;
@@ -549,7 +549,7 @@ class Dir implements \Stringable
             if ($file->isFile()) {
                 if ($file->getMTime() <= $expires) {
                     if (!unlink($file->getPathname())) {
-                        throw new \Exception(App::__('error.file_delete', ['{FILE}' => $file->getPathname()]));
+                        throw new \Exception(App::__('error:file.delete', ['{FILE}' => $file->getPathname()]));
                     }
                 }
             }

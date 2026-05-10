@@ -38,7 +38,7 @@ class Action extends Files
      * @see \Mars\Router\Loaders\Loader::loadHash()
      * {@inheritDoc}
      */
-    protected function loadHash(string $method, string $language, string $route, string $prefix, string $hash, string $type, array $data, null|string|callable|array $action)
+    protected function loadHash(string $method, string $language, string $route, string $prefix, string $hash, string $type, string $name, array $data, null|string|callable|array $action)
     {
         if ($method != $this->app->request->method) {
             return;

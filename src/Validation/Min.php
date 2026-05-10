@@ -15,7 +15,7 @@ class Min extends Rule
     /**
      * {@inheritDoc}
      */
-    public string $error = 'validate.float.min';
+    public string $error = 'validate:float.min';
 
     /**
      * Validates the min value of a number

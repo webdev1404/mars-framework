@@ -11,7 +11,6 @@ use Mars\App\Kernel;
 use Mars\App\HiddenProperty;
 use Mars\Mvc\Controller;
 
-
 class Email
 {
     use Kernel;

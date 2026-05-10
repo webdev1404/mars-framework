@@ -93,7 +93,7 @@ class Handler
             return null;
         }
         
-        return [$handler->getRoute($hash, $route['data']), $params];
+        return [$handler->getRoute($hash, $route['data']), $params, $route['name']];
     }
 
     /**

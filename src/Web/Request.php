@@ -217,7 +217,7 @@ class Request
 
         $f = fopen($filename, 'wb');
         if (!$f) {
-            throw new \Exception(App::__('file_error_write', ['{FILE}' => $filename]));
+            throw new \Exception(App::__('error:file.write', ['{FILE}' => $filename]));
         }
 
         //CURLOPT_RETURNTRANSFER must be set before CURLOPT_FILE. php bug?

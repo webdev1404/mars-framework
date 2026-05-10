@@ -36,6 +36,11 @@ class Javascript extends Urls
     }
 
     /**
+     * Config options to pass as javascript options, if any
+     */
+    public array $config = [];
+
+    /**
      * @see Urls::$type
      * {@inheritDoc}
      */
@@ -123,6 +128,19 @@ class Javascript extends Urls
     }
 
     /**
+     * @see Urls::outputCodes()
+     * {@inheritDoc}
+     */
+    public function outputCodes(string $location)
+    {
+        if ($location == 'head') {
+            $this->outputConfig();
+        }
+
+        parent::outputCodes($location);
+    }
+
+    /**
      * Outputs the given javascript $code
      * @param string $code The code to output
      */
@@ -131,6 +149,18 @@ class Javascript extends Urls
         echo '<script' . $this->getNonce() . '>' . "\n";
         echo $code . "\n";
         echo '</script>' . "\n";
+    }
+
+    /**
+     * Outputs the javascript config as a global variable, if any
+     */
+    protected function outputConfig()
+    {
+        if (!$this->config) {
+            return;
+        }
+
+        $this->outputCode('window.MarsConfig = ' . $this->encode($this->config) . ';');
     }
 
     /**

@@ -21,23 +21,25 @@ class Pages extends Cacheable
     public bool $can_cache = false;
 
     /**
-     * @see Cache::$dir
+     * @see Cacheable::$drivers_enabled
      * {@inheritDoc}
      */
-    public protected(set) string $dir = 'pages';
-
-    /**
-     * @see Cacheable::$can_hash
-     * {@inheritDoc}
-     */
-    protected bool $can_hash = true;
+    public protected(set) array $drivers_enabled = ['text', 'memcache'];
 
     /**
      * @see Cacheable::$driver_name
      * {@inheritDoc}
      */
     protected string $driver_name {
-        get => $this->app->config->cache->page->driver ?? $this->app->config->cache->driver;
+        get {
+            if (isset($this->driver_name)) {
+                return $this->driver_name;
+            }
+
+            $this->driver_name = $this->app->config->cache->page->driver ?? ($this->app->config->cache->driver == 'memcache' ? 'memcache' : 'text');
+
+            return $this->driver_name;
+        }
     }
 
     /**
@@ -50,17 +52,22 @@ class Pages extends Cacheable
     ];
 
     /**
+     * @see Cache::$dir
+     * {@inheritDoc}
+     */
+    public protected(set) string $dir = 'pages';
+
+    /**
+     * @see Cacheable::$can_hash
+     * {@inheritDoc}
+     */
+    protected bool $can_hash = true;
+
+    /**
      * @var bool $minify True, if the output can be minified
      */
     protected bool $minify {
         get => $this->app->config->cache->page->minify;
-    }
-
-    /**
-     * @var int $expires_hours The interval - in hours - after which the content should be refreshed by the browser
-     */
-    protected int $expires_hours {
-        get => $this->app->config->cache->page->expire_hours;
     }
 
     /**
@@ -72,7 +79,9 @@ class Pages extends Cacheable
                 return $this->file;
             }
 
-            $this->file = $this->app->url->full . '-' . $this->app->lang->code;
+            $type = $this->app->request->is_json ? 'json' : 'html';
+
+            $this->file = $this->app->url->full . '-' . $this->app->lang->code . '-' . $type;
 
             return $this->file;
         }
@@ -92,6 +101,11 @@ class Pages extends Cacheable
             return $this->filename;
         }
     }
+
+    /**
+     * @var bool $output_headers_on_store True if the headers should be outputed when storing the content in the cache.
+     */
+    protected bool $output_headers_on_store = false;
 
     /**
      * Builds the page cache object
@@ -129,6 +143,10 @@ class Pages extends Cacheable
         }
 
         $this->driver->set($this->filename, $content, false);
+
+        if ($this->output_headers_on_store) {
+            $this->outputHeadersOnStore();
+        }
 
         return $this;
     }
@@ -191,11 +209,13 @@ class Pages extends Cacheable
             $this->outputHeaders($last_modified, $etag);
 
             $this->outputContent();
+        } else {
+            $this->output_headers_on_store = true;
         }
     }
 
     /**
-     * Sends the 304 Not Modified headers, if the etag matches
+     * Sends the 304 Not Modified headers, if the etag matches or the content has not been modified since the date sent by the browser
      * @param int $last_modified The date when the cached file has been last modified
      * @param string $etag The etag
      */
@@ -225,18 +245,27 @@ class Pages extends Cacheable
      */
     protected function outputHeaders(int $last_modified, string $etag)
     {
+        header('Cache-Control: no-cache');
+        header('Vary: Accept');
+        header('Etag: "' . $etag . '"');
         header('Last-Modified: ' . gmdate('D, d M Y H:i:s', $last_modified) . ' GMT');
-        header('Etag: ' . $etag);
-        header('Vary: Accept-Encoding');
+    }
 
-        if ($this->expires_hours) {
-            $seconds = $this->expires_hours * 3600;
-            $expires = gmdate('D, d M Y H:i:s', time() + $seconds);
+    /**
+     * Outputs the headers needed when storing the content in the cache
+     */
+    protected function outputHeadersOnStore()
+    {
+        if (headers_sent()) {
+            return;
+        }
 
-            header('Expires: ' . $expires . ' GMT');
-            header('Cache-Control: max-age=' . $seconds);
-        } else {
-            header('Cache-Control: public');
+        $last_modified = $this->getLastModified();
+
+        if ($last_modified) {
+            $etag = $this->getEtag($last_modified);
+
+            $this->outputHeaders($last_modified, $etag);
         }
     }
 

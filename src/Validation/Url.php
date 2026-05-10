@@ -14,7 +14,7 @@ class Url extends Rule
     /**
      * {@inheritDoc}
      */
-    public string $error = 'validate.url';
+    public string $error = 'validate:url';
 
     /**
      * Checks if $value is a valid url

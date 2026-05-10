@@ -77,6 +77,25 @@ class Serializer
     }
 
     /**
+     * @var SerializerInterface $data_driver The data driver object
+     */
+    public protected(set) SerializerInterface $data_driver {
+        get {
+            if (isset($this->data_driver)) {
+                return $this->data_driver;
+            }
+
+            if (extension_loaded('igbinary')) {
+                $this->data_driver = $this->drivers->get('igbinary');
+            } else {
+                $this->data_driver = $this->drivers->get('json');
+            }
+
+            return $this->data_driver;
+        }
+    }
+
+    /**
      * Returns the driver used to serialize/unserialize
      * @param bool $use_php_driver If true, will always serialize using the php driver
      * @return SerializerInterface The driver
@@ -133,25 +152,27 @@ class Serializer
     }
 
     /**
-     * Serializes data using the current driver
+     * Serializes data using either igbinary, if available, or json
      * @param mixed $data The data to serialize
-     * @param bool $encode If true, will base64 encode the serialize data
      * @return string The serialized data
      */
-    public function serializeData(mixed $data, bool $encode = false) : string
+    public function serializeData(mixed $data) : string
     {
-        return $this->serialize($data, $encode, false);
+        return $this->data_driver->serialize($data);
     }
 
     /**
-     * Unserializes data using the current driver
+     * Unserializes data using either igbinary, if available, or json
      * @param string|null $data The data to unserialize
      * @param mixed $default_value The default value to return if $data is an empty string or null
-     * @param bool $decode If true, will base64 decode the serialize data
      * @return mixed The unserialized data
      */
-    public function unserializeData(?string $data, $default_value = [], bool $decode = false)
+    public function unserializeData(?string $data, $default_value = [])
     {
-        return $this->unserialize($data, $default_value, $decode, false);
+        if ($data === '' || $data === null) {
+            return $default_value;
+        }
+
+        return $this->data_driver->unserialize($data);
     }
 }

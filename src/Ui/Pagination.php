@@ -241,7 +241,7 @@ class Pagination
             $show = true;
         }
 
-        return $this->getLink(1, App::__('pagination_first'), $show, 'pagination-first');
+        return $this->getLink(1, App::__('pagination:first'), $show, 'pagination-first');
     }
 
     /**
@@ -255,7 +255,7 @@ class Pagination
             $show = true;
         }
 
-        return $this->getLink($this->total_pages, App::__('pagination_last'), $show, 'pagination-last');
+        return $this->getLink($this->total_pages, App::__('pagination:last'), $show, 'pagination-last');
     }
 
     /**
@@ -269,7 +269,7 @@ class Pagination
             $show = true;
         }
 
-        return $this->getLink($this->current_page - 1, App::__('pagination_previous'), $show, 'pagination-previous');
+        return $this->getLink($this->current_page - 1, App::__('pagination:previous'), $show, 'pagination-previous');
     }
 
     /**
@@ -283,6 +283,6 @@ class Pagination
             $show = true;
         }
 
-        return $this->getLink($this->current_page + 1, App::__('pagination_next'), $show, 'pagination-next');
+        return $this->getLink($this->current_page + 1, App::__('pagination:next'), $show, 'pagination-next');
     }
 }

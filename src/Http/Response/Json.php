@@ -6,17 +6,12 @@
 
 namespace Mars\Http\Response;
 
-use Mars\App;
-use Mars\App\Kernel;
-
 /**
  * The Json Response Class
  * Generates a json response
  */
-class Json implements ResponseInterface
+class Json extends Response implements ResponseInterface
 {
-    use Kernel;
-
     /**
      * @see ResponseInterface::output()
      * {@inheritDoc}
@@ -45,6 +40,8 @@ class Json implements ResponseInterface
             $data_array['data'] = $data;
         }
 
-        echo $this->app->json->encode($data_array);
+        $content = $this->app->json->encode($data_array);
+
+        $this->outputContent($content);
     }
 }

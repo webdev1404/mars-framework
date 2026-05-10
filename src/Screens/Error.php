@@ -29,6 +29,6 @@ class Error
             return;
         }
 
-        $this->app->theme->render('message/error', ['title' => $title ?? App::__('message.error'), 'text' => $text]);
+        $this->app->theme->render('message/error', ['title' => $title ?? App::__('message:error'), 'text' => $text]);
     }
 }

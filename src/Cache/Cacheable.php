@@ -22,7 +22,13 @@ abstract class Cacheable extends Cache
         'file' => \Mars\Cache\Cacheable\File::class,
         'php' => \Mars\Cache\Cacheable\Php::class,
         'memcache' => \Mars\Cache\Cacheable\Memcache::class,
+        'text' => \Mars\Cache\Cacheable\Text::class,
     ];
+
+    /**
+     * @var array $drivers_enabled if specified, only these drivers will be enabled. Otherwise, all drivers in $drivers_list will be enabled
+     */
+    public protected(set) array $drivers_enabled = [];
 
     /**
      * @var Drivers $drivers The drivers object
@@ -48,7 +54,14 @@ abstract class Cacheable extends Cache
                 return $this->driver;
             }
 
+            if ($this->drivers_enabled) {
+                if (!in_array($this->driver_name, $this->drivers_enabled)) {
+                    throw new \Exception("The cache driver '{$this->driver_name}' is not enabled for the " . static::class . " cache type");
+                }
+            }
+
             $this->driver = $this->drivers->get($this->driver_name, ...$this->driver_params);
+            
             return $this->driver;
         }
     }

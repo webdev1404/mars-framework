@@ -13,10 +13,10 @@ namespace Mars\Validation;
 class IntVal extends FloatVal
 {
     public array $errors = [
-        'simple' => 'validate.int',
-        'min' => 'validate.int.min',
-        'max' => 'validate.int.max',
-        'min_max' => 'validate.int.min_max',
+        'simple' => 'validate:int',
+        'min' => 'validate:int.min',
+        'max' => 'validate:int.max',
+        'min_max' => 'validate:int.min_max',
     ];
 
     /**

@@ -13,12 +13,10 @@ namespace Mars\Cache;
 class Storage extends Cacheable
 {
     /**
-     * @var array $drivers_list The supported drivers list
+     * @see Cacheable::$drivers_enabled
+     * {@inheritDoc}
      */
-    public protected(set) array $drivers_list = [
-        'file' => \Mars\Cache\Cacheable\File::class,
-        'memcache' => \Mars\Cache\Cacheable\Memcache::class,
-    ];
+    public protected(set) array $drivers_enabled = ['file', 'php', 'memcache'];
 
     /**
      * @see Cacheable::$driver_name

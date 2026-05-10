@@ -10,22 +10,18 @@ namespace Mars\Cache\Cacheable;
  * The Cacheable PHP Driver
  * Driver which stores on disk the cached resources as PHP files
  */
-class Php extends File
+class Php extends Text
 {
     /**
-     * @see File::getFilename()
-     * {@inheritDoc}
+     * @internal
      */
-    protected function getFilename(string $filename) : string
-    {
-        return $filename . '.php';
-    }
+    protected string $extension = 'php';
 
     /**
      * @see CacheableInterface::get()
      * {@inheritDoc}
      */
-    public function get(string $filename, bool $unserialize) : mixed
+    public function get(string $filename) : mixed
     {
         $filename = $this->getFilename($filename);
 
@@ -40,7 +36,7 @@ class Php extends File
      * @see CacheableInterface::set()
      * {@inheritDoc}
      */
-    public function set(string $filename, mixed $content, bool $serialize) : bool
+    public function set(string $filename, mixed $content) : bool
     {
         $filename = $this->getFilename($filename);
 

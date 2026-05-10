@@ -14,11 +14,11 @@ class Username extends Rule
     /**
      * {@inheritDoc}
      */
-    public string $error = 'validate.username';
+    public string $error = 'validate:username';
 
     public array $errors = [
-        'min_max' => 'validate.username.length',
-        'chars' => 'validate.username.chars',
+        'min_max' => 'validate:username.length',
+        'chars' => 'validate:username.chars',
     ];
 
     protected int $min = 5;

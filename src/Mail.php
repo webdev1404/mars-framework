@@ -103,7 +103,7 @@ class Mail
         } catch (\Exception $e) {
             $this->app->plugins->run('mail.send.error', $e, $to, $subject, $message, $options, $attachments, $bcc, $this);
 
-            throw new \Exception(App::__('error.mail.send', ['{ERROR}' => $e->getMessage()]), 0, $e);
+            throw new \Exception(App::__('error:mail.send', ['{ERROR}' => $e->getMessage()]), 0, $e);
         }
     }
 

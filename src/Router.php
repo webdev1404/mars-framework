@@ -45,6 +45,11 @@ class Router extends Base
     }
 
     /**
+     * @var string $name The name of the matched route
+     */
+    public protected(set) string $name = '';
+
+    /**
      * @var Loader $loader The routes loader
      */
     #[LazyLoadProperty]
@@ -81,7 +86,9 @@ class Router extends Base
                 $this->notFound();
             }
         }
-        
+
+        $this->name = $this->getRouteName($route);
+
         $this->output($route);
     }
 
@@ -114,6 +121,15 @@ class Router extends Base
         }
 
         return $this->handler->get($hash, $hashes);
+    }
+
+    /**
+     * Returns the name of the route
+      * @param array $route The route to get the name for
+     */
+    protected function getRouteName(array $route) : string
+    {
+        return $route[2] ?? '';
     }
 
     /**

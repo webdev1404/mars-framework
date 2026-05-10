@@ -356,9 +356,26 @@ class Cli
         return $this;
     }
 
+    /**
+     * Outputs a success message
+     * @param string $text The text to output
+     * @return static
+     */
     public function success(string $text) : static
     {
         $this->print($text, $this->colors['success']);
+
+        return $this;
+    }
+
+    /**
+     * Outputs an important message
+     * @param string $text The text to output
+     * @return static
+     */
+    public function important(string $text) : static
+    {
+        $this->print($text, $this->colors['important']);
 
         return $this;
     }

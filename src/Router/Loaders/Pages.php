@@ -42,6 +42,7 @@ class Pages extends Loader
                 $filename = $dir . '/' . $file;
                 $route = $this->getRoute($file);
                 $prefix = $this->getPrefix($route);
+                $name = 'page.' . $route;
                 $languages = $this->getLanguages($file, $files);
 
                 if (!$languages) {
@@ -51,7 +52,7 @@ class Pages extends Loader
                 foreach ($languages as $language) {
                     $hash = $this->getHash($route, $language, 'get');
 
-                    $this->loadHash($this->method, $language, $route, $prefix, $hash, 'page', ['page' => $filename], null);
+                    $this->loadHash($this->method, $language, $route, $prefix, $hash, 'page', $name, ['page' => $filename], null);
                 }
             }
         }

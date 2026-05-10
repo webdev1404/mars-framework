@@ -20,8 +20,8 @@ class Text extends Rule
      * {@inheritDoc}
      */
     public array $errors = [
-        'min' => 'validate.text.min',
-        'max' => 'validate.text.max',
+        'min' => 'validate:text.min',
+        'max' => 'validate:text.max',
     ];
 
     /**

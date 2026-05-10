@@ -30,6 +30,7 @@ use Mars\Time\Timestamp;
 use Mars\Time\Timezone;
 use Mars\System\Language;
 use Mars\System\Plugins;
+use Mars\System\Menus;
 use Mars\System\Modules;
 use Mars\System\Theme;
 use Mars\System\Uri;
@@ -216,6 +217,12 @@ class App
      */
     #[LazyLoadProperty]
     public Messages $messages;
+
+    /**
+     * @var Menus $menus The menus object
+     */
+    #[LazyLoadProperty]
+    public Menus $menus;
 
     /**
      * @var Modules $modules The modules object
@@ -569,6 +576,21 @@ class App
     }
 
     /**
+     * @var string $framework_path The location on the disk where the framework is installed
+     */
+    public protected(set) string $framework_path {
+        get {
+            if (isset($this->framework_path)) {
+                return $this->framework_path;
+            }
+
+            $this->framework_path = dirname(__DIR__);
+
+            return $this->framework_path;
+        }
+    }
+
+    /**
      * @var string $config_path The folder where the config files are stored
      */
     public protected(set) string $config_path;
@@ -880,11 +902,6 @@ class App
 
         $output = $this->plugins->filter('app.filter.output', $output, $this);
 
-        if ($this->config->cache->page->enable) {
-            //cache the page output, if caching is enabled
-            $this->cache->pages->store($output);
-        }
-
         if ($this->config->debug->enable) {
             $this->stats['output_size'] = strlen($output);
             $this->stats['output_time'] = $this->timer->stop('app_output_time');
@@ -909,9 +926,7 @@ class App
         }
 
         ob_start();
-        $this->theme->renderHeader();
-        $this->theme->renderContent($content);
-        $this->theme->renderFooter();
+        $this->theme->output($content);
         return ob_get_clean();
     }
 

@@ -6,22 +6,18 @@
 
 namespace Mars\Http\Response;
 
-use Mars\App\Kernel;
-
 /**
  * The Html Response Class
  * Generates a html response
  */
-class Html implements ResponseInterface
+class Html extends Response implements ResponseInterface
 {
-    use Kernel;
-
     /**
      * @see ResponseInterface::output()
      * {@inheritDoc}
      */
     public function output(mixed $content)
     {
-        echo $content;
+        $this->outputContent($content);
     }
 }

@@ -59,21 +59,21 @@ class Session
     }
 
     /**
-     * @var string $token The session CSRF token value
+     * @var string $csrf The CSRF token
      */
-    public protected(set) ?string $token {
+    public protected(set) ?string $csrf {
         get {
-            if (isset($this->token)) {
-                return $this->token;
+            if (isset($this->csrf)) {
+                return $this->csrf;
             }
 
-            $this->token = $this->get('token_csrf');
-            if (!$this->token) {
-                $this->token = $this->app->random->getString(32);
-                $this->set('token_csrf', $this->token);
+            $this->csrf = $this->get('csrf-token');
+            if (!$this->csrf) {
+                $this->csrf = $this->app->random->getString(32);
+                $this->set('csrf-token', $this->csrf);
             }
 
-            return $this->token;
+            return $this->csrf;
         }
     }
 

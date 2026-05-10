@@ -41,7 +41,10 @@ class Files extends Loader
      */
     protected function getDirsList() : array
     {
-        $dirs = [];
+        //load the routes from the framework dir
+        $dirs = [$this->app->framework_path . '/routes'];
+
+        //load the routes from the modules dirs
         foreach ($this->app->modules->getEnabled() as $module_path) {
             $module_dir = $module_path . '/' . Module::DIRS['routes'];
             if (is_dir($module_dir)) {
@@ -49,6 +52,7 @@ class Files extends Loader
             }
         }
 
+        //load the routes from the app dir
         $dirs[] = $this->app->app_path . '/routes';
 
         return $dirs;
@@ -320,7 +324,7 @@ class Files extends Loader
                         $this->loadName($language, $name, $route);
                     }
 
-                    $this->loadHash($method, $language, $route, $prefix, $hash, $type, $data, $action);
+                    $this->loadHash($method, $language, $route, $prefix, $hash, $type, $name, $data, $action);
                 }
             }
         }

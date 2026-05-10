@@ -71,11 +71,11 @@ class Files extends Input
             }
 
             if (in_array($extension, $this->disallowed_extensions)) {
-                throw new \Exception(App::__('error.upload.invalid_type', ['{FILE}' => $name]));
+                throw new \Exception(App::__('error:upload.invalid_type', ['{FILE}' => $name]));
             }
             if ($allowed_extensions && $allowed_extensions != '*') {
                 if (!in_array($extension, (array)$allowed_extensions)) {
-                    throw new \Exception(App::__('error.upload.invalid_type', ['{FILE}' => $name]));
+                    throw new \Exception(App::__('error:upload.invalid_type', ['{FILE}' => $name]));
                 }
             }
 
@@ -131,15 +131,15 @@ class Files extends Input
     {
         switch ($code) {
             case UPLOAD_ERR_INI_SIZE:
-                return App::__('error.upload.size', ['{SIZE}' => ini_get('upload_max_filesize')]);
+                return App::__('error:upload.size', ['{SIZE}' => ini_get('upload_max_filesize')]);
             case UPLOAD_ERR_PARTIAL:
-                return App::__('error.upload.partial');
+                return App::__('error:upload.partial');
             case UPLOAD_ERR_NO_FILE:
-                return App::__('error.upload.nofile');
+                return App::__('error:upload.nofile');
             case UPLOAD_ERR_NO_TMP_DIR:
-                return App::__('error.upload.tmp');
+                return App::__('error:upload.tmp');
         }
 
-        return App::__('error.upload.generic', ['{FILE}' => $file]);
+        return App::__('error:upload.generic', ['{FILE}' => $file]);
     }
 }

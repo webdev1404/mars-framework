@@ -15,6 +15,7 @@ use Mars\Extensions\Abilities\LanguagesTrait;
 use Mars\Extensions\Modules\Abilities\MvcTrait;
 use Mars\Extensions\Modules\Abilities\ConfigTrait;
 use Mars\Extensions\Modules\Abilities\TemplatesTrait;
+use Mars\Menus\Menu;
 
 /**
  * The Module Class
@@ -39,6 +40,7 @@ class Module extends Extension implements ContentInterface
         'languages' => 'languages',
         'pages' => 'pages',
         'plugins' => 'plugins',
+        'menus' => 'menus',
         'models' => 'Models',
         'routes' => 'routes',
         'templates' => 'templates',
@@ -158,5 +160,24 @@ class Module extends Extension implements ContentInterface
         $method = $parts[1] ?? null;
 
         return [$controller, $method];
+    }
+
+    /**
+     * Called to collect the menu items for the module
+     * @param Menu $menu The Menu to collect the items for
+     * @return static
+     */
+    public function menu(Menu $menu) : static
+    {
+        if (!$menu->type) {
+            return $this;
+        }
+        
+        $menu_file = $this->path . '/' . self::DIRS['menus'] . "/{$menu->type}.php";
+        if (is_file($menu_file)) {
+            include $menu_file;
+        }
+
+        return $this;
     }
 }

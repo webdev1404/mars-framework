@@ -28,7 +28,7 @@ class Memcache extends Base implements CacheableInterface
      * @see CacheableInterface::get()
      * {@inheritDoc}
      */
-    public function get(string $filename, bool $unserialize) : mixed
+    public function get(string $filename) : mixed
     {
         $filename = $this->getFilename($filename);
         
@@ -44,7 +44,7 @@ class Memcache extends Base implements CacheableInterface
      * @see CacheableInterface::store()
      * {@inheritDoc}
      */
-    public function set(string $filename, mixed $content, bool $serialize) : bool
+    public function set(string $filename, mixed $content) : bool
     {
         $filename = $this->getFilename($filename);
 
@@ -61,7 +61,7 @@ class Memcache extends Base implements CacheableInterface
      */
     public function create(string $filename) : bool
     {
-        return $this->set($filename, '', false);
+        return $this->set($filename, '');
     }
 
     /**

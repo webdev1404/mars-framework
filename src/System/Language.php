@@ -329,7 +329,7 @@ class Language extends BaseLanguage
     /**
      * Registers a language file, from the language's files folder, to be loaded when the key is requested
      * @param string $file The file to register
-     * @param string $key The key of the language file 
+     * @param string $key The key of the language file
      * @return static
      */
     public function registerFile(string $file, string $key) : static

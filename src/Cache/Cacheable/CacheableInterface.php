@@ -14,19 +14,17 @@ interface CacheableInterface
     /**
      * Returns the cached content
      * @param string $filename The filename
-     * @param bool $unserialize Whether to unserialize the content after retrieving
      * @return mixed The content or null if not found
      */
-    public function get(string $filename, bool $unserialize) : mixed;
+    public function get(string $filename) : mixed;
 
     /**
      * Caches content
      * @param string $filename The filename
      * @param mixed $content The content to store
-     * @param bool $serialize Whether to serialize the content before storing
      * @return bool True on success, false on failure
      */
-    public function set(string $filename, mixed $content, bool $serialize) : bool;
+    public function set(string $filename, mixed $content) : bool;
 
     /**
      * Creates a new cache file

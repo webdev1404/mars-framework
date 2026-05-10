@@ -647,6 +647,6 @@ class Html
             $this->app->cache->pages->can_cache = false;
         }
 
-        return $this->hidden($this->app->config->html->csrf_name, $this->app->session->token, ['class' => $this->app->config->html->csrf_name, 'id' => '']);
+        return $this->hidden($this->app->config->html->csrf_name, $this->app->session->csrf, ['class' => $this->app->config->html->csrf_name, 'id' => '']);
     }
 }

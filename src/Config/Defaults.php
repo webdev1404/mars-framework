@@ -209,11 +209,8 @@ class Defaults
         // bool If true, will enable the page cache functionality
         'cache.page.enable' => false,
 
-        // string The driver used for page caching. Supported options: file, memcache
+        // string The driver used for page caching. Supported options: text, memcache. If null, will use cache.driver
         'cache.page.driver' => null,
-
-        // int The value - in hours - of the Expires header
-        'cache.page.expire_hours' => 24,
 
         // bool If true will minify the cached content
         'cache.page.minify' => false,
@@ -453,7 +450,7 @@ class Defaults
 
 
         // string The name of the CSRF hidden field
-        'html.csrf_name' => 'token-csrf',
+        'html.csrf_name' => 'csrf-token',
 
         // string|null The allowed html elements; used when filtering html. If null, all elements are allowed
         'html.allowed_elements' => null,
