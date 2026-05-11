@@ -125,7 +125,7 @@ class Router extends Base
 
     /**
      * Returns the name of the route
-      * @param array $route The route to get the name for
+     * @param array $route The route to get the name for
      */
     protected function getRouteName(array $route) : string
     {

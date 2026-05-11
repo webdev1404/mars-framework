@@ -160,7 +160,24 @@ class Javascript extends Urls
             return;
         }
 
-        $this->outputCode('window.MarsConfig = ' . $this->encode($this->config) . ';');
+        $this->outputCode('window.MarsConfigData = ' . $this->encode($this->config) . ';');
+    }
+
+    /**
+     * Adds a config option to be passed as a javascript option
+     * @param string|array $key The config key to add. If an array is passed, the $value parameter is ignored and the array is merged with the existing config
+     * @param mixed $value The config value to add
+     * @return static
+     */
+    public function addConfig(string|array $key, mixed $value = '') : static
+    {
+        if (is_array($key)) {
+            $this->config = array_merge($this->config, $key);
+        } else {
+            $this->config[$key] = $value;
+        }
+
+        return $this;
     }
 
     /**

@@ -204,7 +204,7 @@ class Template
         $lang = $this->app->lang;
         $theme = $this->app->theme;
         $modules = $this->app->modules;
-        $menus = $this->app->menus; 
+        $menus = $this->app->menus;
         $config = $this->app->config;
         $html = $this->app->html;
         $ui = $this->app->ui;

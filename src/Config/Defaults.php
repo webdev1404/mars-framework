@@ -215,9 +215,6 @@ class Defaults
         // bool If true will minify the cached content
         'cache.page.minify' => false,
 
-        // If true will exclude CSRF protected pages from page caching
-        'cache.page.exclude.csrf' => true,
-
         // The urls to exclude from page caching
         'cache.page.exclude.urls' => [],
 

@@ -642,11 +642,45 @@ class Html
      */
     public function csrf() : string
     {
-        //don't cache the pages where the csrf token is shown
-        if ($this->app->config->cache->page->exclude->csrf) {
-            $this->app->cache->pages->can_cache = false;
+        $value = '';
+        if ($this->canShowCsrf()) {
+            $value = $this->app->session->csrf;
+        } else {
+            $this->enableCachedCsrf();
         }
 
-        return $this->hidden($this->app->config->html->csrf_name, $this->app->session->csrf, ['class' => $this->app->config->html->csrf_name, 'id' => '']);
+        return $this->hidden($this->app->config->html->csrf_name, $value, ['class' => $this->app->config->html->csrf_name, 'id' => '']);
+    }
+
+    /**
+     * Determines if the CSRF field can be shown
+     * @return bool
+     */
+    protected function canShowCsrf() : bool
+    {
+        if ($this->app->cache->pages->can_cache || $this->app->config->accelerator->enable) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Enables the cached CSRF token by adding the necessary configuration to the document.
+     * This will allow the client-side code to fetch the CSRF token via AJAX when needed, which is necessary when page caching or an accelerator is enabled.
+     */
+    protected function enableCachedCsrf()
+    {
+        static $enabled = false;
+        if ($enabled) {
+            return;
+        }
+
+        $enabled = true;
+
+        $this->app->document->js->addConfig([
+            'csrf.url' => (string)$this->app->url->route('get-csrf'),
+            'csrf.name' => $this->app->config->html->csrf_name,
+        ]);
     }
 }

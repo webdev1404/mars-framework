@@ -304,7 +304,7 @@ class Theme extends BaseTheme
      * Outputs a menu
      * @param string $menu The menu [Eg: main, footer, etc]
      */
-    public function outputMenu(string $menu) 
+    public function outputMenu(string $menu)
     {
         if (!isset($this->app->menus->$menu)) {
             throw new \Exception("Menu '{$menu}' not found");

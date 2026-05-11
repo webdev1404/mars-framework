@@ -26,7 +26,7 @@ abstract class System extends Menu
     /**
      * Adds the Home Link to the Menu
      */
-    protected function addHome() 
+    protected function addHome()
     {
         $this->add(App::__('menu:home'), $this->app->base_url . '/', 'home', priority: 100);
     }
