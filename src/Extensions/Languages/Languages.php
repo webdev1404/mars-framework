@@ -16,6 +16,11 @@ class Languages extends Extensions
     /**
      * @internal
      */
+    protected static array $supports = [];
+
+    /**
+     * @internal
+     */
     protected static ?array $list_enabled = null;
 
     /**

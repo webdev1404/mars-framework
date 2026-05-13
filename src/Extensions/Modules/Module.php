@@ -10,10 +10,10 @@ use Mars\App;
 use Mars\Content\ContentInterface;
 use Mars\Extensions\Extension;
 use Mars\Extensions\Extensions;
+use Mars\Extensions\Abilities\ConfigTrait;
 use Mars\Extensions\Abilities\FilesCacheTrait;
 use Mars\Extensions\Abilities\LanguagesTrait;
 use Mars\Extensions\Modules\Abilities\MvcTrait;
-use Mars\Extensions\Modules\Abilities\ConfigTrait;
 use Mars\Extensions\Modules\Abilities\TemplatesTrait;
 use Mars\Menus\Menu;
 
@@ -52,7 +52,7 @@ class Module extends Extension implements ContentInterface
     /**
      * @const array CACHE_DIRS The dirs to be cached
      */
-    public const array CACHE_DIRS = ['config', 'languages', 'templates'];
+    public const array CACHE_DIRS = ['templates'];
 
     /**
      * @var array $route_params The route params passed to the module, if any
@@ -89,14 +89,7 @@ class Module extends Extension implements ContentInterface
     {
         $this->route_params = $params;
 
-        $this->app->lang->saveLocalKeys();
-        
         parent::output();
-
-        $this->app->lang->restoreLocalKeys();
-
-        //unload the loaded language files to save memory
-        $this->unloadLanguages();
     }
 
     /**
@@ -109,8 +102,12 @@ class Module extends Extension implements ContentInterface
             throw new \Exception("No controller defined for module {$this->name}");
         }
 
+        $this->app->lang->setBaseKey(static::$type . '.' . $this->name . '.' . $controller);
+
         $controller = $this->getController($controller);
         $controller->dispatch($method, $this->route_params);
+
+        $this->app->lang->restoreBaseKey();
     }
 
     /**

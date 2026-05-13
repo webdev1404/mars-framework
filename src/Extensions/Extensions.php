@@ -18,6 +18,11 @@ abstract class Extensions
     use Kernel;
 
     /**
+     * @var array $supports The features supported by the extensions of this type
+     */
+    protected static array $supports = [];
+
+    /**
      * @var bool $list_use_all If true, all found extensions are considered enabled
      */
     protected static bool $list_use_all = false;
@@ -46,6 +51,16 @@ abstract class Extensions
      * @var string $instance_class The class of the extensions instance
      */
     protected static string $instance_class = '';
+
+    /**
+     * Determines if the extensions of this type support the specified feature
+     * @param string $feature The feature to check
+     * @return bool True if the feature is supported, false otherwise
+     */
+    public function supports(string $feature) : bool
+    {
+        return in_array($feature, static::$supports);
+    }
 
     /**
      * Returns a new instance of the extension

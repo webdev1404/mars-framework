@@ -11,6 +11,7 @@ use Mars\App\HiddenProperty;
 use Mars\Config\Container;
 use Mars\Config\Defaults;
 use Mars\Config\ArrayResult;
+use Mars\Extensions\Extension;
 
 /**
  * The Config Class
@@ -29,26 +30,6 @@ class Config extends Container
     protected App $_app;
 
     /**
-     * List of files to load at startup
-     */
-    protected $load_files = ['config.php', 'app.php', 'development.php'];
-
-    /**
-     * @var string $cache_filename The cache filename
-     */
-    protected string $cache_filename {
-        get {
-            if (isset($this->cache_filename)) {
-                return $this->cache_filename;
-            }
-
-            $this->cache_filename = $this->_app->cache_path . '/config/config.php';
-
-            return $this->cache_filename;
-        }
-    }
-
-    /**
      * Builds the Config object
      * @param App $app The app object
      */
@@ -65,52 +46,57 @@ class Config extends Container
 
     /**
      * Reads the config settings from the config.php file and the autoload files
-     * @return static
      */
-    protected function init() : static
+    protected function init()
     {
-        if ($this->loadFromCache()) {
-            return $this;
+        $cache_filename = $this->_app->cache_path . '/config/config-all.php';
+
+        if (is_file($cache_filename)) {
+            $this->readFromCache($cache_filename);
+            return;
         }
-
-        $settings = Defaults::$settings;
-
-        foreach ($this->load_files as $file) {
-            $data = $this->readFilename($this->_app->config_path . '/' . $file);
-
-            $settings = array_merge($settings, $data);
-        }
+        
+        $settings = $this->readAllFiles();
 
         $this->assign($this->getTree($settings));
 
-        $this->cache();
+        $this->writeToCache($cache_filename);
+    }
 
-        return $this;
+    /**
+     * Reads the config settings from all the config files
+     * @return array The config settings
+     */
+    protected function readAllFiles() : array
+    {
+        $settings = $this->readFilename($this->_app->framework_path . '/config/default.php');
+        
+        $files = glob($this->_app->config_path . '/*.php');
+        foreach ($files as $file) {
+            $settings = array_merge($settings, $this->read(basename($file)));
+        }
+
+        return $settings;
     }
 
     /**
      * Loads the config settings from cache
-     * @return bool Whether the config was loaded from cache
+     * @param string $filename The cache filename
      */
-    protected function loadFromCache() : bool
+    protected function readFromCache(string $filename)
     {
-        if (!is_file($this->cache_filename)) {
-            return false;
-        }
+        $settings = $this->readFilename($filename);
 
-        $properties = $this->readFilename($this->cache_filename);
-
-        foreach ($properties as $key => $value) {
+        foreach ($settings as $key => $value) {
             $this->$key = $value;
         }
-
-        return true;
     }
 
     /**
      * Caches the config settings to a file
+     * @param string $filename The cache filename
      */
-    protected function cache()
+    protected function writeToCache(string $filename)
     {
         if ($this->development->enable) {
             return;
@@ -120,7 +106,7 @@ class Config extends Container
 
         $content = "<?php\n\nreturn " . var_export($properties, true) . ";";
 
-        file_put_contents($this->cache_filename, $content);
+        file_put_contents($filename, $content);
     }
 
     /**
@@ -177,29 +163,23 @@ class Config extends Container
     }
 
     /**
-     * Reads the config settings from the specified $file and returns it
+     * Reads the config settings from the specified file, found in the config directory
      * @param string $file The file
-     * @param bool $once Whether to use require_once
-     * @return bool|array The config settings or true if the file is already loaded
+     * @return array The config settings
      */
-    public function read(string $file, bool $once = false) : bool|array
+    public function read(string $file) : array
     {
-        return $this->readFilename($this->_app->config_path . '/' . $file, $once);
+        return $this->readFilename($this->_app->config_path . '/' . $file);
     }
 
     /**
-     * Reads the config settings from the specified $filename and returns it
+     * Reads the config settings from the specified filename
      * @param string $filename The filename
-     * @param bool $once Whether to use require_once
-     * @return bool|array The config settings or true if the file is already loaded
+     * @return array The config settings
      */
-    public function readFilename(string $filename, bool $once = false) : bool|array
+    public function readFilename(string $filename) : array
     {
         $app = $this->_app;
-
-        if ($once) {
-            return require_once($filename);
-        }
 
         return require($filename);
     }
@@ -225,50 +205,6 @@ class Config extends Container
     }
 
     /**
-     * Reads the config settings from the specified $file and loads it
-     * @param string $file The file
-     * @return static
-     */
-    public function load(string $file) : static
-    {
-        $this->loadFilename($this->_app->config_path . '/' . $file);
-
-        return $this;
-    }
-
-    /**
-     * Reads the config settings from the specified $filename and loads it
-     * @param string $filename The filename
-     * @return static
-     */
-    public function loadFilename(string $filename) : static
-    {
-        $settings = $this->readFilename($filename, true);
-        if ($settings === true) {
-            return $this;
-        }
-
-        $this->assign($this->getTree($settings));
-
-        return $this;
-    }
-
-    /**
-     * Loads the config settings from a module's config file
-     * @param string $filename The filename
-     * @return static
-     */
-    public function loadModule(string $filename) : static
-    {
-        $filename = $this->_app->config_path . '/' . $filename;
-        if (is_file($filename)) {
-            $this->loadFilename($filename);
-        }
-
-        return $this;
-    }
-
-    /**
      * Normalizes the config options
      */
     protected function normalize()
@@ -288,5 +224,112 @@ class Config extends Container
         if (!$this->url->base && !defined('MARS_SETUP')) {
             throw new \Exception("The 'url.base' config option must be set in file 'config.php'. Either set it manually or run the setup script to set it automatically.");
         }
+    }
+
+    /**
+     * Magic method to get extension config options as properties. Eg: $config->users->registration->open
+     * @param string $name The name of the property
+     * @return mixed The config value or null if not found
+     */
+    public function __get($name)
+    {
+        //we have an undefined property, try to load it from the modules/themes/languages config dir
+        $settings = $this->_app->cache->config->get($name);
+        if ($this->_app->development) {
+            $settings = null;
+        }
+
+        if ($settings === null) {
+            $settings = $this->findExtensionSettings($name);
+
+            $this->_app->cache->config->set($name, $settings);
+        }
+
+        if ($settings) {
+            $this->assign($this->getTree($settings));
+
+            return $this->$name;
+        }
+
+        return null;
+    }
+
+    /**
+     * Finds the config settings for the specified extension name
+     * @param string $name The name of the extension
+     * @return array The config settings
+     */
+    protected function findExtensionSettings(string $name) : array
+    {
+        $settings = [];
+        foreach ($this->_app->extensions as $type => $callback) {
+            $extension = $this->getExtension($name, $callback);
+            if ($extension) {
+                $settings = $this->getExtensionSettings($extension);
+                break;
+            }
+        }
+
+        return $settings;
+    }
+
+    /**
+     * Converts the name from camelCase to a name with dashes. Eg: myConfigOption => my-config-option
+     * @param string $name The name to convert
+     * @return string The converted name
+     */
+    protected function convertName(string $name) : string
+    {
+        return strtolower(preg_replace('/([a-z])([A-Z])/', '$1-$2', $name));
+    }
+
+    /**
+     * Gets an extension by its name
+     * @param string $name The name of the extension
+     * @param callable $callback The callback to get the extension manager
+     * @return Extension|null The extension object or null if not found or not enabled
+     */
+    protected function getExtension(string $name, callable $callback) : ?Extension
+    {
+        $manager = $callback();
+
+        if (!$manager->supports('config')) {
+            return null;
+        }
+
+        if ($manager->isEnabled($name)) {
+            return $manager->get($name);
+        }
+
+        $name = $this->convertName($name);
+        if ($manager->isEnabled($name)) {
+            return $manager->get($name);
+        }
+
+        return null;
+    }
+
+    /**
+     * Gets the config settings for the specified extension
+     * @param Extension $extension The extension
+     * @return array The config settings
+     */
+    protected function getExtensionSettings(Extension $extension) : array
+    {
+        $settings = [];
+        $files = $this->_app->dir->get($extension->config_path, false, true, ['php']);
+        
+        foreach ($files as $file) {
+            $name = basename($file, '.php');
+
+            $file_settings = $this->readFilename($file);
+            $file_settings_keys = array_map(function($val) use($name) {
+                return $name . '.' . $val;
+            }, array_keys($file_settings));
+
+            $settings = array_merge($settings, array_combine($file_settings_keys, $file_settings));
+        }
+
+        return $settings;
     }
 }

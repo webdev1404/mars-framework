@@ -32,7 +32,7 @@ class Language extends Extension
     /**
      * @const array CACHE_DIRS The dirs to be cached
      */
-    public const array CACHE_DIRS = ['files', 'templates'];
+    public const array CACHE_DIRS = ['templates'];
 
     /**
      * @var string $encoding The encoding of the language
@@ -112,13 +112,6 @@ class Language extends Extension
 
             return $this->files_path;
         }
-    }
-
-    /**
-     * @var array $files Array with the list of available files
-     */
-    public array $files {
-        get => $this->files_cache_list['files'] ?? [];
     }
 
     /**

@@ -103,7 +103,7 @@ class Pages extends Cacheable
     }
 
     /**
-     * @var bool $output_headers_on_store True if the headers should be outputed when storing the content in the cache.
+     * @var bool $output_headers_on_store True if the headers should be outputted when storing the content in the cache.
      */
     protected bool $output_headers_on_store = false;
 
@@ -239,7 +239,7 @@ class Pages extends Cacheable
     }
 
     /**
-     * Outputs the headers needed when outputing from the cache
+     * Outputs the headers needed when outputting from the cache
      * @param int $last_modified The date when the cached file has been last modified
      * @param string $etag The etag
      */

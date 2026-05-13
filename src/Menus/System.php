@@ -50,6 +50,6 @@ abstract class System extends Menu
             include $app_menu_file;
         }
 
-        $this->app->plugins->run("menu_collect_items_{$this->type}", $this);
+        $this->app->plugins->run("menu.collect.items.{$this->type}", $this);
     }
 }

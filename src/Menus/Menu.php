@@ -206,7 +206,7 @@ class Menu
 
             $html = $this->app->cache->data->get($key);
             if ($this->app->development) {
-                $html = null;
+                $html = '';
             }
         }
 
@@ -242,7 +242,7 @@ class Menu
             echo '<li>';
             echo $this->app->html->a($item['url'], $item['title'], $item['attributes']);
             if (!empty($item['items'])) {
-                $this->outputItems($item['items']);
+                echo $this->getHtml($item['items']);
             }
             echo '</li>';
         }

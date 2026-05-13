@@ -182,8 +182,8 @@ class Filter
     /**
      * Filters html using HtmlPurifier
      * @param string $html The HTML content to filter
-     * @param string|null $allowed_elements String containing the allowed html elements. If null, it will be read from config->html->allowed_elements
-     * @param string|null $allowed_attributes The allowed attributes. If null, it will be read from config->html->allowed_attributes
+     * @param string|null $allowed_elements String containing the allowed html elements. If null, it will be read from config.get('html.allowed_elements')
+     * @param string|null $allowed_attributes The allowed attributes. If null, it will be read from config.get('html.allowed_attributes')
      * @param string $encoding The encoding of the text
      * @return string The filtered html
      */

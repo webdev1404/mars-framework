@@ -16,6 +16,11 @@ class Themes extends Extensions
     /**
      * @internal
      */
+    protected static array $supports = ['config', 'languages'];
+
+    /**
+     * @internal
+     */
     protected static bool $list_use_all = true;
 
     /**

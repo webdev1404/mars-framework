@@ -18,6 +18,7 @@ use Mars\Extensions\Themes\Links\Javascript;
 use Mars\Extensions\Themes\Links\Favicon;
 use Mars\Extensions\Themes\Links\Fonts;
 use Mars\Extensions\Themes\Links\Images;
+use Mars\Extensions\Abilities\ConfigTrait;
 use Mars\Extensions\Abilities\FilesCacheTrait;
 use Mars\Extensions\Abilities\LanguagesTrait;
 use Mars\Themes\Template;
@@ -37,6 +38,7 @@ class Theme extends Extension
     public const array DIRS = [
         'assets' => 'assets',
         'images' => 'images',
+        'config' => 'config',
         'css' => 'css',
         'fonts' => 'fonts',
         'js' => 'js',
@@ -50,7 +52,7 @@ class Theme extends Extension
     /**
      * @const array CACHE_DIRS The dirs to be cached
      */
-    public const array CACHE_DIRS = ['templates', 'languages'];
+    public const array CACHE_DIRS = ['templates'];
 
     /**
      * @const array MOBILE_DORS The locations of the used mobile subdirs

@@ -500,31 +500,6 @@ abstract class Controller extends \stdClass
     }
 
     /**
-     * Loads the config settings from a file
-     * @param string|null $file The config file. If null, will load the file with the same name as the controller
-     * @return static
-     */
-    public function loadConfig(?string $file = null)
-    {
-        $this->parent->loadConfig($file ?? strtolower($this->name));
-
-        return $this;
-    }
-
-    /**
-     * Loads the language strings from a file
-     * @param string|null $file The language file. If null, will load the file with the same name as the controller
-     * @param string|null $key The key under which the language strings will be stored. If null, the strings will be stored without a key, so they can be accessed directly
-     * @return static
-     */
-    public function loadLanguage(?string $file = null, ?string $key = null)
-    {
-        $this->parent->loadLanguage($file ?? strtolower($this->name), $key);
-
-        return $this;
-    }
-
-    /**
      * Checks if the request can post data, based on throttle settings
      * @param bool $captcha Whether to check the captcha, if enabled
      * @param string|null $key The throttle key. If null, no throttling is applied

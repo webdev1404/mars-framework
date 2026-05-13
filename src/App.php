@@ -82,9 +82,19 @@ class App
 
     /**
      * @var Config $config The config object
+     * If the config object is lazyloaded, the __get() method will be called before the constructor. Bug in php?
      */
-    #[LazyLoadProperty]
-    public Config $config;
+    public Config $config {
+        get {
+            if (isset($this->config)) {
+                return $this->config;
+            }
+
+            $this->config = new Config($this);
+
+            return $this->config;
+        }
+    }
 
     /**
      * @var Crypt $crypt The crypt object
@@ -703,14 +713,23 @@ class App
     }
 
     /**
-     * @var string $namespace The root namespace
+     * @var array $extensions The defined supported extensions and their getters
      */
-    public protected(set) string $namespace = "\\App";
+    public protected(set) array $extensions {
+        get {
+            if (isset($this->extensions)) {
+                return $this->extensions;
+            }
 
-    /**
-     * @var string $extensions_namespace The root namespace for extensions
-     */
-    public protected(set) string $extensions_namespace = "\\App\\Extensions";
+            $this->extensions = [
+                'module' => fn() => $this->modules,
+                'theme' => fn() => $this->theme->manager,
+                'language' => fn() => $this->lang->manager,
+            ];
+
+            return $this->extensions;
+        }
+    }
 
     /**
      * Stats set if debug is on

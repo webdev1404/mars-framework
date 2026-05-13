@@ -16,6 +16,7 @@ use Mars\Cache\Assets\Urls\Css;
 use Mars\Cache\Assets\Urls\Javascript;
 use Mars\Cache\Data;
 use Mars\Cache\Pages;
+use Mars\Cache\Languages;
 use Mars\Cache\Routes;
 use Mars\Cache\Storage;
 use Mars\Cache\Templates;
@@ -70,6 +71,12 @@ class Cache
      */
     #[LazyLoadProperty]
     public protected(set) Pages $pages;
+
+    /**
+     * @var Languages $languages The Languages Cache object
+     */
+    #[LazyLoadProperty]
+    public protected(set) Languages $languages;
 
     /**
      * @var Routes $routes The Routes Cache object

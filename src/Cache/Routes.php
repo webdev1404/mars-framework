@@ -6,9 +6,6 @@
 
 namespace Mars\Cache;
 
-use Mars\App;
-use Mars\Cache\Cacheable\CacheableInterface;
-
 /**
  * The Routes Cache Class
  * Class which handles the caching of routes

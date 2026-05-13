@@ -17,6 +17,11 @@ class Modules extends Extensions
     /**
      * @internal
      */
+    protected static array $supports = ['config', 'languages', 'templates', 'mvc'];
+
+    /**
+     * @internal
+     */
     protected static ?array $list_enabled = null;
 
     /**
@@ -27,7 +32,7 @@ class Modules extends Extensions
     /**
      * @internal
      */
-    protected static string $list_config_file = 'modules.php';
+    protected static string $list_config_file = 'modules/list.php';
 
     /**
      * @internal
