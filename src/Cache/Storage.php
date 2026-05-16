@@ -60,7 +60,7 @@ class Storage extends Cacheable
 
         if ($this->driver_name == 'file') {
             if (!is_dir($dirname)) {
-                mkdir($dirname, 0755, true);
+                mkdir($dirname, 0555, true);
             }
         }
 

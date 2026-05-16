@@ -6,6 +6,7 @@
 
 namespace Mars\Extensions\Languages;
 
+use Mars\Cache\Cacheable;
 use Mars\Extensions\Extensions;
 
 /**
@@ -13,11 +14,6 @@ use Mars\Extensions\Extensions;
  */
 class Languages extends Extensions
 {
-    /**
-     * @internal
-     */
-    protected static array $supports = [];
-
     /**
      * @internal
      */
@@ -37,4 +33,11 @@ class Languages extends Extensions
      * @internal
      */
     protected static string $instance_class = Language::class;
+
+    /**
+     * @internal
+     */
+    public Cacheable $cache {
+        get => $this->app->cache->languages;
+    }
 }

@@ -23,7 +23,7 @@ class Config extends Data
      * {@inheritDoc}
      */
     protected array $driver_params = [
-        false,              // use files cache
+        true,              // use files cache
         'cacheable_config', // driver type
     ];
 

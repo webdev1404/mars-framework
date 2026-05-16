@@ -15,22 +15,22 @@ final class DirTest extends Base
 
     public function testDirCreateAndExists()
     {
-        $dirPath = $this->dir_write . 'create-test';
-        $dir = new Dir($dirPath);
+        $path = $this->dir_write . 'create-test';
+        $dir = new Dir($path);
 
         // Directory should not exist initially
-        if (is_dir($dirPath)) {
-            rmdir($dirPath);
+        if (is_dir($path)) {
+            rmdir($path);
         }
         $this->assertFalse($dir->exists);
 
         // Create directory
         $dir->create();
         $this->assertTrue($dir->exists);
-        $this->assertSame($dirPath, (string)$dir);
+        $this->assertSame($path, (string)$dir);
 
         // Clean up
-        rmdir($dirPath);
+        rmdir($path);
     }
 
     public function testDirCopy()
@@ -73,30 +73,30 @@ final class DirTest extends Base
 
     public function testDirDelete()
     {
-        $dirPath = $this->dir_write . 'delete-test';
-        mkdir($dirPath);
+        $path = $this->dir_write . 'delete-test';
+        mkdir($path);
 
-        $dir = new Dir($dirPath);
+        $dir = new Dir($path);
         $result = $dir->delete();
 
         $this->assertNull($result);
-        $this->assertFalse(is_dir($dirPath));
+        $this->assertFalse(is_dir($path));
     }
 
     public function testDirClean()
     {
-        $dirPath = $this->dir_write . 'clean-test';
-        mkdir($dirPath);
-        file_put_contents($dirPath . '/file.txt', 'test');
+        $path = $this->dir_write . 'clean-test';
+        mkdir($path);
+        file_put_contents($path . '/file.txt', 'test');
 
-        $dir = new Dir($dirPath);
+        $dir = new Dir($path);
         $dir->clean();
 
-        $this->assertTrue(is_dir($dirPath));
-        $this->assertFalse(is_file($dirPath . '/file.txt'));
+        $this->assertTrue(is_dir($path));
+        $this->assertFalse(is_file($path . '/file.txt'));
 
         // Clean up
-        rmdir($dirPath);
+        rmdir($path);
     }
 
     public function testDirContains()

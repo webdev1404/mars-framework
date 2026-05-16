@@ -105,7 +105,7 @@ class Memcache extends Base implements CacheableInterface
      * @see CacheableInterface::clean()
      * {@inheritDoc}
      */
-    public function clean(string $dir, ?int $expire_hours = null)
+    public function clean(string $path, ?int $expire_hours = null)
     {
         $keys = $this->app->memcache->getKeys($this->type);
         if (!$keys) {

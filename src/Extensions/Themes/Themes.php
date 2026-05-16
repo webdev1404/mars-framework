@@ -6,6 +6,7 @@
 
 namespace Mars\Extensions\Themes;
 
+use Mars\Cache\Cacheable;
 use Mars\Extensions\Extensions;
 
 /**
@@ -13,11 +14,6 @@ use Mars\Extensions\Extensions;
  */
 class Themes extends Extensions
 {
-    /**
-     * @internal
-     */
-    protected static array $supports = ['config', 'languages'];
-
     /**
      * @internal
      */
@@ -32,4 +28,11 @@ class Themes extends Extensions
      * @internal
      */
     protected static string $instance_class = Theme::class;
+
+    /**
+     * @internal
+     */
+    public Cacheable $cache {
+        get => $this->app->cache->themes;
+    }
 }

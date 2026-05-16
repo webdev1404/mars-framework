@@ -290,7 +290,7 @@ class Image extends File
     /**
      * Places a watermark image over an image
      * @param string $destination The destination's filename
-     * @param string $watermark_image The path of the image which will be used as a watermark
+     * @param string $watermark_image The filename of the image which will be used as a watermark
      * @param int $position The position of the watermark image. Matches the 1-9 keys of the numpad. 1:bottom-left; 5:middle center; 9:top-right
      * @param array $options Watermark options, if any
      * @return static

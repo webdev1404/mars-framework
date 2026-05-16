@@ -44,39 +44,39 @@ class Device
     /**
      * @var Type $device The device type. Eg: desktop/tablet/smartphone
      */
-    public protected(set) Type $device {
+    public protected(set) Type $type {
         get {
-            if (isset($this->device)) {
-                return $this->device;
+            if (isset($this->type)) {
+                return $this->type;
             }
 
-            $this->device = Type::Desktop;
+            $this->type = Type::Desktop;
             if ($this->app->is_cli) {
-                return $this->device;
+                return $this->type;
             }
 
             if ($this->app->config->development->device) {
-                $this->device = Type::from($this->app->config->development->device);
+                $this->type = Type::from($this->app->config->development->device);
 
-                return $this->device;
+                return $this->type;
             }
 
             $session_device = $this->app->session->get('device');
             if ($session_device) {
-                $this->device = Type::tryFrom($session_device) ?? Type::Desktop;
+                $this->type = Type::tryFrom($session_device) ?? Type::Desktop;
 
-                return $this->device;
+                return $this->type;
             }
 
             if (!empty($_SERVER['X-Device'])) {
-                $this->device = Type::tryFrom($_SERVER['X-Device']) ?? Type::Desktop;
+                $this->type = Type::tryFrom($_SERVER['X-Device']) ?? Type::Desktop;
             } else {
-                $this->device = $this->drivers->get($this->app->config->device->driver)->get();
+                $this->type = $this->drivers->get($this->app->config->device->driver)->get();
             }
 
-            $this->app->session->set('device', $this->device->value);
+            $this->app->session->set('device', $this->type->value);
 
-            return $this->device;
+            return $this->type;
         }
     }
 
@@ -89,7 +89,7 @@ class Device
                 return $this->is_desktop;
             }
 
-            $this->is_desktop = $this->device == Type::Desktop;
+            $this->is_desktop = $this->type == Type::Desktop;
 
             return $this->is_desktop;
         }
@@ -104,7 +104,7 @@ class Device
                 return $this->is_mobile;
             }
 
-            $this->is_mobile = $this->device == Type::Tablet || $this->device == Type::Smartphone;
+            $this->is_mobile = $this->type == Type::Tablet || $this->type == Type::Smartphone;
 
             return $this->is_mobile;
         }
@@ -119,7 +119,7 @@ class Device
                 return $this->is_tablet;
             }
 
-            $this->is_tablet = $this->device == Type::Tablet;
+            $this->is_tablet = $this->type == Type::Tablet;
 
             return $this->is_tablet;
         }
@@ -134,7 +134,7 @@ class Device
                 return $this->is_smartphone;
             }
 
-            $this->is_smartphone = $this->device == Type::Smartphone;
+            $this->is_smartphone = $this->type == Type::Smartphone;
 
             return $this->is_smartphone;
         }

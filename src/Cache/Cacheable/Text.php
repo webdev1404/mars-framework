@@ -124,12 +124,12 @@ class Text extends Base implements CacheableInterface
      * @see CacheableInterface::clean()
      * {@inheritDoc}
      */
-    public function clean(string $dir, ?int $expire_hours = null)
+    public function clean(string $path, ?int $expire_hours = null)
     {
         if (!$expire_hours) {
-            $this->app->dir->clean($dir);
+            $this->app->dir->clean($path);
         } else {
-            $this->app->dir->cleanExpired($dir, time() - ($expire_hours * 3600));
+            $this->app->dir->cleanExpired($path, time() - ($expire_hours * 3600));
         }
     }
 }

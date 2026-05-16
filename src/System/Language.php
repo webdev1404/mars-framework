@@ -28,17 +28,17 @@ class Language extends BaseLanguage
     protected array $loaded_files = [];
 
     /**
-     * @var array $lang_files The list of available files found for the language
+     * @var array $files The list of available files found for the language
      */
-    protected array $lang_files {
+    protected array $files {
         get {
-            if (isset($this->lang_files)) {
-                return $this->lang_files;
+            if (isset($this->files)) {
+                return $this->files;
             }
 
-            $this->lang_files = $this->app->cache->languages->getFiles($this);
+            $this->files = $this->getFiles();
 
-            return $this->lang_files;
+            return $this->files;
         }
     }
 
@@ -46,11 +46,6 @@ class Language extends BaseLanguage
      * @var array $extension_files The list of available language files found for extensions
      */
     protected array $extension_files = [];
-
-    /**
-     * @var array $extension_types The found types for each extension will be stored here to avoid having to search for them multiple times
-     */
-    protected array $extension_types = [];
 
     /**
      * @var string $base_key The key where we're searching for strings without a colon (base keys)
@@ -231,48 +226,6 @@ class Language extends BaseLanguage
     }
 
     /**
-     * @var bool $can_use_fallback If true, the language can use the fallback language
-     */
-    public protected(set) bool $can_use_fallback {
-        get {
-            if (isset($this->can_use_fallback)) {
-                return $this->can_use_fallback;
-            }
-
-            $this->can_use_fallback = false;
-            if ($this->app->config->language->fallback) {
-                //if the current language or its parent language is not the fallback language, we can use the fallback.
-                if ($this->name !== $this->app->config->language->fallback) {
-                    if (!$this->parent || $this->parent->name !== $this->app->config->language->fallback) {
-                        $this->can_use_fallback = true;
-                    }
-                }
-            }
-
-            return $this->can_use_fallback;
-        }
-    }
-
-    /**
-     * @var BaseLanguage $fallback The fallback language
-     */
-    public protected(set) ?BaseLanguage $fallback {
-        get {
-            if (isset($this->fallback)) {
-                return $this->fallback;
-            }
-
-            $this->fallback = null;
-            if ($this->can_use_fallback) {
-                $this->fallback = new BaseLanguage($this->app->config->language->fallback, [], $this->app);
-                $this->fallback->boot();
-            }
-
-            return $this->fallback;
-        }
-    }
-
-    /**
      * @var string $parent_name The name of the parent language, if any
      */
     public protected(set) string $parent_name = '';
@@ -387,7 +340,7 @@ class Language extends BaseLanguage
             $filenames = $this->getFilenames($file);
         } else {
             //we have dots in the file, it's an extension file
-            $filenames = $this->getFilenamesForExtension($parts);
+            $filenames = $this->getExtensionFilenames($parts);
         }
 
         foreach ($filenames as $filename) {
@@ -420,7 +373,58 @@ class Language extends BaseLanguage
      */
     protected function getFilenames(string $file) : array
     {
-        return $this->lang_files[$file] ?? [];
+        return $this->files[$file] ?? [];
+    }
+
+    /**
+     * Returns the language's files list
+     * @return array The list of files
+     */
+    protected function getFiles() : array
+    {
+        $cache_key = $this->name . '-files';
+
+        $files = $this->cache->get($cache_key);
+        if ($this->development) {
+            $files = null;
+        }
+
+        if ($files !== null) {
+            return $files;
+        }
+
+        $files = [];
+        if ($this->parent) {
+            //add the parent language files
+            $this->readFiles($files, $this->parent->files_path);
+        }
+
+        //add the language files
+        $this->readFiles($files, $this->files_path);
+
+        $this->cache->set($cache_key, $files);
+
+        return $files;
+    }
+
+    /**
+     * Adds a list of files from a given directory to the provided files array
+     * @param array $files The array to add the files to
+     * @param string $dir The directory to get the files from
+     */
+    protected function readFiles(array &$files, string $dir)
+    {
+        $files_list = $this->app->dir->get($dir, false, true, ['php']);
+
+        foreach ($files_list as $file) {
+            $name = $this->app->file->getStem($file);
+
+            if (!isset($files[$name])) {
+                $files[$name] = [$file];
+            } else {
+                $files[$name][] = $file;
+            }
+        }
     }
 
     /**
@@ -428,17 +432,17 @@ class Language extends BaseLanguage
      * @param array $parts The parts of the file key
      * @return array The list of filenames
      */
-    protected function getFilenamesForExtension(array $parts) : array
+    protected function getExtensionFilenames(array $parts) : array
     {
         $type = $parts[0];
         $name = $parts[1];
 
-        if (isset($this->app->extensions[$type])) {
+        if (isset($this->app->extensions->types[$type])) {
             if (!isset($parts[2])) {
                 return [];
             }
 
-            $this->extension_files[$type][$name] ??= $this->getExtensionFilenames($type, $name);
+            $this->extension_files[$type][$name] ??= $this->getFilenamesForExtension($type, $name);
 
             $file = implode('.', array_slice($parts, 2));
 
@@ -447,58 +451,106 @@ class Language extends BaseLanguage
             // search through the modules and themes for the file
             $name = $parts[0];
             $file = implode('.', array_slice($parts, 1));
-            $type = $this->getExtensionType($name);
-
+            $type = $this->app->extensions->getType($name);
             if (!$type) {
                 return [];
             }
 
-            $this->extension_files[$type][$name] ??= $this->getExtensionFilenames($type, $name);
+            $this->extension_files[$type][$name] ??= $this->getFilenamesForExtension($type, $name);
 
             return $this->extension_files[$type][$name][$file] ?? [];
         }
     }
 
     /**
-     * Returns the list of filenames for a given extension
+     * Returns the list of filenames for a given extension name and type
      * @param string $type The type of the extension
      * @param string $name The name of the extension
-     * @param bool $check_enabled If true, will check if the extension is enabled
      * @return array The list of filenames
      */
-    protected function getExtensionFilenames(string $type, string $name, bool $check_enabled = true) : array
+    protected function getFilenamesForExtension(string $type, string $name) : array
     {
-        $manager = $this->app->extensions[$type]();
-        if ($check_enabled && !$manager->isEnabled($name)) {
-            return [];
+        $cache_key = $type . '-' . $name . '-' . $this->name . '-lang-filenames';
+
+        $filenames = $this->cache->get($cache_key);
+        if ($this->development) {
+            $filenames = null;
         }
-        
-        return $this->app->cache->languages->getExtensionFiles($this, $manager->get($name));
+
+        if ($filenames !== null) {
+            return $filenames;
+        }
+
+        $filenames = $this->readFilenamesForExtension($type, $name);
+
+        $this->cache->set($cache_key, $filenames);
+
+        return $filenames;
     }
 
     /**
-     * Returns the type of a given extension name, by searching through the enabled extensions
+     * Returns the list of filenames for a given extension name and type by searching for the files in the extension's languages folder and in the language's files folder
+     * @param string $type The type of the extension
      * @param string $name The name of the extension
-     * @return string The type of the extension
+     * @return array The list of filenames
      */
-    protected function getExtensionType(string $name) : string
+    protected function readFilenamesForExtension(string $type, string $name) : array
     {
-        if (isset($this->extension_types[$name])) {
-            return $this->extension_types[$name];
+        $extension = $this->app->extensions->get($name);
+        if (!$extension) {
+            return [];
         }
 
-        $type = '';
-        foreach ($this->app->extensions as $extension_type => $callback) {
-            $manager = $callback();
-            if ($manager->isEnabled($name)) {
-                $type = $extension_type;
-                break;
-            }
+        if (!is_dir($extension->languages_path)) {
+            return [];
         }
 
-        $this->extension_types[$name] = $type;
+        $filenames = [];
+        $files = $this->app->dir->get($extension->languages_path, false, false, ['php']);
+        foreach ($files as $file) {
+            $name = $this->app->file->getStem($file);
 
-        return $type;
+            $filenames[$name] = $this->findFilenamesForExtension($extension, $file);
+        }
+
+        return $filenames;
+    }
+
+    /**
+     * Finds the list of filenames which exist for a given extension and file
+     * @param Extension $extension The extension to find the filenames for
+     * @param string $file The file key
+     * @return array The list of filenames
+     */
+    protected function findFilenamesForExtension(Extension $extension, string $file) : array
+    {
+        $filenames = [];
+
+        //do we have the default file?
+        $filenames[] = $extension->languages_path . '/' . $file;
+
+        //do we have a file for the parent language?
+        if ($this->parent) {
+            $filenames[] = $extension->languages_path . '/' . $this->parent->name . '/' . $file;
+        }
+
+        //do we have a file for the language?
+        $filenames[] = $extension->languages_path . '/' . $this->name . '/' . $file;
+
+        //check if the extension has the file in its languages folder
+        $path_rel = $extension->path_rel . '/' . $file;
+
+        if ($this->parent) {
+            $filenames[] = $this->parent->files_path . '/' . $path_rel;
+        }
+
+        $filenames[] = $this->files_path . '/' . $path_rel;
+
+        $filenames = array_filter($filenames, function ($filename) {
+            return is_file($filename);
+        });
+
+        return $filenames;
     }
 
     /**
@@ -515,12 +567,6 @@ class Language extends BaseLanguage
         if ($this->parent) {
             if (isset($this->parent->templates[$template])) {
                 return $this->parent->templates_path . '/' . $template;
-            }
-        }
-
-        if ($this->fallback) {
-            if (isset($this->fallback->templates[$template])) {
-                return $this->fallback->templates_path . '/' . $template;
             }
         }
 

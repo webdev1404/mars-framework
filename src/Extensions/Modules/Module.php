@@ -33,20 +33,13 @@ class Module extends Extension implements ContentInterface
      * @const array DIRS The locations of the used extensions subdirs
      */
     public const array DIRS = [
-        'assets' => 'assets',
+        ...parent::DIRS,
         'bin' => 'bin',
-        'config' => 'config',
         'controllers' => 'Controllers',
-        'languages' => 'languages',
-        'pages' => 'pages',
-        'plugins' => 'plugins',
-        'menus' => 'menus',
         'models' => 'Models',
-        'routes' => 'routes',
-        'templates' => 'templates',
-        'src' => 'src',
-        'setup' => 'Setup',
-        'views' => 'Views'
+        'views' => 'Views',
+        'pages' => 'pages',
+        'plugins' => 'plugins'
     ];
 
     /**
@@ -166,10 +159,6 @@ class Module extends Extension implements ContentInterface
      */
     public function menu(Menu $menu) : static
     {
-        if (!$menu->type) {
-            return $this;
-        }
-        
         $menu_file = $this->path . '/' . self::DIRS['menus'] . "/{$menu->type}.php";
         if (is_file($menu_file)) {
             include $menu_file;

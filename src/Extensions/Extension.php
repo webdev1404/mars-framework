@@ -8,6 +8,7 @@ namespace Mars\Extensions;
 
 use Mars\App;
 use Mars\App\Kernel;
+use Mars\Cache\Cacheable;
 use Mars\Extensions\List\Reader;
 
 /**
@@ -23,7 +24,13 @@ abstract class Extension
      */
     public const array DIRS = [
         'assets' => 'assets',
+        'config' => 'config',
+        'languages' => 'languages',
+        'menus' => 'menus',
+        'routes' => 'routes',
+        'templates' => 'templates',
         'setup' => 'Setup',
+        'src' => 'src',
     ];
 
     /**
@@ -233,6 +240,13 @@ abstract class Extension
     protected static ?string $development_config_key = null;
 
     /**
+     * @var Cacheable $cache The cache object handling this type of extensions
+     */
+    public Cacheable $cache {
+        get => $this->manager->cache;
+    }
+
+    /**
      * Builds the extension
      * @param string $name The name of the extension
      * @param array $params The params passed to the extension, if any
@@ -243,10 +257,6 @@ abstract class Extension
         $this->name = $name;
         $this->params = $params;
         $this->app = $app;
-
-        if (!$this->manager->exists($this->name)) {
-            throw new \Exception("Extension '{$this->name}' of type '" . static::$type . "' not found. Please clear the cache if you just added it.");
-        }
     }
 
     /**

@@ -28,6 +28,7 @@ use Mars\Time\Date;
 use Mars\Time\Time;
 use Mars\Time\Timestamp;
 use Mars\Time\Timezone;
+use Mars\System\Extensions;
 use Mars\System\Language;
 use Mars\System\Plugins;
 use Mars\System\Menus;
@@ -82,7 +83,7 @@ class App
 
     /**
      * @var Config $config The config object
-     * If the config object is lazyloaded, the __get() method will be called before the constructor. Bug in php?
+     *             If the config object is lazyloaded, the __get() method will be called before the constructor. Bug in php?
      */
     public Config $config {
         get {
@@ -149,6 +150,12 @@ class App
      */
     #[LazyLoadProperty]
     public Escape $escape;
+
+    /**
+     * @var Extensions $extensions The extensions object
+     */
+    #[LazyLoadProperty]
+    public Extensions $extensions;
 
     /**
      * @var Filter $filter The filter object
@@ -713,25 +720,6 @@ class App
     }
 
     /**
-     * @var array $extensions The defined supported extensions and their getters
-     */
-    public protected(set) array $extensions {
-        get {
-            if (isset($this->extensions)) {
-                return $this->extensions;
-            }
-
-            $this->extensions = [
-                'module' => fn() => $this->modules,
-                'theme' => fn() => $this->theme->manager,
-                'language' => fn() => $this->lang->manager,
-            ];
-
-            return $this->extensions;
-        }
-    }
-
-    /**
      * Stats set if debug is on
      * @var array $stats The stats array
      */
@@ -1072,11 +1060,39 @@ class App
     }
 
     /**
-     * Converts a string to a class name. Eg: some-action => SomeAction
+     * Converts a string to camelCase. Eg: some-action => someAction
      * @param string $str The string to convert
-     * @return string The class name
+     * @return string The camelCase string
      */
-    public static function getClass(string $str) : string
+    public static function toCamelCase(string $str) : string
+    {
+        $str = preg_replace('/[^a-z0-9\-_ ]/i', '', $str);
+        $str = str_replace('_', '-', $str);
+        $str = str_replace(' ', '-', $str);
+
+        $str = ucwords($str, '-');
+        $str = lcfirst($str);
+        $str = str_replace('-', '', $str);
+
+        return $str;
+    }
+
+    /**
+     * Converts a string to kebab-case. Eg: someAction => some-action
+     */
+    public static function toKebabCase(string $str) : string
+    {
+        $str = preg_replace('/[^a-z0-9\-_ ]/i', '', $str);
+        $str = str_replace('_', '-', $str);
+        $str = str_replace(' ', '-', $str);
+
+        $str = preg_replace('/([a-z])([A-Z])/', '$1-$2', $str);
+        $str = strtolower($str);
+
+        return $str;
+    }
+
+    public static function toPascalCase(string $str) : string
     {
         $str = preg_replace('/[^a-z0-9\- ]/i', '', $str);
         $str = str_replace(' ', '-', $str);
@@ -1088,21 +1104,23 @@ class App
     }
 
     /**
+     * Converts a string to a class name. Eg: some-action => SomeAction
+     * @param string $str The string to convert
+     * @return string The class name
+     */
+    public static function getClass(string $str) : string
+    {
+        return static::toPascalCase($str);
+    }
+
+    /**
      * Converts a string to a method name. Eg: some-action => someAction
      * @param string $str The string to convert
      * @return string The method name
      */
     public static function getMethod(string $str) : string
     {
-        $str = preg_replace('/[^a-z0-9\-_ ]/i', '', $str);
-        $str = str_replace('_', '-', $str);
-        $str = str_replace(' ', '-', $str);
-
-        $str = ucwords($str, '-');
-        $str = lcfirst($str);
-        $str = str_replace('-', '', $str);
-
-        return $str;
+        return static::toCamelCase($str);
     }
     
     /********************** DEBUG FUNCTIONS ***************************************/

@@ -63,9 +63,6 @@ return [
     // string The default language
     'language.name' => 'english',
 
-    // string The fallback language for modules
-    'language.fallback' => 'english',
-
     // array The language codes mapping. Format: code => name
     'language.codes' => ['en' => 'english'],
 
@@ -179,6 +176,12 @@ return [
 
     // string|null The driver used for languages caching. If null, will use cache.driver
     'cache.languages.driver' => 'php',
+
+    // string|null The driver used for themes caching. If null, will use cache.driver
+    'cache.themes.driver' => 'php',
+
+    // string|null The driver used for modules caching. If null, will use cache.driver
+    'cache.modules.driver' => 'php',
 
     // string|null The driver used for routes caching. If null, will use cache.driver
     'cache.routes.driver' => 'php',

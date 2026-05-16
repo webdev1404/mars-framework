@@ -7,6 +7,8 @@
 namespace Mars\Extensions\Modules;
 
 use Mars\App;
+use Mars\Cache\Cacheable;
+use Mars\Extensions\Extension;
 use Mars\Extensions\Extensions;
 
 /**
@@ -14,11 +16,6 @@ use Mars\Extensions\Extensions;
  */
 class Modules extends Extensions
 {
-    /**
-     * @internal
-     */
-    protected static array $supports = ['config', 'languages', 'templates', 'mvc'];
-
     /**
      * @internal
      */
@@ -40,40 +37,37 @@ class Modules extends Extensions
     protected static string $instance_class = Module::class;
 
     /**
+     * @internal
+     */
+    public Cacheable $cache {
+        get => $this->app->cache->modules;
+    }
+
+    /**
      * @see Extensions::install()
      */
-    public function install(string $name)
+    public function install(string $name) : Extension
     {
-        $extension = $this->get($name);
-
-        $setup = $this->getSetupManager($name);
-        if ($setup && method_exists($setup, 'install')) {
-            $setup->install();
-        }
-       
-        $this->createSymlink($extension);
+        $extension = parent::install($name);
 
         if (!$extension->enabled) {
             $this->addConfig($name);
         }
+
+        return $extension;
     }
 
     /**
      * @see Extensions::uninstall()
      */
-    public function uninstall(string $name)
+    public function uninstall(string $name) : Extension
     {
-        $extension = $this->get($name);
-
-        $setup = $this->getSetupManager($name);
-        if ($setup && method_exists($setup, 'uninstall')) {
-            $setup->uninstall();
-        }
-
-        $this->removeSymlink($extension);
+        $extension = parent::uninstall($name);
 
         if ($extension->enabled) {
             $this->removeConfig($name);
         }
+
+        return $extension;
     }
 }

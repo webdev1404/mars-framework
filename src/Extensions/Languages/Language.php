@@ -22,11 +22,8 @@ class Language extends Extension
      * @internal
      */
     public const array DIRS = [
-        'assets' => 'assets',
+        ...parent::DIRS,
         'files' => 'files',
-        'templates' => 'templates',
-        'src' => 'src',
-        'setup' => 'Setup',
     ];
 
     /**

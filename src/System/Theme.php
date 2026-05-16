@@ -9,6 +9,9 @@ namespace Mars\System;
 use Mars\Extensions\Themes\Theme as BaseTheme;
 
 use Mars\App;
+use Mars\App\LazyLoadProperty;
+use Mars\App\HiddenProperty;
+use Mars\Themes\Template;
 
 /**
  * The System's Theme Class
@@ -16,11 +19,45 @@ use Mars\App;
 class Theme extends BaseTheme
 {
     /**
+     * @const array MOBILE_DORS The locations of the used mobile subdirs
+     */
+    public const array MOBILE_DIRS = [
+        'mobile' => 'mobile',
+        'tablet' => 'tablets',
+        'smartphone' => 'smartphones'
+    ];
+
+    /**
+     * @var string $header_template The template which will be used to render the header
+     */
+    public string $header_template = 'header';
+
+    /**
+     * @var string $footer_template The template which will be used to render the footer
+     */
+    public string $footer_template = 'footer';
+
+    /**
+     * @var string $content_template The template which will be used to render the content
+     */
+    public string $content_template = 'content';
+
+    /**
+     * @var array $vars The theme's vars are stored here
+     */
+    public array $vars = [];
+
+    /**
      * @var bool $is_homepage Set to true if the homepage is currently displayed
      */
     public bool $is_homepage {
         get => $this->app->is_homepage;
     }
+
+    /**
+     * @var string $content The generated content
+     */
+    protected string $content = '';
 
     /**
      * @var string $parent_name The name of the parent theme, if any
@@ -46,6 +83,33 @@ class Theme extends BaseTheme
             return $this->parent;
         }
     }
+
+    /**
+     * @var Template $template The engine used to parse the template
+     */
+    #[LazyLoadProperty]
+    #[HiddenProperty]
+    public protected(set) Template $template;
+
+    /**
+     * @var array $templates Array with the list of available templates
+     */
+    public protected(set) array $templates {
+        get {
+            if (isset($this->templates)) {
+                return $this->templates;
+            }
+
+            $this->templates = $this->getTemplates();
+
+            return $this->templates;
+        }
+    }
+
+    /**
+     * @var array Array with the list of loaded templates
+     */
+    public protected(set) array $templates_loaded = [];
 
     /**
      * Builds the theme
@@ -88,11 +152,21 @@ class Theme extends BaseTheme
     }
 
     /**
+     * Renders/Outputs a template
+     * @param string $template The name of the template
+     * @param array $vars Vars to pass to the template, if any
+     */
+    public function render(string $template, array $vars = [])
+    {
+        echo $this->getTemplate($template, $vars);
+    }
+
+    /**
      * Outputs the header
      */
     public function renderHeader()
     {
-        echo $this->getTemplate($this->header_template);
+        $this->render($this->header_template);
     }
 
     /**
@@ -103,7 +177,7 @@ class Theme extends BaseTheme
     {
         $this->content = $content;
 
-        echo $this->getTemplate($this->content_template, ['content' => $content]);
+        $this->render($this->content_template, ['content' => $content]);
     }
 
     /**
@@ -111,7 +185,16 @@ class Theme extends BaseTheme
      */
     public function renderFooter()
     {
-        echo $this->getTemplate($this->footer_template);
+        $this->render($this->footer_template);
+    }
+
+    /**
+     * Renders/Outputs a template, by filename
+     * @see Theme::getTemplateByFilename()
+     */
+    public function renderFilename(string $filename, ?string $filename_rel = null, array $vars = [], string $type = 'template', array $params = [], bool $development = false)
+    {
+        echo $this->getTemplateByFilename($filename, $filename_rel, $vars, $type, $params, $development);
     }
 
     /**
@@ -314,56 +397,210 @@ class Theme extends BaseTheme
     }
 
     /**
-     * @see BaseTheme::getTemplateFilename()
-     * {@inheritDoc}
+     * Returns the templates the theme has, by device
      */
-    public function getTemplateFilename(string $template) : ?string
+    protected function getTemplates() : array
     {
-        $template_filename = parent::getTemplateFilename($template);
-        if ($template_filename) {
-            return $template_filename;
+        $cache_key = $this->name . '-' . $this->app->device->type->value . '-templates';
+
+        $templates = $this->app->cache->themes->get($cache_key);
+        if ($this->development) {
+            $templates = null;
         }
 
-        //if we have a parent, check the parent's templates
-        if ($this->parent) {
-            $template_filename = $this->parent->getTemplateFilename($template);
-            if ($template_filename) {
-                return $template_filename;
-            }
+        if ($templates !== null) {
+            return $templates;
         }
 
-        return null;
+        $templates = $this->findTemplates();
+
+        $this->app->cache->themes->set($cache_key, $templates);
+
+        return $templates;
     }
 
     /**
-     * @see BaseTheme::getTemplateFromFilename()
-     * {@inheritDoc}
+     * Finds the theme's templates, by device. It will check the parent theme(if any) templates as well.
+     * @return array The list of templates
      */
-    public function getTemplateFromFilename(string $filename, ?string $filename_rel = null, array $vars = [], string $type = 'template', array $params = [], bool $development = false) : string
+    protected function findTemplates() : array
     {
+        $templates = $this->readTemplates('', [static::MOBILE_DIRS['mobile']]);
+
+        if ($this->app->device->is_desktop) {
+            return $templates;
+        }
+
+        //try to locate a mobile template for each of the read templates
+        $mobile_templates = $this->readTemplates(static::MOBILE_DIRS['mobile'], [static::MOBILE_DIRS['tablet'], static::MOBILE_DIRS['smartphone']]);
+        $templates = array_merge($templates, $mobile_templates);
+
+        $device_dir = static::MOBILE_DIRS[$this->app->device->type->value] ?? null;
+        $device_templates = $this->readTemplates(static::MOBILE_DIRS['mobile'] . '/' . $device_dir);
+        $templates = array_merge($templates, $device_templates);
+
+        return $templates;
+    }
+
+    /**
+     * Reads the templates from both the parent theme(if any) and the current theme and adds them to the $templates array
+     * @param string $path_suffix The suffix to add to the templates path, if any. Used to read mobile templates from the mobile subdir
+     * @param array $exclude_dirs Array with the directories to exclude from the search, if any
+     * @return array The list of templates
+     */
+    protected function readTemplates(string $path_suffix = '', array $exclude_dirs = []) : array
+    {
+        $templates = [];
+        $path_suffix = $path_suffix ? '/' . $path_suffix : '';
+
+        if ($this->parent) {
+            $this->readTemplatesFromDir($templates, $this->parent->templates_path . $path_suffix, $exclude_dirs);
+        }
+        
+        $this->readTemplatesFromDir($templates, $this->templates_path . $path_suffix, $exclude_dirs);
+
+        return $templates;
+    }
+
+    /**
+     * Reads the templates from a directory and adds them to the $templates array
+     * @param array $templates The array to add the templates to
+     * @param string $path The path to get the templates from
+     * @param array $exclude_dirs Array with the directories to exclude from the search, if any
+     */
+    protected function readTemplatesFromDir(array &$templates, string $path, array $exclude_dirs = [])
+    {
+        if (!is_dir($path)) {
+            return;
+        }
+
+        $files = $this->app->dir->get($path, true, false, ['php'], $exclude_dirs);
+
+        foreach ($files as $file) {
+            $name = $this->app->file->getFullStem($file);
+            
+            $templates[$name] = $path . '/' . $file;
+        }
+    }
+
+    /**
+     * Loads a template from the theme's templates dir and returns it's content
+     * @param string $template The name of the template
+     * @param array $vars Vars to pass to the template, if any
+     * @return string The template content
+     * @throws \Exception If the template is not found
+     */
+    public function getTemplate(string $template, array $vars = []) : string
+    {
+        $filename = $this->templates[$template] ?? null;
+        if (!$filename) {
+            throw new \Exception("Template '{$template}' not found in theme '{$this->name}'");
+        }
+
+        if ($this->app->config->debug->enable) {
+            $this->templates_loaded[] = $template;
+        }
+
+        return $this->template->get($filename, $vars);
+    }
+
+    /**
+     * Loads a template and returns it's content
+     * @param string $filename The filename of the template
+     * @param string $filename_rel The relative filename of the template
+     * @param array $vars Vars to pass to the template, if any
+     * @param string $type The template's type, if any
+     * @param array $params The template's params, if any
+     * @param bool $development If true, the template will be parsed in development mode
+     * @return string The template content
+     */
+    public function getTemplateByFilename(string $filename, ?string $filename_rel = null, array $vars = [], string $type = 'template', array $params = [], bool $development = false) : string
+    {
+        if ($this->app->config->debug->enable) {
+            $this->templates_loaded[] = $filename_rel ?? $filename;
+        }
+
         if ($filename_rel) {
-            if (!isset($this->templates[$filename_rel])) {
-                //does the parent have it?
-                if ($this->parent) {
-                    if (isset($this->parent->templates[$filename_rel])) {
-                        $filename = $this->parent->templates_path . '/' . $filename_rel;
-                    }
-                }
+            if (isset($this->templates[$filename_rel])) {
+                $filename = $this->templates_path . '/' . $filename_rel;
             }
         }
 
-        return parent::getTemplateFromFilename($filename, $filename_rel, $vars, $type, $params, $development);
+        return $this->template->get($filename, $vars, $type, $params, $development);
     }
 
     /**
-     * @see LanguagesTrait::loadLanguage
+     * Returns a data value from the last rendered template.
+     * @param string $name The name of the data
+     * @return mixed The data value
      */
-    public function loadLanguage(string $file, ?string $key = null) : static
+    public function getData(string $name)
     {
-        if ($this->parent) {
-            $this->parent->loadLanguage($file, $key);
+        return $this->template->data[$name] ?? null;
+    }
+
+    /**
+     * Returns a theme variable.
+     * @param string $name The name of the var
+     * @return static
+     */
+    public function getVar(string $name)
+    {
+        return $this->vars[$name] ?? null;
+    }
+    
+    /**
+     * Adds a theme variable.
+     * @param string $name The name of the var
+     * @param mixed $value The value of the var
+     * @return static
+     */
+    public function addVar(string $name, $value) : static
+    {
+        $this->vars[$name] = $value;
+
+        return $this;
+    }
+
+    /**
+     * Adds template variables
+     * @param array $vars Adds each element [$name=>$value] from $values as theme variables
+     * @return static
+     */
+    public function addVars(array $vars) : static
+    {
+        if (!$vars) {
+            return $this;
         }
 
-        return parent::loadLanguage($file, $key);
+        $this->vars = array_merge($this->vars, $vars);
+
+        return $this;
+    }
+
+    /**
+     * Unsets a theme variable
+     * @param string $name The name of the var
+     * @return static
+     */
+    public function unsetVar(string $name) : static
+    {
+        unset($this->vars[$name]);
+
+        return $this;
+    }
+
+    /**
+     * Unsets theme variables
+     * @param array $values Array with the name of the vars to unset
+     * @return static
+     */
+    public function unsetVars(array $values) : static
+    {
+        foreach ($values as $name) {
+            unset($this->vars[$name]);
+        }
+
+        return $this;
     }
 }

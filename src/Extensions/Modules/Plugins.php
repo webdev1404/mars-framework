@@ -7,6 +7,7 @@
 namespace Mars\Extensions\Modules;
 
 use Mars\App;
+use Mars\Cache\Cacheable;
 use Mars\Extensions\Extensions;
 use Mars\Extensions\Modules\Module;
 use Mars\Extensions\Modules\Modules;
@@ -37,6 +38,13 @@ class Plugins extends Extensions
     protected static string $instance_class = Plugin::class;
 
     /**
+     * @internal
+     */
+    public Cacheable $cache {
+        get => $this->app->cache->modules;
+    }
+
+    /**
      * @see Extensions::readAll()
      * {@inheritDoc}
      */
@@ -47,12 +55,12 @@ class Plugins extends Extensions
         $modules = new Modules($this->app);
         foreach ($modules->getEnabled() as $module_path) {
             $module_name = basename($module_path);
-            $plugins_dir = $module_path . '/' . Module::DIRS['plugins'];
-            if (!is_dir($plugins_dir)) {
+            $plugins_path = $module_path . '/' . Module::DIRS['plugins'];
+            if (!is_dir($plugins_path)) {
                 continue;
             }
 
-            $plugins = $this->app->dir->getFiles($plugins_dir, false, false, [], ['php']);
+            $plugins = $this->app->dir->getFiles($plugins_path, false, false, [], ['php']);
             if (!$plugins) {
                 continue;
             }

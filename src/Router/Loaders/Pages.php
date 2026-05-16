@@ -34,12 +34,12 @@ class Pages extends Loader
             return;
         }
 
-        $dirs = $this->getDirsList();
-        foreach ($dirs as $dir) {
-            $files = $this->getFromDir($dir);
+        $paths = $this->getPaths();
+        foreach ($paths as $path) {
+            $files = $this->getFromPath($path);
 
             foreach ($files as $file) {
-                $filename = $dir . '/' . $file;
+                $filename = $path . '/' . $file;
                 $route = $this->getRoute($file);
                 $prefix = $this->getPrefix($route);
                 $name = 'page.' . $route;
@@ -59,36 +59,36 @@ class Pages extends Loader
     }
 
     /**
-     * Returns the list of dirs from where to build page routes
-     * @return array The list of dirs
+     * Returns the list of paths from where to build page routes
+     * @return array The list of paths
      */
-    protected function getDirsList() : array
+    protected function getPaths() : array
     {
-        $dirs = [];
+        $paths = [];
         foreach ($this->app->modules->getEnabled() as $module_path) {
-            $module_dir = $module_path . '/' . Module::DIRS['pages'];
-            if (is_dir($module_dir)) {
-                $dirs[] = $module_dir;
+            $module_path = $module_path . '/' . Module::DIRS['pages'];
+            if (is_dir($module_path)) {
+                $paths[] = $module_path;
             }
         }
 
-        $dirs[] = $this->app->app_path . '/pages';
+        $paths[] = $this->app->app_path . '/pages';
 
-        return $dirs;
+        return $paths;
     }
 
     /**
-     * Returns the list of pages from a dir
-     * @param string $dir The dir where to look for the pages
+     * Returns the list of pages from a path
+     * @param string $path The path where to look for the pages
      * @return array The list of pages
      */
-    protected function getFromDir(string $dir) : array
+    protected function getFromPath(string $path) : array
     {
-        if (!is_dir($dir)) {
+        if (!is_dir($path)) {
             return [];
         }
 
-        return $this->app->dir->getFiles($dir, true, false, extensions: ['php']);
+        return $this->app->dir->getFiles($path, true, false, extensions: ['php']);
     }
 
     /**

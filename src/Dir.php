@@ -80,7 +80,7 @@ class Dir implements \Stringable
      * It doesn't check if the file or dir actually exist so use with care
      * @param string $filename The filename to check
      * @param bool $check_exists If true, will check if the file actually exists
-     * @return bool True if $filename is inside $dir
+     * @return bool True if $filename is inside the dir
      */
     public function contains(string $filename, bool $check_exists = true) : bool
     {
@@ -113,7 +113,7 @@ class Dir implements \Stringable
      * @param array $extensions If specified, will return only the files matching the extensions
      * @param array $exclude_dirs Array of dirs to exclude, if any
      * @param array $exclude_extensions If specified, will exclude the files matching the extensions
-     * @return array The files
+     * @return array The files and dirs
      */
     public function get(bool $recursive = true, bool $full_path = true, array $extensions = [], array $exclude_dirs = [], array $exclude_extensions = []) : array
     {
@@ -125,7 +125,7 @@ class Dir implements \Stringable
      * @param bool $recursive If true will enum. recursive
      * @param bool $full_path If true it will set will return the file's full path
      * @param array $exclude_dirs Array of dirs to exclude, if any
-     * @return array The files
+     * @return array The directory paths
      */
     public function getDirs(bool $recursive = true, bool $full_path = true, array $exclude_dirs = []) : array
     {
@@ -133,16 +133,16 @@ class Dir implements \Stringable
 
         $iterator = $this->getIterator($this->path, $recursive, $exclude_dirs);
 
-        $dirs = [];
+        $paths = [];
         foreach ($iterator as $file) {
             if ($file->isFile()) {
                 continue;
             }
 
-            $dirs[] = $full_path ? $file->getPathname() : $file->getSubPathname();
+            $paths[] = $full_path ? $file->getPathname() : $file->getSubPathname();
         }
 
-        return $dirs;
+        return $paths;
     }
 
     /**
@@ -151,9 +151,9 @@ class Dir implements \Stringable
      */
     public function getDirsSorted(bool $recursive = true, bool $full_path = true, array $exclude_dirs = []) : array
     {
-        $dirs = $this->getDirs($recursive, $full_path, $exclude_dirs);
+        $paths = $this->getDirs($recursive, $full_path, $exclude_dirs);
 
-        return $this->getSorted($dirs);
+        return $this->getSorted($paths);
     }
 
     /**
@@ -224,34 +224,34 @@ class Dir implements \Stringable
      * @param array $exclude_dirs Array of dirs to exclude, if any
      * @param string $prefix The prefix to add to each dir (used for indentation)
      * @param bool $sort If true, will sort the dirs
-     * @param string|null $dir @internal
+     * @param string|null $path @internal
      * @param int $level @internal
      * @return array The dirs as a tree
      */
-    public function getDirsTree(bool $recursive = true, bool $full_path = false, array $exclude_dirs = [], string $prefix = '', bool $sort = true, ?string $dir = null, int $level = 1) : array
+    public function getDirsTree(bool $recursive = true, bool $full_path = false, array $exclude_dirs = [], string $prefix = '', bool $sort = true, ?string $path = null, int $level = 1) : array
     {
-        if ($dir === null) {
-            $dir = $this->path;
+        if ($path === null) {
+            $path = $this->path;
 
             $this->check();
         }
 
-        $list = $this->getTreeList($dir, $exclude_dirs, $sort, false, $level);
+        $list = $this->getTreeList($path, $exclude_dirs, $sort, false, $level);
 
-        $dirs = [];
-        $dirs_prefix = str_repeat($prefix, $level);
+        $paths = [];
+        $paths_prefix = str_repeat($prefix, $level);
 
         foreach ($list as $file) {
-            $name = $dirs_prefix . ($full_path ? $file['full_path'] : $file['filename']);
+            $name = $paths_prefix . ($full_path ? $file['full_path'] : $file['filename']);
 
             if ($recursive) {
-                $dirs[$name] = $this->getDirsTree(true, $full_path, $exclude_dirs, $dirs_prefix, $sort, $file['full_path'], $level + 1);
+                $paths[$name] = $this->getDirsTree(true, $full_path, $exclude_dirs, $prefix, $sort, $file['full_path'], $level + 1);
             } else {
-                $dirs[$name] = [];
+                $paths[$name] = [];
             }
         }
 
-        return $dirs;
+        return $paths;
     }
 
     /**
@@ -262,19 +262,19 @@ class Dir implements \Stringable
      * @param array $extensions If specified, will return only the files matching the extensions
      * @param string $prefix The prefix to add to each file (used for indentation)
      * @param bool $sort If true, will sort the files
-     * @param string|null @internal
+     * @param string|null $path @internal
      * @param int $level @internal
      * @return array The files as a tree
      */
-    public function getFilesTree(bool $recursive = true, bool $full_path = false, array $exclude_dirs = [], array $extensions = [], array $exclude_extensions = [], string $prefix = '', bool $sort = true, ?string $dir = null, int $level = 1) : array
+    public function getFilesTree(bool $recursive = true, bool $full_path = false, array $exclude_dirs = [], array $extensions = [], array $exclude_extensions = [], string $prefix = '', bool $sort = true, ?string $path = null, int $level = 1) : array
     {
-        if ($dir === null) {
-            $dir = $this->path;
+        if ($path === null) {
+            $path = $this->path;
 
             $this->check();
         }
 
-        $list = $this->getTreeList($dir, $exclude_dirs, $sort, true, $level);
+        $list = $this->getTreeList($path, $exclude_dirs, $sort, true, $level);
 
         $files = [];
         $file_prefix = str_repeat($prefix, $level);
@@ -309,16 +309,16 @@ class Dir implements \Stringable
 
     /**
      * Returns the tree list of files and directories
-     * @param string $dir The folder to be searched
+     * @param string $path The folder path to be searched
      * @param array $exclude_dirs Array of dirs to exclude, if any
      * @param bool $sort If true, will sort the dirs
      * @param bool $include_files If true, will include files
      * @param int $level The current level of recursion (used for indentation)
      * @return array The tree list
      */
-    protected function getTreeList(string $dir, array $exclude_dirs = [], bool $sort = true, bool $include_files = true, int $level = 1) : array
+    protected function getTreeList(string $path, array $exclude_dirs = [], bool $sort = true, bool $include_files = true, int $level = 1) : array
     {
-        $iterator = $this->getIterator($dir, false, $exclude_dirs);
+        $iterator = $this->getIterator($path, false, $exclude_dirs);
 
         //copy the iterator to an array of SplFileInfo objects, so we can sort them
         $list = [];
@@ -353,19 +353,19 @@ class Dir implements \Stringable
 
     /**
      * Returns the iterator used to generate the files
-     * @param string $dir The folder to be searched
+     * @param string $path The folder path to be searched
      * @param bool $recursive If true will enum. recursive
      * @param array $exclude_dirs Array of dirs to exclude, if any
      * @param int $flag Flag to pass to \RecursiveIteratorIterator
      * @return Iterator The iterator
      */
-    protected function getIterator(string $dir, bool $recursive = true, array $exclude_dirs = [], int $flag = \RecursiveIteratorIterator::SELF_FIRST) : \Iterator
+    protected function getIterator(string $path, bool $recursive = true, array $exclude_dirs = [], int $flag = \RecursiveIteratorIterator::SELF_FIRST) : \Iterator
     {
-        $iterator = new \RecursiveDirectoryIterator($dir, \RecursiveDirectoryIterator::SKIP_DOTS | \RecursiveDirectoryIterator::CURRENT_AS_SELF);
+        $iterator = new \RecursiveDirectoryIterator($path, \RecursiveDirectoryIterator::SKIP_DOTS | \RecursiveDirectoryIterator::CURRENT_AS_SELF);
 
         if ($exclude_dirs) {
-            $iterator = new \RecursiveCallbackFilterIterator($iterator, function ($current, $key, $dir_iterator) use ($exclude_dirs) {
-                if (in_array($dir_iterator->getSubPathname(), $exclude_dirs)) {
+            $iterator = new \RecursiveCallbackFilterIterator($iterator, function ($current, $key, $path_iterator) use ($exclude_dirs) {
+                if (in_array($path_iterator->getSubPathname(), $exclude_dirs)) {
                     return false;
                 }
 

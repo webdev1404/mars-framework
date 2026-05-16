@@ -24,13 +24,13 @@ trait MvcTrait
 
     /**
      * Returns a MVC class name
-     * @param string $dir The dir from where to load the class
+     * @param string $path The path from where to load the class
      * @param string $class_name The class name
      * @return string The class name
      */
-    protected function getMvcClass(string $dir, string $class_name) : string
+    protected function getMvcClass(string $path, string $class_name) : string
     {
-        $namespace_path = str_replace("/", "\\", ucfirst($dir) . '/');
+        $namespace_path = str_replace("/", "\\", ucfirst($path) . '/');
 
         return $namespace_path . App::getClass($class_name);
     }

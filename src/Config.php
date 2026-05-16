@@ -233,18 +233,8 @@ class Config extends Container
      */
     public function __get($name)
     {
-        //we have an undefined property, try to load it from the modules/themes/languages config dir
-        $settings = $this->_app->cache->config->get($name);
-        if ($this->_app->development) {
-            $settings = null;
-        }
-
-        if ($settings === null) {
-            $settings = $this->findExtensionSettings($name);
-
-            $this->_app->cache->config->set($name, $settings);
-        }
-
+        //we have an undefined property, try to find it in the extensions config dir
+        $settings = $this->getExtensionSettings($name);
         if ($settings) {
             $this->assign($this->getTree($settings));
 
@@ -255,76 +245,85 @@ class Config extends Container
     }
 
     /**
-     * Finds the config settings for the specified extension name
+     * Gets the config settings for the specified extension name
      * @param string $name The name of the extension
      * @return array The config settings
      */
-    protected function findExtensionSettings(string $name) : array
+    protected function getExtensionSettings(string $name) : array
     {
-        $settings = [];
-        foreach ($this->_app->extensions as $type => $callback) {
-            $extension = $this->getExtension($name, $callback);
-            if ($extension) {
-                $settings = $this->getExtensionSettings($extension);
-                break;
-            }
+        $settings = $this->_app->cache->config->get($name);
+        if ($this->_app->development) {
+            $settings = null;
         }
+
+        if ($settings !== null) {
+            return $settings;
+        }
+
+        $settings = $this->readSettingsForExtension($name);
+
+        $this->_app->cache->config->set($name, $settings);
 
         return $settings;
     }
 
     /**
-     * Converts the name from camelCase to a name with dashes. Eg: myConfigOption => my-config-option
-     * @param string $name The name to convert
-     * @return string The converted name
-     */
-    protected function convertName(string $name) : string
-    {
-        return strtolower(preg_replace('/([a-z])([A-Z])/', '$1-$2', $name));
-    }
-
-    /**
-     * Gets an extension by its name
+     * Returns the settings for the specified extension by reading the config files from the extension's config directory and the app's config directory
      * @param string $name The name of the extension
-     * @param callable $callback The callback to get the extension manager
-     * @return Extension|null The extension object or null if not found or not enabled
-     */
-    protected function getExtension(string $name, callable $callback) : ?Extension
-    {
-        $manager = $callback();
-
-        if (!$manager->supports('config')) {
-            return null;
-        }
-
-        if ($manager->isEnabled($name)) {
-            return $manager->get($name);
-        }
-
-        $name = $this->convertName($name);
-        if ($manager->isEnabled($name)) {
-            return $manager->get($name);
-        }
-
-        return null;
-    }
-
-    /**
-     * Gets the config settings for the specified extension
-     * @param Extension $extension The extension
      * @return array The config settings
      */
-    protected function getExtensionSettings(Extension $extension) : array
+    protected function readSettingsForExtension(string $name) : array
     {
+        $extension = $this->findExtension($name);
+        if (!$extension) {
+            return [];
+        }
+
+        $name = App::toCamelCase($extension->name);
+
+        $extension_settings = $this->readSettingsForExtensionFromDir($extension->config_path, $name);
+
+        $config_settings = $this->readSettingsForExtensionFromDir($this->_app->config_path . '/' . $extension->path_rel, $name);
+
+        return array_merge($extension_settings, $config_settings);
+    }
+    
+    /**
+     * Finds the extension with the specified name. It will search for the actual name and the kebab case name. Eg: 'myExtension' and 'my-extension'
+     * @param string $name The name of the extension
+     * @return Extension|null The extension object or null if not found
+     */
+    protected function findExtension(string $name) : ?Extension
+    {
+        $extension = $this->_app->extensions->get($name);
+        if ($extension) {
+            return $extension;
+        }
+
+        return $this->_app->extensions->get(App::toKebabCase($name));
+    }
+
+    /**
+     * Reads the config settings from the specified directory and returns them as an array
+     * @param string $path The path to read the config settings from
+     * @param string $extension_name The name of the extension, used as a prefix for the config keys
+     * @return array The config settings
+     */
+    protected function readSettingsForExtensionFromDir(string $path, string $extension_name) : array
+    {
+        if (!is_dir($path)) {
+            return [];
+        }
+
         $settings = [];
-        $files = $this->_app->dir->get($extension->config_path, false, true, ['php']);
-        
+        $files = $this->_app->dir->get($path, false, true, ['php']);
+
         foreach ($files as $file) {
-            $name = basename($file, '.php');
+            $name = $this->_app->file->getStem($file);
 
             $file_settings = $this->readFilename($file);
-            $file_settings_keys = array_map(function($val) use($name) {
-                return $name . '.' . $val;
+            $file_settings_keys = array_map(function ($val) use ($extension_name, $name) {
+                return $extension_name . '.' . $name . '.' . $val;
             }, array_keys($file_settings));
 
             $settings = array_merge($settings, array_combine($file_settings_keys, $file_settings));

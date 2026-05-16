@@ -42,13 +42,6 @@ class File implements \Stringable
     }
 
     /**
-     * @var Dir|null $path The directory of the file. Alias of $dir
-     */
-    public ?Dir $path {
-        get => $this->dir;
-    }
-
-    /**
      * @var string $realpath The real path of the file or null if the file doesn't exist
      */
     public string $realpath {

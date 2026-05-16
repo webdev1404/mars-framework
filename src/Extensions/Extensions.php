@@ -8,6 +8,7 @@ namespace Mars\Extensions;
 
 use Mars\App;
 use Mars\App\Kernel;
+use Mars\Cache\Cacheable;
 
 /**
  * The Base Extensions Class
@@ -16,11 +17,6 @@ use Mars\App\Kernel;
 abstract class Extensions
 {
     use Kernel;
-
-    /**
-     * @var array $supports The features supported by the extensions of this type
-     */
-    protected static array $supports = [];
 
     /**
      * @var bool $list_use_all If true, all found extensions are considered enabled
@@ -53,23 +49,24 @@ abstract class Extensions
     protected static string $instance_class = '';
 
     /**
-     * Determines if the extensions of this type support the specified feature
-     * @param string $feature The feature to check
-     * @return bool True if the feature is supported, false otherwise
+     * @var Cacheable $cache The cache object handling this type of extensions
      */
-    public function supports(string $feature) : bool
-    {
-        return in_array($feature, static::$supports);
+    public Cacheable $cache {
+        get => $this->app->cache->data;
     }
 
     /**
      * Returns a new instance of the extension
      * @param string $name The name of the extension
      * @param array $params Optional parameters to pass to the extension constructor
-     * @return Extension The extension
+     * @return Extension The extension or null if the extension doesn't exist or is not enabled
      */
-    public function get(string $name, array $params = []) : Extension
+    public function get(string $name, array $params = []) : ?Extension
     {
+        if (!$this->isEnabled($name)) {
+            return null;
+        }
+
         return new static::$instance_class($name, $params, $this->app);
     }
 
@@ -107,6 +104,15 @@ abstract class Extensions
         static::$list_all ??= $this->getAll();
 
         return static::$list_all[$name] ?? null;
+    }
+
+    /**
+     * Returns the base directory for this type of extensions
+     * @return string The base directory
+     */
+    public function getBaseDir(): ?string
+    {
+        return static::$instance_class::getBaseDir();
     }
 
     /**
@@ -240,7 +246,7 @@ abstract class Extensions
      */
     protected function getCacheFilename(string $type): string
     {
-        return str_replace('/', '-', static::$instance_class::getBaseDir()) . '-extensions-list-' . $type;
+        return 'list-' . $type;
     }
 
     /**
@@ -254,7 +260,7 @@ abstract class Extensions
     {
         $cache_filename = $this->getCacheFilename($type);
 
-        $list = $this->app->cache->data->get($cache_filename);
+        $list = $this->cache->get($cache_filename);
 
         // If we are in development mode, we always read the list from the filesystem
         $development = $this->app->development ? true : $this->app->config->development->extensions[static::$instance_class::getBaseDir()] ?? false;
@@ -268,7 +274,7 @@ abstract class Extensions
 
         $list = $get();
 
-        $this->app->cache->data->set($cache_filename, $list, false);
+        $this->cache->set($cache_filename, $list, false);
 
         return $list;
     }
@@ -279,13 +285,13 @@ abstract class Extensions
      */
     protected function readAll(): array
     {
-        $dirs = array_merge($this->readFromVendor(static::$instance_class::getBaseDir()), $this->readFromExtensionsDir(static::$instance_class::getBaseDir()));
+        $paths = array_merge($this->readFromVendor(static::$instance_class::getBaseDir()), $this->readFromExtensionsDir(static::$instance_class::getBaseDir()));
 
         $list = [];
-        foreach ($dirs as $dir) {
-            $name = basename($dir);
+        foreach ($paths as $path) {
+            $name = basename($path);
 
-            $list[$name] = $dir;
+            $list[$name] = $path;
         }
 
         return $list;
@@ -293,13 +299,13 @@ abstract class Extensions
 
     /**
      * Returns the list of extensions from the specified directory
-     * @param string $dir The directory to scan
+     * @param string $path The directory to scan
      * @param bool $check_info If true, we'll check for the info.php file in each directory
      * @return array The list of extensions
      */
-    protected function readFromDir(string $dir, bool $check_info) : array
+    protected function readFromDir(string $path, bool $check_info) : array
     {
-        $dirs = $this->app->dir->getDirs($dir, false, true);
+        $dirs = $this->app->dir->getDirs($path, false, true);
         if (!$check_info) {
             return $dirs;
         }
@@ -333,30 +339,30 @@ abstract class Extensions
     {
         $vendor_exclude = ['bin', 'psr', 'composer'];
 
-        $dirs = [];
+        $paths = [];
 
         $vendors = $this->app->dir->getDirs($this->app->vendor_path, false, true, $vendor_exclude);
-        foreach ($vendors as $dir) {
-            $vendor_packages = $this->app->dir->getDirs($dir, false, true);
+        foreach ($vendors as $vendor_path) {
+            $vendor_packages = $this->app->dir->getDirs($vendor_path, false, true);
 
-            foreach ($vendor_packages as $package_dir) {
-                $package_dir = $package_dir . '/' . $type;
-                if (!is_dir($package_dir)) {
+            foreach ($vendor_packages as $package_path) {
+                $package_path = $package_path . '/' . $type;
+                if (!is_dir($package_path)) {
                     continue;
                 }
 
-                $dirs = array_merge($dirs, $this->readFromDir($package_dir, true));
+                $paths = array_merge($paths, $this->readFromDir($package_path, true));
             }
         }
 
-        return $dirs;
+        return $paths;
     }
 
     /**
      * Installs the specified extension
      * @param string $name The name of the extension
      */
-    public function install(string $name)
+    public function install(string $name) : Extension
     {
         $extension = $this->get($name);
 
@@ -366,13 +372,17 @@ abstract class Extensions
         }
        
         $this->createSymlink($extension);
+
+        $this->cache->clean();
+
+        return $extension;
     }
 
     /**
      * Enables the specified extension
      * @param string $name The name of the extension
      */
-    public function enable(string $name)
+    public function enable(string $name) : Extension
     {
         $extension = $this->get($name);
 
@@ -384,13 +394,17 @@ abstract class Extensions
         $this->addConfig($name);
        
         $this->createSymlink($extension);
+
+        $this->cache->clean();
+
+        return $extension;
     }
 
     /**
      * Disables the specified extension
      * @param string $name The name of the extension
      */
-    public function disable(string $name)
+    public function disable(string $name) : Extension
     {
         $extension = $this->get($name);
         if (!$extension->enabled) {
@@ -405,13 +419,17 @@ abstract class Extensions
         $this->removeConfig($name);
        
         $this->removeSymlink($extension);
+
+        $this->cache->clean();
+
+        return $extension;
     }
 
     /**
      * Upgrades the specified extension
      * @param string $name The name of the extension
      */
-    public function upgrade(string $name)
+    public function upgrade(string $name) : Extension
     {
         $extension = $this->get($name);
         if (!$extension->enabled) {
@@ -424,13 +442,17 @@ abstract class Extensions
         }
 
         $this->createSymlink($extension);
+
+        $this->cache->clean();
+
+        return $extension;
     }
 
     /**
      * Uninstalls the specified extension
      * @param string $name The name of the extension
      */
-    public function uninstall(string $name)
+    public function uninstall(string $name) : Extension
     {
         $extension = $this->get($name);
 
@@ -440,6 +462,10 @@ abstract class Extensions
         }
 
         $this->removeSymlink($extension);
+
+        $this->cache->clean();
+
+        return $extension;
     }
 
     /**

@@ -33,9 +33,9 @@ trait FilesCacheTrait
      */
     protected function getCachedFiles() : array
     {
-        $cache_filename = static::$type . '-' . $this->name . '-files';
+        $cache_filename = $this->name . '-files-list';
 
-        $files = $this->app->cache->data->get($cache_filename);
+        $files = $this->cache->get($cache_filename);
 
         // Force files scan if we are in development mode
         if ($this->development) {
@@ -48,16 +48,16 @@ trait FilesCacheTrait
 
         $files = [];
         foreach (static::CACHE_DIRS as $name) {
-            $dir = $this->path . '/' . $name;
-            if (!is_dir($dir)) {
+            $path = $this->path . '/' . $name;
+            if (!is_dir($path)) {
                 continue;
             }
 
-            $files[$name] = $this->app->dir->getFiles($dir, true, false);
+            $files[$name] = $this->app->dir->getFiles($path, true, false);
             $files[$name] = $this->app->array->flip($files[$name]);
         }
 
-        $this->app->cache->data->set($cache_filename, $files);
+        $this->cache->set($cache_filename, $files);
 
         return $files;
     }

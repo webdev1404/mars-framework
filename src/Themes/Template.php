@@ -68,40 +68,13 @@ class Template
     }
 
     /**
-     * Renders/Outputs a template
-     * @param string $template The name of the template
-     * @param array $vars Vars to pass to the template, if any
-     */
-    public function render(string $template, array $vars = [])
-    {
-        echo $this->get($template, $vars);
-    }
-
-    /**
      * Renders/Outputs a template, by filename
      * @param string $filename The filename of the template
      * @param array $vars Vars to pass to the template, if any
      */
-    public function renderFilename(string $filename, array $vars = [])
+    public function render(string $filename, array $vars = [])
     {
-        echo $this->getFromFilename($filename, $vars);
-    }
-
-    /**
-     * Loads a template from the theme's templates dir and returns its content
-     * @param string $template The name of the template
-     * @param array $vars Vars to pass to the template, if any
-     * @param string $type The template's type, if any
-     * @return string The template content
-     */
-    public function get(string $template, array $vars = [], string $type = 'template') : string
-    {
-        $filename = $this->getFilename($template);
-        $cache_name = $this->app->cache->templates->getName($filename, $type);
-
-        $content = $this->getContent($filename, $cache_name, $vars);
-
-        return $this->app->plugins->filter('template.get', $content, $template, $vars, $type, $this);
+        echo $this->get($filename, $vars);
     }
 
     /**
@@ -113,28 +86,13 @@ class Template
      * @param bool $development True if the template should be parsed in development mode
      * @return string The template content
      */
-    public function getFromFilename(string $filename, array $vars = [], string $type = 'template', array $params = [], bool $development = false) : string
+    public function get(string $filename, array $vars = [], string $type = 'template', array $params = [], bool $development = false) : string
     {
         $cache_file = $this->app->cache->templates->getName($filename, $type);
 
         $content = $this->getContent($filename, $cache_file, $vars, $params, $development);
 
         return $this->app->plugins->filter('template.get.from.filename', $content, $filename, $vars, $type, $this);
-    }
-
-    /**
-     * Returns the filename corresponding to $template
-     * @param string $template The name of the template
-     * @return string The filename
-     */
-    public function getFilename(string $template) : string
-    {
-        $filename = $this->app->theme->getTemplateFilename($template);
-        if (!$filename) {
-            throw new \Exception("Template not found: {$template}");
-        }
-
-        return $filename;
     }
 
     /**

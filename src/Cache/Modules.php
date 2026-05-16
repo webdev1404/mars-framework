@@ -1,23 +1,23 @@
 <?php
 /**
-* The Languages Cache Class
+* The Modules Cache Class
 * @package Mars
 */
 
 namespace Mars\Cache;
 
 /**
- * The Languages Cache Class
- * Class which handles the caching of language files
+ * The Modules Cache Class
+ * Class which handles the caching of module files
  */
-class Languages extends Data
+class Modules extends Data
 {
     /**
      * @see Cacheable::$driver_name
      * {@inheritDoc}
      */
     protected string $driver_name {
-        get => $this->app->config->cache->languages->driver ?? $this->app->config->cache->driver;
+        get => $this->app->config->cache->modules->driver ?? $this->app->config->cache->driver;
     }
 
     /**
@@ -26,12 +26,12 @@ class Languages extends Data
      */
     protected array $driver_params = [
         true,                    // use files cache
-        'cacheable_languages',   // driver type
+        'cacheable_modules',     // driver type
     ];
 
     /**
      * @see Cache::$dir
      * {@inheritDoc}
      */
-    public protected(set) string $dir = 'languages';
+    public protected(set) string $dir = 'modules';
 }

@@ -25,51 +25,51 @@ class Files extends Loader
      */
     public function load()
     {
-        $dirs = $this->getDirsList();
-        foreach ($dirs as $dir) {
-            $files_array = $this->getFromDir($dir);
+        $paths = $this->getPaths();
+        foreach ($paths as $path) {
+            $files = $this->getFromPath($path);
 
-            foreach ($files_array as $file) {
+            foreach ($files as $file) {
                 $this->loadFile($file);
             }
         }
     }
 
     /**
-     * Returns the list of dirs from where to build page routes
-     * @return array The list of dirs
+     * Returns the list of paths from where to build page routes
+     * @return array The list of paths
      */
-    protected function getDirsList() : array
+    protected function getPaths() : array
     {
         //load the routes from the framework dir
-        $dirs = [$this->app->framework_path . '/routes'];
+        $paths = [$this->app->framework_path . '/routes'];
 
         //load the routes from the modules dirs
         foreach ($this->app->modules->getEnabled() as $module_path) {
-            $module_dir = $module_path . '/' . Module::DIRS['routes'];
-            if (is_dir($module_dir)) {
-                $dirs[] = $module_dir;
+            $module_path = $module_path . '/' . Module::DIRS['routes'];
+            if (is_dir($module_path)) {
+                $paths[] = $module_path;
             }
         }
 
         //load the routes from the app dir
-        $dirs[] = $this->app->app_path . '/routes';
+        $paths[] = $this->app->app_path . '/routes';
 
-        return $dirs;
+        return $paths;
     }
 
     /**
      * Returns the list of cached route files
-     * @param string $dir The dir where to look for cached route files
+     * @param string $path The path where to look for cached route files
      * @return array The list of cached route files
      */
-    protected function getFromDir(string $dir) : array
+    protected function getFromPath(string $path) : array
     {
-        if (!is_dir($dir)) {
+        if (!is_dir($path)) {
             return [];
         }
 
-        return $this->app->dir->getFilesSorted($dir, true, true, extensions: ['php']);
+        return $this->app->dir->getFilesSorted($path, true, true, extensions: ['php']);
     }
 
     /**

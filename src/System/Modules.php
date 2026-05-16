@@ -61,9 +61,9 @@ class Modules extends BaseModules
      */
     protected function getBootList(): array
     {
-        $cache_filename = 'modules-boot-list';
+        $cache_filename = 'boot-list';
 
-        $list = $this->app->cache->data->get($cache_filename);
+        $list = $this->cache->get($cache_filename);
         if ($this->app->development) {
             $list = null;
         }
@@ -82,7 +82,7 @@ class Modules extends BaseModules
             }
         }
 
-        $this->app->cache->data->set($cache_filename, $list);
+        $this->cache->set($cache_filename, $list);
 
         return $list;
     }

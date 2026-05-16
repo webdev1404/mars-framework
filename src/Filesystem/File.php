@@ -216,16 +216,16 @@ class File
     /**
      * Returns a temporary filename
      * @param string $name The name of the file, if any
-     * @param string $dir The dir of the temp. filename. If empty $this->app->tmp_path is used
+     * @param string $path The path of the temp. filename. If empty $this->app->tmp_path is used
      * @return FileObj The temporary filename
      */
-    public function getTmp(string $name = '', string $dir = '') : FileObj
+    public function getTmp(string $name = '', string $path = '') : FileObj
     {
-        if (!$dir) {
-            $dir = $this->app->tmp_path;
+        if (!$path) {
+            $path = $this->app->tmp_path;
         }
 
-        $tmp_filename = $dir . '/';
+        $tmp_filename = $path . '/';
         if ($name) {
             $tmp_filename.= basename($name) . '-';
         }

@@ -37,16 +37,16 @@ class Files extends Input
     /**
      * Uploads a file/files
      * @param string $name The name of the file
-     * @param string $upload_dir Destination folder
+     * @param string $upload_path Destination folder
      * @param string|array $allowed_extensions Array containing the extensions of the file that are allowed to be uploaded. If '*' is passed all types of files are allowed [minus those deemed unsafe]
      * @param bool $append_suffix If true, will always generate a random suffix for the uploaded filename
      * @param bool $append_suffix_if_file_exists If true, will generate a random suffix if the file already exists
      * @return array Returns the list of uploaded files
      * @throws Exception if the upload failed
      */
-    public function upload(string $name, string $upload_dir, string|array $allowed_extensions = [], bool $append_suffix = false, bool $append_suffix_if_file_exists = true) : array
+    public function upload(string $name, string $upload_path, string|array $allowed_extensions = [], bool $append_suffix = false, bool $append_suffix_if_file_exists = true) : array
     {
-        $this->app->plugins->run('http.request.files.upload', $name, $upload_dir, $allowed_extensions, $append_suffix, $append_suffix_if_file_exists, $this);
+        $this->app->plugins->run('http.request.files.upload', $name, $upload_path, $allowed_extensions, $append_suffix, $append_suffix_if_file_exists, $this);
 
         if (!$this->has($name)) {
             return [];
@@ -79,14 +79,14 @@ class Files extends Input
                 }
             }
 
-            $filename = $this->getFilename($name, $upload_dir, $append_suffix, $append_suffix_if_file_exists);
+            $filename = $this->getFilename($name, $upload_path, $append_suffix, $append_suffix_if_file_exists);
             
             if (move_uploaded_file($tmp_filename, $filename)) {
                 $this->app->plugins->run('http.request.files.upload.success', $filename, $this);
 
                 $uploaded_files[$name] = $filename;
             } else {
-                $this->app->plugins->run('http.request.files.upload.error', $filename, $tmp_filename, $upload_dir, $this);
+                $this->app->plugins->run('http.request.files.upload.error', $filename, $tmp_filename, $upload_path, $this);
                 
                 throw new \Exception($this->getUploadError($errors_array[$i], $name));
             }
@@ -98,14 +98,14 @@ class Files extends Input
     /**
      * Returns the filename where the file will be uploaded
      * @param string $name The name of the file
-     * @param string $upload_dir Destination folder
+     * @param string $upload_path Destination folder
      * @param bool $append_suffix If true, will always generate a random suffix for the uploaded filename
      * @param bool $append_suffix_if_file_exists If true, will generate a random suffix if the file already exists
      * @return string
      */
-    protected function getFilename(string $name, string $upload_dir, bool $append_suffix = false, bool $append_suffix_if_file_exists = true) : string
+    protected function getFilename(string $name, string $upload_path, bool $append_suffix = false, bool $append_suffix_if_file_exists = true) : string
     {
-        $filename = $upload_dir . '/' . $this->app->filter->filename($name);
+        $filename = $upload_path . '/' . $this->app->filter->filename($name);
 
         if (!$append_suffix && $append_suffix_if_file_exists) {
             if (is_file($filename)) {

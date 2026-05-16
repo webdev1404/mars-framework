@@ -19,9 +19,7 @@ use Mars\Extensions\Themes\Links\Favicon;
 use Mars\Extensions\Themes\Links\Fonts;
 use Mars\Extensions\Themes\Links\Images;
 use Mars\Extensions\Abilities\ConfigTrait;
-use Mars\Extensions\Abilities\FilesCacheTrait;
 use Mars\Extensions\Abilities\LanguagesTrait;
-use Mars\Themes\Template;
 
 /**
  * The Theme Class
@@ -29,38 +27,19 @@ use Mars\Themes\Template;
 class Theme extends Extension
 {
     use LazyLoad;
-    use FilesCacheTrait;
+    use ConfigTrait;
     use LanguagesTrait;
 
     /**
      * @internal
      */
     public const array DIRS = [
-        'assets' => 'assets',
+        ...parent::DIRS,
         'images' => 'images',
-        'config' => 'config',
         'css' => 'css',
         'fonts' => 'fonts',
         'js' => 'js',
         'libraries' => 'libraries',
-        'languages' => 'languages',
-        'templates' => 'templates',
-        'src' => 'src',
-        'setup' => 'Setup',
-    ];
-
-    /**
-     * @const array CACHE_DIRS The dirs to be cached
-     */
-    public const array CACHE_DIRS = ['templates'];
-
-    /**
-     * @const array MOBILE_DORS The locations of the used mobile subdirs
-     */
-    public const array MOBILE_DIRS = [
-        'mobile' => 'mobile',
-        'tablets' => 'tablets',
-        'smartphones' => 'smartphones'
     ];
 
     /**
@@ -101,13 +80,6 @@ class Theme extends Extension
     public Images $images;
 
     /**
-     * @var Template $template The engine used to parse the template
-     */
-    #[LazyLoadProperty]
-    #[HiddenProperty]
-    public protected(set) Template $template;
-
-    /**
      * @internal
      */
     protected static array $lazyload_add_this = [
@@ -117,21 +89,6 @@ class Theme extends Extension
        Fonts::class,
        Images::class,
     ];
-
-    /**
-     * @var string $header_template The template which will be used to render the header
-     */
-    public string $header_template = 'header';
-
-    /**
-     * @var string $footer_template The template which will be used to render the footer
-     */
-    public string $footer_template = 'footer';
-
-    /**
-     * @var string $content_template The template which will be used to render the content
-     */
-    public string $content_template = 'content';
 
     /**
      * @var string $images_path The path for the theme's images folder
@@ -248,43 +205,6 @@ class Theme extends Extension
     }
 
     /**
-     * @var array $templates Array with the list of available templates
-     */
-    public array $templates {
-        get => $this->files_cache_list['templates'] ?? [];
-    }
-
-    /**
-     * @var bool $has_mobile_templates If true, the theme has mobile templates
-     */
-    public protected(set) bool $has_mobile_templates {
-        get {
-            if (isset($this->has_mobile_templates)) {
-                return $this->has_mobile_templates;
-            }
-
-            $this->has_mobile_templates = isset($this->templates[static::MOBILE_DIRS['mobile']]);
-
-            return $this->has_mobile_templates;
-        }
-    }
-
-    /**
-     * @var array Array with the list of loaded templates
-     */
-    public protected(set) array $templates_loaded = [];
-
-    /**
-     * @var array $vars The theme's vars are stored here
-     */
-    public array $vars = [];
-
-    /**
-     * @var string $content The generated content
-     */
-    protected string $content = '';
-
-    /**
      * @internal
      */
     protected static string $manager_class = Themes::class;
@@ -332,187 +252,6 @@ class Theme extends Extension
         if (is_file($this->path . '/prepare.php')) {
             include($this->path . '/prepare.php');
         }
-    }
-
-    /**
-     * Returns a data value.
-     * @param string $name The name of the data
-     * @return mixed The data value
-     */
-    public function getData(string $name)
-    {
-        return $this->template->data[$name] ?? null;
-    }
-
-    /**
-     * Returns a theme variable.
-     * @param string $name The name of the var
-     * @return static
-     */
-    public function getVar(string $name)
-    {
-        return $this->vars[$name] ?? null;
-    }
-    
-    /**
-     * Adds a theme variable.
-     * @param string $name The name of the var
-     * @param mixed $value The value of the var
-     * @return static
-     */
-    public function addVar(string $name, $value) : static
-    {
-        $this->vars[$name] = $value;
-
-        return $this;
-    }
-
-    /**
-     * Adds template variables
-     * @param array $vars Adds each element [$name=>$value] from $values as theme variables
-     * @return static
-     */
-    public function addVars(array $vars) : static
-    {
-        if (!$vars) {
-            return $this;
-        }
-
-        $this->vars = array_merge($this->vars, $vars);
-
-        return $this;
-    }
-
-    /**
-     * Unsets a theme variable
-     * @param string $name The name of the var
-     * @return static
-     */
-    public function unsetVar(string $name) : static
-    {
-        unset($this->vars[$name]);
-
-        return $this;
-    }
-
-    /**
-     * Unsets theme variables
-     * @param array $values Array with the name of the vars to unset
-     * @return static
-     */
-    public function unsetVars(array $values) : static
-    {
-        foreach ($values as $name) {
-            unset($this->vars[$name]);
-        }
-
-        return $this;
-    }
-
-    /**
-     * Returns the template filename. It will check if the template exists in the mobile templates, if the device is mobile.
-     * If the device is a smartphone, it will check for the smartphone template first, then the tablet template, and finally the generic mobile template.
-     * @param string $template The name of the template
-     * @return ?string The template filename or null if not found
-     */
-    public function getTemplateFilename(string $template) : ?string
-    {
-        $template_filename = null;
-        $template = $template . '.php';
-
-        if ($this->has_mobile_templates && $this->app->device->is_mobile) {
-            if ($this->app->device->is_smartphone) {
-                $filename = static::MOBILE_DIRS['mobile'] . '/' . static::MOBILE_DIRS['smartphones'] . '/' . $template;
-                
-                if (isset($this->templates[$filename])) {
-                    $template_filename = $filename;
-                }
-            } elseif ($this->app->device->is_tablet) {
-                $filename = static::MOBILE_DIRS['mobile'] . '/' . static::MOBILE_DIRS['tablets'] . '/' . $template;
-                if (isset($this->templates[$filename])) {
-                    $template_filename = $filename;
-                }
-            }
-
-            if (!$template_filename) {
-                $filename = static::MOBILE_DIRS['mobile'] . '/' . $template;
-                if (isset($this->templates[$filename])) {
-                    $template = $filename;
-                }
-            }
-        }
-
-        if (!$template_filename) {
-            if (isset($this->templates[$template])) {
-                $template_filename = $template;
-            }
-        }
-
-        if ($template_filename) {
-            return $this->templates_path . '/' . $template_filename;
-        }
-
-        return $template_filename;
-    }
-
-    /**
-     * Renders/Outputs a template
-     * @param string $template The name of the template
-     * @param array $vars Vars to pass to the template, if any
-     */
-    public function render(string $template, array $vars = [])
-    {
-        echo $this->template->render($template, $vars);
-    }
-
-    /**
-     * Renders/Outputs a template, by filename
-     * @param string $filename The filename of the template
-     * @param array $vars Vars to pass to the template, if any
-     */
-    public function renderFilename(string $filename, array $vars = [])
-    {
-        echo $this->template->renderFilename($filename, $vars);
-    }
-
-    /**
-     * Loads a template and returns it's content
-     * @param string $template The name of the template
-     * @param array $vars Vars to pass to the template, if any
-     * @return string The template content
-     */
-    public function getTemplate(string $template, array $vars = []) : string
-    {
-        if ($this->app->config->debug->enable) {
-            $this->templates_loaded[] = $template;
-        }
-
-        return $this->template->get($template, $vars);
-    }
-
-    /**
-     * Loads a template and returns it's content
-     * @param string $filename The filename of the template
-     * @param string $filename_rel The relative filename of the template
-     * @param array $vars Vars to pass to the template, if any
-     * @param string $type The template's type, if any
-     * @param array $params The template's params, if any
-     * @param bool $development If true, the template will be parsed in development mode
-     * @return string The template content
-     */
-    public function getTemplateFromFilename(string $filename, ?string $filename_rel = null, array $vars = [], string $type = 'template', array $params = [], bool $development = false) : string
-    {
-        if ($this->app->config->debug->enable) {
-            $this->templates_loaded[] = $filename;
-        }
-
-        if ($filename_rel) {
-            if (isset($this->templates[$filename_rel])) {
-                $filename = $this->templates_path . '/' . $filename_rel;
-            }
-        }
-
-        return $this->template->getFromFilename($filename, $vars, $type, $params, $development);
     }
 
     /**
