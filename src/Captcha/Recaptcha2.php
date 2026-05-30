@@ -18,6 +18,15 @@ class Recaptcha2 implements CaptchaInterface
     use Kernel;
 
     /**
+     * @var array $csp_directives The CSP directives to be added for the captcha to work
+     */
+    protected array $csp_directives = [
+        'script-src' => ['https://www.gstatic.com/recaptcha/'],
+        'frame-src' => ['https://www.google.com/recaptcha/'],
+        'connect-src' => ['https://www.google.com/recaptcha/'],
+    ];
+
+    /**
      * @var bool $initialized Whether the captcha has been initialized
      */
     protected bool $initialized = false;
@@ -46,8 +55,10 @@ class Recaptcha2 implements CaptchaInterface
 
         $this->initialized = true;
 
-        $this->app->document->js->load($this->app->assets_url . '/framework/js/captcha/recaptcha2.js', attributes: ['defer' => true]);
-        $this->app->document->js->load('https://www.google.com/recaptcha/api.js?onload=onloadRecaptcha2Callback&render=explicit', attributes: ['async' => true, 'defer' => true]);
+        $this->app->document->js->add($this->app->assets_url . '/framework/js/captcha/recaptcha2.min.js', attributes: ['defer' => true]);
+        $this->app->document->js->add('https://www.google.com/recaptcha/api.js?onload=onloadRecaptcha2Callback&render=explicit', attributes: ['async' => true, 'defer' => true]);
+
+        $this->app->response->headers->csp->add($this->csp_directives);
     }
 
     /**

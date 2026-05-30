@@ -1,6 +1,6 @@
 <?php
 /**
-* The Css Urls Class
+* The Css Links Class
 * @package Mars
 */
 
@@ -8,15 +8,22 @@ namespace Mars\Document\Links;
 
 use Mars\App\LazyLoadProperty;
 use Mars\Assets\Css as CssAsset;
+use Mars\Document\Url;
 
 /**
- * The Document's Css Urls Class
+ * The Document's Css Links Class
  * Class containing the css functionality used by a document
  */
-class Css extends Urls
+class Css extends Links
 {
     /**
-     * @see Urls::$version
+     * @see Links::$type
+     * {@inheritDoc}
+     */
+    public protected(set) string $type = 'style';
+
+    /**
+     * @see Links::$version
      * {@inheritDoc}
      */
     public string $version {
@@ -36,25 +43,13 @@ class Css extends Urls
     }
 
     /**
-     * @see Urls::$type
-     * {@inheritDoc}
-     */
-    public protected(set) string $type = 'style';
-
-    /**
-     * @see Urls::$preload_config_key
-     * {@inheritDoc}
-     */
-    public protected(set) string $preload_config_key = 'css';
-
-    /**
      * @var CssAsset $asset The css asset object
      */
     #[LazyLoadProperty]
     public protected(set) CssAsset $asset;
 
     /**
-     * @see Urls::$minify
+     * @see Links::$minify
      * {@inheritDoc}
      */
     protected bool $minify {
@@ -62,7 +57,7 @@ class Css extends Urls
     }
 
     /**
-     * @see Urls::$minify_exclude
+     * @see Links::$minify_exclude
      * {@inheritDoc}
      */
     protected array $minify_exclude {
@@ -70,23 +65,7 @@ class Css extends Urls
     }
 
     /**
-     * @see Urls::$combine
-     * {@inheritDoc}
-     */
-    protected bool $combine {
-        get => $this->app->config->assets->css->combine->enable;
-    }
-
-    /**
-     * @see Urls::$combine_exclude
-     * {@inheritDoc}
-     */
-    protected array $combine_exclude {
-        get => $this->app->config->assets->css->combine->exclude->urls;
-    }
-
-    /**
-     * @see Urls::$development
+     * @see Links::$development
      * {@inheritDoc}
      */
     protected bool $development {
@@ -94,16 +73,12 @@ class Css extends Urls
     }
 
     /**
-     * @see Urls::outputLink()
+     * @see Links::outputLink()
      * {@inheritDoc}
      */
-    public function outputLink(string $url, array $attributes = [], bool $add_version = true)
+    public function outputLink(Url $url)
     {
-        if ($add_version) {
-            $url = $this->getUrl($url);
-        }
-        
-        echo '<link rel="stylesheet" type="text/css" href="' . $this->app->escape->html($url) . '" />' . "\n";
+        echo '<link rel="stylesheet" type="text/css" href="' . $this->app->escape->html($url->url) . '" />' . "\n";
     }
 
     /**

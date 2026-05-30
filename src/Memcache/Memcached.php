@@ -78,10 +78,10 @@ class Memcached implements MemcacheInterface
     }
 
     /**
-     * @see MemcacheInterface::exists()
+     * @see MemcacheInterface::has()
      * {@inheritDoc}
      */
-    public function exists(string $key) : bool
+    public function has(string $key) : bool
     {
         if ($this->handle->get($key) === false) {
             return false;

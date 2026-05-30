@@ -18,7 +18,9 @@ abstract class Asset extends Cacheable
      * @see Cacheable::$driver_name
      * {@inheritDoc}
      */
-    protected string $driver_name = 'file';
+    protected string $driver_name {
+        get => 'text';
+    }
 
     /**
      * @see Cacheable::$driver_params
@@ -42,17 +44,17 @@ abstract class Asset extends Cacheable
     protected bool $serialize = false;
 
     /**
-     * @var string $url The base url for the cached assets
+     * @var string $base_url The base url for the cached assets
      */
-    public protected(set) string $url {
+    public protected(set) string $base_url {
         get {
-            if (isset($this->url)) {
-                return $this->url;
+            if (isset($this->base_url)) {
+                return $this->base_url;
             }
+            
+            $this->base_url = $this->app->assets_url . '/cache/' . $this->dir;
 
-            $this->url = $this->app->assets_url . '/cache/' . $this->dir;
-
-            return $this->url;
+            return $this->base_url;
         }
     }
 }

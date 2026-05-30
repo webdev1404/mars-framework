@@ -6,19 +6,19 @@
 
 namespace Mars\Extensions\Themes\Links;
 
-use Mars\Document\Links\Urls as DocumentUrls;
+use Mars\Document\Links\Links as DocumentLinks;
 use Mars\Extensions\Themes\Theme;
 
 /**
  * The Theme's Fonts Links Class
  * @package Mars
  */
-class Fonts extends Urls
+class Fonts extends Links
 {
     /**
      * @internal
      */
-    protected DocumentUrls $urls {
+    public DocumentLinks $urls {
         get => $this->app->document->fonts;
     }
 

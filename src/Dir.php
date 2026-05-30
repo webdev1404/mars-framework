@@ -58,12 +58,29 @@ class Dir implements \Stringable
     }
 
     /**
-     * Returns the current directory path
-     * @return string The current directory path
+     * @internal
      */
     public function __toString() : string
     {
         return $this->path;
+    }
+
+    /**
+     * @internal
+     */
+    public function __serialize() : array
+    {
+        return [
+            'path' => $this->path,
+        ];
+    }
+
+    /**
+     * @internal
+     */
+    public function __unserialize(array $data) : void
+    {
+        $this->path = $data['path'];
     }
 
     /**

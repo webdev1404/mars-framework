@@ -1,33 +1,29 @@
 <?php
 /**
-* The Images Urls Class
+* The Images Links Class
 * @package Mars
 */
 
 namespace Mars\Document\Links;
 
+use Mars\Document\Url;
+
 /**
- * The Images Urls Class
+ * The Images Links Class
  * Class containing the images functionality used by a document
  */
-class Images extends Urls
+class Images extends Links
 {
     /**
-     * @see Urls::$type
+     * @see Links::$type
      * {@inheritDoc}
      */
     public protected(set) string $type = 'image';
 
     /**
-     * @see Urls::$preload_config_key
-     * {@inheritDoc}
-     */
-    public protected(set) string $preload_config_key = 'images';
-
-    /**
      * Does nothing
      */
-    public function outputLink(string $url, array $attributes = [], bool $add_version = true)
+    public function outputLink(Url $url)
     {
     }
 

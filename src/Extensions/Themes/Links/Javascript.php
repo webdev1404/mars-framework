@@ -6,19 +6,19 @@
 
 namespace Mars\Extensions\Themes\Links;
 
-use Mars\Document\Links\Urls as DocumentUrls;
+use Mars\Document\Links\Links as DocumentLinks;
 use Mars\Extensions\Themes\Theme;
 
 /**
  * The Theme's Javascript Links Class
  * @package Mars
  */
-class Javascript extends Urls
+class Javascript extends Links
 {
     /**
      * @internal
      */
-    protected DocumentUrls $urls {
+    public DocumentLinks $urls {
         get => $this->app->document->js;
     }
 

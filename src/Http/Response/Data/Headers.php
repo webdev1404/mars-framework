@@ -56,7 +56,19 @@ class Headers
 
         $this->app = $app;
 
-        $this->list = $this->app->config->http->response->headers->list;
+        $this->list = $this->app->config->headers->list;
+    }
+
+    /**
+     * Collects the headers to be sent
+     */
+    protected function collect()
+    {
+        if ($this->app->config->headers->csp->enable) {
+            $this->csp->collect();
+        }
+
+        $this->app->plugins->run('response.headers.collect', $this->list, $this);
     }
 
     /**
@@ -64,9 +76,9 @@ class Headers
      */
     public function output()
     {
-        if ($this->app->config->http->response->headers->csp->enable) {
-            $this->csp->output();
-        }
+        $this->collect();
+
+        $this->list = $this->app->plugins->filter('response.headers.list', $this->list, $this);
 
         foreach ($this->list as $name => $value) {
             header("{$name}: $value");

@@ -183,11 +183,11 @@ class Memcache
      * @param string $key The key
      * @return bool True if the key exists
      */
-    public function exists(string $key) : bool
+    public function has(string $key) : bool
     {
         $this->check();
 
-        return $this->driver->exists($key . '-' . $this->key);
+        return $this->driver->has($key . '-' . $this->key);
     }
 
     /**

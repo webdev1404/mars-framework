@@ -8,11 +8,10 @@ namespace Mars\Assets;
 
 use Mars\Cache\Assets\Lists\Assets as CacheList;
 use Mars\Cache\Assets\Urls\Asset as CacheUrl;
-use Mars\Document\Links\Urls as DocumentUrls;
 
 /**
  * The CSS Asset Class
- * Minifies & combines css content
+ * Processes css assets by minifying them
  */
 class Css extends Asset
 {
@@ -33,12 +32,10 @@ class Css extends Asset
     }
 
     /**
-     * @see DocumentUrls::$urls
+     * @see Asset::$type
      * {@inheritDoc}
      */
-    protected DocumentUrls $urls {
-        get => $this->app->document->css;
-    }
+    public protected(set) string $type = 'style';
 
     /**
      * @see Asset::$dir

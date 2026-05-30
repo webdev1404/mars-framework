@@ -36,13 +36,13 @@ final class MapTraitTest extends Base
     {
         $elements = new Elements;
 
-        $this->assertFalse($elements->exists('X-Test-Header'));
+        $this->assertFalse($elements->has('X-Test-Header'));
 
         $elements->add('X-Test-Header', 'test123');
-        $this->assertTrue($elements->exists('X-Test-Header'));
+        $this->assertTrue($elements->has('X-Test-Header'));
 
         $elements->remove('X-Test-Header');
-        $this->assertFalse($elements->exists('X-Test-Header'));
+        $this->assertFalse($elements->has('X-Test-Header'));
     }
 
     public function testAssign()

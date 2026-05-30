@@ -38,7 +38,7 @@ interface CacheableInterface
      * @param string $filename The name of the cache file
      * @return bool True if the cache file exists, false otherwise
      */
-    public function exists(string $filename) : bool;
+    public function has(string $filename) : bool;
 
     /**
      * Returns the timestamp when the asset was last modified

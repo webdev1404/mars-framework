@@ -7,6 +7,7 @@
 namespace Mars\Extensions\Themes;
 
 use Mars\Cache\Cacheable;
+use Mars\Extensions\Extension;
 use Mars\Extensions\Extensions;
 
 /**

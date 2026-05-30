@@ -6,44 +6,39 @@
 
 namespace Mars\Assets;
 
-use Mars\Url;
 use Mars\App\Kernel;
 use Mars\Cache\Assets\Lists\Assets as CacheList;
 use Mars\Cache\Assets\Urls\Asset as CacheUrl;
-use Mars\Document\Links\Urls as DocumentUrls;
+use Mars\Document\Url;
+use Mars\Document\Urls;
 
 /**
  * The Asset Class
- * Minifies & combines content
+ * Processes assets by minifying them
  */
 abstract class Asset
 {
     use Kernel;
 
     /**
-     * @var CacheList $cache_list The list cache object
+     * @var CacheList $cache_list The cache object handling the caching of the list of asset URLs
      */
     protected CacheList $cache_list;
 
     /**
-     * @var CacheUrl $cache_url The url cache object
+     * @var CacheUrl $cache_url The cache object handling the caching of a single asset URL
      */
     protected CacheUrl $cache_url;
 
     /**
-     * @var DocumentUrls $urls The urls object
+     * @var string $type The asset type (e.g. 'script' or 'style')
      */
-    protected DocumentUrls $urls;
+    public protected(set) string $type = '';
 
     /**
      * @var string $dir The assets directory
      */
     protected string $dir = '';
-
-    /**
-     * @var bool $combine_split If true, will split combined assets by checking the defer and async attributes
-     */
-    protected bool $combine_split = false;
 
     /**
      * @var bool $development If true, we are in development mode
@@ -61,40 +56,37 @@ abstract class Asset
 
     /**
      * Processes the given urls by minifying and/or combining them
-     * @param array $urls The urls to process
+     * @param Urls $urls The urls to process
      * @param bool $minify If true, will minify the assets
      * @param array $minify_exclude The urls to exclude from minification
-     * @param bool $combine If true, will combine the assets
-     * @param array $combine_exclude The urls to exclude from combination
-     * @return array The processed urls
+     * @return Urls The processed urls
      */
-    public function process(array $urls, bool $minify, array $minify_exclude, bool $combine, array $combine_exclude) : array
+    public function process(Urls $urls, bool $minify, array $minify_exclude) : Urls
     {
-        $cache_key = json_encode(['urls' => $urls, 'minify' => $minify, 'combine' => $combine]);
+        if (!$minify) {
+            return $urls;
+        }
+
+        $cache_key = json_encode(['urls' => $urls->urls, 'minify' => $minify]);
         $urls_list = $this->cache_list->get($cache_key);
 
         if ($this->development) {
             $urls_list = null;
         }
+
         if ($urls_list !== null) {
             return $urls_list;
         }
+  
+        //minify only local urls
+        $local_urls = $urls->getLocal();
+        if (count($local_urls)) {
+            $urls_list = $urls->getExternal();
 
-        $urls_list = array_filter($urls, fn ($url) => !$url['is_local']);
-        $local_urls = array_filter($urls, fn ($url) => $url['is_local']);
-        if (!$local_urls) {
-            return $urls_list;
+            $urls_list->add($this->minify($local_urls, $minify_exclude));
         }
 
-        $processed_urls = $this->prepare($local_urls);
-        if ($minify) {
-            $processed_urls = $this->minify($processed_urls, $minify_exclude);
-        }
-        if ($combine) {
-            $processed_urls = $this->combine($processed_urls, $combine_exclude);
-        }
-
-        $urls_list = array_merge($urls_list, $processed_urls);
+        $this->app->plugins->run('assets.processed', $urls_list, $urls, $local_urls, $external_list, $minify_exclude);
 
         $this->cache_list->set($cache_key, $urls_list);
 
@@ -102,58 +94,38 @@ abstract class Asset
     }
 
     /**
-     * Prepares the given urls for processing
-     * @param array $urls_list The urls to prepare
-     * @return array The prepared urls
-     * @throws \Exception If an asset file is not found
-     */
-    protected function prepare(array $urls_list) : array
-    {
-        foreach ($urls_list as &$url) {
-            $file = new Url($url['url'])->getLocalFile($this->app->assets_path, true);
-            if (!$file) {
-                throw new \Exception('Asset file not found for url: ' . $url['url'] . ' in path: ' . $this->app->assets_path);
-            }
-
-            $url['filename'] = $file->filename;
-            $url['original_url'] = $url['url'];
-        }
-
-        return $urls_list;
-    }
-
-    /**
      * Minifies the given urls
-     * @param array $urls_list The urls to process
+     * @param array $urls The urls to minify
      * @param array $minify_exclude The urls to exclude from minification
-     * @return array The processed urls
+     * @return Urls The processed urls
      */
-    protected function minify(array $urls_list, array $minify_exclude) : array
+    protected function minify(Urls $urls, array $minify_exclude) : Urls
     {
-        $urls = [];
-        foreach ($urls_list as $url) {
-            if ($this->canMinify($url['original_url'], $minify_exclude)) {
-                $this->cache_url->set($url['url'], $this->minifyContent($this->app->file->read($url['filename'])));
+        $minified_urls = new Urls($this->type, $this->app);
 
-                $name = $this->cache_url->getName($url['url']);
-
-                $url['filename'] = $this->cache_url->path . '/' . $name;
-                $url['url'] = $this->urls->getUrl($this->cache_url->url . '/' . $name, true);
+        foreach ($urls as $url) {
+            if (!$url->filename) {
+                throw new \Exception("Could not minify url {$url->url} because it does not have a filename");
             }
-        
-            $urls[] = $url;
+            if ($this->canMinify($url, $minify_exclude)) {
+                $this->cache_url->set($url->url, $this->minifyContent($this->app->file->read($url->filename)));
+
+                $url = new Url($url->type, $this->cache_url->base_url . '/' . $this->cache_url->getName($url->url), $url->attributes, $url->priority, $this->app);
+            }
+
+            $minified_urls->add($url);
         }
 
-        return $urls;
+        return $minified_urls;
     }
 
     /**
      * Checks whether the given url can be minified
-     * @param string $url The url to check
+     * @param Url $url The url to check
      * @param array $minify_exclude The urls to exclude from minification
      * @return bool True if can be minified, false otherwise
      */
-    protected function canMinify(string $url, array $minify_exclude) : bool
+    protected function canMinify(Url $url, array $minify_exclude) : bool
     {
         if (!$minify_exclude) {
             return true;
@@ -170,112 +142,18 @@ abstract class Asset
 
     /**
      * Checks whether the given url matches the exclude pattern
-     * @param string $url The url to check
+     * @param Url $url The url to check
      * @param string $exclude The exclude pattern
      * @return bool True if matches, false otherwise
      */
-    protected function matches(string $url, string $exclude) : bool
+    protected function matches(Url $url, string $exclude) : bool
     {
         if (str_contains($exclude, '*')) {
             $pattern = str_replace('\*', '.*', preg_quote($exclude, '/'));
 
-            return preg_match('/' . $pattern . '/', $url);
+            return preg_match('/' . $pattern . '/', $url->url);
         }
 
-        return str_contains($url, $exclude);
-    }
-
-    /**
-     * Combines the given urls
-     * @param array $urls_list The urls to process
-     * @param array $combine_exclude The urls to exclude from combination
-     * @return array The processed urls
-     */
-    protected function combine(array $urls_list, array $combine_exclude) : array
-    {
-        $urls = [];
-        $combined_data = ['regular' => [], 'defer' => [], 'async' => []];
-        $content_data = ['regular' => '', 'defer' => '', 'async' => ''];
-
-        foreach ($urls_list as $url) {
-            if (!$this->canCombine($url['original_url'], $combine_exclude)) {
-                $urls[] = $url;
-                continue;
-            }
-
-            $type = $this->getCombinedType($url);
-
-            $combined_data[$type][] = $url;
-            $content_data[$type] .= $this->app->file->read($url['filename']) . "\n";
-        }
-
-        foreach ($combined_data as $type => $combined_urls) {
-            if (!$combined_urls) {
-                continue;
-            }
-
-            $combined_key = json_encode($combined_urls);
-
-            $this->cache_url->set($combined_key, $content_data[$type]);
-
-            $attributes = [];
-            if ($type != 'regular') {
-                $attributes[$type] = true;
-            }
-
-            $urls[] = [
-                'url' => $this->urls->getUrl($this->cache_url->url . '/' . $this->cache_url->getName($combined_key), true),
-                'is_local' => true,
-                'attributes' => $attributes
-            ];
-        }
-
-        return $urls;
-    }
-
-    /**
-     * Gets the combined type for the given url
-     * @param array $url The url to get the type for
-     * @return string The combined type. It can be 'regular', 'defer' or 'async' based on the attributes of the url
-     */
-    protected function getCombinedType(array $url) : string
-    {
-        $key = 'regular';
-        if (!$this->combine_split) {
-            return $key;
-        }
-
-        $attributes = $url['attributes'] ?? [];
-        $defer = $attributes['defer'] ?? false;
-        $async = $attributes['async'] ?? false;
-        
-        if ($defer) {
-            $key = 'defer';
-        } elseif ($async) {
-            $key = 'async';
-        }
-
-        return $key;
-    }
-
-    /**
-     * Checks whether the given url can be combined
-     * @param string $url The url to check
-     * @param array $combine_exclude The urls to exclude from combination
-     * @return bool True if can be combined, false otherwise
-     */
-    protected function canCombine(string $url, array $combine_exclude) : bool
-    {
-        if (!$combine_exclude) {
-            return true;
-        }
-
-        foreach ($combine_exclude as $exclude) {
-            if ($this->matches($url, $exclude)) {
-                return false;
-            }
-        }
-
-        return true;
+        return str_contains($url->url, $exclude);
     }
 }

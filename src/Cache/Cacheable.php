@@ -19,10 +19,10 @@ abstract class Cacheable extends Cache
      * @var array $drivers_list The supported drivers list
      */
     public protected(set) array $drivers_list = [
-        'file' => \Mars\Cache\Cacheable\File::class,
         'php' => \Mars\Cache\Cacheable\Php::class,
-        'memcache' => \Mars\Cache\Cacheable\Memcache::class,
         'text' => \Mars\Cache\Cacheable\Text::class,
+        'serialized' => \Mars\Cache\Cacheable\Serialized::class,
+        'memcache' => \Mars\Cache\Cacheable\Memcache::class,
     ];
 
     /**
@@ -56,7 +56,7 @@ abstract class Cacheable extends Cache
 
             if ($this->drivers_enabled) {
                 if (!in_array($this->driver_name, $this->drivers_enabled)) {
-                    throw new \Exception("The cache driver '{$this->driver_name}' is not enabled for the " . static::class . " cache type");
+                    throw new \Exception("The cache driver '{$this->driver_name}' is not enabled for the " . static::class . " cache type. Available drivers: " . implode(', ', $this->drivers_enabled));
                 }
             }
 
@@ -143,9 +143,9 @@ abstract class Cacheable extends Cache
      * @param string $name The name of the cached value
      * @return bool True if the cached value exists, false otherwise
      */
-    public function exists(string $name) : bool
+    public function has(string $name) : bool
     {
-        return $this->driver->exists($this->getFilename($name));
+        return $this->driver->has($this->getFilename($name));
     }
 
     /**

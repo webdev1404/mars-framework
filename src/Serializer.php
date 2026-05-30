@@ -24,7 +24,6 @@ class Serializer
      */
     public protected(set) array $drivers_list = [
         'php' => \Mars\Serializers\Php::class,
-        'json' => \Mars\Serializers\Json::class,
         'igbinary' => \Mars\Serializers\Igbinary::class,
     ];
 
@@ -88,7 +87,7 @@ class Serializer
             if (extension_loaded('igbinary')) {
                 $this->data_driver = $this->drivers->get('igbinary');
             } else {
-                $this->data_driver = $this->drivers->get('json');
+                $this->data_driver = $this->php_driver;
             }
 
             return $this->data_driver;
@@ -152,7 +151,7 @@ class Serializer
     }
 
     /**
-     * Serializes data using either igbinary, if available, or json
+     * Serializes data using either igbinary, if available, or php
      * @param mixed $data The data to serialize
      * @return string The serialized data
      */
@@ -162,7 +161,7 @@ class Serializer
     }
 
     /**
-     * Unserializes data using either igbinary, if available, or json
+     * Unserializes data using either igbinary, if available, or php
      * @param string|null $data The data to unserialize
      * @param mixed $default_value The default value to return if $data is an empty string or null
      * @return mixed The unserialized data

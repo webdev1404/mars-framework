@@ -20,7 +20,7 @@ trait MapTrait
      * @param string $name The name of the element to check.
      * @return bool Returns true if the element exists, false otherwise.
      */
-    public function exists(string $name) : bool
+    public function has(string $name) : bool
     {
         return isset($this->{static::$property}[$name]);
     }
@@ -42,20 +42,26 @@ trait MapTrait
     /**
      * Alias for set()
      */
-    public function add(string $name, mixed $value) : static
+    public function add(string|array $name, mixed $value = '') : static
     {
         return $this->set($name, $value);
     }
 
     /**
      * Sets an element
-     * @param string $name The name of the element
+     * @param string|array $name The name of the element. If an array is provided, the elements will be added in the name => value format
      * @param mixed $value The value
      * @return static
      */
-    public function set(string $name, mixed $value) : static
+    public function set(string|array $name, mixed $value = '') : static
     {
-        $this->{static::$property}[$name] = $value;
+        if (is_array($name)) {
+            foreach ($name as $n => $v) {
+                $this->{static::$property}[$n] = $v;
+            }
+        } else {
+            $this->{static::$property}[$name] = $value;
+        }
 
         return $this;
     }
@@ -74,12 +80,14 @@ trait MapTrait
 
     /**
      * Removes an element
-     * @param string $name The name of the element
+     * @param string|array $names The name of the element(s) to remove
      * @return static
      */
-    public function remove(string $name) : static
+    public function remove(string|array $names) : static
     {
-        if (isset($this->{static::$property}[$name])) {
+        $names = (array)$names;
+
+        foreach ($names as $name) {
             unset($this->{static::$property}[$name]);
         }
 

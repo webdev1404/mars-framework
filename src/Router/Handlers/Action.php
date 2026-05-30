@@ -28,9 +28,8 @@ class Action extends Files
         $this->hashes = [$hash => true];
         $this->routes = new Routes;
 
-
         $this->loadFile($data['filename']);
-        
+
         return $this->routes->hashes[$hash] ?? null;
     }
 

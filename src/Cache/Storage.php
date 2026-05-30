@@ -16,7 +16,7 @@ class Storage extends Cacheable
      * @see Cacheable::$drivers_enabled
      * {@inheritDoc}
      */
-    public protected(set) array $drivers_enabled = ['file', 'php', 'memcache'];
+    public protected(set) array $drivers_enabled = ['serialized', 'php', 'memcache'];
 
     /**
      * @see Cacheable::$driver_name
@@ -60,7 +60,7 @@ class Storage extends Cacheable
 
         if ($this->driver_name == 'file') {
             if (!is_dir($dirname)) {
-                mkdir($dirname, 0555, true);
+                mkdir($dirname, recursive: true);
             }
         }
 

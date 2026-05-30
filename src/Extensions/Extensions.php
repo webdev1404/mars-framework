@@ -71,6 +71,21 @@ abstract class Extensions
     }
 
     /**
+     * Returns a new instance of the extension if it exists, even if it's not enabled
+     * @param string $name The name of the extension
+     * @param array $params Optional parameters to pass to the extension constructor
+     * @return Extension The extension or null if the extension doesn't exist
+     */
+    public function getExisting(string $name, array $params = []) : ?Extension
+    {
+        if (!$this->exists($name)) {
+            return null;
+        }
+
+        return new static::$instance_class($name, $params, $this->app);
+    }
+
+    /**
      * Determines if an extension exists
      * @param string $name The name of the extension
      * @return bool True if the extension exists, false otherwise
@@ -370,8 +385,8 @@ abstract class Extensions
         if ($setup && method_exists($setup, 'install')) {
             $setup->install();
         }
-       
-        $this->createSymlink($extension);
+
+        $this->createSymlinks($extension);
 
         $this->cache->clean();
 
@@ -393,7 +408,7 @@ abstract class Extensions
 
         $this->addConfig($name);
        
-        $this->createSymlink($extension);
+        $this->createSymlinks($extension);
 
         $this->cache->clean();
 
@@ -441,7 +456,7 @@ abstract class Extensions
             $setup->upgrade();
         }
 
-        $this->createSymlink($extension);
+        $this->createSymlinks($extension);
 
         $this->cache->clean();
 
@@ -516,6 +531,26 @@ abstract class Extensions
         $setup_class = $this->getBaseNamespace($name, static::$instance_class::DIRS['setup']) . '\\Setup';
 
         return new $setup_class($this->app);
+    }
+
+    /**
+     * Creates the symlinks for the specified extension, including the parent extension if it has one
+     * @param Extension $extension The extension object
+     */
+    protected function createSymlinks(Extension $extension)
+    {
+        //create the symlink to the extension's assets folder
+        $this->createSymlink($extension);
+
+        //create the symlink to the extension's parent, if it has one
+         if ($extension->parent_name) {
+             $parent_extension = $this->getExisting($extension->parent_name);
+             if (!$parent_extension) {
+                    throw new \Exception("Parent extension '{$extension->parent_name}' not found for extension '{$extension->name}'");
+             }
+
+             $this->createSymlink($parent_extension);
+         }
     }
 
     /**

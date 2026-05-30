@@ -170,6 +170,8 @@ class VariablesParser
             $value = preg_replace('/#([^\-\[#]*)/s', "['$1']", $value);
         }
 
+        //$value.= "\n";
+
         return $value;
     }
 

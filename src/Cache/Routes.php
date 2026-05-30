@@ -44,7 +44,7 @@ class Routes extends Data
      */
     public function getHashes(string $method, string $language, string $prefix) : array
     {
-        if (!$this->exists('routes-cached') || $this->app->development || $this->app->config->development->routes) {
+        if ($this->app->development || $this->app->config->development->routes || !$this->has('routes-cached')) {
             $this->cache();
         }
 

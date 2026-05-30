@@ -92,8 +92,8 @@ class Handler
         if (!$handler) {
             return null;
         }
-        
-        return [$handler->getRoute($hash, $route['data']), $params, $route['name']];
+
+        return [$handler->getRoute($hash, $route['data']), $params, ['pattern' => $route['route'], 'name' => $route['name']]];
     }
 
     /**

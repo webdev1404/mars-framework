@@ -222,13 +222,13 @@ class Uri implements \Stringable
     }
 
     /**
-     * Returns the root of a given url. It contains the scheme, host and port
+     * Returns the origin of a given url. It contains the scheme, host and port
      * @param string $url The url
-     * @return string The root
+     * @return string The origin
      */
-    public function getRoot(string $url) : string
+    public function getOrigin(string $url) : string
     {
-        return new Url($url)->root;
+        return new Url($url)->origin;
     }
 
     /**
@@ -289,17 +289,6 @@ class Uri implements \Stringable
     public function getFragment(string $url) : string
     {
         return new Url($url)->fragment;
-    }
-
-    /**
-     * Returns the filename from a given url
-     * !!!!Use with caution!!!!
-     * @param string $url The url
-     * @return string The local filename. If the url is not local, it will return an empty string
-     */
-    public function getLocalFilename(string $url) : string
-    {
-        return new Url($url)->getLocalFilename();
     }
 
     /**

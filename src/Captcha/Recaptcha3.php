@@ -18,6 +18,15 @@ class Recaptcha3 implements CaptchaInterface
     use Kernel;
 
     /**
+     * @var array $csp_directives The CSP directives to be added for the captcha to work
+     */
+    protected array $csp_directives = [
+        'script-src' => ['https://www.gstatic.com/recaptcha/'],
+        'frame-src' => ['https://www.google.com/recaptcha/'],
+        'connect-src' => ['https://www.google.com/recaptcha/'],
+    ];
+
+    /**
      * @var bool $initialized Whether the captcha has been initialized
      */
     protected bool $initialized = false;
@@ -46,8 +55,10 @@ class Recaptcha3 implements CaptchaInterface
 
         $this->initialized = true;
 
-        $this->app->document->js->load($this->app->assets_url . '/framework/js/captcha/recaptcha3.js', attributes: ['defer' => true]);
-        $this->app->document->js->load('https://www.google.com/recaptcha/api.js?render=' . urlencode($this->app->config->captcha->recaptcha->site_key), attributes: ['defer' => true]);
+        $this->app->document->js->add($this->app->assets_url . '/framework/js/captcha/recaptcha3.min.js', attributes: ['defer' => true]);
+        $this->app->document->js->add('https://www.google.com/recaptcha/api.js?render=' . urlencode($this->app->config->captcha->recaptcha->site_key), attributes: ['defer' => true]);
+
+        $this->app->response->headers->csp->add($this->csp_directives);
     }
 
     /**
@@ -99,7 +110,7 @@ class Recaptcha3 implements CaptchaInterface
 
         echo $this->app->html->hidden('recaptcha3-token', '', ['id' => $field_name]);
         ?>
-        <script>
+        <script<?php echo $this->app->document->js->getNonce() ?>>
             document.addEventListener('DOMContentLoaded', () => {
                 onloadRecaptcha3Callback('<?php echo $this->app->escape->jsString($field_name); ?>', '<?php echo $this->app->escape->jsString($this->app->config->captcha->recaptcha->site_key); ?>');
             });

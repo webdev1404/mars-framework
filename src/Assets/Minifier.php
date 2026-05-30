@@ -22,7 +22,6 @@ class Minifier
      * @var array $minifiers_list The list of supported minifiers
      */
     public protected(set) array $minifiers_list = [
-        'html' => \Mars\Assets\Minifiers\Html::class,
         'css' => \Mars\Assets\Minifiers\Css::class,
         'js' => \Mars\Assets\Minifiers\Javascript::class
     ];
@@ -40,18 +39,6 @@ class Minifier
 
             return $this->minifiers;
         }
-    }
-
-    /**
-     * Minifies html code
-     * @param string $code The code to minify
-     * @return string The minified code
-     */
-    public function minifyHtml(string $code) : string
-    {
-        $handler = $this->minifiers->get('html');
-
-        return $handler->minify($code);
     }
 
     /**

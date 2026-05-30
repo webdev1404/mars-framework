@@ -1,31 +1,27 @@
 <?php
 /**
-* The Fonts Urls Class
+* The Fonts Links Class
 * @package Mars
 */
 
 namespace Mars\Document\Links;
 
+use Mars\Document\Url;
+
 /**
- * The Fonts Urls Class
+ * The Fonts Links Class
  * Class containing the fonts functionality used by a document
  */
-class Fonts extends Urls
+class Fonts extends Links
 {
     /**
-     * @see Urls::$type
+     * @see Links::$type
      * {@inheritDoc}
      */
     public protected(set) string $type = 'font';
 
     /**
-     * @see Urls::$preload_config_key
-     * {@inheritDoc}
-     */
-    public protected(set) string $preload_config_key = 'fonts';
-
-    /**
-     * @see Urls::$crossorigin
+     * @see Links::$crossorigin
      * {@inheritDoc}
      */
     public protected(set) string $crossorigin = 'anonymous';
@@ -33,7 +29,7 @@ class Fonts extends Urls
     /**
      * Does nothing
      */
-    public function outputLink(string $url, array $attributes = [], bool $add_version = true)
+    public function outputLink(Url $url)
     {
     }
 

@@ -13,90 +13,33 @@ namespace Mars\Data;
  */
 trait ListTrait
 {
+    use IteratorTrait;
+    
     /**
      * The name of the property which holds the list
      */
     //protected static string $property = 'list';
 
     /**
-     * Check if a specific element exists in the list.
-     * @param string $value The value of the element to check.
-     * @return bool Returns true if the element exists, false otherwise.
-     */
-    public function exists(string $value) : bool
-    {
-        return in_array($value, $this->{static::$property});
-    }
-
-    /**
-     * Returns all elements
-     */
-    public function get() : array
-    {
-        return $this->{static::$property};
-    }
-
-    /**
-     * Returns the first element
-     * @return mixed The first element or empty string if the list is empty
-     */
-    public function getFirst() : mixed
-    {
-        if (!$this->{static::$property}) {
-            return '';
-        }
-
-        return array_first($this->{static::$property});
-    }
-
-    /**
-     * Returns the last element
-     * @return mixed The last element or empty string if the list is empty
-     */
-    public function getLast() : mixed
-    {
-        if (!$this->{static::$property}) {
-            return '';
-        }
-
-        return array_last($this->{static::$property});
-    }
-
-    /**
      * Adds an element
-     * @param string|array $values The value(s)
+     * @param mixed $value The value to add
      * @return static
      */
-    public function add(string|array $values) : static
+    public function add(mixed $value) : static
     {
-        $values = (array)$values;
+        $this->{static::$property}[] = $value;
 
+        return $this;
+    }
+
+    /**
+     * Adds multiple elements
+     * @param array $values The values to add
+     * @return static
+     */
+    public function addMany(array $values) : static
+    {
         $this->{static::$property} = array_merge($this->{static::$property}, $values);
-
-        return $this;
-    }
-
-    /**
-     * Sets the list
-     * @param string|array $values The value(s)
-     * @return static
-     */
-    public function set(string|array $values) : static
-    {
-        $values = (array)$values;
-
-        $this->{static::$property} = $values;
-
-        return $this;
-    }
-
-    /**
-     * Resets the list
-     * @return static
-     */
-    public function reset() : static
-    {
-        $this->{static::$property} = [];
 
         return $this;
     }
@@ -111,22 +54,5 @@ trait ListTrait
         $this->{static::$property} = $this->app->array->remove($this->{static::$property}, $values);
 
         return $this;
-    }
-
-    /**
-     * Returns the number of elements in the list
-     * @return int
-     */
-    public function count() : int
-    {
-        return count($this->{static::$property});
-    }
-
-    /**
-     * Returns the list as an iterator
-     */
-    public function getIterator() : \Traversable
-    {
-        return new \ArrayIterator($this->{static::$property});
     }
 }

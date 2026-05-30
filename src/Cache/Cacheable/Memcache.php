@@ -65,14 +65,14 @@ class Memcache extends Base implements CacheableInterface
     }
 
     /**
-     * @see CacheableInterface::exists()
+     * @see CacheableInterface::has()
      * {@inheritDoc}
      */
-    public function exists(string $filename) : bool
+    public function has(string $filename) : bool
     {
         $filename = $this->getFilename($filename);
 
-        return $this->app->memcache->exists($filename);
+        return $this->app->memcache->has($filename);
     }
 
     /**

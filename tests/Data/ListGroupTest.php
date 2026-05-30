@@ -1,31 +1,31 @@
 <?php
 use Mars\App\Kernel;
-use Mars\Data\SetTrait;
+use Mars\Data\ListGroupTrait;
 
 include_once(dirname(__DIR__) . '/Base.php');
 
 class ElementsSet
 {
     use Kernel;
-    use SetTrait;
+    use ListGroupTrait;
 
     protected static string $property = 'list';
     protected array $list = [];
 }
 
-class SetTraitTest extends Base
+class ListGroupTraitTest extends Base
 {
     public function testAddAndExists()
     {
         $elements = new ElementsSet;
 
         $elements->add('type1', 'value1');
-        $this->assertTrue($elements->exists('value1'));
-        $this->assertFalse($elements->exists('value2'));
+        $this->assertTrue($elements->has('type1', 'value1'));
+        $this->assertFalse($elements->has('type1', 'value2'));
 
-        $elements->add('type1', ['value2', 'value3']);
-        $this->assertTrue($elements->exists('value2'));
-        $this->assertTrue($elements->exists('value3'));
+        $elements->addMany('type1', ['value2', 'value3']);
+        $this->assertTrue($elements->has('type1', 'value2'));
+        $this->assertTrue($elements->has('type1', 'value3'));
     }
 
     public function testGet()
@@ -33,7 +33,7 @@ class SetTraitTest extends Base
         $elements = new ElementsSet;
 
         $elements->add('type1', 'value1');
-        $elements->add('type2', ['value2', 'value3']);
+        $elements->addMany('type2', ['value2', 'value3']);
 
         $this->assertEquals(['value1'], $elements->get('type1'));
         $this->assertEquals(['value2', 'value3'], $elements->get('type2'));
@@ -44,16 +44,17 @@ class SetTraitTest extends Base
     {
         $elements = new ElementsSet;
 
-        $elements->add('type1', ['value1', 'value2']);
-        $elements->remove('value1', 'type1');
-        $this->assertFalse($elements->exists('value1'));
-        $this->assertTrue($elements->exists('value2'));
+        $elements->addMany('type1', ['value1', 'value2']);
+        $elements->remove('type1', 'value1');
+        $this->assertFalse($elements->has('type1', 'value1'));
+        $this->assertTrue($elements->has('type1','value2'));
 
-        $elements->add('type2', ['value3', 'value4']);
-        $elements->remove(['value2', 'value3']);
-        $this->assertFalse($elements->exists('value2'));
-        $this->assertFalse($elements->exists('value3'));
-        $this->assertTrue($elements->exists('value4'));
+        $elements->addMany('type2', ['value3', 'value4']);
+        $elements->remove('type1', ['value2']);
+        $elements->remove('type2', ['value3']);
+        $this->assertFalse($elements->has('type1', 'value2'));
+        $this->assertFalse($elements->has('type2', 'value3'));
+        $this->assertTrue($elements->has('type2', 'value4'));
     }
 
     public function testCount()
@@ -61,8 +62,9 @@ class SetTraitTest extends Base
         $elements = new ElementsSet;
 
         $elements->add('type1', 'value1');
-        $elements->add('type2', ['value2', 'value3']);
-        $this->assertEquals(3, $elements->count());
+        $elements->addMany('type2', ['value2', 'value3']);
+        $this->assertEquals(1, $elements->count('type1'));
+        $this->assertEquals(2, $elements->count('type2'));
     }
 
     public function testGetIterator()
@@ -70,7 +72,7 @@ class SetTraitTest extends Base
         $elements = new ElementsSet;
         
         $elements->add('type1', 'value1');
-        $elements->add('type2', ['value2', 'value3']);
+        $elements->addMany('type2', ['value2', 'value3']);
 
         $iterator = $elements->getIterator();
         $this->assertInstanceOf(\RecursiveArrayIterator::class, $iterator);

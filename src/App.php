@@ -762,10 +762,8 @@ class App
 
         $this->setErrorReporting();
 
-        //send the early hints headers as soon as possible
-        if ($this->config->hints->early_hints->enable && $this->config->hints->early_hints->list) {
-            $this->response->headers->early_hints->output();
-        }
+        //output the early hints headers, if enabled
+        $this->outputEarlyHints();
         
         //output the cached content if it exists
         $this->outputIfCached();
@@ -843,6 +841,26 @@ class App
     }
 
     /**
+     * Outputs the early hints headers, if enabled
+     */
+    protected function outputEarlyHints()
+    {
+        if (!$this->config->development->enable && $this->config->headers->early_hints->enable) {
+            $this->response->headers->early_hints->output();
+        }
+    }
+
+    /**
+     * Caches the early hints headers, if enabled
+     */
+    protected function cacheEarlyHints()
+    {
+        if ($this->config->headers->early_hints->enable) {
+            $this->response->headers->early_hints->cache();
+        }
+    }
+
+    /**
      * Outputs the content if the page is cached
      */
     protected function outputIfCached()
@@ -915,6 +933,8 @@ class App
 
             $output.= $this->getDebugOutput();
         }
+
+        $this->cacheEarlyHints();
 
         $this->response->output($output);
 

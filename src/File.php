@@ -192,12 +192,29 @@ class File implements \Stringable
     }
 
     /**
-     * Returns the current filename
-     * @return string The current filename
+     * @internal
      */
     public function __toString() : string
     {
         return $this->filename;
+    }
+
+    /**
+     * @internal
+     */
+    public function __serialize() : array
+    {
+        return [
+            'filename' => $this->filename,
+        ];
+    }
+
+    /**
+     * @internal
+     */
+    public function __unserialize(array $data) : void
+    {
+        $this->filename = $data['filename'];
     }
 
     /**

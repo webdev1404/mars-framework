@@ -10,10 +10,17 @@ namespace Mars\Document\Hints;
  * The Prefetch Class
  * Class containing the prefetch functionality used by a document
  */
-class Prefetch extends Preload
+class Prefetch extends Preconnect
 {
     /**
-     * @var string $rel The rel attribute of the prefetch
+     * @var string $rel The rel attribute
      */
     protected string $rel = 'prefetch';
+
+    /**
+     * @internal
+     */
+    protected function load()
+    {
+    }
 }

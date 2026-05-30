@@ -16,7 +16,9 @@ class Config extends Data
      * @see Cacheable::$driver_name
      * {@inheritDoc}
      */
-    protected string $driver_name = 'php';
+    protected string $driver_name {
+        get => 'php';
+    }
 
     /**
      * @see Cacheable::$driver_params

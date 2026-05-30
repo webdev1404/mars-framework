@@ -180,12 +180,12 @@ class Theme extends Extension
     }
 
     /**
-     * @var string $library_path The path for the currently loaded library. It will be set when loading a library with loadLibrary() method.
+     * @var string $library_path The path for the currently loaded library. It will be set when loading a library with addLibrary() method.
      */
     public protected(set) string $library_path = '';
 
     /**
-     * @var string $library_url The url for the currently loaded library. It will be set when loading a library with loadLibrary() method.
+     * @var string $library_url The url for the currently loaded library. It will be set when loading a library with addLibrary() method.
      */
     public protected(set) string $library_url = '';
 
@@ -255,11 +255,11 @@ class Theme extends Extension
     }
 
     /**
-     * Loads a library
+     * Adds a library
      * @param string $name The name of the library
      * @return static
      */
-    public function loadLibrary(string $name, $base_dir = 'node_modules') : static
+    public function addLibrary(string $name, $base_dir = 'node_modules') : static
     {
         $this->library_path = $this->assets_path . '/' . static::DIRS['libraries'] . '/' . $base_dir . '/' . $name;
         $this->library_url = $this->assets_url . '/' . urlencode(static::DIRS['libraries']) . '/' . urlencode($base_dir) . '/' . $name;

@@ -162,17 +162,14 @@ return [
     'memcache.port' => '11211',
 
 
-    // string The driver used for caching. Supported options: file, php, memcache. If memcache is used, memcache.enable must be true
-    'cache.driver' => 'file',
+    // string The driver used for caching. Supported options: serialized, php, memcache. If memcache is used, memcache.enable must be true
+    'cache.driver' => 'serialized',
 
     // string The hash algorithm used for caching
     'cache.hash' => 'sha256',
 
     // string|null The driver used for data caching. If null, will use cache.driver
     'cache.data.driver' => 'php',
-
-    // string|null The driver used for assets caching. If null, will use cache.driver
-    'cache.assets.driver' => 'php',
 
     // string|null The driver used for languages caching. If null, will use cache.driver
     'cache.languages.driver' => 'php',
@@ -185,6 +182,9 @@ return [
 
     // string|null The driver used for routes caching. If null, will use cache.driver
     'cache.routes.driver' => 'php',
+
+    // string|null The driver used for assets caching. If null, will use cache.driver
+    'cache.assets.driver' => null,
 
     // string|null The driver used for storage caching. If null, will use cache.driver
     'cache.storage.driver' => null,
@@ -207,9 +207,6 @@ return [
     // string The driver used for page caching. Supported options: text, memcache. If null, will use cache.driver
     'cache.page.driver' => null,
 
-    // bool If true will minify the cached content
-    'cache.page.minify' => false,
-
     // The urls to exclude from page caching
     'cache.page.exclude.urls' => [],
 
@@ -227,23 +224,11 @@ return [
     // The css urls to exclude from minification
     'assets.css.minify.exclude.urls' => [],
 
-    // If true, will combine the css assets
-    'assets.css.combine.enable' => false,
-
-    // The css urls to exclude from combination
-    'assets.css.combine.exclude.urls' => [],
-
     // If true, will minify the js assets
     'assets.js.minify.enable' => false,
 
     // The js urls to exclude from minification
     'assets.js.minify.exclude.urls' => [],
-
-    // If true, will combine the js assets
-    'assets.js.combine.enable' => false,
-
-    // The js urls to exclude from combination
-    'assets.js.combine.exclude.urls' => [],
 
 
     // string The driver used to send mail. Supported options: phpmailer
@@ -298,49 +283,32 @@ return [
 
 
     // array Additional headers to send with each HTTP response
-    'http.response.headers.list' => [],
+    'headers.list' => [],
+
 
     // bool If true, will enable the Content Security Policy header
-    'http.response.headers.csp.enable' => false,
+    'headers.csp.enable' => false,
 
     // bool If true, will use a nonce for the Content Security Policy header
-    'http.response.headers.csp.use_nonce' => false,
+    'headers.csp.use_nonce' => true,
+
+    // bool If true, will allow the 'unsafe-inline' value for the script-src and style-src directives
+    'headers.csp.unsafe_inline' =>false,
 
     // array The default Content Security Policy headers
-    'http.response.headers.csp.defaults' => [
+    'headers.csp.defaults' => [
         'default-src' => "'self'",
-        'script-src' => "'self'",
-        'style-src' => "'self'",
-        'object-src' => "'none'"
     ],
 
-    // array The Content Security Policy headers
-    'http.response.headers.csp.list' => [],
+    // array The Content Security Policy headers. If specified, will override the default values and the values added by the application
+    'headers.csp.list' => [],
 
-
-    // array The urls to preload
-    'hints.preload' => [
-        // The css urls to preload
-        'css' => [],
-        // The javascript urls to preload
-        'js' => [],
-        // The fonts urls to preload
-        'fonts' => [],
-        // The images urls to preload
-        'images' => []
-    ],
-
-    // array The urls to preconnect without the crossorigin attribute
-    'hints.preconnect.non_cors' => [],
-
-    // array The urls to preconnect using the crossorigin attribute
-    'hints.preconnect.cors' => [],
 
     // bool If true, will enable the Early Hints functionality
-    'hints.early_hints.enable' => false,
+    'headers.early_hints.enable' => false,
 
     // array The Early Hints headers
-    'hints.early_hints.list' => [
+    'headers.early_hints.list' => [
         'preload' => [
             // The styles to be sent as early hints
             'style' => [],
@@ -354,6 +322,22 @@ return [
         // The preconnect urls to be sent with the response
         'preconnect' => []
     ],
+
+
+    // array The urls to preload
+    'hints.preload' => [
+        // The css urls to preload
+        'style' => [],
+        // The javascript urls to preload
+        'script' => [],
+        // The fonts urls to preload
+        'font' => [],
+        // The images urls to preload
+        'image' => []
+    ],
+
+    // array The urls to preconnect to
+    'hints.preconnect' => [],
 
 
     // int The interval, in days, for which the cookies will be valid
@@ -544,7 +528,7 @@ return [
     'image.watermark.margin.left' => '30',
 
 
-    // string The serializer driver. Supported options: php, json, igbinary
+    // string The serializer driver. Supported options: php, igbinary
     'serializer.driver' => 'php',
 
 

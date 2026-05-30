@@ -103,20 +103,20 @@ class Url implements \Stringable
     }
 
     /**
-     * @var string The root of the url. It contains the scheme and the host
+     * @var string The origin of the url. It contains the scheme, host and port
      */
-    public protected(set) string $root {
+    public protected(set) string $origin {
         get {
-            if (isset($this->root)) {
-                return $this->root;
+            if (isset($this->origin)) {
+                return $this->origin;
             }
 
-            $this->root = $this->scheme . $this->host;
+            $this->origin = $this->scheme . $this->host;
             if ($this->port) {
-                $this->root .= ':' . $this->port;
+                $this->origin .= ':' . $this->port;
             }
 
-            return $this->root;
+            return $this->origin;
         }
     }
 
@@ -183,7 +183,7 @@ class Url implements \Stringable
                 return $this->path_name;
             }
 
-            $this->path_name = $this->root . '/' . $this->path;
+            $this->path_name = $this->origin . '/' . $this->path;
 
             return $this->path_name;
         }
@@ -220,12 +220,43 @@ class Url implements \Stringable
     }
 
     /**
+     * @var string $filename The local filename the url points to. 
+     * Only applicable if the url is local
+     * !!!!Use with caution!!!!
+     */
+    public protected(set) string $filename {
+        get {
+            if (isset($this->filename)) {
+                return $this->filename;
+            }
+
+            if (!$this->is_local || !$this->is_valid) {
+                $this->filename = '';
+                return '';
+            }
+
+            $this->filename = $this->app->public_path . '/' . $this->path;
+            $this->filename = preg_replace('/[\/\\\]+/', '/', $this->filename);
+
+            try {
+                $this->app->file->check($this->filename, true);
+            } catch (\Exception $e) {
+                $this->filename = '';
+            }
+
+            return $this->filename;
+        }
+    }
+
+    /**
      * Builds the Url object
      * @param string $url The url
      * @param bool $sanitize If true, it will sanitize the url
+     * @param App|null $app The app instance
      */
-    public function __construct(string $url, bool $sanitize = true)
+    public function __construct(string $url, bool $sanitize = true, ?App $app = null)
     {
+        $this->app = $app;
         $this->url = $url;
 
         if ($sanitize) {
@@ -234,8 +265,7 @@ class Url implements \Stringable
     }
 
     /**
-     * Returns the current url
-     * @return string The current url
+     * @internal
      */
     public function __toString() : string
     {
@@ -243,29 +273,21 @@ class Url implements \Stringable
     }
 
     /**
-     * Returns a local file from a local url
-     * !!!!Use with caution!!!!
-     * @param ?string $open_basedir The open_basedir restriction, if any
-     * @param bool $is_link If true, the filename the url points to is a symbolic link
-     * @return File|null The local file. If the url is not local, or valid,  it will return null
-     * @throws \Exception If the file contains invalid characters or is not inside the open_basedir paths
+     * @internal
      */
-    public function getLocalFile(?string $open_basedir = null) : ?File
+    public function __serialize() : array
     {
-        if (!$this->is_valid || !$this->is_local) {
-            return null;
-        }
+        return [
+            'url' => $this->url,
+        ];
+    }
 
-        $filename = $this->app->public_path . '/' . $this->path;
-        $filename = preg_replace('/[\/\\\]+/', '/', $filename);
-
-        try {
-            $this->app->file->check($filename, $open_basedir);
-        } catch (\Exception $e) {
-            return null;
-        }
-
-        return new File($filename);
+    /**
+     * @internal
+     */
+    public function __unserialize(array $data) : void
+    {
+        $this->url = $data['url'];
     }
 
     /**

@@ -24,6 +24,6 @@ class Page extends Content implements ContentInterface
             $filename = $this->app->app_path . '/pages/' . $this->name . '.php';
         }
 
-        echo $this->app->theme->getTemplateFromFilename($filename, vars: $vars);
+        echo $this->app->theme->getTemplateByFilename($filename, vars: $vars);
     }
 }

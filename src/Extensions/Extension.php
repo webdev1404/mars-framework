@@ -44,6 +44,24 @@ abstract class Extension
     public protected(set) string $name = '';
 
     /**
+     * @var string $parent_name The name of the parent extension, if this extension is a child extension
+     */
+    public protected(set) string $parent_name {
+        get {
+            if (isset($this->parent_name)) {
+                return $this->parent_name;
+            }
+
+            $this->parent_name = '';
+            if (is_file($this->path . '/parent.php')) {
+                $this->parent_name = include $this->path . '/parent.php';
+            }
+
+            return $this->parent_name;
+        }
+    }
+
+    /**
      * @var string $path The path where the extension is located
      */
     public protected(set) string $path {
@@ -260,7 +278,7 @@ abstract class Extension
     }
 
     /**
-     * Includes the extension's boot fileau creat un model pentru o potențială invazie americană, un pas considerat obligatoriu din cauza “fixației lui Trump privind anexarea” țării vecine. Deși un astfel de atac “este foarte improbabil”, militarii au stabilit că armata SUA, mult mai mare, ar copleși în două zile forțele canadiene, dar o rezistență asimetrică ar face ocupația dificil de realizat.
+     * Includes the extension's boot file
      */
     public function boot()
     {

@@ -7,8 +7,9 @@
 namespace Mars\Http\Response\Data\Headers;
 
 use Mars\App;
-use Mars\Url;
 use Mars\App\Kernel;
+use Mars\Url;
+use Mars\Data\ListGroupTrait;
 
 /**
  * The Content Security Policy Header Response Class
@@ -17,11 +18,22 @@ use Mars\App\Kernel;
 class CSP
 {
     use Kernel;
+    use ListGroupTrait;
 
     /**
-     * @var array $document_assets The default document sources to get the urls from
+     * @var array $urls The list of URLs to send
      */
-    protected array $document_assets = [
+    protected array $urls = [];
+
+    /**
+     * @internal
+     */
+    protected static string $property = 'urls';
+
+    /**
+     * @var array $assets_directives The default document assets directives to get the urls from
+     */
+    protected array $assets_directives = [
         'style-src' => 'css',
         'script-src' => 'js',
         'font-src' => 'fonts',
@@ -29,57 +41,118 @@ class CSP
     ];
 
     /**
-     * @var array $results The CSP results
+     * Determines whether a nonce can be used, based on the configuration and the cache/accelerator status
+     * @return bool
      */
-    protected array $results = [];
+    public function canUseNonce() : bool
+    {
+        if ($this->app->config->cache->page->enable || $this->app->config->accelerator->enable) {
+            return false;
+        }
+
+        return true;
+    }
 
     /**
-     * Sends the CSP header
+     * Prepares the CSP header
      */
-    public function output()
+    public function collect()
     {
-        if (!$this->app->config->http->response->headers->csp->enable) {
+        if (!$this->app->config->headers->csp->enable) {
             return;
         }
 
-        //get the sources from the defaults
-        foreach ($this->app->config->http->response->headers->csp->defaults as $name => $src) {
-            $this->results[$name] = $src;
+        if ($this->app->config->headers->csp->use_nonce) {
+            if ($this->app->config->cache->page->enable || $this->app->config->accelerator->enable) {
+                $this->app->config->headers->csp->use_nonce = false;
+                $this->app->config->headers->csp->unsafe_inline = true;
+
+            } else {
+                //set unsafe-inline to false if using nonce, iregardless of the config value
+                $this->app->config->headers->csp->unsafe_inline = false;
+            }
         }
 
-        //get the sources from the document assets
-        foreach ($this->document_assets as $name => $source) {
-            $this->results[$name] = $this->getFromDocument($name, $source);
+        $this->app->response->headers->add('Content-Security-Policy', $this->getHeader($this->getDirectives()));
+    }
+
+    /**
+     * Returns the CSP directives
+     * @return array The directives
+     */
+    protected function getDirectives() : array
+    {
+        $directives = [];
+
+        //get the directives from the defaults
+        foreach ($this->app->config->headers->csp->defaults as $name => $src) {
+            $directives[$name][] = $src;
         }
 
-        //get the sources from the config
-        if ($this->app->config->http->response->headers->csp->list) {
-            foreach ($this->app->config->http->response->headers->csp->list as $name => $src) {
+        if ($this->app->config->headers->csp->unsafe_inline) {
+            $directives['script-src'][] = "'unsafe-inline'";
+            $directives['style-src'][] = "'unsafe-inline'";
+        }
+
+        //get the directives from the document assets
+        foreach ($this->assets_directives as $name => $source) {
+            if (!empty($this->app->config->headers->csp->list[$name])) {
+                continue;
+            }
+
+            $directives[$name] = array_merge($directives[$name] ?? [], $this->getFromAsset($name, $source));
+        }
+
+        //get the added directives
+        foreach ($this->urls as $name => $directives_array) {
+            if (!empty($this->app->config->headers->csp->list[$name])) {
+                continue;
+            }
+
+            $directives[$name] = array_merge($directives[$name] ?? [], $directives_array);
+        }
+
+        $defaults = $this->app->config->headers->csp->defaults['default-src'] ?? '';
+        foreach ($directives as $name => $list) {
+            //if the default-src is not already included in the directive, add it to the beginning of the list
+            if (!isset($this->app->config->headers->csp->defaults[$name])) {
+                array_unshift($list, $defaults);
+            }
+
+            $list = $list |> array_filter(...) |> array_unique(...);
+
+            $directives[$name] = implode(' ', $list);
+        }
+
+        //overwrite with the directives from the config, if specified
+        if ($this->app->config->headers->csp->list) {
+            foreach ($this->app->config->headers->csp->list as $name => $src) {
                 if ($src) {
-                    $this->results[$name] = $src;
+                    $directives[$name] = $src;
                 }
             }
         }
 
         //add nonce
-        if ($this->app->config->http->response->headers->csp->use_nonce) {
+        if ($this->app->config->headers->csp->use_nonce) {
             $nonce = $this->app->nonce;
 
-            $this->results['script-src'] .= " 'nonce-$nonce'";
-            $this->results['style-src'] .= " 'nonce-$nonce'";
+            $directives['script-src'] .= " 'nonce-{$nonce}'";
+            $directives['style-src'] .= " 'nonce-{$nonce}'";
         }
 
-        header('Content-Security-Policy: ' . $this->getHeader());
+        return $directives;
     }
 
     /**
      * Returns the header's content
+     * @param array $directives The directives to include in the header
      * @return string
      */
-    protected function getHeader() : string
+    protected function getHeader(array $directives) : string
     {
         $parts = [];
-        foreach ($this->results as $name => $src) {
+        foreach ($directives as $name => $src) {
             if (!trim($src)) {
                 continue;
             }
@@ -91,19 +164,15 @@ class CSP
     }
 
     /**
-     * Returns the source from the document
+     * Returns the directives from the document assets
      * @param string $name The name of the source
      * @param string $source The source
-     * @return string
+     * @return array
      */
-    protected function getFromDocument(string $name, string $source) : string
+    protected function getFromAsset(string $name, string $source) : array
     {
-        //return from config if we have it set
-        if (!empty($this->app->config->http->response->headers->csp->list[$name])) {
-            return $this->app->config->http->response->headers->csp->list[$name];
-        }
-
         $external_urls = [];
+
         $urls = $this->app->document->$source->urls;
         foreach ($urls as $type => $urls_array) {
             foreach ($urls_array as $url) {
@@ -111,18 +180,14 @@ class CSP
                     continue;
                 }
 
-                $external_urls[] = $this->app->url->getRoot($url['url']);
+                $external_urls[] = $this->app->url->getOrigin($url['url']);
             }
         }
 
-        $default = $this->app->config->http->response->headers->csp->defaults[$name] ?? '';
         if (!$external_urls) {
-            return $default;
+            return [];
         }
 
-        $external_urls = array_unique($external_urls);
-        $external_urls = array_filter($external_urls);
-
-        return $default . ' ' . implode(' ', $external_urls);
+        return $external_urls |> array_filter(...) |> array_unique(...);
     }
 }

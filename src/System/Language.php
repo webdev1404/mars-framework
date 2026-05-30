@@ -226,11 +226,6 @@ class Language extends BaseLanguage
     }
 
     /**
-     * @var string $parent_name The name of the parent language, if any
-     */
-    public protected(set) string $parent_name = '';
-
-    /**
      * @var BaseLanguage $parent The parent language, if any
      */
     public protected(set) ?BaseLanguage $parent {

@@ -16,7 +16,7 @@ class Data extends Cacheable
      * @see Cacheable::$drivers_enabled
      * {@inheritDoc}
      */
-    public protected(set) array $drivers_enabled = ['file', 'php', 'memcache'];
+    public protected(set) array $drivers_enabled = ['data', 'php', 'memcache'];
     
     /**
      * @see Cacheable::$driver_name

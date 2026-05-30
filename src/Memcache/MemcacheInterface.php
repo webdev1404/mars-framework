@@ -54,7 +54,7 @@ interface MemcacheInterface
      * @param string $key The key
      * @return bool True if the key exists
      */
-    public function exists(string $key) : bool;
+    public function has(string $key) : bool;
 
     /**
      * Deletes $key

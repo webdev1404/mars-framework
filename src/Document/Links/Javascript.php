@@ -8,15 +8,22 @@ namespace Mars\Document\Links;
 
 use Mars\App\LazyLoadProperty;
 use Mars\Assets\Javascript as JsAsset;
+use Mars\Document\Url;
 
 /**
  * The Document's Javascript Urls Class
  * Class containing the javascript functionality used by a document
  */
-class Javascript extends Urls
+class Javascript extends Links
 {
     /**
-     * @see Urls::$version
+     * @see Links::$type
+     * {@inheritDoc}
+     */
+    public protected(set) string $type = 'script';
+
+    /**
+     * @see Links::$version
      * {@inheritDoc}
      */
     public string $version {
@@ -41,25 +48,13 @@ class Javascript extends Urls
     public array $config = [];
 
     /**
-     * @see Urls::$type
-     * {@inheritDoc}
-     */
-    public protected(set) string $type = 'script';
-
-    /**
-     * @see Urls::$preload_config_key
-     * {@inheritDoc}
-     */
-    public protected(set) string $preload_config_key = 'js';
-
-    /**
      * @var JsAsset $asset The javascript asset object
      */
     #[LazyLoadProperty]
     public protected(set) JsAsset $asset;
 
     /**
-     * @see Urls::$minify
+     * @see Links::$minify
      * {@inheritDoc}
      */
     protected bool $minify {
@@ -67,7 +62,7 @@ class Javascript extends Urls
     }
 
     /**
-     * @see Urls::$minify_exclude
+     * @see Links::$minify_exclude
      * {@inheritDoc}
      */
     protected array $minify_exclude {
@@ -75,23 +70,7 @@ class Javascript extends Urls
     }
 
     /**
-     * @see Urls::$combine
-     * {@inheritDoc}
-     */
-    protected bool $combine {
-        get => $this->app->config->assets->js->combine->enable;
-    }
-
-    /**
-     * @see Urls::$combine_exclude
-     * {@inheritDoc}
-     */
-    protected array $combine_exclude {
-        get => $this->app->config->assets->js->combine->exclude->urls;
-    }
-
-    /**
-     * @see Urls::$development
+     * @see Links::$development
      * {@inheritDoc}
      */
     protected bool $development {
@@ -100,35 +79,27 @@ class Javascript extends Urls
 
     /**
      * Loads a javascript module url
-     * @param string|array $urls The url(s) to load. Will only load it once, no matter how many times the function is called with the same url
-     * @param string $location The location of the url [head|footer]
-     * @param int $priority The url's output priority. The higher, the better
-     * @param bool $preload If true, will output the url as a preload
-     * @param array $attributes The attributes of the url, if any
-     * @return static
+     * @see Links::add()
+     * {@inheritDoc}
      */
-    public function loadModule(string|array $urls, string $location = 'head', int $priority = 100, bool $preload = false, array $attributes = []) : static
+    public function addModule(string|array $urls, string $location = 'head', int $priority = 100, array $attributes = [], bool $early_hints = false, bool $preload = false, bool $crossorigin = false) : static
     {
         $attributes['type'] = 'module';
 
-        return $this->load($urls, $location, $priority, $preload, $attributes);
+        return $this->add($urls, $location, $priority, $attributes, $early_hints, $preload, $crossorigin);
     }
 
     /**
-     * @see Urls::outputLink()
+     * @see Links::outputLink()
      * {@inheritDoc}
      */
-    public function outputLink(string $url, array $attributes = [], bool $add_version = true)
+    public function outputLink(Url $url)
     {
-        if ($add_version) {
-            $url = $this->getUrl($url);
-        }
-
-        echo '<script src="' . $this->app->escape->html($url) . '"' . $this->app->html->getAttributes($attributes) . '></script>' . "\n";
+        echo '<script src="' . $this->app->escape->html($url->url) . '"' . $this->app->html->getAttributes($url->attributes) . '></script>' . "\n";
     }
 
     /**
-     * @see Urls::outputCodes()
+     * @see Links::outputCodes()
      * {@inheritDoc}
      */
     public function outputCodes(string $location)

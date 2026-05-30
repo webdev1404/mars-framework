@@ -86,12 +86,12 @@ class Redis implements MemcacheInterface
     }
 
     /**
-     * @see MemcacheInterface::exists()
+     * @see MemcacheInterface::has()
      * {@inheritDoc}
      */
-    public function exists(string $key) : bool
+    public function has(string $key) : bool
     {
-        return (bool) $this->handle->exists($key);
+        return (bool) $this->handle->has($key);
     }
 
     /**

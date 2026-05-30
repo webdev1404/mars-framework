@@ -25,14 +25,14 @@ final class ListTraitTest extends Base
         $this->assertSame($elements->get(), []);
 
         $elements->add('test123');
-        $elements->add(['test345', 'test678']);
+        $elements->addMany(['test345', 'test678']);
 
-        $this->assertTrue($elements->exists('test123'));
-        $this->assertTrue($elements->exists('test345'));
-        $this->assertFalse($elements->exists('test'));
+        $this->assertTrue($elements->has('test123'));
+        $this->assertTrue($elements->has('test345'));
+        $this->assertFalse($elements->has('test'));
 
         $elements->remove('test123');
-        $this->assertFalse($elements->exists('test123'));
+        $this->assertFalse($elements->has('test123'));
     }
 
     public function testAdd()
@@ -42,7 +42,7 @@ final class ListTraitTest extends Base
         $elements->add('test123');
         $this->assertSame($elements->get(), ['test123']);
 
-        $elements->add(['test345', 'test678']);
+        $elements->addMany(['test345', 'test678']);
         $this->assertSame($elements->get(), ['test123', 'test345', 'test678']);
     }
 
@@ -66,7 +66,7 @@ final class ListTraitTest extends Base
         $elements->add('test123');
         $this->assertSame($elements->get(), ['test123']);
 
-        $elements->add(['test345', 'test678']);
+        $elements->addMany(['test345', 'test678']);
         $this->assertSame($elements->get(), ['test123', 'test345', 'test678']);
     }
 
@@ -76,7 +76,7 @@ final class ListTraitTest extends Base
 
         $this->assertSame($elements->getFirst(), '');
 
-        $elements->add(['test123', 'test345', 'test678']);
+        $elements->addMany(['test123', 'test345', 'test678']);
         $this->assertSame($elements->getFirst(), 'test123');
     }
 
@@ -86,7 +86,7 @@ final class ListTraitTest extends Base
 
         $this->assertSame($elements->getLast(), '');
 
-        $elements->add(['test123', 'test345', 'test678']);
+        $elements->addMany(['test123', 'test345', 'test678']);
         $this->assertSame($elements->getLast(), 'test678');
     }
 
@@ -94,7 +94,7 @@ final class ListTraitTest extends Base
     {
         $elements = new ElementsSimple;
 
-        $elements->add(['test123', 'test345', 'test678']);
+        $elements->addMany(['test123', 'test345', 'test678']);
         $elements->reset();
         $this->assertSame($elements->get(), []);
     }
@@ -103,7 +103,7 @@ final class ListTraitTest extends Base
     {
         $elements = new ElementsSimple;
 
-        $elements->add(['test123', 'test345', 'test678']);
+        $elements->addMany(['test123', 'test345', 'test678']);
         $elements->remove('test123');
         $this->assertSame($elements->get(), [1 => 'test345', 2 => 'test678']);
 
@@ -120,7 +120,7 @@ final class ListTraitTest extends Base
         $elements->add('test123');
         $this->assertSame($elements->count(), 1);
 
-        $elements->add(['test345', 'test678']);
+        $elements->addMany(['test345', 'test678']);
         $this->assertSame($elements->count(), 3);
 
         $elements->remove('test123');

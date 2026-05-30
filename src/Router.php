@@ -50,6 +50,11 @@ class Router extends Base
     public protected(set) string $name = '';
 
     /**
+     * @var string $pattern The pattern of the matched route
+     */
+    public protected(set) string $pattern = '';
+
+    /**
      * @var Loader $loader The routes loader
      */
     #[LazyLoadProperty]
@@ -88,6 +93,7 @@ class Router extends Base
         }
 
         $this->name = $this->getRouteName($route);
+        $this->pattern = $this->getRoutePattern($route);
 
         $this->output($route);
     }
@@ -124,12 +130,21 @@ class Router extends Base
     }
 
     /**
+     * Returns the pattern of the route
+     * @param array $route The route to get the pattern for
+     */
+    protected function getRoutePattern(array $route) : string
+    {
+        return $route[2]['pattern'] ?? '';
+    }
+
+    /**
      * Returns the name of the route
      * @param array $route The route to get the name for
      */
     protected function getRouteName(array $route) : string
     {
-        return $route[2] ?? '';
+        return $route[2]['name'] ?? '';
     }
 
     /**

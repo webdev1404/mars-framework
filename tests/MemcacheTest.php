@@ -41,14 +41,14 @@ final class MemcacheTest extends Base
         $key = $this->getKey();
 
         $this->assertTrue($memcache->add($key, '12345'));
-        $this->assertTrue($memcache->exists($key));
-        $this->assertFalse($memcache->exists($this->getKey()));
+        $this->assertTrue($memcache->has($key));
+        $this->assertFalse($memcache->has($this->getKey()));
         $this->assertEquals($memcache->get($key), '12345');
 
         $this->assertTrue($memcache->set($key, 'abcdef'));
         $this->assertEquals($memcache->get($key), 'abcdef');
         $this->assertTrue($memcache->delete($key));
-        $this->assertFalse($memcache->exists($key));
+        $this->assertFalse($memcache->has($key));
         $this->assertNull($memcache->get($key));
     }
 
@@ -160,7 +160,7 @@ final class MemcacheTest extends Base
 
         $memcache->deleteAll();
 
-        $this->assertFalse($memcache->exists($key1));
-        $this->assertFalse($memcache->exists($key2));
+        $this->assertFalse($memcache->has($key1));
+        $this->assertFalse($memcache->has($key2));
     }
 }

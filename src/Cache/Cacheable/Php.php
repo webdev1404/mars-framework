@@ -10,7 +10,7 @@ namespace Mars\Cache\Cacheable;
  * The Cacheable PHP Driver
  * Driver which stores on disk the cached resources as PHP files
  */
-class Php extends Text
+class Php extends File
 {
     /**
      * @internal

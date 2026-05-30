@@ -23,6 +23,12 @@ abstract class Assets extends Cacheable
     }
 
     /**
+     * @see Cacheable::$drivers_enabled
+     * {@inheritDoc}
+     */
+    public protected(set) array $drivers_enabled = ['serialized', 'memcache'];
+
+    /**
      * @see Cacheable::$driver_params
      * {@inheritDoc}
      */

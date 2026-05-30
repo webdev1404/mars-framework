@@ -60,11 +60,6 @@ class Theme extends BaseTheme
     protected string $content = '';
 
     /**
-     * @var string $parent_name The name of the parent theme, if any
-     */
-    public protected(set) string $parent_name = '';
-
-    /**
      * @var BaseTheme $parent The parent theme, if any
      */
     public protected(set) ?BaseTheme $parent {

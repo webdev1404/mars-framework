@@ -109,7 +109,7 @@ class Memcache extends Base implements \SessionHandlerInterface, \SessionUpdateT
      */
     public function validateId(string $id) : bool
     {
-        return $this->app->memcache->exists("session-{$id}");
+        return $this->app->memcache->has("session-{$id}");
     }
 
     /**

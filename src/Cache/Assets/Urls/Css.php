@@ -19,7 +19,7 @@ class Css extends Asset
      * @see Cache::$dir
      * {@inheritDoc}
      */
-    public protected(set) string $dir = 'css';
+    public protected(set) string $dir = 'assets/css';
 
     /**
      * @see Cacheable::$extension

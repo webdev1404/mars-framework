@@ -8,11 +8,10 @@ namespace Mars\Assets;
 
 use Mars\Cache\Assets\Lists\Assets as CacheList;
 use Mars\Cache\Assets\Urls\Asset as CacheUrl;
-use Mars\Document\Links\Urls as DocumentUrls;
 
 /**
  * The Javascript Asset Class
- * Minifies & combines javascript content
+ * Processes javascript assets by minifying them
  */
 class Javascript extends Asset
 {
@@ -33,24 +32,16 @@ class Javascript extends Asset
     }
 
     /**
-     * @see DocumentUrls::$urls
+     * @see Asset::$type
      * {@inheritDoc}
      */
-    protected DocumentUrls $urls {
-        get => $this->app->document->js;
-    }
+    public protected(set) string $type = 'script';
 
     /**
      * @see Asset::$dir
      * {@inheritDoc}
      */
     protected string $dir = 'js';
-
-    /**
-     * @see Asset::$combine_split
-     * {@inheritDoc}
-     */
-    protected bool $combine_split = true;
 
     /**
      * @see Asset::minify()

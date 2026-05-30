@@ -7,68 +7,27 @@
 namespace Mars\Document\Hints;
 
 use Mars\App;
-use Mars\App\Kernel;
-use Mars\Data\SetTrait;
+use Mars\Document\Url;
+use Mars\Document\Urls;
 
 /**
  * The Preconnect Urls Class
  * Class containing the preconnect functionality used by a document
  */
-class Preconnect
+class Preconnect extends Urls
 {
-    use Kernel;
-    use SetTrait;
-
     /**
-     * @var array $urls Array with all the urls to preconnect to
+     * @var string $rel The rel attribute
      */
-    protected array $urls = ['cors' => [], 'non_cors' => []];
+    protected string $rel = 'preconnect';
 
     /**
-     * @internal
-     */
-    protected static string $property = 'urls';
-
-    /**
-     * Builds the preconnect object
-     * @param App $app The app object
+     * Builds the Preconnect object
+     * @param App $app The app instance
      */
     public function __construct(App $app)
     {
         $this->app = $app;
-
-        $cors_urls = $this->app->config->hints->preconnect->cors ?? [];
-        if ($cors_urls) {
-            $this->load($cors_urls, true);
-        }
-
-        $non_cors_urls = $this->app->config->hints->preconnect->non_cors ?? [];
-        if ($non_cors_urls) {
-            $this->load($non_cors_urls);
-        }
-    }
-
-    /**
-     * Loads the urls to preconnect to
-     * @param string|array $urls The urls to preconnect to
-     * @param bool $crossorigin If true, the crossorigin attribute will be added to the link
-     * @return static
-     */
-    public function load(string|array $urls, bool $crossorigin = false) : static
-    {
-        $type = $crossorigin ? 'cors' : 'non_cors';
-
-        return $this->add($type, $urls);
-    }
-
-    /**
-     * Unloads the preconnected urls
-     * @param string|array $urls The urls to unload
-     * @return static
-     */
-    public function unload(string|array $urls) : static
-    {
-        return $this->remove($urls);
     }
 
     /**
@@ -76,24 +35,30 @@ class Preconnect
      */
     public function output()
     {
-        foreach ($this->urls['cors'] as $url) {
-            $this->outputLink($url, true);
-        }
+        $this->load();
 
-        foreach ($this->urls['non_cors'] as $url) {
+        foreach ($this->urls as $url) {
             $this->outputLink($url);
         }
+
+        //unset the urls to save some memory
+        unset($this->urls);
+    }
+
+    /**
+     * Loads the preconnect urls from the config
+     */
+    protected function load()
+    {
+        $this->addMany($this->app->config->hints->preconnect);
     }
 
     /**
      * Outputs a preconnect url
-     * @param string $url The url to output
-     * @param bool $crossorigin If true, the crossorigin attribute will be added to the link
+     * @param Url $url The url to output
      */
-    public function outputLink(string $url, bool $crossorigin = false)
+    public function outputLink(Url $url)
     {
-        $crossorigin = $crossorigin ? ' crossorigin="anonymous"' : '';
-
-        echo '<link rel="preconnect" href="' . $this->app->escape->html($url) . '"' . $crossorigin . ' />' . "\n";
+        echo '<link rel="' . $this->rel . '" href="' . $this->app->escape->html($url->url) . '"' . $this->app->html->getAttributes($url->attributes) . ' />' . "\n";
     }
 }

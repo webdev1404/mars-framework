@@ -45,7 +45,7 @@ class Plugins extends BasePlugins
 
             $this->plugins = [];
 
-            foreach ($this->getEnabled() as $class_name => $module_name) {
+            /*foreach ($this->getEnabled() as $class_name => $module_name) {
                 $plugin = new $class_name($module_name, [], $this->app);
 
                 if (!$plugin instanceof Plugin) {
@@ -54,7 +54,7 @@ class Plugins extends BasePlugins
                 
                 $class_name = ltrim($class_name, '\\');
                 $this->plugins[$class_name] = $plugin;
-            }
+            }*/
 
             return $this->plugins;
         }

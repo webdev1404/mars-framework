@@ -19,7 +19,7 @@ class Javascript extends Asset
      * @see Cache::$dir
      * {@inheritDoc}
      */
-    public protected(set) string $dir = 'js';
+    public protected(set) string $dir = 'assets/js';
 
     /**
      * @see Cacheable::$extension
