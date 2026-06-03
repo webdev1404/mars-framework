@@ -6,7 +6,7 @@
 
 namespace Mars\Extensions\Themes\Links;
 
-use Mars\Document\Links\Links as DocumentLinks;
+use Mars\Document\Link\Links as DocumentLinks;
 use Mars\Extensions\Themes\Theme;
 
 /**

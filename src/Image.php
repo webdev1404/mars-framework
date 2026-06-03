@@ -8,7 +8,7 @@ namespace Mars;
 
 use Mars\App\Handlers;
 use Mars\App\Drivers;
-use Mars\Images\ImageInterface;
+use Mars\Image\ImageInterface;
 
 /**
  * The Image Class
@@ -20,23 +20,23 @@ class Image extends File
      * @var array $supported_types The supported image types
      */
     public static array $supported_types = [
-        'jpg' => \Mars\Images\Jpg::class,
-        'jpeg' => \Mars\Images\Jpg::class,
-        'png' => \Mars\Images\Png::class,
-        'gif' => \Mars\Images\Gif::class,
-        'webp' => \Mars\Images\Webp::class,
-        'avif' => \Mars\Images\Avif::class
+        'jpg' => \Mars\Image\Jpg::class,
+        'jpeg' => \Mars\Image\Jpg::class,
+        'png' => \Mars\Image\Png::class,
+        'gif' => \Mars\Image\Gif::class,
+        'webp' => \Mars\Image\Webp::class,
+        'avif' => \Mars\Image\Avif::class
     ];
 
     /**
      * @var array $supported_operations The list of supported operations
      */
     public static array $supported_operations = [
-        'resize' => \Mars\Images\Operations\Resize::class,
-        'crop' => \Mars\Images\Operations\Crop::class,
-        'cut' => \Mars\Images\Operations\Cut::class,
-        'convert' => \Mars\Images\Operations\Convert::class,
-        'watermark' => \Mars\Images\Operations\Watermark::class
+        'resize' => \Mars\Image\Operation\Resize::class,
+        'crop' => \Mars\Image\Operation\Crop::class,
+        'cut' => \Mars\Image\Operation\Cut::class,
+        'convert' => \Mars\Image\Operation\Convert::class,
+        'watermark' => \Mars\Image\Operation\Watermark::class
     ];
 
     /**

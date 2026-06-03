@@ -7,7 +7,6 @@
 namespace Mars;
 
 use Mars\App\Kernel;
-use Mars\Data\MapTrait;
 
 /**
  * The Json Class
@@ -16,18 +15,6 @@ use Mars\Data\MapTrait;
 class Json
 {
     use Kernel;
-    use MapTrait;
-
-    /**
-     * Json data to be outputted, if the request is a json request
-     * @var array
-     */
-    public array $data = [];
-
-    /**
-     * @internal
-     */
-    protected static string $property = 'data';
 
     /**
      * Encodes data

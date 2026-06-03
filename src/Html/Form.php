@@ -7,7 +7,7 @@
 namespace Mars\Html;
 
 use Mars\App;
-use Mars\Alerts\Errors;
+use Mars\Alert\Errors;
 use Mars\Html\TagInterface;
 use Mars\Html\Input\FormInputInterface;
 use Mars\Http\Request\Input;

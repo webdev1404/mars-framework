@@ -61,7 +61,7 @@ class UrlsGroup
     {
         if (is_array($type)) {
             foreach ($type as $_type => $urls) {
-                $this->addArray($_type, $urls);
+                $this->addArray($_type, (array)$urls);
             }
         } else {
             $this->addArray($type, $urls);
@@ -79,5 +79,20 @@ class UrlsGroup
     {
         $this->urls[$type] ??= new Urls($type, $this->app);
         $this->urls[$type]->addMany($urls);
+    }
+
+    /**
+     * Removes an element
+     * @param string $type The type of the elements
+     * @param string|array $values The value(s) to remove
+     * @return static
+     */
+    public function remove(string|array|Url $url) : static
+    {
+        foreach ($this->urls as $type => $urls) {
+            $urls->remove($url);
+        }
+
+        return $this;
     }
 }

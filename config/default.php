@@ -204,11 +204,17 @@ return [
     // bool If true, will enable the page cache functionality
     'cache.page.enable' => false,
 
-    // string The driver used for page caching. Supported options: text, memcache. If null, will use cache.driver
-    'cache.page.driver' => null,
+    // string The driver used for page caching. Supported options: text, memcache
+    'cache.page.driver' => 'text',
 
     // The urls to exclude from page caching
     'cache.page.exclude.urls' => [],
+
+    // bool If true, will enable the compression of the cached pages based on the accepted encodings of the client
+    'cache.page.compress.enable' => false,
+
+    // array The compression drivers to use for the cached pages, based on the accepted encodings of the client. Supported options: gzip, brotli, zstd
+    'cache.page.compress.drivers' => ['gzip'],
 
 
     // string The crypt driver. Supported options: openssl, sodium
@@ -280,6 +286,12 @@ return [
 
     // array The trusted proxies from which we'll accept the HTTP_X_FORWARDED_FOR header
     'security.trusted_proxies' => [],
+
+    // string The default hashing algorithm used for common hashing functionalities
+    'security.hash_algo' => 'sha256',
+
+    // string The hashing algorithm used for the strong hashing functionalities
+    'security.strong_hash_algo' => 'sha512',
 
 
     // array Additional headers to send with each HTTP response
@@ -427,12 +439,6 @@ return [
 
     // string The name of the CSRF hidden field
     'html.csrf_name' => 'csrf-token',
-
-    // string|null The allowed html elements; used when filtering html. If null, all elements are allowed
-    'html.allowed_elements' => null,
-
-    // string The allowed html attributes; used when filtering html
-    'html.allowed_attributes' => '*.class,*.style,img.src,img.alt,a.target,a.rel,a.href,a.title',
 
 
     // string The request action parameter name

@@ -14,7 +14,7 @@ use Mars\Data\MapTrait;
  * The Handlers Class
  * Encapsulates a list of supported handlers
  */
-class Handlers implements \IteratorAggregate
+class Handlers implements \Countable, \IteratorAggregate
 {
     use Kernel;
     use MapTrait {

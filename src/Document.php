@@ -9,18 +9,18 @@ namespace Mars;
 use Mars\App\Kernel;
 use Mars\App\LazyLoad;
 use Mars\App\LazyLoadProperty;
-use Mars\Document\Links\Css;
-use Mars\Document\Links\Javascript;
-use Mars\Document\Links\Fonts;
-use Mars\Document\Links\Images;
-use Mars\Document\Hints\Preload;
-use Mars\Document\Hints\Prefetch;
-use Mars\Document\Hints\Preconnect;
-use Mars\Document\Tags\Meta;
-use Mars\Document\Tags\Rss;
-use Mars\Document\Tags\Encoding;
-use Mars\Document\Tags\Favicon;
-use Mars\Document\Tags\Title;
+use Mars\Document\Link\Css;
+use Mars\Document\Link\Javascript;
+use Mars\Document\Link\Fonts;
+use Mars\Document\Link\Images;
+use Mars\Document\Hint\Preload;
+use Mars\Document\Hint\Prefetch;
+use Mars\Document\Hint\Preconnect;
+use Mars\Document\Tag\Meta;
+use Mars\Document\Tag\Rss;
+use Mars\Document\Tag\Encoding;
+use Mars\Document\Tag\Favicon;
+use Mars\Document\Tag\Title;
 
 /**
  * The Document Class
@@ -115,41 +115,41 @@ class Document
     }
 
     /**
-     * Outputs the required head tags
+     * Renders the required head tags
      */
-    public function outputHead()
+    public function renderHead()
     {
-        $this->title->output();
-        $this->encoding->output();
-        $this->favicon->output();
-        $this->meta->output();
-        $this->rss->output();
+        $this->title->render();
+        $this->encoding->render();
+        $this->favicon->render();
+        $this->meta->render();
+        $this->rss->render();
 
-        $this->preload->output();
-        $this->prefetch->output();
-        $this->preconnect->output();
+        $this->preload->render();
+        $this->prefetch->render();
+        $this->preconnect->render();
         
-        $this->outputLocation('head');
+        $this->renderLocation('head');
     }
 
     /**
-     * Outputs the required footer tags
+     * Renders the required footer tags
      */
-    public function outputFooter()
+    public function renderFooter()
     {
-        $this->outputLocation('footer');
+        $this->renderLocation('footer');
     }
 
     /**
-     * Outputs the urls and codes of a location
+     * Renders the urls and codes of a location
      * @param string $location The location of the url [head|footer]
      */
-    protected function outputLocation(string $location)
+    protected function renderLocation(string $location)
     {
-        $this->js->output($location);
-        $this->js->outputCodes($location);
+        $this->js->render($location);
+        $this->js->renderCodes($location);
 
-        $this->css->output($location);
-        $this->css->outputCodes($location);
+        $this->css->render($location);
+        $this->css->renderCodes($location);
     }
 }

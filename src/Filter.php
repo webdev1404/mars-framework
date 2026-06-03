@@ -21,15 +21,15 @@ class Filter
      * @var array $supported_filters The list of supported filters
      */
     public protected(set) array $supported_filters = [
-        'alpha' => \Mars\Filters\Alpha::class,
-        'alnum' => \Mars\Filters\Alnum::class,
-        'email' => \Mars\Filters\Email::class,
-        'filename' => \Mars\Filters\Filename::class,
-        'filepath' => \Mars\Filters\Filepath::class,
-        'html' => \Mars\Filters\Html::class,
-        'interval' => \Mars\Filters\Interval::class,
-        'slug' => \Mars\Filters\Slug::class,
-        'url' => \Mars\Filters\Url::class,
+        'alpha' => \Mars\Filter\Alpha::class,
+        'alnum' => \Mars\Filter\Alnum::class,
+        'email' => \Mars\Filter\Email::class,
+        'filename' => \Mars\Filter\Filename::class,
+        'filepath' => \Mars\Filter\Filepath::class,
+        'html' => \Mars\Filter\Html::class,
+        'interval' => \Mars\Filter\Interval::class,
+        'slug' => \Mars\Filter\Slug::class,
+        'url' => \Mars\Filter\Url::class,
     ];
 
     /**
@@ -176,21 +176,6 @@ class Filter
     {
         return $this->app->data->map($value, function ($value) use ($allowed_tags) {
             return strip_tags($value, $allowed_tags);
-        });
-    }
-
-    /**
-     * Filters html using HtmlPurifier
-     * @param string $html The HTML content to filter
-     * @param string|null $allowed_elements String containing the allowed html elements. If null, it will be read from config.get('html.allowed_elements')
-     * @param string|null $allowed_attributes The allowed attributes. If null, it will be read from config.get('html.allowed_attributes')
-     * @param string $encoding The encoding of the text
-     * @return string The filtered html
-     */
-    public function html(string $html, ?string $allowed_elements = null, ?string $allowed_attributes = null, string $encoding = 'UTF-8') : string
-    {
-        return $this->app->data->map($html, function ($html) use ($allowed_elements, $allowed_attributes, $encoding) {
-            return $this->filters->get('html')->filter($html, $allowed_elements, $allowed_attributes, $encoding);
         });
     }
 

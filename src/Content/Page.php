@@ -6,6 +6,8 @@
 
 namespace Mars\Content;
 
+use Mars\Http\Response\Body\Data\Data;
+
 /**
  * The Page Content Class
  * Outputs the content of a page from app/pages
@@ -13,10 +15,10 @@ namespace Mars\Content;
 class Page extends Content implements ContentInterface
 {
     /**
-     * Outputs a html page from the app's pages folder
-     * @param array $vars Variables to pass to the page
+     * @see ContentInterface::run()
+     * {@inheritDoc}
      */
-    public function output(array $vars = [])
+    public function run(array $vars = []) : Data
     {
         $filename = $this->name;
         
@@ -24,6 +26,6 @@ class Page extends Content implements ContentInterface
             $filename = $this->app->app_path . '/pages/' . $this->name . '.php';
         }
 
-        echo $this->app->theme->getTemplateByFilename($filename, vars: $vars);
+        return $this->app->response->body->create(null, $this->app->theme->getTemplateByFilename($filename, vars: $vars));
     }
 }

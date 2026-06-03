@@ -1,0 +1,25 @@
+<?php
+/**
+* The Javascript Minifier
+* @package Mars
+*/
+
+namespace Mars\Assets\Minifier;
+
+/**
+ * The Javascript Minifier
+ */
+class Javascript implements MinifierInterface
+{
+    /**
+     * @see MinifierInterface::minify()
+     * {@inheritDoc}
+     */
+    public function minify(string $content) : string
+    {
+        $minifier = new \MatthiasMullie\Minify\JS;
+        $minifier->add($content);
+
+        return $minifier->minify();
+    }
+}

@@ -7,7 +7,6 @@
 namespace Mars\Cache;
 
 use Mars\App;
-use Mars\Assets\Minifier;
 
 /**
  * The Page Cache Class
@@ -64,13 +63,6 @@ class Pages extends Cacheable
     protected bool $can_hash = true;
 
     /**
-     * @var bool $minify True, if the output can be minified
-     */
-    protected bool $minify {
-        get => $this->app->config->cache->page->minify;
-    }
-
-    /**
      * @var string $file The name of the file used to cache the content
      */
     public string $file {
@@ -103,9 +95,9 @@ class Pages extends Cacheable
     }
 
     /**
-     * @var bool $output_headers_on_store True if the headers should be outputted when storing the content in the cache.
+     * @var bool $send_headers_on_store True if the headers should be sent when storing the content in the cache.
      */
-    protected bool $output_headers_on_store = false;
+    protected bool $send_headers_on_store = false;
 
     /**
      * Builds the page cache object
@@ -138,14 +130,11 @@ class Pages extends Cacheable
         if (!$this->can_cache) {
             return $this;
         }
-        if ($this->minify) {
-            $content = $this->minify($content);
-        }
 
         $this->driver->set($this->filename, $content, false);
 
-        if ($this->output_headers_on_store) {
-            $this->outputHeadersOnStore();
+        if ($this->send_headers_on_store) {
+            $this->sendHeadersOnStore();
         }
 
         return $this;
@@ -188,9 +177,9 @@ class Pages extends Cacheable
     }
 
     /**
-     * Outputs the content, if it's cached
+     * Serves the content, if it's cached
      */
-    public function output()
+    public function serve()
     {
         if (!$this->can_cache) {
             return;
@@ -203,14 +192,14 @@ class Pages extends Cacheable
             $etag = $this->getEtag($last_modified);
 
             //check if we can send the 304 Not Modified header
-            $this->outputNotModified($last_modified, $etag);
+            $this->sendNotModified($last_modified, $etag);
 
             //output the cache headers
-            $this->outputHeaders($last_modified, $etag);
+            $this->sendHeaders($last_modified, $etag);
 
-            $this->outputContent();
+            $this->serveContent();
         } else {
-            $this->output_headers_on_store = true;
+            $this->send_headers_on_store = true;
         }
     }
 
@@ -219,7 +208,7 @@ class Pages extends Cacheable
      * @param int $last_modified The date when the cached file has been last modified
      * @param string $etag The etag
      */
-    protected function outputNotModified(int $last_modified, string $etag)
+    protected function sendNotModified(int $last_modified, string $etag)
     {
         if (isset($_SERVER['HTTP_IF_NONE_MATCH'])) {
             if ($_SERVER['HTTP_IF_NONE_MATCH'] == $etag) {
@@ -243,7 +232,7 @@ class Pages extends Cacheable
      * @param int $last_modified The date when the cached file has been last modified
      * @param string $etag The etag
      */
-    protected function outputHeaders(int $last_modified, string $etag)
+    protected function sendHeaders(int $last_modified, string $etag)
     {
         header('Cache-Control: no-cache');
         header('Vary: Accept');
@@ -254,7 +243,7 @@ class Pages extends Cacheable
     /**
      * Outputs the headers needed when storing the content in the cache
      */
-    protected function outputHeadersOnStore()
+    protected function sendHeadersOnStore()
     {
         if (headers_sent()) {
             return;
@@ -265,32 +254,21 @@ class Pages extends Cacheable
         if ($last_modified) {
             $etag = $this->getEtag($last_modified);
 
-            $this->outputHeaders($last_modified, $etag);
+            $this->sendHeaders($last_modified, $etag);
         }
     }
 
     /**
-     * Outputs the cached content
+     * Serves the cached content
      */
-    protected function outputContent()
+    protected function serveContent()
     {
-        $this->outputContentType();
-
         $content = $this->driver->get($this->filename, false);
         
         header('Content-Length: ' . strlen($content));
 
         echo $content;
         die;
-    }
-
-    /**
-     * Outputs the content type. Must be implemented by the classes extending Cacheable
-     * @return static
-     */
-    protected function outputContentType() : static
-    {
-        return $this;
     }
 
     /**
@@ -310,16 +288,5 @@ class Pages extends Cacheable
     protected function getEtag(int $last_modified) : string
     {
         return md5($this->filename . $last_modified);
-    }
-
-    /**
-     * Html minifies the content
-     * @param string $content The code to minify
-     * @return string The minified code
-     */
-    protected function minify(string $content) : string
-    {
-        $minifier = new Minifier($this->app);
-        return $minifier->minifyHtml($content);
     }
 }

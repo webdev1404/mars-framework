@@ -9,17 +9,20 @@ namespace Mars;
 use Mars\App\LazyLoad;
 use Mars\App\LazyLoadProperty;
 use Mars\App\Registry;
-use Mars\Alerts\Errors;
-use Mars\Alerts\Info;
-use Mars\Alerts\Warnings;
-use Mars\Alerts\Messages;
-use Mars\Assets\Minifier;
+use Mars\Alert\Errors;
+use Mars\Alert\Info;
+use Mars\Alert\Warnings;
+use Mars\Alert\Messages;
+use Mars\Asset\Minifier;
 use Mars\Db\Sql;
 use Mars\Filesystem\Dir;
 use Mars\Filesystem\File;
 use Mars\Filesystem\Image;
 use Mars\Http\Request;
 use Mars\Http\Response;
+use Mars\Http\Response\Body\Data\Data as ResponseData;
+use Mars\Http\Response\Body\Data\Json as JsonData;
+use Mars\Http\Response\Body\Data\Html as HtmlData;
 use Mars\Data\Types\ArrayType;
 use Mars\Data\Types\ObjectType;
 use Mars\Data\Types\StringType;
@@ -290,10 +293,10 @@ class App
     public Router $router;
 
     /**
-     * @var Screens $screen The screens object
+     * @var Screen $screen The screen object
      */
     #[LazyLoadProperty]
-    public Screens $screens;
+    public Screen $screen;
 
     /**
      * @var Serializer $serializer The serializer object
@@ -726,8 +729,8 @@ class App
     public protected(set) array $stats = [
         'content_size' => 0,
         'content_time' => 0,
-        'output_size' => 0,
-        'output_time' => 0
+        'html_size' => 0,
+        'html_time' => 0
     ];
 
     /**
@@ -762,11 +765,11 @@ class App
 
         $this->setErrorReporting();
 
-        //output the early hints headers, if enabled
-        $this->outputEarlyHints();
+        //sends the early hints headers, if enabled
+        $this->sendEarlyHints();
         
-        //output the cached content if it exists
-        $this->outputIfCached();
+        //sends the cached content if it exists
+        $this->sendIfCached();
 
         //boot the modules
         $this->modules->boot();
@@ -841,13 +844,29 @@ class App
     }
 
     /**
-     * Outputs the early hints headers, if enabled
+     * Runs the app: starts the output buffering, executes the router and ends the output buffering
      */
-    protected function outputEarlyHints()
+    public function run()
     {
-        if (!$this->config->development->enable && $this->config->headers->early_hints->enable) {
-            $this->response->headers->early_hints->output();
+        $this->plugins->run('app.start', $this);
+
+        $data = $this->router->execute();
+
+        $this->send($data);
+
+        $this->plugins->run('app.end', $this);
+    }
+
+    /**
+     * Sends the early hints headers, if enabled
+     */
+    protected function sendEarlyHints()
+    {
+        if (!$this->config->headers->early_hints->enable || $this->request->is_json || $this->config->development->enable) {
+            return;
         }
+
+        $this->response->headers->early_hints->send();
     }
 
     /**
@@ -855,120 +874,124 @@ class App
      */
     protected function cacheEarlyHints()
     {
-        if ($this->config->headers->early_hints->enable) {
-            $this->response->headers->early_hints->cache();
+        if (!$this->config->headers->early_hints->enable || $this->request->is_json) {
+            return;
         }
+
+        $this->response->headers->early_hints->cache();
     }
 
     /**
-     * Outputs the content if the page is cached
+     * Sends the content if the page is cached
      */
-    protected function outputIfCached()
+    protected function sendIfCached()
     {
-        if ($this->config->cache->page->enable) {
-            $this->cache->pages->output();
+        //var_dump($_SERVER);die;
+        if (!$this->config->cache->page->enable) {
+            return;
         }
+
+        $this->cache->pages->serve();
     }
 
     /**
-     * Sends a json response
-     * @param mixed $content The content to send
+     * Caches the content if page caching is enabled
+     * @param string $content The content to cache
      */
-    public function send($content)
+    protected function cacheContent(string $content)
     {
-        $this->response->type = 'json';
+        if (!$this->config->cache->page->enable) {
+            return;
+        }
 
-        $this->response->output($content);
-        die;
+        $this->cache->pages->store($content);
     }
 
     /**
-     * Outputs the content
-     * @param string $content The content
+     * Sends the response
+     * @param ResponseData $data The data to send in the response
      */
-    public function output(string $content)
+    protected function send(ResponseData $data)
     {
-        $this->response->type = 'html';
+        if ($data instanceof HtmlData) {
+            $data = $this->prepareHtml($data);
+        } else {
+            $data = $this->prepareJson($data);
+        }
 
-        echo $content;
+        $content = $this->response->send($data);
+
+        if ($data instanceof HtmlData) {
+            //only cache early hints if it's an HTML response, so assets which can be marked as early hints can properly load
+            $this->cacheEarlyHints();
+        }
+
+        $this->cacheContent($content);
     }
 
     /**
-     * Starts the output buffering.
+     * Prepares a json response
+     * @param ResponseData $data The data to prepare in the json response
+     * @return ResponseData The prepared response data
      */
-    public function start()
+    public function prepareJson(ResponseData $data) : ResponseData
     {
-        $this->plugins->run('app.start', $this);
+        $data->content = $this->plugins->filter('app.prepare.json', $data->content, $this);
+
+        return $data;
+    }
+
+    /**
+     * Prepares the HTML content
+     * @param ResponseData $data The data to prepare in the HTML response
+     * @return ResponseData The prepared response data
+     */
+    public function prepareHtml(ResponseData $data) : ResponseData
+    {
+        if ($this->config->debug->enable) {
+            $this->timer->start('app_html_time');
+        }
+
+        $html =  $this->getHtml($data->content);
 
         if ($this->config->debug->enable) {
-            $this->timer->start('app_content_time');
+            $this->stats['html_size'] = strlen($html);
+            $this->stats['html_time'] = $this->timer->stop('app_html_time');
+
+            $html.= $this->getDebugHtml();
         }
 
+        $html = $this->plugins->filter('app.prepare.html', $html, $this);
+
+        $data->content = $html;
+
+        return $data;
+    }
+
+    /**
+     * Returns the HTML output
+     * @param string $content The content to build the html output from
+     * @return string The html output
+     */
+    protected function getHtml(string $content) : string
+    {
         ob_start();
-    }
-
-    /**
-     * Generates the output and sends it to the browser.
-     */
-    public function end()
-    {
-        $content = ob_get_clean();
-        
-        $content = $this->plugins->filter('app.filter.content', $content, $this);
-
-        if ($this->config->debug->enable) {
-            $this->stats['content_size'] = strlen($content);
-            $this->stats['content_time'] = $this->timer->stop('app_content_time');
-
-            $this->timer->start('app_output_time');
-        }
-
-        $output = $this->buildOutput($content);
-
-        $output = $this->plugins->filter('app.filter.output', $output, $this);
-
-        if ($this->config->debug->enable) {
-            $this->stats['output_size'] = strlen($output);
-            $this->stats['output_time'] = $this->timer->stop('app_output_time');
-
-            $output.= $this->getDebugOutput();
-        }
-
-        $this->cacheEarlyHints();
-
-        $this->response->output($output);
-
-        $this->plugins->run('app.end', $this);
-    }
-
-    /**
-     * Builds the output
-     * @param string $content The content to build the output for
-     * @return string The output
-     */
-    protected function buildOutput(string $content) : string
-    {
-        if (!$this->config->theme->name) {
-            return $content;
-        }
-
-        ob_start();
-        $this->theme->output($content);
+        $this->theme->renderHtml($content);
         return ob_get_clean();
     }
 
     /**
-     * Returns the debug output, if debug is on
+     * Returns the debug HTML code, if debug is on
      * @return string
      */
-    protected function getDebugOutput() : string
+    protected function getDebugHtml() : string
     {
         ob_start();
-        $this->debug->output();
+        $this->debug->render();
         return ob_get_clean();
     }
 
-    /**********************SCREENS METHODS***************************************/
+    /**********************SCREEN METHODS***************************************/
 
     /**
      * Displays a fatal error screen
@@ -981,7 +1004,7 @@ class App
             return;
         }
 
-        $this->screens->fatalError($text);
+        $this->screen->fatalError($text);
     }
 
     /**
@@ -996,7 +1019,7 @@ class App
             return;
         }
 
-        $this->screens->error($text, $title);
+        $this->screen->error($text, $title);
     }
 
     /**
@@ -1011,7 +1034,7 @@ class App
             return;
         }
 
-        $this->screens->message($text, $title);
+        $this->screen->message($text, $title);
     }
 
     /**
@@ -1025,7 +1048,7 @@ class App
             return;
         }
 
-        $this->screens->permissionDenied();
+        $this->screen->permissionDenied();
     }
 
     /**
@@ -1112,6 +1135,11 @@ class App
         return $str;
     }
 
+    /**
+     * Converts a string to PascalCase. Eg: some-action => SomeAction
+     * @param string $str The string to convert
+     * @return string The PascalCase string
+     */
     public static function toPascalCase(string $str) : string
     {
         $str = preg_replace('/[^a-z0-9\- ]/i', '', $str);

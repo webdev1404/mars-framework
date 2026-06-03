@@ -37,14 +37,14 @@ final class ResponseTest extends Base
     {
         $content = '<p>Test HTML Content</p>';
         ob_start();
-        $this->app->response->output($content);
+        $this->app->response->send($content);
         $output = ob_get_clean();
         $this->assertSame($output, $content);
 
         $this->app->response->type = 'ajax';
         $content = ['status' => 'success', 'message' => 'Test AJAX Content'];
         ob_start();
-        $this->app->response->output($content);
+        $this->app->response->send($content);
         $output = ob_get_clean();
 
         $expected = [

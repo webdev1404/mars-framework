@@ -8,7 +8,7 @@ namespace Mars\Objects;
 
 use Mars\App;
 use Mars\App\Kernel;
-use Mars\Alerts\Errors;
+use Mars\Alert\Errors;
 use Mars\Validation\ValidateTrait;
 
 /**

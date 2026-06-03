@@ -51,7 +51,7 @@ trait ListGroupTrait
     public function add(string|array $type, mixed $value = '') : static
     {
         if (is_array($type)) {
-            $this->{static::$property} = array_merge_recursive($this->{static::$property}, $type);
+            $this->addMany($type);
         } else {
             $this->{static::$property}[$type][] = $value;
         }
@@ -65,10 +65,16 @@ trait ListGroupTrait
      * @param array $values The values to add
      * @return static
      */
-    public function addMany(string $type, array $values) : static
+    public function addMany(string|array $type, array $values = []) : static
     {
-        foreach ($values as $value) {
-            $this->{static::$property}[$type][] = $value;
+        if (is_array($type)) {
+            foreach ($type as $_type => $values) {
+                $this->{static::$property}[$_type] = array_merge($this->{static::$property}[$_type] ?? [], (array)$values);
+            }
+        } else {
+            foreach ($values as $value) {
+                $this->{static::$property}[$type][] = $value;
+            }
         }
 
         return $this;

@@ -6,7 +6,7 @@
 
 namespace Mars\Extensions\Themes\Links;
 
-use Mars\Document\Links\Links as DocumentLinks;
+use Mars\Document\Link\Links as DocumentLinks;
 
 /**
  * The Base Class for the theme document elements
@@ -63,24 +63,24 @@ abstract class Links extends Base
     }
 
     /**
-     * Outputs a link
-     * @param string $url The url to output
+     * Renders a link
+     * @param string $url The url to render
      * @param array $attributes The attributes of the url, if any
      */
-    public function outputLink(string $url, array $attributes = [])
+    public function renderLink(string $url, array $attributes = [])
     {
         $url = $this->assets_url . '/' . $url;
 
-        $this->urls->outputLink($url, $attributes);
+        $this->urls->renderLink($url, $attributes);
     }
 
     /**
-     * Outputs the given code
-     * @param string $code The code to output
+     * Renders the given code
+     * @param string $code The code to render
      */
-    public function outputCode(string $code)
+    public function renderCode(string $code)
     {
-        $this->urls->outputCode($code);
+        $this->urls->renderCode($code);
     }
 
     /**

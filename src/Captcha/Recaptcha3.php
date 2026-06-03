@@ -21,9 +21,9 @@ class Recaptcha3 implements CaptchaInterface
      * @var array $csp_directives The CSP directives to be added for the captcha to work
      */
     protected array $csp_directives = [
-        'script-src' => ['https://www.gstatic.com/recaptcha/'],
-        'frame-src' => ['https://www.google.com/recaptcha/'],
-        'connect-src' => ['https://www.google.com/recaptcha/'],
+        'script-src' => 'https://www.gstatic.com/recaptcha/',
+        'frame-src' => 'https://www.google.com/recaptcha/',
+        'connect-src' => 'https://www.google.com/recaptcha/',
     ];
 
     /**
@@ -62,10 +62,10 @@ class Recaptcha3 implements CaptchaInterface
     }
 
     /**
-     * @see CaptchaInterface::check()
+     * @see CaptchaInterface::verify()
      * {@inheritDoc}
      */
-    public function check() : bool
+    public function verify() : bool
     {
         $token = $this->app->request->post->get('recaptcha3-token');
         if (!$token) {
@@ -99,10 +99,10 @@ class Recaptcha3 implements CaptchaInterface
     }
 
     /**
-     * @see CaptchaInterface::output()
+     * @see CaptchaInterface::render()
      * {@inheritDoc}
      */
-    public function output()
+    public function render()
     {
         $this->init();
 

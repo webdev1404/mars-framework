@@ -100,7 +100,7 @@ class Routes extends Data
      */
     protected function getHashesData(array $hashes_list, array $routes_list) : array
     {
-        $routes = new \Mars\Router\Loaders\Routes;
+        $routes = new \Mars\Router\Loader\Routes;
         foreach ($hashes_list as $hash => $key) {
             $routes->hashes[$hash] = $routes->getKey($routes_list[$key]);
         }

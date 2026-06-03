@@ -278,18 +278,6 @@ abstract class Extension
     }
 
     /**
-     * Includes the extension's boot file
-     */
-    public function boot()
-    {
-        $app = $this->app;
-
-        if (is_file($this->path . '/boot.php')) {
-            include($this->path . '/boot.php');
-        }
-    }
-
-    /**
      * Returns the extension's type
      * @return string
      */
@@ -317,46 +305,14 @@ abstract class Extension
     }
 
     /**
-     * Runs the extension and outputs the generated content
+     * Includes the extension's boot file
      */
-    public function output()
+    public function boot()
     {
-        echo $this->run();
-    }
+        $app = $this->app;
 
-    /**
-     * Executes the extension's code and returns the generated content
-     * @return string The generated content
-     */
-    public function run() : string
-    {
-        $this->startOutput();
-
-        include($this->path . '/index.php');
-
-        return $this->endOutput();
-    }
-
-    /**
-     * Starts the output buffering
-     */
-    protected function startOutput()
-    {
-        $this->app->timer->start('extension_output');
-
-        ob_start();
-    }
-
-    /**
-     * Ends the output buffering
-     * @return string The output
-     */
-    protected function endOutput() : string
-    {
-        $output = ob_get_clean();
-
-        $this->exec_time = $this->app->timer->stop('extension_output');
-
-        return $output;
+        if (is_file($this->path . '/boot.php')) {
+            include($this->path . '/boot.php');
+        }
     }
 }

@@ -1,0 +1,51 @@
+<?php
+/**
+* The Varnish Accelerator Class
+* @package Mars
+*/
+
+namespace Mars\Accelerator;
+
+use Mars\App;
+use Mars\App\Kernel;
+
+/**
+ * The Varnish Accelerator Class
+ */
+class Varnish implements AcceleratorInterface
+{
+    use Kernel;
+
+    /**
+     * AcceleratorInterface::delete()
+     * {@inheritDoc}
+     */
+    public function delete(string $url) : bool
+    {
+        $response = $this->app->web->request->custom($this->app->base_url, 'PURGE');
+
+        return $response->ok();
+    }
+
+    /**
+     * AcceleratorInterface::deleteByPattern()
+     * {@inheritDoc}
+     */
+    public function deleteByPattern(string $pattern) : bool
+    {
+        $response = $this->app->web->request->custom($this->app->base_url, 'BAN', ['headers' => ['X-Ban-Pattern: ' . $pattern]]);
+
+        return $response->ok();
+    }
+
+    /**
+     * AcceleratorInterface::deleteAll()
+     * {@inheritDoc}
+     */
+    public function deleteAll() : bool
+    {
+        $response = $this->app->web->request->custom($this->app->base_url, 'FULLBAN');
+
+        return $response->ok();
+    }
+}

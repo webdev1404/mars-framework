@@ -80,16 +80,16 @@ class Captcha
     }
 
     /**
-     * Outputs the captcha
+     * Renders the captcha
      */
-    public function output()
+    public function render()
     {
         if (!$this->enabled) {
             return;
         }
 
         echo '<div class="captcha">';
-        $this->driver->output();
+        $this->driver->render();
         echo '</div>';
     }
 }

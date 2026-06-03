@@ -18,6 +18,6 @@ final class RssTest extends Base
             '<link rel="alternate" type="application/rss+xml" title="My First Rss feed" href="https://www.mydomain.com/rss/feed1.xml">' . "\n" .
             '<link rel="alternate" type="application/rss+xml" title="My Second Rss feed" href="https://www.mydomain.com/rss/feed2.xml">' . "\n"
         );
-        $this->app->document->rss->output();
+        $this->app->document->rss->send();
     }
 }

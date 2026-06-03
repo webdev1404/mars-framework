@@ -1,0 +1,81 @@
+<?php
+/**
+* The Screen Class
+* @package Mars
+*/
+
+namespace Mars;
+
+use Mars\App\Kernel;
+use Mars\App\Handlers;
+
+/**
+ * The Screen Class
+ * Contains 'Screen' functionality. Eg: error, message, fatal error screens etc..
+ */
+class Screen
+{
+    use Kernel;
+
+    /**
+     * @var array $screens_list The list of supported screens
+     */
+    public protected(set) array $screens_list = [
+        'error' => \Mars\Screen\Error::class,
+        'message' => \Mars\Screen\Message::class,
+        'fatal_error' => \Mars\Screen\FatalError::class,
+        'permission_denied' => \Mars\Screen\PermissionDenied::class,
+    ];
+
+    /**
+     * @var Handlers $screens The screens handlers
+     */
+    public protected(set) Handlers $screens {
+        get {
+            if (isset($this->screens)) {
+                return $this->screens;
+            }
+
+            $this->screens = new Handlers($this->screens_list, null, $this->app);
+
+            return $this->screens;
+        }
+    }
+
+    /**
+     * Displays an error screen
+     * @param string $text The error's text
+     * @param string $title The error's title, if any
+     */
+    public function error(string $text, ?string $title = null)
+    {
+        $this->screens->get('error')->render($text, $title);
+    }
+
+    /**
+     * Displays a message screen
+     * @param string $text The text of the message
+     * @param string $title The title of the message, if any
+     */
+    public function message(string $text, ?string $title = null)
+    {
+        $this->screens->get('message')->render($text, $title);
+    }
+
+    /**
+     * Displays a fatal error screen
+     * @param string $text The error's text
+     */
+    public function fatalError(string $text)
+    {
+        $this->screens->get('fatal_error')->render($text);
+    }
+
+    /**
+     * Displays the Permission Denied screen
+     */
+    public function permissionDenied()
+    {
+        $this->screens->get('permission_denied')->render();
+    }
+}

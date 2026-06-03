@@ -17,27 +17,27 @@ class Debug
     use Kernel;
 
     /**
-     * Outputs all the debug info
+     * Renders all the debug info
      */
-    public function output()
+    public function render()
     {
         echo '<div id="debug-info">';
 
         $this->app->plugins->run('debug.output.step1', $this);
 
-        $this->outputInfo();
-        $this->outputExecutionTime();
+        $this->renderInfo();
+        $this->renderExecutionTime();
 
         $this->app->plugins->run('debug.output.step2', $this);
         
-        $this->outputPlugins();
-        $this->outputDbQueries();
+        $this->renderPlugins();
+        $this->renderDbQueries();
 
         $this->app->plugins->run('debug.output.step3', $this);
 
-        $this->outputLoadedTemplates();
-        $this->outputOpcacheInfo();
-        $this->outputPreloadInfo();
+        $this->renderLoadedTemplates();
+        $this->renderOpcacheInfo();
+        $this->renderPreloadInfo();
 
         $this->app->plugins->run('debug.output.step4', $this);
 
@@ -45,15 +45,14 @@ class Debug
     }
 
     /**
-     * Outputs basic debug info
+     * Renders basic debug info
      */
-    public function outputInfo()
+    public function renderInfo()
     {
         echo '<table class="grid debug-grid">';
         echo '<tr><th colspan="3">Debug Info</th></tr>';
         echo '<tr><td><strong>Execution Time</strong></td><td>' . $this->app->timer->getExecutionTime() . 's</td></tr>';
-        echo '<tr><td><strong>Content Size</strong></td><td>' . $this->app->format->filesize($this->app->stats['content_size']) . '</td></tr>';
-        echo '<tr><td><strong>Output Size</strong></td><td>' . $this->app->format->filesize($this->app->stats['output_size']) . '</td></tr>';
+        echo '<tr><td><strong>HTML Size</strong></td><td>' . $this->app->format->filesize($this->app->stats['html_size']) . '</td></tr>';
         echo '<tr><td><strong>Memory Usage</strong></td><td>' . $this->app->format->filesize(\memory_get_usage()) . '</td></tr>';
         echo '<tr><td><strong>Memory Peak Usage</strong></td><td>' . $this->app->format->filesize(\memory_get_peak_usage()) . '</td></tr>';
         echo '<tr><td><strong>Memory Usage (Real)</strong></td><td>' . $this->app->format->filesize(\memory_get_usage(true)) . '</td></tr>';
@@ -65,9 +64,9 @@ class Debug
     }
 
     /**
-     * Outputs execution time info
+     * Renders execution time info
      */
-    public function outputExecutionTime()
+    public function renderExecutionTime()
     {
         $execution_time = $this->app->timer->getExecutionTime();
 
@@ -76,15 +75,14 @@ class Debug
         echo '<tr><td><strong>Execution Time</strong></td><td>' . $execution_time . 's</td><td></td></tr>';
         echo "<tr><td><strong>DB Queries</strong></td><td>{$this->app->db->queries_time}s</td><td>" . $this->app->format->percentage($this->app->db->queries_time, $execution_time) . '%</td></tr>';
         echo "<tr><td><strong>Plugins</strong></td><td>{$this->app->plugins->total_time}s</td><td>" . $this->app->format->percentage($this->app->plugins->total_time, $execution_time) . '%</td></tr>';
-        echo "<tr><td><strong>Content Output</strong></td><td>{$this->app->stats['content_time']}s</td><td>" . $this->app->format->percentage($this->app->stats['content_time'], $execution_time) . '%</td></tr>';
-        echo "<tr><td><strong>Generate Output</strong></td><td>{$this->app->stats['output_time']}s</td><td>" . $this->app->format->percentage($this->app->stats['output_time'], $execution_time) . '%</td></tr>';
+        echo "<tr><td><strong>Generate HTML</strong></td><td>{$this->app->stats['html_time']}s</td><td>" . $this->app->format->percentage($this->app->stats['html_time'], $execution_time) . '%</td></tr>';
         echo '</table><br><br>';
     }
 
     /**
-     * Outputs plugins debug info
+     * Renders plugins debug info
      */
-    public function outputPlugins()
+    public function renderPlugins()
     {
         $execution_time = $this->app->timer->getExecutionTime();
         if (!$this->app->plugins->plugins) {
@@ -108,9 +106,9 @@ class Debug
     }
 
     /**
-     * Outputs mysql info
+     * Renders mysql info
      */
-    public function outputDbQueries()
+    public function renderDbQueries()
     {
         $execution_time = $this->app->timer->getExecutionTime();
 
@@ -127,9 +125,9 @@ class Debug
     }
 
     /**
-     * Outputs info about the loaded templates
+     * Renders info about the loaded templates
      */
-    public function outputLoadedTemplates()
+    public function renderLoadedTemplates()
     {
         echo '<table class="grid debug-grid debug-grid-templates">';
         echo '<tr><th colspan="1">Loaded templates</th></tr>';
@@ -140,9 +138,9 @@ class Debug
     }
 
     /**
-     * Outputs opcache info
+     * Renders opcache info
      */
-    public function outputOpcacheInfo()
+    public function renderOpcacheInfo()
     {
         $info = opcache_get_status(true);
         if (!$info) {
@@ -183,18 +181,9 @@ class Debug
         echo '<tr><td><strong>From Cache</strong></td><td>' . $from_cache . '</td></tr>';
         echo '<tr><td><strong>From Disk</strong></td><td>' . $from_disk . '</td></tr>';
         echo '</table><br><br>';
-
-        /*if ($uncached_files) {
-            echo '<table class="grid debug-grid debug-grid-opcache-uncached">';
-            echo '<tr><th>Files Read From Disk</th></tr>';
-            foreach ($uncached_files as $file) {
-                echo '<tr><td>' . $this->app->escape->html($file) . '</td></tr>';
-            }
-            echo '</table><br><br>';
-        }*/
     }
 
-    public function outputPreloadInfo()
+    public function renderPreloadInfo()
     {
         $info = opcache_get_status(true);
         if (!$info) {

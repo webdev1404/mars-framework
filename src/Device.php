@@ -8,8 +8,8 @@ namespace Mars;
 
 use Mars\App\Kernel;
 use Mars\App\Drivers;
-use Mars\Devices\DeviceInterface;
-use Mars\Devices\Type;
+use Mars\Device\DeviceInterface;
+use Mars\Device\Type;
 
 /**
  * The Device Class
@@ -23,7 +23,7 @@ class Device
      * @var array $drivers_list The supported drivers list
      */
     public protected(set) array $drivers_list = [
-        'mobile_detect' => \Mars\Devices\MobileDetect::class
+        'mobile_detect' => \Mars\Device\MobileDetect::class
     ];
 
     /**

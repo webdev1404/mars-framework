@@ -1,0 +1,26 @@
+<?php
+/**
+* The Alphabetic Filter Class
+* @package Mars
+*/
+
+namespace Mars\Filter;
+
+/**
+ * The Alphabetic Filter Class
+ */
+class Alpha extends Filter
+{
+    /**
+     * @see \Mars\Filter::alpha()
+     */
+    public function filter(string $value, bool $space = false) : string
+    {
+        $pattern = "/[^a-z]/i";
+        if ($space) {
+            $pattern = "/[^a-z ]/i";
+        }
+
+        return preg_replace($pattern, '', trim($value));
+    }
+}

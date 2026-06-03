@@ -10,10 +10,10 @@ use Mars\App;
 use Mars\App\Kernel;
 use Mars\App\Lazyload;
 use Mars\App\LazyLoadProperty;
-use Mars\App\Handlers;
-use Mars\Http\Response\ResponseInterface;
-use Mars\Http\Response\Data\Cookies;
-use Mars\Http\Response\Data\Headers;
+use Mars\Http\Response\Body;
+use Mars\Http\Response\Cookies;
+use Mars\Http\Response\Headers;
+use Mars\Http\Response\Body\Data\Data;
 
 /**
  * The Response Class
@@ -25,55 +25,22 @@ class Response
     use Lazyload;
 
     /**
-     * @var array $supported_responses The supported responses types
+     * @var Headers $headers The headers object
      */
-    protected array $supported_responses = [
-        'json' => \Mars\Http\Response\Json::class,
-        'html' => \Mars\Http\Response\Html::class
-    ];
+    #[LazyLoadProperty]
+    public Headers $headers;
 
     /**
-     * @var Handlers $responses The $responses object
+     * @var Body $body The response body
      */
-    public protected(set) Handlers $responses {
-        get {
-            if (isset($this->responses)) {
-                return $this->responses;
-            }
-
-            $this->responses = new Handlers($this->supported_responses, ResponseInterface::class, $this->app);
-
-            return $this->responses;
-        }
-    }
+    #[LazyLoadProperty]
+    public Body $body;
 
     /**
      * @var Cookies $cookies The cookies object
      */
     #[LazyLoadProperty]
     public Cookies $cookies;
-
-    /**
-     * @var Headers $headers The headers object
-     */
-    #[LazyLoadProperty]
-    public Headers $headers;
-    
-    /**
-     * @var string $type The response type
-     */
-    public string $type = 'html' {
-        set(string $type) {
-            switch ($type) {
-                case 'json':
-                case 'ajax':
-                    $this->type = 'json';
-                    break;
-                default:
-                    $this->type = 'html';
-            }
-        }
-    }
 
     /**
      * Builds the Response object
@@ -87,13 +54,13 @@ class Response
     }
 
     /**
-     * Outputs the $content
-     * @param mixed $content The content to output
+     * Sends the content as a response
+     * @return string The sent content
      */
-    public function output($content)
+    public function send(Data $data) : string
     {
-        $this->headers->output();
+        $this->headers->send();
 
-        $this->responses->get($this->type)->output($content);
+        return $this->body->send($data);
     }
 }

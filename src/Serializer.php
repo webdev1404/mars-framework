@@ -8,7 +8,7 @@ namespace Mars;
 
 use Mars\App\Kernel;
 use Mars\App\Drivers;
-use Mars\Serializers\SerializerInterface;
+use Mars\Serializer\SerializerInterface;
 
 /**
  * The Serializer Class
@@ -23,8 +23,8 @@ class Serializer
      * @var array $drivers_list The supported drivers list
      */
     public protected(set) array $drivers_list = [
-        'php' => \Mars\Serializers\Php::class,
-        'igbinary' => \Mars\Serializers\Igbinary::class,
+        'php' => \Mars\Serializer\Php::class,
+        'igbinary' => \Mars\Serializer\Igbinary::class,
     ];
 
     /**

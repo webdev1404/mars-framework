@@ -8,7 +8,7 @@ namespace Mars;
 
 use Mars\App\Kernel;
 use Mars\App\Drivers;
-use Mars\Accelerators\AcceleratorInterface;
+use Mars\Accelerator\AcceleratorInterface;
 
 /**
  * The Accelerator Class
@@ -22,7 +22,7 @@ class Accelerator
      * @var array $drivers_list The supported drivers list
      */
     public protected(set) array $drivers_list = [
-        'varnish' => \Mars\Accelerators\Varnish::class
+        'varnish' => \Mars\Accelerator\Varnish::class
     ];
 
     /**

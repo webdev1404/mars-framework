@@ -17,53 +17,80 @@ class Security
     use Kernel;
 
     /**
-     * @var string $default_algo The default hashing algorithm
+     * @var string $hash_algo The default hashing algorithm
      */
-    protected string $default_algo = 'sha512';
-
-    /**
-     * Hashes data using the specified algorithm
-     * @param string $data The data to hash
-     * @param string|null $algo The hashing algorithm to use. If null, the default algorithm (sha512) will be used
-     * @return string The hashed data
-     */
-    public function hash(string $data, ?string $algo = null) : string
-    {
-        return hash($algo ?? $this->default_algo, $data);
+    protected string $hash_algo {
+        get => $this->app->config->security->hash_algo;
     }
 
     /**
-     * Verifies a hash against data using the specified algorithm
+     * @var string $strong_hash_algo The strong hashing algorithm
+     */
+    protected string $strong_hash_algo {
+        get => $this->app->config->security->strong_hash_algo;
+    }
+
+    /**
+     * Hashes data using the security.hash.algo algorithm
+     * @param string $data The data to hash
+     * @return string The hashed data
+     */
+    public function getHash(string $data) : string
+    {
+        return hash($this->hash_algo, $data);
+    }
+
+    /**
+     * Verifies a hash against data
      * @param string $data The data to verify
      * @param string $hash The hash to verify against
-     * @param string|null $algo The hashing algorithm to use. If null, the default algorithm (sha512) will be used
      * @return bool True if the data matches the hash, false otherwise
      */
-    public function verifyHash(string $data, string $hash, ?string $algo = null) : bool
+    public function verifyHash(string $data, string $hash) : bool
     {
-        return hash($algo ?? $this->default_algo, $data) === $hash;
+        return hash($this->hash_algo, $data) === $hash;
+    }
+
+    /**
+     * Hashes data using the security.strong_hash.algo algorithm
+     * @param string $data The data to hash
+     * @return string The hashed data
+     */
+    public function getStrongHash(string $data) : string
+    {
+        return hash($this->strong_hash_algo, $data);
+    }
+
+    /**
+     * Verifies a strong hash against data
+     * @param string $data The data to verify
+     * @param string $hash The hash to verify against
+     * @return bool True if the data matches the hash, false otherwise
+     */
+    public function verifyStrongHash(string $data, string $hash) : bool
+    {
+        return hash($this->strong_hash_algo, $data) === $hash;
     }
 
     /**
      * Returns a token from a string
      * @param string $string The string to generate the token from
-     * @param string|null $algo The hashing algorithm to use
+     * @return string The generated token
      */
-    public function getToken(string $string, ?string $algo = null) : string
+    public function getToken(string $string) : string
     {
-        return $algo ? $this->hash($string, $algo) : $this->hashPassword($string);
+        return $this->hashPassword($string);
     }
 
     /**
      * Verifies a token against a string
      * @param string $string The string to verify
      * @param string $token The token to verify against
-     * @param string|null $algo The hashing algorithm to use
      * @return bool True if the string matches the token, false otherwise
      */
-    public function verifyToken(string $string, string $token, ?string $algo = null) : bool
+    public function verifyToken(string $string, string $token) : bool
     {
-        return $algo ? $this->verifyHash($string, $token, $algo) : $this->verifyPassword($string, $token);
+        return $this->verifyPassword($string, $token);
     }
 
     /**

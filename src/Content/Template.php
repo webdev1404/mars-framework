@@ -6,6 +6,8 @@
 
 namespace Mars\Content;
 
+use Mars\Http\Response\Body\Data\Data;
+
 /**
  * The Template Content Class
  * Outputs the content of a template
@@ -13,11 +15,11 @@ namespace Mars\Content;
 class Template extends Content implements ContentInterface
 {
     /**
-     * Outputs a html template from the theme's templates folder
-     * @param array $vars Variables to pass to the template
+     * @see ContentInterface::run()
+     * {@inheritDoc}
      */
-    public function output(array $vars = [])
+    public function run(array $vars = []) : Data
     {
-        echo $this->app->theme->getTemplate($this->name, $vars);
+        return $this->app->response->body->create(null, $this->app->theme->getTemplate($this->name, $vars));
     }
 }

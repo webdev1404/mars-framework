@@ -8,7 +8,7 @@ namespace Mars;
 
 use Mars\App\Kernel;
 use Mars\App\Handlers;
-use Mars\Alerts\Errors;
+use Mars\Alert\Errors;
 
 /**
  * The Validator Class

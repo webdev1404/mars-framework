@@ -18,6 +18,6 @@ final class MetaTest extends Base
             '<meta name="author" content="John Doe">' . "\n" .
             '<meta name="keywords" content="k1, k2">' . "\n"
         );
-        $this->app->document->meta->output();
+        $this->app->document->meta->send();
     }
 }

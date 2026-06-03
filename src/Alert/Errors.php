@@ -1,0 +1,27 @@
+<?php
+/**
+* The Errors Class
+* @package Mars
+*/
+
+namespace Mars\Alert;
+
+/**
+ * The Errors Class
+ * Errors container
+ */
+class Errors extends Alerts
+{
+    /**
+     * Returns true if no errors have been generated
+     * @return bool
+     */
+    public function ok() : bool
+    {
+        if ($this->alerts) {
+            return false;
+        }
+
+        return true;
+    }
+}

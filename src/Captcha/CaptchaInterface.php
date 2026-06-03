@@ -12,13 +12,13 @@ namespace Mars\Captcha;
 interface CaptchaInterface
 {
     /**
-     * Checks the captcha is correct
+     * Verifies the captcha
      * @return bool True if the captcha is valid, false otherwise
      */
-    public function check() : bool;
+    public function verify() : bool;
 
     /**
-     * Outputs the captcha
+     * Renders the captcha
      */
-    public function output();
+    public function render();
 }

@@ -122,16 +122,18 @@ class Theme extends BaseTheme
     }
 
     /**
-     * Outputs the generated content
-     * @param string $content The content to output
+     * Builds the theme's HTML code and renders it
+     * @param string $content The content
      */
-    public function output(string $content = '')
+    public function renderHtml(string $content = '')
     {
+        $this->content = $content;
+
         $this->prepare();
 
-        $this->renderHeader();
-        $this->renderContent($content);
-        $this->renderFooter();
+        $this->render($this->header_template);
+        $this->render($this->content_template);
+        $this->render($this->footer_template);
     }
 
     /**
@@ -147,7 +149,7 @@ class Theme extends BaseTheme
     }
 
     /**
-     * Renders/Outputs a template
+     * Renders a template
      * @param string $template The name of the template
      * @param array $vars Vars to pass to the template, if any
      */
@@ -157,34 +159,7 @@ class Theme extends BaseTheme
     }
 
     /**
-     * Outputs the header
-     */
-    public function renderHeader()
-    {
-        $this->render($this->header_template);
-    }
-
-    /**
-     * Outputs the content template
-     * @param string $content The content to render
-     */
-    public function renderContent(string $content)
-    {
-        $this->content = $content;
-
-        $this->render($this->content_template, ['content' => $content]);
-    }
-
-    /**
-     * Outputs the footer
-     */
-    public function renderFooter()
-    {
-        $this->render($this->footer_template);
-    }
-
-    /**
-     * Renders/Outputs a template, by filename
+     * Renders a template, by filename
      * @see Theme::getTemplateByFilename()
      */
     public function renderFilename(string $filename, ?string $filename_rel = null, array $vars = [], string $type = 'template', array $params = [], bool $development = false)
@@ -193,92 +168,92 @@ class Theme extends BaseTheme
     }
 
     /**
-     * Outputs the language
+     * Renders the language
      */
-    public function outputLang()
+    public function renderLang()
     {
         echo $this->app->escape->html($this->app->lang->lang);
     }
 
     /**
-     * Outputs code in the <head>
+     * Renders code in the <head>
      */
-    public function outputHead()
+    public function renderHead()
     {
-        $this->document->outputHead();
+        $this->document->renderHead();
 
-        $this->app->plugins->run('theme.output.head', $this);
+        $this->app->plugins->run('theme.render.head', $this);
     }
 
     /**
-     * Outputs code in the footer
+     * Renders code in the footer
      */
-    public function outputFooter()
+    public function renderFooter()
     {
-        $this->document->outputFooter();
+        $this->document->renderFooter();
 
-        $this->app->plugins->run('theme.output.footer', $this);
+        $this->app->plugins->run('theme.render.footer', $this);
     }
 
     /**
-     * Outputs the generated content
+     * Renders the generated content
      */
-    public function outputContent()
+    public function renderContent()
     {
         echo $this->content;
 
-        $this->app->plugins->run('theme.output.content', $this);
+        $this->app->plugins->run('theme.render.content', $this);
     }
 
     /**
-     * Outputs css inline code
-     * @param string $code The css code to output
+     * Renders css inline code
+     * @param string $code The css code to render
      */
-    public function outputCssCode(string $code)
+    public function renderCssCode(string $code)
     {
-        $this->css->outputCode($code);
+        $this->css->renderCode($code);
     }
 
     /**
-     * Outputs javascript inline code
-     * @param string $code The js code to output
+     * Renders javascript inline code
+     * @param string $code The js code to render
      */
-    public function outputJsCode(string $code)
+    public function renderJsCode(string $code)
     {
-        $this->js->outputCode($code);
+        $this->js->renderCode($code);
     }
 
     /**
-     * Outputs the execution time
+     * Renders the execution time
      */
-    public function outputExecutionTime()
+    public function renderExecutionTime()
     {
         echo $this->app->timer->getExecutionTime();
     }
 
     /**
-     * Outputs the memory usage
+     * Renders the memory usage
      */
-    public function outputMemoryUsage()
+    public function renderMemoryUsage()
     {
         echo round(memory_get_peak_usage(true) / (1024 * 1024), 4);
     }
 
     /**
-     * Outputs all the alerts: messages/errors/info/warnings
+     * Renders all the alerts: messages/errors/info/warnings
      */
-    public function outputAlerts()
+    public function renderAlerts()
     {
-        $this->outputMessages();
-        $this->outputErrors();
-        $this->outputInfo();
-        $this->outputWarnings();
+        $this->renderMessages();
+        $this->renderErrors();
+        $this->renderInfo();
+        $this->renderWarnings();
     }
 
     /**
-     * Outputs the errors
+     * Renders the errors
      */
-    public function outputErrors()
+    public function renderErrors()
     {
         $errors = $this->getErrors();
         if (!$errors) {
@@ -287,7 +262,7 @@ class Theme extends BaseTheme
 
         $this->addVar('errors', $errors);
 
-        $this->render('alerts/errors');
+        $this->render('alert/errors');
     }
 
     /**
@@ -314,9 +289,9 @@ class Theme extends BaseTheme
     }
 
     /**
-     * Outputs the messages
+     * Renders the messages
      */
-    public function outputMessages()
+    public function renderMessages()
     {
         if ($this->app->errors->count()) {
             return;
@@ -329,13 +304,13 @@ class Theme extends BaseTheme
 
         $this->addVar('messages', $messages);
 
-        $this->render('alerts/messages');
+        $this->render('alert/messages');
     }
 
     /**
-     * Outputs the info
+     * Renders the info
      */
-    public function outputInfo()
+    public function renderInfo()
     {
         $info = $this->app->info->get();
         if (!$info) {
@@ -344,13 +319,13 @@ class Theme extends BaseTheme
 
         $this->addVar('info', $info);
 
-        $this->render('alerts/info');
+        $this->render('alert/info');
     }
 
     /**
-     * Outputs the warnings
+     * Renders the warnings
      */
-    public function outputWarnings()
+    public function renderWarnings()
     {
         $warnings = $this->app->warnings->get();
         if (!$warnings) {
@@ -359,36 +334,36 @@ class Theme extends BaseTheme
 
         $this->addVar('warnings', $warnings);
 
-        $this->render('alerts/warnings');
+        $this->render('alert/warnings');
     }
 
     /**
-     * Outputs the site name
+     * Renders the site name
      */
-    public function outputSiteName()
+    public function renderSiteName()
     {
         echo $this->app->escape->html($this->app->config->site->name);
     }
 
     /**
-     * Outputs the site slogan
+     * Renders the site slogan
      */
-    public function outputSiteSlogan()
+    public function renderSiteSlogan()
     {
         echo $this->app->escape->html($this->app->config->site->slogan);
     }
 
     /**
-     * Outputs a menu
+     * Renders a menu
      * @param string $menu The menu [Eg: main, footer, etc]
      */
-    public function outputMenu(string $menu)
+    public function renderMenu(string $menu)
     {
         if (!isset($this->app->menus->$menu)) {
             throw new \Exception("Menu '{$menu}' not found");
         }
 
-        echo $this->app->menus->$menu->output();
+        echo $this->app->menus->$menu->render();
     }
 
     /**

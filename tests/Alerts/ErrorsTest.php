@@ -1,7 +1,7 @@
 <?php
 
-use Mars\Alerts\Errors;
-use Mars\Alerts\Alert;
+use Mars\Alert\Errors;
+use Mars\Alert\Alert;
 
 include_once(dirname(__DIR__) . '/Base.php');
 

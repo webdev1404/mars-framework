@@ -9,10 +9,10 @@ namespace Mars\System;
 use Mars\App;
 use Mars\App\LazyLoad;
 use Mars\App\LazyLoadProperty;
-use Mars\Menus\Menu;
-use Mars\Menus\Main as MainMenu;
-use Mars\Menus\Footer as FooterMenu;
-use Mars\Menus\Sidebar as SidebarMenu;
+use Mars\Menu\Menu;
+use Mars\Menu\Main as MainMenu;
+use Mars\Menu\Footer as FooterMenu;
+use Mars\Menu\Sidebar as SidebarMenu;
 
 /**
  * The System's Menus Container Class
