@@ -9,18 +9,18 @@ namespace Mars;
 use Mars\App\Kernel;
 use Mars\App\LazyLoad;
 use Mars\App\LazyLoadProperty;
-use Mars\Document\Link\Css;
-use Mars\Document\Link\Javascript;
-use Mars\Document\Link\Fonts;
-use Mars\Document\Link\Images;
-use Mars\Document\Hint\Preload;
-use Mars\Document\Hint\Prefetch;
-use Mars\Document\Hint\Preconnect;
-use Mars\Document\Tag\Meta;
-use Mars\Document\Tag\Rss;
-use Mars\Document\Tag\Encoding;
-use Mars\Document\Tag\Favicon;
-use Mars\Document\Tag\Title;
+use Mars\Document\Links\Css;
+use Mars\Document\Links\Javascript;
+use Mars\Document\Links\Fonts;
+use Mars\Document\Links\Images;
+use Mars\Document\Hints\Preload;
+use Mars\Document\Hints\Prefetch;
+use Mars\Document\Hints\Preconnect;
+use Mars\Document\Tags\Meta;
+use Mars\Document\Tags\Rss;
+use Mars\Document\Tags\Encoding;
+use Mars\Document\Tags\Favicon;
+use Mars\Document\Tags\Title;
 
 /**
  * The Document Class

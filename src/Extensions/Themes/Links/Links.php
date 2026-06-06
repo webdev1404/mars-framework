@@ -6,7 +6,7 @@
 
 namespace Mars\Extensions\Themes\Links;
 
-use Mars\Document\Link\Links as DocumentLinks;
+use Mars\Document\Links\Links as DocumentLinks;
 
 /**
  * The Base Class for the theme document elements

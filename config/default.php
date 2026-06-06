@@ -312,7 +312,7 @@ return [
         'default-src' => "'self'",
     ],
 
-    // array The Content Security Policy headers. If specified, will override the default values and the values added by the application
+    // array The Content Security Policy header. If specified, will be added to the list of directives
     'headers.csp.list' => [],
 
 

@@ -85,7 +85,7 @@ class VariablesParser
     }
 
     /**
-     * @see TemplateInterface::parse()
+     * @see \Mars\Theme\Template\TemplateInterface::parse()
      * {@inheritDoc}
      */
     public function parse(string $content, array $params = []) : string

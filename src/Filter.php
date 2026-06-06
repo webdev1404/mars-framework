@@ -21,15 +21,15 @@ class Filter
      * @var array $supported_filters The list of supported filters
      */
     public protected(set) array $supported_filters = [
-        'alpha' => \Mars\Filter\Alpha::class,
-        'alnum' => \Mars\Filter\Alnum::class,
-        'email' => \Mars\Filter\Email::class,
-        'filename' => \Mars\Filter\Filename::class,
-        'filepath' => \Mars\Filter\Filepath::class,
-        'html' => \Mars\Filter\Html::class,
-        'interval' => \Mars\Filter\Interval::class,
-        'slug' => \Mars\Filter\Slug::class,
-        'url' => \Mars\Filter\Url::class,
+        'alpha' => \Mars\Filters\Alpha::class,
+        'alnum' => \Mars\Filters\Alnum::class,
+        'email' => \Mars\Filters\Email::class,
+        'filename' => \Mars\Filters\Filename::class,
+        'filepath' => \Mars\Filters\Filepath::class,
+        'html' => \Mars\Filters\Html::class,
+        'interval' => \Mars\Filters\Interval::class,
+        'slug' => \Mars\Filters\Slug::class,
+        'url' => \Mars\Filters\Url::class,
     ];
 
     /**

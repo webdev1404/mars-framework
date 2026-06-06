@@ -21,10 +21,10 @@ class Screen
      * @var array $screens_list The list of supported screens
      */
     public protected(set) array $screens_list = [
-        'error' => \Mars\Screen\Error::class,
-        'message' => \Mars\Screen\Message::class,
-        'fatal_error' => \Mars\Screen\FatalError::class,
-        'permission_denied' => \Mars\Screen\PermissionDenied::class,
+        'error' => \Mars\Screens\Error::class,
+        'message' => \Mars\Screens\Message::class,
+        'fatal_error' => \Mars\Screens\FatalError::class,
+        'permission_denied' => \Mars\Screens\PermissionDenied::class,
     ];
 
     /**

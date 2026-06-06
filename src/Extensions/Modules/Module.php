@@ -16,7 +16,7 @@ use Mars\Extensions\Abilities\LanguagesTrait;
 use Mars\Extensions\Modules\Abilities\MvcTrait;
 use Mars\Extensions\Modules\Abilities\TemplatesTrait;
 use Mars\Http\Response\Body\Data\Data;
-use Mars\Menu\Menu;
+use Mars\Menus\Menu;
 
 /**
  * The Module Class

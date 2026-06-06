@@ -11,8 +11,8 @@ use Mars\App\Kernel;
 use Mars\App\Lazyload;
 use Mars\App\LazyLoadProperty;
 use Mars\Data\MapTrait;
-use Mars\Http\Response\Header\EarlyHints;
-use Mars\Http\Response\Header\CSP;
+use Mars\Http\Response\Headers\EarlyHints;
+use Mars\Http\Response\Headers\CSP;
 
 /**
  * The Headers Response Class

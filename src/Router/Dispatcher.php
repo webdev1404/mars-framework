@@ -22,9 +22,9 @@ class Dispatcher
      * @var array $supported_dispatchers The supported route dispatcher handlers
      */
     public protected(set) array $supported_dispatchers = [
-        'callable' => \Mars\Router\Dispatcher\Callable_::class,
-        'object' => \Mars\Router\Dispatcher\Object_::class,
-        'string' => \Mars\Router\Dispatcher\String_::class,
+        'callable' => \Mars\Router\Dispatchers\Callable_::class,
+        'object' => \Mars\Router\Dispatchers\Object_::class,
+        'string' => \Mars\Router\Dispatchers\String_::class,
     ];
 
     /**

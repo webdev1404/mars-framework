@@ -6,11 +6,10 @@
 
 namespace Mars\System;
 
-use Mars\Extensions\Themes\Theme as BaseTheme;
-
 use Mars\App;
 use Mars\App\LazyLoadProperty;
 use Mars\App\HiddenProperty;
+use Mars\Extensions\Themes\Theme as BaseTheme;
 use Mars\Themes\Template;
 
 /**

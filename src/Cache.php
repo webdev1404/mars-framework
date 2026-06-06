@@ -18,10 +18,10 @@ use Mars\Cache\Routes;
 use Mars\Cache\Storage;
 use Mars\Cache\Templates;
 use Mars\Cache\Themes;
-use Mars\Cache\Asset\List\Css as CssList;
-use Mars\Cache\Asset\List\Javascript as JavascriptList;
-use Mars\Cache\Asset\Url\Css;
-use Mars\Cache\Asset\Url\Javascript;
+use Mars\Cache\Assets\Lists\Css as CssList;
+use Mars\Cache\Assets\Lists\Javascript as JavascriptList;
+use Mars\Cache\Assets\Urls\Css;
+use Mars\Cache\Assets\Urls\Javascript;
 
 /**
  * The Cache Class

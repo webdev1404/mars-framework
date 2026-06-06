@@ -23,8 +23,8 @@ class Serializer
      * @var array $drivers_list The supported drivers list
      */
     public protected(set) array $drivers_list = [
-        'php' => \Mars\Serializer\Php::class,
-        'igbinary' => \Mars\Serializer\Igbinary::class,
+        'php' => \Mars\Serializers\Php::class,
+        'igbinary' => \Mars\Serializers\Igbinary::class,
     ];
 
     /**

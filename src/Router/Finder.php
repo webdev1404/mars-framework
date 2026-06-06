@@ -22,10 +22,10 @@ class Finder
      * @var array $supported_finders The supported route finder handlers
      */
     public protected(set) array $supported_finders = [
-        'callable' => \Mars\Router\Finder\Callable_::class,
-        'module' => \Mars\Router\Finder\Module::class,
-        'page' => \Mars\Router\Finder\Page::class,
-        'template' => \Mars\Router\Finder\Template::class,
+        'callable' => \Mars\Router\Finders\Callable_::class,
+        'module' => \Mars\Router\Finders\Module::class,
+        'page' => \Mars\Router\Finders\Page::class,
+        'template' => \Mars\Router\Finders\Template::class,
     ];
 
     /**
