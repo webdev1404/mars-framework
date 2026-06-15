@@ -220,9 +220,9 @@ class Url implements \Stringable
     }
 
     /**
-     * @var string $filename The local filename the url points to. 
-     * Only applicable if the url is local
-     * !!!!Use with caution!!!!
+     * @var string $filename The local filename the url points to.
+     *             Only applicable if the url is local
+     *             !!!!Use with caution!!!!
      */
     public protected(set) string $filename {
         get {

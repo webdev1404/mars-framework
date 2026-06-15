@@ -96,7 +96,7 @@ class Urls implements \Countable, \IteratorAggregate
             $url = new Url($url, $this->type, app: $this->app);
         }
 
-        $key = array_find_key($this->urls, fn($current_url) => $current_url->url == $url->url);
+        $key = array_find_key($this->urls, fn ($current_url) => $current_url->url == $url->url);
         if ($key !== null) {
             unset($this->urls[$key]);
         }
@@ -123,7 +123,7 @@ class Urls implements \Countable, \IteratorAggregate
      */
     public function getExternal() : Urls
     {
-        $urls = array_filter($this->urls, fn($url) => !$url->is_local);
+        $urls = array_filter($this->urls, fn ($url) => !$url->is_local);
         
         return new static($this->type, $this->app)->set($urls);
     }
@@ -134,7 +134,7 @@ class Urls implements \Countable, \IteratorAggregate
      */
     public function getLocal() : Urls
     {
-        $urls = array_filter($this->urls, fn($url) => $url->is_local);
+        $urls = array_filter($this->urls, fn ($url) => $url->is_local);
         
         return new static($this->type, $this->app)->set($urls);
     }

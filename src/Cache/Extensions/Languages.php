@@ -4,22 +4,14 @@
 * @package Mars
 */
 
-namespace Mars\Cache;
+namespace Mars\Cache\Extensions;
 
 /**
  * The Languages Cache Class
  * Class which handles the caching of language files
  */
-class Languages extends Data
+class Languages extends Extensions
 {
-    /**
-     * @see Cacheable::$driver_name
-     * {@inheritDoc}
-     */
-    protected string $driver_name {
-        get => $this->app->config->cache->languages->driver ?? $this->app->config->cache->driver;
-    }
-
     /**
      * @see Cacheable::$driver_params
      * {@inheritDoc}
@@ -33,5 +25,5 @@ class Languages extends Data
      * @see Cache::$dir
      * {@inheritDoc}
      */
-    public protected(set) string $dir = 'languages';
+    public protected(set) string $dir = 'extensions/languages';
 }

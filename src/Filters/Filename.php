@@ -22,7 +22,7 @@ class Filename extends Filter
     public function filter(string $filename) : string
     {
         $filename = basename(trim($filename));
-        if (strlen($filename) > $this->max_chars) {
+        if (mb_strlen($filename) > $this->max_chars) {
             $filename = $this->cutFilename($filename);
         }
 

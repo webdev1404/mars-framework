@@ -16,7 +16,7 @@ class Routes extends Data
      * @see Cacheable::$driver_name
      * {@inheritDoc}
      */
-    protected string $driver_name {
+    public string $driver_name {
         get => $this->app->config->cache->routes->driver ?? $this->app->config->cache->driver;
     }
 

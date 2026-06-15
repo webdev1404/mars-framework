@@ -7,6 +7,9 @@
 namespace Mars\Cache;
 
 use Mars\App;
+use Mars\App\LazyLoad;
+use Mars\App\LazyLoadProperty;
+use Mars\Cache\Pages\Headers;
 
 /**
  * The Page Cache Class
@@ -14,6 +17,8 @@ use Mars\App;
  */
 class Pages extends Cacheable
 {
+    use LazyLoad;
+
     /**
      * @var bool $can_cache True if the content can be cached
      */
@@ -29,7 +34,7 @@ class Pages extends Cacheable
      * @see Cacheable::$driver_name
      * {@inheritDoc}
      */
-    protected string $driver_name {
+    public string $driver_name {
         get {
             if (isset($this->driver_name)) {
                 return $this->driver_name;
@@ -71,9 +76,7 @@ class Pages extends Cacheable
                 return $this->file;
             }
 
-            $type = $this->app->request->is_json ? 'json' : 'html';
-
-            $this->file = $this->app->url->full . '-' . $this->app->lang->code . '-' . $type;
+            $this->file = $this->app->url->full . '-' . $this->app->lang->code;
 
             return $this->file;
         }
@@ -95,9 +98,85 @@ class Pages extends Cacheable
     }
 
     /**
+     * @var string $compression The compression method to use for the cached content. Eg: gzip, brotli, zstd
+     */
+    protected string $compression {
+        get {
+            if (isset($this->compression)) {
+                return $this->compression;
+            }
+
+            $this->compression = '';
+
+            if ($this->app->config->cache->page->compression->enable) {
+                $encodings = $_SERVER['HTTP_ACCEPT_ENCODING'] ?? '';
+                if ($encodings) {
+                    $encodings = explode(',', strtolower($encodings));
+                    $encodings = array_map('trim', $encodings);
+
+                    foreach ($this->app->config->cache->page->compression->drivers as $driver) {
+                        if (!isset($this->content_encoding[$driver])) {
+                            continue;
+                        }
+                        if (in_array($driver, $encodings)) {
+                            $this->compression = $driver;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            return $this->compression;
+        }
+    }
+
+    /**
+     * @see Cacheable::$extension
+     * {@inheritDoc}
+     */
+    public string $extension {
+        get {
+            if (isset($this->extension)) {
+                return $this->extension;
+            }
+
+            $this->extension = $this->app->request->is_json ? 'json' : 'html';
+            if (isset($this->extensions[$this->compression])) {
+                $this->extension .= '.' . $this->extensions[$this->compression];
+            }
+
+            return $this->extension;
+        }
+    }
+
+    /**
+     * @var array $extensions The available compression extensions
+     */
+    protected array $extensions = [
+        'gzip' => 'gz',
+        'brotli' => 'br',
+        'zstd' => 'zst',
+    ];
+
+    /**
+     * @var array $content_encoding The content encoding types associated with the compression methods
+     */
+    protected array $content_encoding = [
+        'gzip' => 'gzip',
+        'brotli' => 'br',
+        'zstd' => 'zstd',
+    ];
+
+    /**
      * @var bool $send_headers_on_store True if the headers should be sent when storing the content in the cache.
      */
     protected bool $send_headers_on_store = false;
+
+    /**
+     * @var Headers $headers The headers object
+     */
+    #[LazyLoadProperty]
+    protected Headers $headers;
 
     /**
      * Builds the page cache object
@@ -118,6 +197,8 @@ class Pages extends Cacheable
         }
 
         $this->can_cache = true;
+
+        $this->lazyLoad($app);
     }
 
     /**
@@ -131,13 +212,39 @@ class Pages extends Cacheable
             return $this;
         }
 
-        $this->driver->set($this->filename, $content, false);
+        $this->storeHeaders();
+        $this->storeContent($content);
 
         if ($this->send_headers_on_store) {
             $this->sendHeadersOnStore();
         }
 
         return $this;
+    }
+
+    /**
+     * Stores the headers associated with the page in the cache
+     */
+    protected function storeHeaders()
+    {
+        if (!$this->app->response->headers->list) {
+            return;
+        }
+
+        $this->headers->set($this->file, $this->app->response->headers->list);
+    }
+
+    /**
+     * Stores the page content in the cache
+     * @param string $content The content to store
+     */
+    protected function storeContent(string $content)
+    {
+        if ($this->compression) {
+            $content = $this->app->compression->compressWith($this->compression, $content, $this->app->config->cache->page->compression->level);
+        }
+
+        $this->driver->set($this->filename, $content);
     }
 
     /**
@@ -177,9 +284,9 @@ class Pages extends Cacheable
     }
 
     /**
-     * Serves the content, if it's cached
+     * Sends the cached content
      */
-    public function serve()
+    public function send()
     {
         if (!$this->can_cache) {
             return;
@@ -188,6 +295,9 @@ class Pages extends Cacheable
         $last_modified = $this->getLastModified();
 
         if ($last_modified) {
+            //send the stored headers
+            $this->sendStoredHeaders();
+
             //we have the content in the cache
             $etag = $this->getEtag($last_modified);
 
@@ -195,11 +305,24 @@ class Pages extends Cacheable
             $this->sendNotModified($last_modified, $etag);
 
             //output the cache headers
-            $this->sendHeaders($last_modified, $etag);
+            $this->sendCacheHeaders($last_modified, $etag);
 
-            $this->serveContent();
+            $this->sendContent();
         } else {
             $this->send_headers_on_store = true;
+        }
+    }
+
+    /**
+     * Sends the headers stored in the cache
+     */
+    protected function sendStoredHeaders()
+    {
+        //send the stored headers
+        $headers = $this->headers->get($this->file) ?? [];
+
+        foreach ($headers as $name => $value) {
+            header($name . ': ' . $value);
         }
     }
 
@@ -232,7 +355,7 @@ class Pages extends Cacheable
      * @param int $last_modified The date when the cached file has been last modified
      * @param string $etag The etag
      */
-    protected function sendHeaders(int $last_modified, string $etag)
+    protected function sendCacheHeaders(int $last_modified, string $etag)
     {
         header('Cache-Control: no-cache');
         header('Vary: Accept');
@@ -261,21 +384,26 @@ class Pages extends Cacheable
     /**
      * Serves the cached content
      */
-    protected function serveContent()
+    protected function sendContent()
     {
-        $content = $this->driver->get($this->filename, false);
-        
-        header('Content-Length: ' . strlen($content));
+        $size = $this->driver->getSize($this->filename);
+        if ($size !== null) {
+            header('Content-Length: ' . $size);
+        }
 
-        echo $content;
+        if ($this->compression) {
+            header('Content-Encoding: ' . $this->content_encoding[$this->compression]);
+        }
+
+        $this->driver->output($this->filename);
         die;
     }
 
     /**
      * Returns the date when the cached file has been last modified
-     * @return int
+     * @return int|null The date when the cached file has been last modified or null if not found
      */
-    protected function getLastModified() : int
+    protected function getLastModified() : ?int
     {
         return $this->driver->getLastModified($this->filename);
     }

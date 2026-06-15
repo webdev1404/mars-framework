@@ -86,7 +86,7 @@ class Uri implements \Stringable
                 return $this->base;
             }
 
-            $this->base = new Url($this->app->config->url->base);
+            $this->base = new Url($this->app->config->site->url->base);
 
             return $this->base;
         }

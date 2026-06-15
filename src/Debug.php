@@ -91,7 +91,8 @@ class Debug
 
         echo '<table class="grid debug-grid debug-grid-plugins">';
         echo '<tr><th colspan="3">Plugins</th></tr>';
-        foreach ($this->app->plugins->plugins as $name => $plugin) {
+        foreach ($this->app->plugins->plugins as $plugin) {
+            $name = $plugin::class;
             $exec_time = $this->app->plugins->exec_time[$name] ?? 0;
             echo "<tr><td>" . $this->app->escape->html($name) . "</td><td>" . $exec_time . "s</td><td>" . $this->app->format->percentage($exec_time, $execution_time) . '%</td></tr>';
         }

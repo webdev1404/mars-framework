@@ -14,60 +14,52 @@ use Mars\Extensions\Extensions as BaseExtensions;
  * The Extensions Class
  * Provides info about the System's Extensions
  */
-class Extensions
+class Extensions implements \IteratorAggregate
 {
     use Kernel;
 
     /**
-     * @var array $types The defined supported extension types and their getters
+     * @var array $list The defined supported extension types and their managers
      */
-    public protected(set) array $types {
-        get {
-            if (isset($this->types)) {
-                return $this->types;
-            }
-
-            $this->types = [
-                'module' => fn () => $this->app->modules,
-                'theme' => fn () => $this->app->theme->manager,
-                'language' => fn () => $this->app->lang->manager,
-            ];
-
-            return $this->types;
-        }
-    }
-
-    /**
-     * @var array $list The list of all enabled extensions and their types
-     */
-    public array $list {
+    public protected(set) array $list {
         get {
             if (isset($this->list)) {
                 return $this->list;
             }
 
-            $this->list = [];
-
-            foreach ($this->types as $name => $getter) {
-                $manager = $getter();
-
-                $list = array_map(fn ($path) => $name, $manager->getEnabled());
-
-                $this->list = array_merge($this->list, $list);
-            }
+            $this->list = [
+                'plugin' => $this->app->plugins,
+                'module' =>  $this->app->modules,
+                'theme' => $this->app->theme->manager,
+                'language' => $this->app->lang->manager,
+            ];
 
             return $this->list;
         }
     }
 
     /**
-     * Gets the list of supported extensions and their getters
-     * @return array The extensions
+     * @var array $enabled The list of all enabled extensions and their types
      */
-    public function getTypes() : array
-    {
-        return $this->types;
+    public array $enabled {
+        get {
+            if (isset($this->enabled)) {
+                return $this->enabled;
+            }
+
+            $this->enabled = [];
+
+            foreach ($this->list as $type => $manager) {
+                $enabled = array_map(fn ($path) => $type, $manager->getEnabled());
+
+                $this->enabled = array_merge($this->enabled, $enabled);
+            }
+
+            return $this->enabled;
+        }
     }
+
+    public protected(set) array $enabled_supports = [];
 
     /**
      * Gets a specific manager by type
@@ -76,21 +68,24 @@ class Extensions
      */
     public function getManager(string $type) : ?BaseExtensions
     {
-        if (isset($this->types[$type])) {
-            return $this->types[$type]();
-        }
-
-        return null;
+        return $this->list[$type] ?? null;
     }
 
     /**
      * Returns the type of a given extension name
      * @param string $name The name of the extension
+     * @param string $support The required support. Eg: 'config'
      * @return string|null The type of the extension or null if not found
      */
-    public function getType(string $name) : ?string
+    public function getType(string $name, string $support = '') : ?string
     {
-        return $this->list[$name] ?? null;
+        if ($support) {
+            $this->enabled_supports[$support] ??= $this->getEnabledWithSupport($support);
+
+            return $this->enabled_supports[$support][$name] ?? null;
+        } else {
+            return $this->enabled[$name] ?? null;
+        }
     }
 
     /**
@@ -118,16 +113,57 @@ class Extensions
     /**
      * Gets an extension by name
      * @param string $name The name of the extension
+     * @param string $support The required support. Eg: 'config'
      * @return Extension|null The extension instance or null if not found
      */
-    public function get(string $name) : ?Extension
+    public function get(string $name, string $support = '') : ?Extension
     {
-        if (!isset($this->list[$name])) {
-            return null;
+        if ($support) {
+            $this->enabled_supports[$support] ??= $this->getEnabledWithSupport($support);
+
+            if (!isset($this->enabled_supports[$support][$name])) {
+                return null;
+            }
+
+            $type = $this->enabled_supports[$support][$name];
+        } else {
+            if (!isset($this->enabled[$name])) {
+                return null;
+            }
+
+            $type = $this->enabled[$name];
         }
 
-        $type = $this->list[$name];
-
         return $this->getManager($type)->get($name);
+    }
+
+    /**
+     * Gets the list of enabled extensions that support a specific feature
+     * @param string $support The required support. Eg: 'config'
+     * @return array The list of enabled extensions
+     */
+    protected function getEnabledWithSupport(string $support) : array
+    {
+        $enabled = [];
+
+        foreach ($this->list as $type => $manager) {
+            if (!$manager->supports($support)) {
+                continue;
+            }
+
+            $enabled_list = array_map(fn ($path) => $type, $manager->getEnabled());
+
+            $enabled = array_merge($enabled, $enabled_list);
+        }
+
+        return $enabled;
+    }
+
+    /**
+     * @internal
+     */
+    public function getIterator() : \Traversable
+    {
+        return new \ArrayIterator($this->list);
     }
 }

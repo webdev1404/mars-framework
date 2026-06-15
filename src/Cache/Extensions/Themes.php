@@ -4,22 +4,14 @@
 * @package Mars
 */
 
-namespace Mars\Cache;
+namespace Mars\Cache\Extensions;
 
 /**
  * The Themes Cache Class
  * Class which handles the caching of theme files
  */
-class Themes extends Data
+class Themes extends Extensions
 {
-    /**
-     * @see Cacheable::$driver_name
-     * {@inheritDoc}
-     */
-    protected string $driver_name {
-        get => $this->app->config->cache->themes->driver ?? $this->app->config->cache->driver;
-    }
-
     /**
      * @see Cacheable::$driver_params
      * {@inheritDoc}
@@ -33,5 +25,5 @@ class Themes extends Data
      * @see Cache::$dir
      * {@inheritDoc}
      */
-    public protected(set) string $dir = 'themes';
+    public protected(set) string $dir = 'extensions/themes';
 }

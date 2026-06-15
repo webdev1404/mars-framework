@@ -28,7 +28,7 @@ final class ExceptionTest extends Base
     public function testExceptionCode()
     {
         $code = 123;
-        $exception = new Exception('Test message', 'TestType', $code);
+        $exception = new Exception('Test message', 'TestType', [], $code);
 
         $this->assertEquals($code, $exception->getCode());
     }

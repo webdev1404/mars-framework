@@ -12,7 +12,7 @@ use Mars\App\Kernel;
  * Setup class for Extensions
  * Class which handles the setup of an extension
  */
-class Extension
+abstract class Extension
 {
     use Kernel;
 

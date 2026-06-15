@@ -13,7 +13,7 @@ class ElementsSet
     protected array $list = [];
 }
 
-class ListGroupTraitTest extends Base
+class ListGroupTest extends Base
 {
     public function testAddAndExists()
     {
@@ -47,7 +47,7 @@ class ListGroupTraitTest extends Base
         $elements->addMany('type1', ['value1', 'value2']);
         $elements->remove('type1', 'value1');
         $this->assertFalse($elements->has('type1', 'value1'));
-        $this->assertTrue($elements->has('type1','value2'));
+        $this->assertTrue($elements->has('type1', 'value2'));
 
         $elements->addMany('type2', ['value3', 'value4']);
         $elements->remove('type1', ['value2']);

@@ -55,15 +55,14 @@ class Body
 
     /**
      * Creates and returns a new Data object based on the passed data type
-      * @return Data The created Data object
+     * @return Data The created Data object
      */
     public function create(mixed $return_value, string $content = '') : Data
     {
-          if ($return_value !== null) {
+        if ($return_value !== null) {
             if ($return_value instanceof Data) {
                 return $return_value;
-            }
-            elseif (is_array ($return_value) || is_object($return_value)) {
+            } elseif (is_array($return_value) || is_object($return_value)) {
                 return new JsonData($return_value);
             } elseif (is_string($return_value)) {
                 return new HtmlData($return_value);
@@ -82,4 +81,3 @@ class Body
         return $this->{$data->type}->send($data->content);
     }
 }
-

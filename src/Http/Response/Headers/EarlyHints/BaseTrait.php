@@ -41,4 +41,3 @@ trait BaseTrait
         return $headers;
     }
 }
-

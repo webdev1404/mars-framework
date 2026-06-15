@@ -8,6 +8,7 @@ namespace Mars\Extensions;
 
 use Mars\App;
 use Mars\App\Kernel;
+use Mars\App\HiddenProperty;
 use Mars\Cache\Cacheable;
 
 /**
@@ -17,6 +18,11 @@ use Mars\Cache\Cacheable;
 abstract class Extensions
 {
     use Kernel;
+
+    /**
+     * @var array $supports The list of features supported by this type of extensions
+     */
+    protected static array $supports = [];
 
     /**
      * @var bool $list_use_all If true, all found extensions are considered enabled
@@ -49,10 +55,23 @@ abstract class Extensions
     protected static string $instance_class = '';
 
     /**
+     * @var string $setup_class The class of the extensions setup manager
+     */
+    protected static string $setup_class = '';
+
+    /**
      * @var Cacheable $cache The cache object handling this type of extensions
      */
-    public Cacheable $cache {
-        get => $this->app->cache->data;
+    #[HiddenProperty]
+    public Cacheable $cache;
+
+    /**
+     * Returns the class of the extensions instance
+     * @return string The class of the extensions instance
+     */
+    public function getInstanceClass() : string
+    {
+        return static::$instance_class;
     }
 
     /**
@@ -122,6 +141,16 @@ abstract class Extensions
     }
 
     /**
+     * Determines if this type of extensions supports the specified feature
+     * @param string $feature The feature to check
+     * @return bool True if the feature is supported, false otherwise
+     */
+    public function supports(string $feature): bool
+    {
+        return in_array($feature, static::$supports);
+    }
+
+    /**
      * Returns the base directory for this type of extensions
      * @return string The base directory
      */
@@ -154,7 +183,7 @@ abstract class Extensions
      */
     public function getFilenameFromNamespace(array $parts) : string
     {
-        $name = strtolower($parts[1]);
+        $name = App::toKebabCase($parts[1]);
         $file_parts = array_slice($parts, 2);
 
         return $this->getPath($name) . '/src/' . implode('/', $file_parts) . '.php';
@@ -253,17 +282,7 @@ abstract class Extensions
 
         return static::$list_enabled;
     }
-
-    /**
-     * Generates the cache filename for the specified list type
-     * @param string $type The type of the list (all, enabled, etc.)
-     * @return string The cache filename
-     */
-    protected function getCacheFilename(string $type): string
-    {
-        return 'list-' . $type;
-    }
-
+    
     /**
      * Gets the list of extensions, using the cache if available
      * @param bool $use_cache If true, the cache will be used
@@ -273,9 +292,9 @@ abstract class Extensions
      */
     protected function getList(bool $use_cache, string $type, callable $get) : array
     {
-        $cache_filename = $this->getCacheFilename($type);
+        $cache_name = 'list-' . $type;
 
-        $list = $this->cache->get($cache_filename);
+        $list = $this->cache->get($cache_name);
 
         // If we are in development mode, we always read the list from the filesystem
         $development = $this->app->development ? true : $this->app->config->development->extensions[static::$instance_class::getBaseDir()] ?? false;
@@ -289,7 +308,7 @@ abstract class Extensions
 
         $list = $get();
 
-        $this->cache->set($cache_filename, $list, false);
+        $this->cache->set($cache_name, $list, false);
 
         return $list;
     }
@@ -320,6 +339,10 @@ abstract class Extensions
      */
     protected function readFromDir(string $path, bool $check_info) : array
     {
+        if (!is_dir($path)) {
+            return [];
+        }
+
         $dirs = $this->app->dir->getDirs($path, false, true);
         if (!$check_info) {
             return $dirs;
@@ -376,19 +399,22 @@ abstract class Extensions
     /**
      * Installs the specified extension
      * @param string $name The name of the extension
+     * @return Extension The installed extension
+     * @throws \Exception If the extension is not found
      */
     public function install(string $name) : Extension
     {
-        $extension = $this->get($name);
+        $extension = $this->getExisting($name);
+        if (!$extension) {
+            throw new \Exception("Extension '{$name}' not found.");
+        }
 
         $setup = $this->getSetupManager($name);
-        if ($setup && method_exists($setup, 'install')) {
+        if (method_exists($setup, 'install')) {
             $setup->install();
         }
 
-        $this->createSymlinks($extension);
-
-        $this->cache->clean();
+        $this->enable($name, $setup);
 
         return $extension;
     }
@@ -396,13 +422,17 @@ abstract class Extensions
     /**
      * Enables the specified extension
      * @param string $name The name of the extension
+     * @param object|null $setup The setup manager for the extension
      */
-    public function enable(string $name) : Extension
+    public function enable(string $name, ?object $setup = null) : Extension
     {
-        $extension = $this->get($name);
+        $extension = $this->getExisting($name);
 
-        $setup = $this->getSetupManager($name);
-        if ($setup && method_exists($setup, 'enable')) {
+        if (!$setup) {
+            $setup = $this->getSetupManager($name);
+        }
+
+        if (method_exists($setup, 'enable')) {
             $setup->enable();
         }
 
@@ -410,32 +440,29 @@ abstract class Extensions
        
         $this->createSymlinks($extension);
 
-        $this->cache->clean();
-
         return $extension;
     }
 
     /**
      * Disables the specified extension
      * @param string $name The name of the extension
+     * @param object|null $setup The setup manager for the extension
      */
-    public function disable(string $name) : Extension
+    public function disable(string $name, ?object $setup = null) : Extension
     {
-        $extension = $this->get($name);
-        if (!$extension->enabled) {
-            throw new \Exception("Extension '{$name}' is not enabled.");
-        }
+        $extension = $this->getExisting($name);
 
-        $setup = $this->getSetupManager($name);
-        if ($setup && method_exists($setup, 'disable')) {
+        if (!$setup) {
+            $setup = $this->getSetupManager($name);
+        }
+    
+        if (method_exists($setup, 'disable')) {
             $setup->disable();
         }
 
         $this->removeConfig($name);
        
         $this->removeSymlink($extension);
-
-        $this->cache->clean();
 
         return $extension;
     }
@@ -446,19 +473,14 @@ abstract class Extensions
      */
     public function upgrade(string $name) : Extension
     {
-        $extension = $this->get($name);
-        if (!$extension->enabled) {
-            throw new \Exception("Extension '{$name}' is not enabled.");
-        }
+        $extension = $this->getExisting($name);
 
         $setup = $this->getSetupManager($name);
-        if ($setup && method_exists($setup, 'upgrade')) {
+        if (method_exists($setup, 'upgrade')) {
             $setup->upgrade();
         }
 
         $this->createSymlinks($extension);
-
-        $this->cache->clean();
 
         return $extension;
     }
@@ -469,16 +491,15 @@ abstract class Extensions
      */
     public function uninstall(string $name) : Extension
     {
-        $extension = $this->get($name);
+        $extension = $this->getExisting($name);
 
         $setup = $this->getSetupManager($name);
-        if ($setup && method_exists($setup, 'uninstall')) {
+
+        $this->disable($name, $setup);
+
+        if (method_exists($setup, 'uninstall')) {
             $setup->uninstall();
         }
-
-        $this->removeSymlink($extension);
-
-        $this->cache->clean();
 
         return $extension;
     }
@@ -493,7 +514,7 @@ abstract class Extensions
         }
 
         $extensions = $this->app->config->read(static::$list_config_file);
-        
+
         $extensions[] = $name;
         $extensions = array_unique($extensions);
 
@@ -513,6 +534,8 @@ abstract class Extensions
         
         $extensions = array_filter($extensions, fn ($extension) => $extension !== $name);
 
+        $extensions = array_unique($extensions);
+
         $this->app->config->write(static::$list_config_file, $extensions);
     }
 
@@ -523,10 +546,12 @@ abstract class Extensions
      */
     protected function getSetupManager(string $name) : ?object
     {
-        $setup_file = $this->getPath($name) . '/' . static::$instance_class::DIRS['src'] . '/' . static::$instance_class::DIRS['setup'] . '/Setup.php';
+        $setup_file = $this->getPath($name) . '/' . static::$instance_class::DIRS['setup'] . '/Setup.php';
         if (!is_file($setup_file)) {
-            return null;
+            return new static::$setup_class($this->app);
         }
+
+        include_once($setup_file);
 
         $setup_class = $this->getBaseNamespace($name, static::$instance_class::DIRS['setup']) . '\\Setup';
 
@@ -543,14 +568,14 @@ abstract class Extensions
         $this->createSymlink($extension);
 
         //create the symlink to the extension's parent, if it has one
-         if ($extension->parent_name) {
-             $parent_extension = $this->getExisting($extension->parent_name);
-             if (!$parent_extension) {
-                    throw new \Exception("Parent extension '{$extension->parent_name}' not found for extension '{$extension->name}'");
-             }
+        if ($extension->parent_name) {
+            $parent_extension = $this->getExisting($extension->parent_name);
+            if (!$parent_extension) {
+                throw new \Exception("Parent extension '{$extension->parent_name}' not found for extension '{$extension->name}'");
+            }
 
-             $this->createSymlink($parent_extension);
-         }
+            $this->createSymlink($parent_extension);
+        }
     }
 
     /**

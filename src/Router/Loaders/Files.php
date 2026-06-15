@@ -6,7 +6,7 @@
 
 namespace Mars\Router\Loaders;
 
-use Mars\Extensions\Modules\Module;
+use Mars\Extensions\Module;
 
 /**
  * The Files Loader Class
@@ -44,11 +44,21 @@ class Files extends Loader
         //load the routes from the framework dir
         $paths = [$this->app->framework_path . '/routes'];
 
-        //load the routes from the modules dirs
-        foreach ($this->app->modules->getEnabled() as $module_path) {
-            $module_path = $module_path . '/' . Module::DIRS['routes'];
-            if (is_dir($module_path)) {
-                $paths[] = $module_path;
+        //load the routes from the extensions
+        foreach ($this->app->extensions as $type => $manager) {
+            if (!$manager->supports('routes')) {
+                continue;
+            }
+
+            $instance = $manager->getInstanceClass();
+
+            foreach ($manager->getEnabled() as $extension_name => $extension_path) {
+                $routes_path = $extension_path . '/' . $instance::DIRS['routes'];
+                if (!is_dir($routes_path)) {
+                    continue;
+                }
+
+                $paths[] = $routes_path;
             }
         }
 

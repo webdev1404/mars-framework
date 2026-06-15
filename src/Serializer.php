@@ -8,7 +8,7 @@ namespace Mars;
 
 use Mars\App\Kernel;
 use Mars\App\Drivers;
-use Mars\Serializer\SerializerInterface;
+use Mars\Serializers\SerializerInterface;
 
 /**
  * The Serializer Class

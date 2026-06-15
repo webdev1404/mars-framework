@@ -4,11 +4,9 @@
 * @package Mars
 */
 
-namespace Mars\Extensions\Languages;
+namespace Mars\Extensions;
 
 use Mars\App;
-use Mars\Extensions\Extension;
-use Mars\Extensions\Extensions;
 use Mars\Extensions\Abilities\FilesCacheTrait;
 
 /**

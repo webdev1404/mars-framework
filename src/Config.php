@@ -192,7 +192,7 @@ class Config extends Container
      */
     public function write(string $file, array $data) : static
     {
-        $filename = $this->_app->config_path . '/' . basename($file);
+        $filename = $this->_app->config_path . '/' . $file;
         if (!is_writable($filename)) {
             throw new \Exception("The config file '{$file}' is not writable");
         }
@@ -221,8 +221,8 @@ class Config extends Container
      */
     protected function check()
     {
-        if (!$this->url->base && !defined('MARS_SETUP')) {
-            throw new \Exception("The 'url.base' config option must be set in file 'config.php'. Either set it manually or run the setup script to set it automatically.");
+        if (!$this->site->url->base && !defined('MARS_SETUP')) {
+            throw new \Exception("The 'site.url.base' config option must be set in file 'site.php'. Either set it manually or run the setup script to set it automatically.");
         }
     }
 
@@ -295,12 +295,12 @@ class Config extends Container
      */
     protected function findExtension(string $name) : ?Extension
     {
-        $extension = $this->_app->extensions->get($name);
+        $extension = $this->_app->extensions->get($name, 'config');
         if ($extension) {
             return $extension;
         }
 
-        return $this->_app->extensions->get(App::toKebabCase($name));
+        return $this->_app->extensions->get(App::toKebabCase($name), 'config');
     }
 
     /**

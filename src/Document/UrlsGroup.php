@@ -31,14 +31,14 @@ class UrlsGroup
      */
     protected static string $property = 'urls';
 
-    /** 
+    /**
      * Adds an URL to the list
      * @param string $type The URL's type
      * @param string|array|Url|Urls $url The URL to add
      * @param array $attributes The URL's attributes, if any
      * @param int $priority The URL's priority (higher number means higher priority)
      * @return static
-    */
+     */
     public function add(string|array $type, string|array|Url $url = '', array $attributes = [], int $priority = 100) : static
     {
         if (is_array($type)) {

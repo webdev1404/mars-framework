@@ -27,6 +27,13 @@ interface CacheableInterface
     public function set(string $filename, mixed $content) : bool;
 
     /**
+     * Outputs the cached content
+     * @param string $filename The filename
+     * @return bool True on success, false on failure
+     */
+    public function output(string $filename) : bool;
+
+    /**
      * Creates a new cache file
      * @param string $filename The name of the cache file
      * @return bool True on success, false on failure
@@ -43,9 +50,16 @@ interface CacheableInterface
     /**
      * Returns the timestamp when the asset was last modified
      * @param string $filename The filename
-     * @return int The timestamp when the file was last modified
+     * @return int|null The timestamp when the file was last modified or null if not found
      */
-    public function getLastModified(string $filename) : int;
+    public function getLastModified(string $filename) : ?int;
+
+    /**
+     * Returns the size of the cached file in bytes
+     * @param string $filename The filename
+     * @return int|null The size of the file or null if not found
+     */
+    public function getSize(string $filename) : ?int;
 
     /**
      * Deletes a cached file

@@ -7,8 +7,8 @@
 namespace Mars\System;
 
 use Mars\App;
-use Mars\Extensions\Modules\Plugin;
-use Mars\Extensions\Modules\Plugins as BasePlugins;
+use Mars\Extensions\Plugin;
+use Mars\Extensions\Plugins as BasePlugins;
 
 /**
  * The Plugins Class
@@ -45,16 +45,17 @@ class Plugins extends BasePlugins
 
             $this->plugins = [];
 
-            /*foreach ($this->getEnabled() as $class_name => $module_name) {
-                $plugin = new $class_name($module_name, [], $this->app);
+            $files = $this->getFiles();
+            foreach ($files as $name => $namespaces) {
+                foreach ($namespaces as $class_name) {
+                    $plugin = new $class_name($name, [], $this->app);
+                    if (!$plugin instanceof Plugin) {
+                        throw new \Exception("Plugin class {$class_name} does not extend the Plugin class");
+                    }
 
-                if (!$plugin instanceof Plugin) {
-                    throw new \Exception("Plugin {$class_name} must extend class Plugin");
+                    $this->plugins[] = $plugin;
                 }
-                
-                $class_name = ltrim($class_name, '\\');
-                $this->plugins[$class_name] = $plugin;
-            }*/
+            }
 
             return $this->plugins;
         }
@@ -64,6 +65,11 @@ class Plugins extends BasePlugins
      * @var array $hooks Registered hooks
      */
     public protected(set) array $hooks = [];
+
+    /**
+     * @var array $hooks_sort The hooks which need to be sorted by priority
+     */
+    protected array $hooks_sort = [];
 
     /**
      * @var array $hooks_exec_time The execution time for all hooks. Set only if debug is enabled
@@ -92,8 +98,6 @@ class Plugins extends BasePlugins
             return $this;
         }
 
-        $hooks = (array)$hooks;
-
         foreach ($hooks as $name => $hook) {
             if (is_string($hook)) {
                 $method = $hook;
@@ -103,7 +107,11 @@ class Plugins extends BasePlugins
                 $priority = $hook['priority'] ?? 100;
             }
 
-            $this->hooks[$name][] = ['class' => $plugin::class, 'method' => $method, 'priority' => $priority];
+            if ($priority !== 100) {
+                $this->hooks_sort[$name] = true;
+            }
+
+            $this->hooks[$name][] = ['plugin' => $plugin, 'method' => $method, 'priority' => $priority];
         }
 
         return $this;
@@ -121,11 +129,14 @@ class Plugins extends BasePlugins
             return $args[0] ?? null;
         }
 
-        //sort the hooks by priority
         $hooks_array = $this->hooks[$hook];
-        usort($hooks_array, function ($a, $b) {
-            return $a['priority'] <=> $b['priority'];
-        });
+
+        if (isset($this->hooks_sort[$hook])) {
+            //sort the hooks by priority, if we have a hook with non-default priority
+            usort($hooks_array, function ($a, $b) {
+                return $a['priority'] <=> $b['priority'];
+            });
+        }
 
         $return_value = null;
         
@@ -134,14 +145,7 @@ class Plugins extends BasePlugins
                 $this->startTimer();
             }
 
-            $class_name = $hook_data['class'];
-            $plugin = $this->plugins[$class_name] ?? null;
-            $method = $hook_data['method'];
-
-            if (!$plugin) {
-                throw new \Exception("Plugin {$class_name} not found on the list of loaded plugins");
-            }
-
+            ['plugin' => $plugin, 'method' => $method] = $hook_data;
 
             $plugin_return_value = call_user_func_array([$plugin, $method], $args);
 
@@ -154,7 +158,7 @@ class Plugins extends BasePlugins
             }
 
             if ($this->app->config->debug->enable) {
-                $this->endTimer($class_name, $hook);
+                $this->endTimer($plugin::class, $hook);
             }
         }
 

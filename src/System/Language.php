@@ -10,7 +10,7 @@ use Mars\App;
 use Mars\App\Drivers;
 use Mars\Localization\LocalizationInterface;
 use Mars\Extensions\Extension;
-use Mars\Extensions\Languages\Language as BaseLanguage;
+use Mars\Extensions\Language as BaseLanguage;
 
 /**
  * The System's Language Class
@@ -377,9 +377,9 @@ class Language extends BaseLanguage
      */
     protected function getFiles() : array
     {
-        $cache_key = $this->name . '-files';
+        $cache_name = $this->name . '-files';
 
-        $files = $this->cache->get($cache_key);
+        $files = $this->cache->get($cache_name);
         if ($this->development) {
             $files = null;
         }
@@ -397,7 +397,7 @@ class Language extends BaseLanguage
         //add the language files
         $this->readFiles($files, $this->files_path);
 
-        $this->cache->set($cache_key, $files);
+        $this->cache->set($cache_name, $files);
 
         return $files;
     }
@@ -432,7 +432,7 @@ class Language extends BaseLanguage
         $type = $parts[0];
         $name = $parts[1];
 
-        if (isset($this->app->extensions->types[$type])) {
+        if (isset($this->app->extensions->list[$type])) {
             if (!isset($parts[2])) {
                 return [];
             }
@@ -443,10 +443,10 @@ class Language extends BaseLanguage
 
             return $this->extension_files[$type][$name][$file] ?? [];
         } else {
-            // search through the modules and themes for the file
+            // search through the extensions to find the extension name, since the type is not specified in the file key
             $name = $parts[0];
             $file = implode('.', array_slice($parts, 1));
-            $type = $this->app->extensions->getType($name);
+            $type = $this->app->extensions->getType($name, 'lang');
             if (!$type) {
                 return [];
             }
@@ -465,9 +465,9 @@ class Language extends BaseLanguage
      */
     protected function getFilenamesForExtension(string $type, string $name) : array
     {
-        $cache_key = $type . '-' . $name . '-' . $this->name . '-lang-filenames';
+        $cache_name = $type . '-' . $name . '-' . $this->name . '-language-files';
 
-        $filenames = $this->cache->get($cache_key);
+        $filenames = $this->cache->get($cache_name);
         if ($this->development) {
             $filenames = null;
         }
@@ -478,7 +478,7 @@ class Language extends BaseLanguage
 
         $filenames = $this->readFilenamesForExtension($type, $name);
 
-        $this->cache->set($cache_key, $filenames);
+        $this->cache->set($cache_name, $filenames);
 
         return $filenames;
     }
@@ -491,7 +491,7 @@ class Language extends BaseLanguage
      */
     protected function readFilenamesForExtension(string $type, string $name) : array
     {
-        $extension = $this->app->extensions->get($name);
+        $extension = $this->app->extensions->get($name, 'lang');
         if (!$extension) {
             return [];
         }

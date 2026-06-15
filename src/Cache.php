@@ -11,13 +11,14 @@ use Mars\App\LazyLoadProperty;
 use Mars\Cache\Assets;
 use Mars\Cache\Config;
 use Mars\Cache\Data;
-use Mars\Cache\Languages;
-use Mars\Cache\Modules;
 use Mars\Cache\Pages;
 use Mars\Cache\Routes;
 use Mars\Cache\Storage;
 use Mars\Cache\Templates;
-use Mars\Cache\Themes;
+use Mars\Cache\Extensions\Languages;
+use Mars\Cache\Extensions\Modules;
+use Mars\Cache\Extensions\Plugins;
+use Mars\Cache\Extensions\Themes;
 use Mars\Cache\Assets\Lists\Css as CssList;
 use Mars\Cache\Assets\Lists\Javascript as JavascriptList;
 use Mars\Cache\Assets\Urls\Css;
@@ -69,18 +70,6 @@ class Cache
     public protected(set) Data $data;
 
     /**
-     * @var Languages $languages The Languages Cache object
-     */
-    #[LazyLoadProperty]
-    public protected(set) Languages $languages;
-
-    /**
-     * @var Modules $modules The Modules Cache object
-     */
-    #[LazyLoadProperty]
-    public protected(set) Modules $modules;
-
-    /**
      * @var Pages $pages The Page Cache object
      */
     #[LazyLoadProperty]
@@ -103,6 +92,24 @@ class Cache
      */
     #[LazyLoadProperty]
     public protected(set) Templates $templates;
+
+    /**
+     * @var Languages $languages The Languages Cache object
+     */
+    #[LazyLoadProperty]
+    public protected(set) Languages $languages;
+
+    /**
+     * @var Modules $modules The Modules Cache object
+     */
+    #[LazyLoadProperty]
+    public protected(set) Modules $modules;
+
+    /**
+     * @var Plugins $plugins The Plugins Cache object
+     */
+    #[LazyLoadProperty]
+    public protected(set) Plugins $plugins;
 
     /**
      * @var Themes $themes The Themes Cache object

@@ -17,7 +17,7 @@ class Text
     use Kernel;
 
     /**
-     * Returns the first $max_length characters from text. If strlen($text) > $max_length will append $replace_with
+     * Returns the first $max_length characters from text. If mb_strlen($text) > $max_length will append $replace_with
      * @param string $text The text to cut
      * @param int $max_length The max number of characters
      * @param string $replace_with Will replace the removed/cut text with this value

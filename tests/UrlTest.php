@@ -23,7 +23,7 @@ final class UrlTest extends Base
         $this->assertEquals('https://', $url->scheme);
         $this->assertEquals('sub.example.com', $url->host);
         $this->assertEquals('8080', $url->port);
-        $this->assertEquals('https://sub.example.com:8080', $url->root);
+        $this->assertEquals('https://sub.example.com:8080', $url->origin);
         $this->assertEquals('example.com', $url->domain);
         $this->assertEquals('sub', $url->subdomain);
         $this->assertEquals('test/path', $url->path);
@@ -37,7 +37,7 @@ final class UrlTest extends Base
         $this->assertEquals('https://', $url->scheme);
         $this->assertEquals('example.com', $url->host);
         $this->assertEquals('', $url->port);
-        $this->assertEquals('https://example.com', $url->root);
+        $this->assertEquals('https://example.com', $url->origin);
         $this->assertEquals('example.com', $url->domain);
         $this->assertEquals('', $url->subdomain);
         $this->assertEquals('test', $url->path);
@@ -55,7 +55,7 @@ final class UrlTest extends Base
         $this->assertEquals('https://', $url->scheme);
         $this->assertEquals('example.com', $url->host);
         $this->assertEquals('', $url->port);
-        $this->assertEquals('https://example.com', $url->root);
+        $this->assertEquals('https://example.com', $url->origin);
         $this->assertEquals('example.com', $url->domain);
         $this->assertEquals('', $url->subdomain);
         $this->assertEquals('', $url->path);

@@ -67,28 +67,22 @@ final class ControllerTest extends Base
     {
         $controller = new MyController;
 
-        ob_start();
-        $controller->dispatch();
-        $this->assertSame('my index', ob_get_clean());
+        $data = $controller->dispatch();
+        $this->assertSame('my index', $data->content);
 
-        ob_start();
-        $controller->dispatch('index');
-        $this->assertSame('my index', ob_get_clean());
+        $data = $controller->dispatch('index');
+        $this->assertSame('my index', $data->content);
 
-        ob_start();
-        $controller->dispatch('myAction');
-        $this->assertSame('my action', ob_get_clean());
+        $data = $controller->dispatch('myAction');
+        $this->assertSame('my action', $data->content);
 
-        ob_start();
-        $controller->dispatch('myProtectedAction');
-        $this->assertSame('my index', ob_get_clean());
+        $data = $controller->dispatch('myProtectedAction');
+        $this->assertSame('my index', $data->content);
 
-        ob_start();
-        $controller->dispatch('withSuccess');
-        $this->assertSame('with successmy success', ob_get_clean());
+        $data = $controller->dispatch('withSuccess');
+        $this->assertSame('my success', $data->content);
 
-        ob_start();
-        $controller->dispatch('withError');
-        $this->assertSame('with errormy error', ob_get_clean());
+        $data = $controller->dispatch('withError');
+        $this->assertSame('my error', $data->content);
     }
 }

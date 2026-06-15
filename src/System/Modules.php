@@ -6,8 +6,8 @@
 
 namespace Mars\System;
 
-use Mars\Extensions\Modules\Module;
-use Mars\Extensions\Modules\Modules as BaseModules;
+use Mars\Extensions\Module;
+use Mars\Extensions\Modules as BaseModules;
 
 /**
  * The System's Modules Class
@@ -50,6 +50,7 @@ class Modules extends BaseModules
     public function boot()
     {
         $list = $this->getBootList();
+        
         foreach ($list as $name) {
             $module = $this->get($name, use_cache: false);
             $module->boot();
@@ -61,9 +62,9 @@ class Modules extends BaseModules
      */
     protected function getBootList(): array
     {
-        $cache_filename = 'boot-list';
+        $cache_file = 'boot-list';
 
-        $list = $this->cache->get($cache_filename);
+        $list = $this->cache->get($cache_file);
         if ($this->app->development) {
             $list = null;
         }
@@ -82,7 +83,7 @@ class Modules extends BaseModules
             }
         }
 
-        $this->cache->set($cache_filename, $list);
+        $this->cache->set($cache_file, $list);
 
         return $list;
     }

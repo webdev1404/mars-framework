@@ -67,7 +67,7 @@ class Memcached implements MemcacheInterface
      * @see MemcacheInterface::get()
      * {@inheritDoc}
      */
-    public function get(string $key)
+    public function get(string $key) : mixed
     {
         $value = $this->handle->get($key);
         if ($value === false) {

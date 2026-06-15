@@ -9,7 +9,7 @@ namespace Mars\System;
 use Mars\App;
 use Mars\App\LazyLoadProperty;
 use Mars\App\HiddenProperty;
-use Mars\Extensions\Themes\Theme as BaseTheme;
+use Mars\Extensions\Theme as BaseTheme;
 use Mars\Themes\Template;
 
 /**
@@ -370,9 +370,9 @@ class Theme extends BaseTheme
      */
     protected function getTemplates() : array
     {
-        $cache_key = $this->name . '-' . $this->app->device->type->value . '-templates';
+        $cache_name = $this->name . '-' . $this->app->device->type->value . '-templates';
 
-        $templates = $this->app->cache->themes->get($cache_key);
+        $templates = $this->cache->get($cache_name);
         if ($this->development) {
             $templates = null;
         }
@@ -383,7 +383,7 @@ class Theme extends BaseTheme
 
         $templates = $this->findTemplates();
 
-        $this->app->cache->themes->set($cache_key, $templates);
+        $this->cache->set($cache_name, $templates);
 
         return $templates;
     }

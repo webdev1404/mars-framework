@@ -39,7 +39,7 @@ class Headers
     /**
      * @var array $list The list of headers
      */
-    protected array $list = [];
+    public array $list = [];
     
     /**
      * @internal

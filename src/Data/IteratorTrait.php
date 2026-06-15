@@ -51,12 +51,12 @@ trait IteratorTrait
 
     /**
      * Sets the iterator
-     * @param array $values The values
+     * @param string|array $values The values
      * @return static
      */
-    public function set(array $values) : static
+    public function set(string|array $values) : static
     {
-        $this->{static::$property} = $values;
+        $this->{static::$property} = (array)$values;
 
         return $this;
     }

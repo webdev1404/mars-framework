@@ -69,7 +69,7 @@ abstract class Cacheable extends Cache
     /**
      * @var string $driver_name The used driver
      */
-    protected string $driver_name {
+    public string $driver_name {
         get => $this->app->config->cache->driver;
     }
 
@@ -115,7 +115,7 @@ abstract class Cacheable extends Cache
 
     /**
      * Sets the value of a cached value
-     * @param string $name The name
+     * @param string $name The name of the cached data
      * @param mixed $value The value
      * @return static $this
      */
@@ -128,7 +128,7 @@ abstract class Cacheable extends Cache
 
     /**
      * Creates a cached value
-     * @param string $name The name of the cached value
+     * @param string $name The name of the cached data to create
      * @return static $this
      */
     public function create(string $name) : static
@@ -140,7 +140,7 @@ abstract class Cacheable extends Cache
 
     /**
      * Checks if a cached value exists
-     * @param string $name The name of the cached value
+     * @param string $name The name of the cached data
      * @return bool True if the cached value exists, false otherwise
      */
     public function has(string $name) : bool
@@ -150,7 +150,7 @@ abstract class Cacheable extends Cache
 
     /**
      * Deletes a cached value
-     * @param string $name The name of the value to unset
+     * @param string $name The name of the cached data to delete
      * @return static $this
      */
     public function delete(string $name) : static

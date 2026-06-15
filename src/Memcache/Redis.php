@@ -75,7 +75,7 @@ class Redis implements MemcacheInterface
      * @see MemcacheInterface::get()
      * {@inheritDoc}
      */
-    public function get(string $key)
+    public function get(string $key) : mixed
     {
         $value = $this->handle->get($key);
         if ($value === false) {
@@ -91,7 +91,7 @@ class Redis implements MemcacheInterface
      */
     public function has(string $key) : bool
     {
-        return (bool) $this->handle->has($key);
+        return (bool) $this->handle->exists($key);
     }
 
     /**

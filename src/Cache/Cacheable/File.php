@@ -70,6 +70,17 @@ abstract class File extends Base implements CacheableInterface
     }
 
     /**
+     * @see CacheableInterface::output()
+     * {@inheritDoc}
+     */
+    public function output(string $filename) : bool
+    {
+        $filename = $this->getFilename($filename);
+
+        return readfile($filename);
+    }
+
+    /**
      * @see CacheableInterface::create()
      * {@inheritDoc}
      */
@@ -93,15 +104,30 @@ abstract class File extends Base implements CacheableInterface
      * @see CacheableInterface::getLastModified()
      * {@inheritDoc}
      */
-    public function getLastModified(string $filename) : int
+    public function getLastModified(string $filename) : ?int
     {
         $filename = $this->getFilename($filename);
 
         if (!$this->isFile($filename)) {
-            return 0;
+            return null;
         }
 
         return filemtime($filename);
+    }
+
+    /**
+     * @see CacheableInterface::getSize()
+     * {@inheritDoc}
+     */
+    public function getSize(string $filename) : ?int
+    {
+        $filename = $this->getFilename($filename);
+
+        if (!$this->isFile($filename)) {
+            return null;
+        }
+
+        return filesize($filename);
     }
 
     /**

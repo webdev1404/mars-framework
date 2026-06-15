@@ -91,6 +91,26 @@ class Cli
     }
 
     /**
+     * @var array $commands The commands to be executed
+     */
+    public protected(set) array $commands {
+        get {
+            if (isset($this->commands)) {
+                return $this->commands;
+            }
+
+            $this->commands = [];
+            foreach ($this->params as $param) {
+                if (!str_starts_with($param, '-')) {
+                    $this->commands[] = $param;
+                }
+            }
+
+            return $this->commands;
+        }
+    }
+
+    /**
      * @var array $options List of options
      */
     public protected(set) array $options {

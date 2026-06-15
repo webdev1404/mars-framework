@@ -4,22 +4,14 @@
 * @package Mars
 */
 
-namespace Mars\Cache;
+namespace Mars\Cache\Extensions;
 
 /**
  * The Modules Cache Class
  * Class which handles the caching of module files
  */
-class Modules extends Data
+class Modules extends Extensions
 {
-    /**
-     * @see Cacheable::$driver_name
-     * {@inheritDoc}
-     */
-    protected string $driver_name {
-        get => $this->app->config->cache->modules->driver ?? $this->app->config->cache->driver;
-    }
-
     /**
      * @see Cacheable::$driver_params
      * {@inheritDoc}
@@ -33,5 +25,5 @@ class Modules extends Data
      * @see Cache::$dir
      * {@inheritDoc}
      */
-    public protected(set) string $dir = 'modules';
+    public protected(set) string $dir = 'extensions/modules';
 }

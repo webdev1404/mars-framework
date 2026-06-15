@@ -8,7 +8,6 @@ namespace Mars\Themes;
 
 use Mars\App\Kernel;
 use Mars\App\Drivers;
-use Mars\Extensions\Theme;
 use Mars\Themes\Templates\TemplateInterface;
 
 /**

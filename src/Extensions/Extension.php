@@ -8,6 +8,7 @@ namespace Mars\Extensions;
 
 use Mars\App;
 use Mars\App\Kernel;
+use Mars\App\HiddenProperty;
 use Mars\Cache\Cacheable;
 use Mars\Extensions\List\Reader;
 
@@ -29,7 +30,7 @@ abstract class Extension
         'menus' => 'menus',
         'routes' => 'routes',
         'templates' => 'templates',
-        'setup' => 'Setup',
+        'setup' => 'setup',
         'src' => 'src',
     ];
 
@@ -165,7 +166,7 @@ abstract class Extension
                 return $this->namespace;
             }
 
-            $this->namespace =  static::$base_namespace . '\\' . App::getClass($this->name);
+            $this->namespace =  static::getNamespace($this->name);
 
             return $this->namespace;
         }
@@ -210,6 +211,7 @@ abstract class Extension
     /**
      * @var Extensions $manager The extensions manager object
      */
+    #[HiddenProperty]
     public protected(set) ?Extensions $manager {
         get {
             if (isset($this->manager)) {
@@ -260,6 +262,7 @@ abstract class Extension
     /**
      * @var Cacheable $cache The cache object handling this type of extensions
      */
+    #[HiddenProperty]
     public Cacheable $cache {
         get => $this->manager->cache;
     }
@@ -302,6 +305,16 @@ abstract class Extension
     public static function getBaseNamespace() : string
     {
         return static::$base_namespace;
+    }
+
+    /**
+     * Returns the namespace of the extension
+     * @param string $name The name of the extension
+     * @return string The namespace of the extension
+     */
+    public static function getNamespace(string $name) : string
+    {
+        return static::$base_namespace . '\\' . App::getClass($name);
     }
 
     /**

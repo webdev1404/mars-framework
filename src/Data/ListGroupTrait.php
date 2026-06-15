@@ -87,7 +87,7 @@ trait ListGroupTrait
      * @return static
      */
     public function set(string $type, array $values) : static
-    {        
+    {
         $this->{static::$property}[$type] = $values;
 
         return $this;

@@ -4,17 +4,22 @@
 * @package Mars
 */
 
-namespace Mars\Extensions\Themes;
+namespace Mars\Extensions;
 
+use Mars\App\HiddenProperty;
 use Mars\Cache\Cacheable;
-use Mars\Extensions\Extension;
-use Mars\Extensions\Extensions;
+use Mars\Extensions\Setup\Theme as ThemeSetup;
 
 /**
  * The Themes Class
  */
 class Themes extends Extensions
 {
+    /**
+     * @internal
+     */
+    protected static array $supports = ['config', 'lang'];
+
     /**
      * @internal
      */
@@ -33,6 +38,12 @@ class Themes extends Extensions
     /**
      * @internal
      */
+    protected static string $setup_class = ThemeSetup::class;
+
+    /**
+     * @internal
+     */
+    #[HiddenProperty]
     public Cacheable $cache {
         get => $this->app->cache->themes;
     }

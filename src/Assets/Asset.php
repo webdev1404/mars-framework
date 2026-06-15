@@ -67,8 +67,8 @@ abstract class Asset
             return $urls;
         }
 
-        $cache_key = json_encode(['urls' => $urls->urls, 'minify' => $minify]);
-        $urls_list = $this->cache_list->get($cache_key);
+        $cache_name = json_encode(['urls' => $urls->urls, 'minify' => $minify]);
+        $urls_list = $this->cache_list->get($cache_name);
 
         if ($this->development) {
             $urls_list = null;
@@ -88,7 +88,7 @@ abstract class Asset
 
         $this->app->plugins->run('assets.processed', $urls_list, $urls, $local_urls, $external_list, $minify_exclude);
 
-        $this->cache_list->set($cache_key, $urls_list);
+        $this->cache_list->set($cache_name, $urls_list);
 
         return $urls_list;
     }

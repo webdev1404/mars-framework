@@ -2,6 +2,9 @@
 
 include_once(dirname(__DIR__) . '/Base.php');
 
+use Mars\Http\Response\Body\Data\Html;
+use Mars\Http\Response\Body\Data\Json;
+
 /**
  * @ignore
  */
@@ -21,36 +24,28 @@ final class ResponseTest extends Base
         $this->assertNull($this->app->response->headers->get('X-Test-Header'));
     }
 
-    public function testResponseType()
-    {
-        $this->app->response->type = 'ajax';
-        $this->assertSame($this->app->response->type, 'json');
-
-        $this->app->response->type = 'json';
-        $this->assertSame($this->app->response->type, 'json');
-
-        $this->app->response->type = 'html';
-        $this->assertSame($this->app->response->type, 'html');
-    }
-
     public function testOutputResponse()
     {
         $content = '<p>Test HTML Content</p>';
-        ob_start();
-        $this->app->response->send($content);
-        $output = ob_get_clean();
-        $this->assertSame($output, $content);
+        $html = new Html('<p>Test HTML Content</p>');
 
-        $this->app->response->type = 'ajax';
+        ob_start();
+        $this->app->response->send($html);
+        $output = ob_get_clean();
+
+        $this->assertSame($content, $output);
+
         $content = ['status' => 'success', 'message' => 'Test AJAX Content'];
-        ob_start();
-        $this->app->response->send($content);
-        $output = ob_get_clean();
-
         $expected = [
             'success' => true,
             'data' => $content,
         ];
+
+        $json = new Json($content);
+
+        ob_start();
+        $this->app->response->send($json);
+        $output = ob_get_clean();
 
         $this->assertSame($output, json_encode($expected));
     }

@@ -6,7 +6,7 @@
 
 namespace Mars\Router\Loaders;
 
-use Mars\Extensions\Modules\Module;
+use Mars\Extensions\Module;
 
 /**
  * The Pages Loader Class

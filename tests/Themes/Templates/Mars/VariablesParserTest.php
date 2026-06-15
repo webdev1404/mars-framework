@@ -21,8 +21,8 @@ final class VariablesParserTest extends Base
 
         $this->assertSame($parser->parse('{{ my_str123|raw }}'), '<?= $lang->get(\'my_str123\') ?>');
         $this->assertSame($parser->parse('{{ $myvar | raw }}'), '<?= $myvar ?>');
-        $this->assertSame($parser->parse('{{ $myvar | lower| trim }}'), '<?= $this->app->escape->html(strtolower(trim($myvar))) ?>');
-        $this->assertSame($parser->parse('{{ $myvar | raw | lower | trim }}'), '<?= strtolower(trim($myvar)) ?>');
+        $this->assertSame($parser->parse('{{ $myvar | lower| trim }}'), '<?= $this->app->escape->html(mb_strtolower(trim($myvar))) ?>');
+        $this->assertSame($parser->parse('{{ $myvar | raw | lower | trim }}'), '<?= mb_strtolower(trim($myvar)) ?>');
 
         $this->assertSame($parser->parse('{{ trim($myvar) }}'), '<?= $this->app->escape->html(trim($myvar)) ?>');
         $this->assertSame($parser->parse('{{ trim($myvar) | raw }}'), '<?= trim($myvar) ?>');

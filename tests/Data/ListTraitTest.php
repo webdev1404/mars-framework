@@ -74,7 +74,7 @@ final class ListTraitTest extends Base
     {
         $elements = new ElementsSimple;
 
-        $this->assertSame($elements->getFirst(), '');
+        $this->assertSame($elements->getFirst(), null);
 
         $elements->addMany(['test123', 'test345', 'test678']);
         $this->assertSame($elements->getFirst(), 'test123');
@@ -84,7 +84,7 @@ final class ListTraitTest extends Base
     {
         $elements = new ElementsSimple;
 
-        $this->assertSame($elements->getLast(), '');
+        $this->assertSame($elements->getLast(), null);
 
         $elements->addMany(['test123', 'test345', 'test678']);
         $this->assertSame($elements->getLast(), 'test678');
@@ -131,7 +131,7 @@ final class ListTraitTest extends Base
     {
         $elements = new ElementsSimple;
 
-        $elements->add(['test123', 'test345', 'test678']);
+        $elements->addMany(['test123', 'test345', 'test678']);
         $iterator = $elements->getIterator();
 
         $this->assertInstanceOf(\ArrayIterator::class, $iterator);

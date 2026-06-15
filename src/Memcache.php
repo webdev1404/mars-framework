@@ -165,7 +165,7 @@ class Memcache
      * @param bool $unserialize If true, will unserialize the returned result
      * @return mixed The value of $key
      */
-    public function get(string $key, bool $unserialize = false)
+    public function get(string $key, bool $unserialize = false) : mixed
     {
         $this->check();
 

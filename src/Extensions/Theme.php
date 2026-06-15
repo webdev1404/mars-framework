@@ -4,22 +4,20 @@
 * @package Mars
 */
 
-namespace Mars\Extensions\Themes;
+namespace Mars\Extensions;
 
 use Mars\App;
 use Mars\App\LazyLoad;
 use Mars\App\LazyLoadProperty;
 use Mars\App\HiddenProperty;
 use Mars\Document;
-use Mars\Extensions\Extension;
-use Mars\Extensions\Extensions;
+use Mars\Extensions\Abilities\ConfigTrait;
+use Mars\Extensions\Abilities\LanguagesTrait;
 use Mars\Extensions\Themes\Links\Css;
 use Mars\Extensions\Themes\Links\Javascript;
 use Mars\Extensions\Themes\Links\Favicon;
 use Mars\Extensions\Themes\Links\Fonts;
 use Mars\Extensions\Themes\Links\Images;
-use Mars\Extensions\Abilities\ConfigTrait;
-use Mars\Extensions\Abilities\LanguagesTrait;
 
 /**
  * The Theme Class

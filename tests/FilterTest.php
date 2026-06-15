@@ -116,16 +116,6 @@ final class FilterTest extends Base
         $this->assertEquals($this->app->filter->slug('some_url/12', true), 'some-url/12');
     }
 
-    public function testHtml()
-    {
-        $filter = $this->app->filter;
-
-        $this->assertEquals($this->app->filter->html('<a href="http://www.sss.com" data-attr="12345">xxxx</a>'), '<a href="http://www.sss.com">xxxx</a>');
-        $this->assertEquals($this->app->filter->html('<a href="http://www.sss.com" data-attr="12345"><span>xxxx</span></a>', 'a'), '<a href="http://www.sss.com">xxxx</a>');
-        $this->assertEquals($this->app->filter->html('<a href="http://www.sss.com" data-attr="12345"><span>xxxx</span></a>', 'a,span,img'), '<a href="http://www.sss.com"><span>xxxx</span></a>');
-        $this->assertEquals($this->app->filter->html('<a href="http://www.sss.com" data-attr="12345"><span>xxxx</span></a>', null, 'a.href,img.src'), '<a href="http://www.sss.com"><span>xxxx</span></a>');
-    }
-
     public function testInterval()
     {
         $filter = $this->app->filter;

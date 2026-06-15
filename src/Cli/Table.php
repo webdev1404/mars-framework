@@ -118,7 +118,7 @@ class Table extends Printer
      */
     protected function getText(string $text, string $alignment, int $padding_left, int $padding_right, int $max_value) : string
     {
-        $length = strlen($text);
+        $length = mb_strlen($text);
 
         if ($alignment == 'left') {
             $padding_right = $max_value - $length - $padding_left;
@@ -157,7 +157,7 @@ class Table extends Printer
 
                 $padding_left = $paddings_left[$i] ?? $this->padding_left;
                 $padding_right = $paddings_right[$i] ?? $this->padding_right;
-                $length = strlen($item) + $padding_right + $padding_left;
+                $length = mb_strlen($item) + $padding_right + $padding_left;
 
                 if ($length > $max[$i]) {
                     $max[$i] = $length;

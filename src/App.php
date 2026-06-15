@@ -101,6 +101,12 @@ class App
     }
 
     /**
+     * @var Compression $compression The compression object
+     */
+    #[LazyLoadProperty]
+    public Compression $compression;
+
+    /**
      * @var Crypt $crypt The crypt object
      */
     #[LazyLoadProperty]
@@ -655,8 +661,8 @@ class App
             }
 
             $base_url = $this->base_url;
-            if ($this->config->url->cdn) {
-                $base_url = $this->config->url->cdn;
+            if ($this->config->site->url->cdn) {
+                $base_url = $this->config->site->url->cdn;
             }
 
             $this->assets_url = $base_url . '/' . rawurlencode(basename($this->assets_path));
@@ -773,9 +779,6 @@ class App
 
         //boot the modules
         $this->modules->boot();
-
-        //run plugins boot actions
-        $this->plugins->run('app.boot');
     }
 
     /**
@@ -891,7 +894,7 @@ class App
             return;
         }
 
-        $this->cache->pages->serve();
+        $this->cache->pages->send();
     }
 
     /**

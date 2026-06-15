@@ -35,10 +35,10 @@ class VariablesParser
 
         //base modifiers
         'nl2br' => ['nl2br', 100],
-        'length' => ['strlen', 10],
-        'lower' => ['strtolower', 10],
-        'upper' => ['strtoupper', 10],
-        'ucfirst' => ['ucfirst', 10],
+        'length' => ['mb_strlen', 10],
+        'lower' => ['mb_strtolower', 10],
+        'upper' => ['mb_strtoupper', 10],
+        'ucfirst' => ['mb_ucfirst', 10],
         'ucwords' => ['ucwords', 10],
         'trim' => ['trim', 10],
         'strip_tags' => ['strip_tags', 10],

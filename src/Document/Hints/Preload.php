@@ -41,7 +41,7 @@ class Preload extends UrlsGroup
     {
         $allowed_attributes = ['crossorigin', 'integrity'];
 
-        $attributes = array_filter($url->attributes, fn($attribute) => in_array($attribute, $allowed_attributes), ARRAY_FILTER_USE_KEY);
+        $attributes = array_filter($url->attributes, fn ($attribute) => in_array($attribute, $allowed_attributes), ARRAY_FILTER_USE_KEY);
 
         return $this->app->html->getAttributes($attributes);
     }

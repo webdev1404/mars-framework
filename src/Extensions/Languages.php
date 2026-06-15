@@ -4,10 +4,11 @@
 * @package Mars
 */
 
-namespace Mars\Extensions\Languages;
+namespace Mars\Extensions;
 
+use Mars\App\HiddenProperty;
 use Mars\Cache\Cacheable;
-use Mars\Extensions\Extensions;
+use Mars\Extensions\Setup\Language as LanguageSetup;
 
 /**
  * The Languages Class
@@ -37,6 +38,13 @@ class Languages extends Extensions
     /**
      * @internal
      */
+    protected static string $setup_class = LanguageSetup::class;
+    
+
+    /**
+     * @internal
+     */
+    #[HiddenProperty]
     public Cacheable $cache {
         get => $this->app->cache->languages;
     }

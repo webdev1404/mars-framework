@@ -48,9 +48,31 @@ class Memcache extends Base implements CacheableInterface
     {
         $filename = $this->getFilename($filename);
 
-        $this->app->memcache->set($filename, $this->app->serializer->serializeData($content));
-        $this->app->memcache->set($filename . '-last-modified', time());
+        $data = $this->app->serializer->serializeData($content);
+
+        $this->app->memcache->set($filename, $data);
+        $this->app->memcache->set($filename . ':last-modified', time());
+        $this->app->memcache->set($filename . ':size', strlen($data));
+
         $this->app->memcache->storeKey($filename, $this->type);
+
+        return true;
+    }
+
+    /**
+     * @see CacheableInterface::output()
+     * {@inheritDoc}
+     */
+    public function output(string $filename) : bool
+    {
+        $filename = $this->getFilename($filename);
+
+        $content = $this->get($filename);
+        if ($content === null) {
+            return false;
+        }
+
+        echo $content;
 
         return true;
     }
@@ -79,11 +101,22 @@ class Memcache extends Base implements CacheableInterface
      * @see CacheableInterface::getLastModified()
      * {@inheritDoc}
      */
-    public function getLastModified(string $filename) : int
+    public function getLastModified(string $filename) : ?int
     {
         $filename = $this->getFilename($filename);
 
-        return (int)$this->app->memcache->get($filename . '-last-modified');
+        return $this->app->memcache->get($filename . ':last-modified');
+    }
+
+    /**
+     * @see CacheableInterface::getSize()
+     * {@inheritDoc}
+     */
+    public function getSize(string $filename) : ?int
+    {
+        $filename = $this->getFilename($filename);
+
+        return $this->app->memcache->get($filename . ':size');
     }
 
     /**
@@ -95,7 +128,8 @@ class Memcache extends Base implements CacheableInterface
         $filename = $this->getFilename($filename);
 
         $this->app->memcache->delete($filename);
-        $this->app->memcache->delete($filename . '-last-modified');
+        $this->app->memcache->delete($filename . ':last-modified');
+        $this->app->memcache->delete($filename . ':size');
         $this->app->memcache->deleteKey($filename, $this->type);
 
         return true;
@@ -115,7 +149,8 @@ class Memcache extends Base implements CacheableInterface
         foreach ($keys as $key) {
             if ($this->canCleanKey($key, $expire_hours)) {
                 $this->app->memcache->delete($key);
-                $this->app->memcache->delete($key . '-last-modified');
+                $this->app->memcache->delete($key . ':last-modified');
+                $this->app->memcache->delete($key . ':size');
             }
         }
 
@@ -135,7 +170,7 @@ class Memcache extends Base implements CacheableInterface
         }
 
         $cutoff = time() - ($expire_hours * 3600);
-        $last_modified = $this->app->memcache->get($key . '-last-modified');
+        $last_modified = $this->app->memcache->get($key . ':last-modified');
 
         return $last_modified < $cutoff;
     }

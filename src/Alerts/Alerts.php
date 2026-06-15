@@ -16,9 +16,7 @@ use Mars\Data\ListTrait;
 abstract class Alerts implements \Countable, \IteratorAggregate
 {
     use Kernel;
-    use ListTrait {
-        ListTrait::add as listAdd;
-    }
+    use ListTrait;
     
     /**
      * @var array $alerts Array with all the generated alerts
@@ -65,8 +63,8 @@ abstract class Alerts implements \Countable, \IteratorAggregate
                 'code' => $code
             ]];
         }
-        
-        $this->listAdd($alerts);
+
+        $this->addMany($alerts);
 
         return $this;
     }

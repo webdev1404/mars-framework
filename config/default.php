@@ -171,14 +171,8 @@ return [
     // string|null The driver used for data caching. If null, will use cache.driver
     'cache.data.driver' => 'php',
 
-    // string|null The driver used for languages caching. If null, will use cache.driver
-    'cache.languages.driver' => 'php',
-
-    // string|null The driver used for themes caching. If null, will use cache.driver
-    'cache.themes.driver' => 'php',
-
-    // string|null The driver used for modules caching. If null, will use cache.driver
-    'cache.modules.driver' => 'php',
+    // string|null The driver used for extensions caching. If null, will use cache.driver
+    'cache.extensions.driver' => 'php',
 
     // string|null The driver used for routes caching. If null, will use cache.driver
     'cache.routes.driver' => 'php',
@@ -211,12 +205,24 @@ return [
     'cache.page.exclude.urls' => [],
 
     // bool If true, will enable the compression of the cached pages based on the accepted encodings of the client
-    'cache.page.compress.enable' => false,
+    'cache.page.compression.enable' => true,
 
     // array The compression drivers to use for the cached pages, based on the accepted encodings of the client. Supported options: gzip, brotli, zstd
-    'cache.page.compress.drivers' => ['gzip'],
+    'cache.page.compression.drivers' => ['gzip'],
+
+    // int|null The compression level to use for the cached pages. If null, the default level of the driver will be used
+    'cache.page.compression.level' => null,
 
 
+    // string The compression driver. Supported options: gzip, brotli, zstd
+    'compression.driver' => 'gzip',
+
+    // int The compression level. If null, the default level of the driver will be used
+    // Supported options for gzip: -1 (default), 0 (no compression), 1 (fastest), 9 (slowest).
+    // See the documentation of the specific driver for more details on the supported levels
+    'compression.level' => null,
+
+    
     // string The crypt driver. Supported options: openssl, sodium
     'crypt.driver' => 'openssl',
 

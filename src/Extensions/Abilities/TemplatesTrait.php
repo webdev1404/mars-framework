@@ -4,7 +4,7 @@
 * @package Mars
 */
 
-namespace Mars\Extensions\Modules\Abilities;
+namespace Mars\Extensions\Abilities;
 
 /**
  * The Extension's Templates Trait

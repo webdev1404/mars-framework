@@ -33,9 +33,9 @@ trait FilesCacheTrait
      */
     protected function getCachedFiles() : array
     {
-        $cache_filename = $this->name . '-files-list';
+        $cache_name = $this->name . '-files-list';
 
-        $files = $this->cache->get($cache_filename);
+        $files = $this->cache->get($cache_name);
 
         // Force files scan if we are in development mode
         if ($this->development) {
@@ -57,7 +57,7 @@ trait FilesCacheTrait
             $files[$name] = $this->app->array->flip($files[$name]);
         }
 
-        $this->cache->set($cache_filename, $files);
+        $this->cache->set($cache_name, $files);
 
         return $files;
     }

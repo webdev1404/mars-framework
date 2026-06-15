@@ -8,7 +8,7 @@ namespace Mars\Extensions\Themes\Links;
 
 use Mars\App;
 use Mars\App\Kernel;
-use Mars\Extensions\Themes\Theme;
+use Mars\Extensions\Theme;
 
 /**
  * The Theme's Links Base Class

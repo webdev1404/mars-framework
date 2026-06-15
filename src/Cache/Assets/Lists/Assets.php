@@ -18,7 +18,7 @@ abstract class Assets extends Cacheable
      * @see Cacheable::$driver_name
      * {@inheritDoc}
      */
-    protected string $driver_name {
+    public string $driver_name {
         get => $this->app->config->cache->assets->driver ?? $this->app->config->cache->driver;
     }
 

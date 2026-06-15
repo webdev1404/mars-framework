@@ -245,7 +245,7 @@ class File implements \Stringable
      */
     public function check(?string $open_basedir = null) : static
     {
-        if (strlen(basename($this->filename)) > $this->app->config->files->max_chars) {
+        if (mb_strlen(basename($this->filename)) > $this->app->config->files->max_chars) {
             throw new \Exception(App::__('error:file.invalid_maxchars', ['{FILE}' => $this->filename]));
         }
 

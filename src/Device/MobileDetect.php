@@ -4,7 +4,7 @@
 * @package Mars
 */
 
-namespace Mars\Devices;
+namespace Mars\Device;
 
 use Mars\App\Kernel;
 

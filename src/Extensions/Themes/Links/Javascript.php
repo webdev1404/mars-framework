@@ -7,7 +7,7 @@
 namespace Mars\Extensions\Themes\Links;
 
 use Mars\Document\Links\Links as DocumentLinks;
-use Mars\Extensions\Themes\Theme;
+use Mars\Extensions\Theme;
 
 /**
  * The Theme's Javascript Links Class

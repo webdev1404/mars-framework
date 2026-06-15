@@ -47,7 +47,7 @@ interface MemcacheInterface
      * @param string $key The key
      * @return mixed The value of $key
      */
-    public function get(string $key);
+    public function get(string $key) : mixed;
 
     /**
      * Checks if a key exists/is set
