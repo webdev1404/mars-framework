@@ -174,4 +174,13 @@ class Memcache extends Base implements CacheableInterface
 
         return $last_modified < $cutoff;
     }
+
+    /**
+     * @see CacheableInterface::clearstat()
+     * {@inheritDoc}
+     */
+    public function clearstat()
+    {
+        // No action needed for Memcache
+    }
 }

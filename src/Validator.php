@@ -87,13 +87,13 @@ class Validator
 
     /**
      * Validates the rules
-     * @param array|object $data The data to validate
      * @param array $rules The rules to validate, in the format ['field' => validation_type]. Eg: 'my_id' => 'required|min:3|unique:my_table:my_id'
+     * @param array|object $data The data to validate
      * @param array $error_strings Custom error strings, if any
      * @param array $skip_array Array with the fields for which we'll skip validation, if any
      * @return bool True if the validation passed all tests, false otherwise
      */
-    public function validate(array|object $data, array $rules, array $error_strings = [], array $skip_array = []) : bool
+    public function validate(array $rules, array|object $data, array $error_strings = [], array $skip_array = []) : bool
     {
         $ok = true;
         $this->errors->reset();

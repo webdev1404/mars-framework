@@ -32,7 +32,7 @@ abstract class Tag
 
     /**
      * Sets the value of the property
-     * @param string $value The new value
+     * @param string $value The value
      * @return static
      */
     public function set(string $value) : static

@@ -1,6 +1,6 @@
 <?php
 /**
-* The Pages Loader Class
+* The Articles Loader Class
 * @package Mars
 */
 
@@ -9,10 +9,10 @@ namespace Mars\Router\Loaders;
 use Mars\Extensions\Module;
 
 /**
- * The Pages Loader Class
- * Loads the page routes
+ * The Articles Loader Class
+ * Loads the article routes
  */
-class Pages extends Loader
+class Articles extends Loader
 {
     /**
      * @var string $homepage The name of the homepage file
@@ -20,7 +20,7 @@ class Pages extends Loader
     protected string $homepage = 'homepage';
 
     /**
-     * @var string $method The HTTP method for the page routes
+     * @var string $method The HTTP method for the article routes
      */
     protected string $method = 'get';
 
@@ -30,7 +30,7 @@ class Pages extends Loader
      */
     public function load()
     {
-        if (!$this->app->config->routes->pages_autoload) {
+        if (!$this->app->config->routes->articles->autoload) {
             return;
         }
 
@@ -42,7 +42,7 @@ class Pages extends Loader
                 $filename = $path . '/' . $file;
                 $route = $this->getRoute($file);
                 $prefix = $this->getPrefix($route);
-                $name = 'page.' . $route;
+                $name = $route == '/' ? 'homepage' : $route;
                 $languages = $this->getLanguages($file, $files);
 
                 if (!$languages) {
@@ -52,35 +52,37 @@ class Pages extends Loader
                 foreach ($languages as $language) {
                     $hash = $this->getHash($route, $language, 'get');
 
-                    $this->loadHash($this->method, $language, $route, $prefix, $hash, 'page', $name, ['page' => $filename], null);
+                    //$this->loadName($language, $name, $route);
+
+                    $this->loadHash($this->method, $language, $route, $prefix, $hash, 'article', $name, ['filename' => $filename, 'file' => $file], null);
                 }
             }
         }
     }
 
     /**
-     * Returns the list of paths from where to build page routes
+     * Returns the list of paths from where to build article routes
      * @return array The list of paths
      */
     protected function getPaths() : array
     {
         $paths = [];
         foreach ($this->app->modules->getEnabled() as $module_path) {
-            $module_path = $module_path . '/' . Module::DIRS['pages'];
+            $module_path = $module_path . '/' . Module::DIRS['articles'];
             if (is_dir($module_path)) {
                 $paths[] = $module_path;
             }
         }
 
-        $paths[] = $this->app->app_path . '/pages';
+        $paths[] = $this->app->app_path . '/articles';
 
         return $paths;
     }
 
     /**
-     * Returns the list of pages from a path
-     * @param string $path The path where to look for the pages
-     * @return array The list of pages
+     * Returns the list of articles from a path
+     * @param string $path The path where to look for the articles
+     * @return array The list of articles
      */
     protected function getFromPath(string $path) : array
     {
@@ -104,6 +106,12 @@ class Pages extends Loader
         }
 
         $parts = explode('/', $route);
+        if (array_last($parts) == 'index') {
+            array_pop($parts);
+
+            $route = implode('/', $parts);
+        }
+
         $lang = $parts[0] ?? '';
 
         if (!$lang) {

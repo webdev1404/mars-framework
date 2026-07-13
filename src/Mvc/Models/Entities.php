@@ -21,10 +21,10 @@ abstract class Entities extends \Mars\Entities
 
     /**
      * Builds the Model
-     * @param App $app The app object
-     * @param Controller|null $controller The controller object, if any
+     * @param Controller|null $controller The controller object
+     * @param App|null $app The app object
      */
-    public function __construct(App $app, ?Controller $controller = null)
+    public function __construct(?Controller $controller = null, ?App $app = null)
     {
         parent::__construct();
 

@@ -12,6 +12,6 @@ use Mars\Mvc\Models\Items;
  * The Model Class
  * Alias for the Items Model Class
  */
-abstract class Model extends Items
+class Model extends Items
 {
 }

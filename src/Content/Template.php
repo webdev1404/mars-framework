@@ -18,8 +18,10 @@ class Template extends Content implements ContentInterface
      * @see ContentInterface::run()
      * {@inheritDoc}
      */
-    public function run(array $vars = []) : Data
+    public function run(string $action = '', array $vars = []) : Data
     {
-        return $this->app->response->body->create(null, $this->app->theme->getTemplate($this->name, $vars));
+        $name = $this->data['template'];
+
+        return $this->app->response->body->create(null, $this->app->theme->getTemplate($name, $vars));
     }
 }

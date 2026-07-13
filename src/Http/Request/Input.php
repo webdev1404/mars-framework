@@ -41,7 +41,7 @@ abstract class Input
      * @param bool $trim Whether to trim the value
      * @return mixed The value
      */
-    public function get(string $name, mixed $default_value = '', string $filter = '', bool $is_array = false, bool $trim = true) : mixed
+    public function get(string $name, mixed $default_value = null, string $filter = '', bool $is_array = false, bool $trim = true) : mixed
     {
         $value = $this->data[$name] ?? null;
         if ($value === null) {
@@ -56,12 +56,14 @@ abstract class Input
             }
         }
 
-        if ($trim) {
-            $value = $this->app->filter->trim($value);
-        }
+        if ($value) {
+            if ($trim) {
+                $value = $this->app->filter->trim($value);
+            }
 
-        if ($filter) {
-            $value = $this->app->filter->value($value, $filter);
+            if ($filter) {
+                $value = $this->app->filter->value($value, $filter);
+            }
         }
 
         return $value;
@@ -111,7 +113,7 @@ abstract class Input
      * @param bool $trim Whether to trim the value
      * @return array The value
      */
-    public function getArray(string $name, mixed $default_value = '', string $filter = '', bool $trim = true) : array
+    public function getArray(string $name, mixed $default_value = null, string $filter = '', bool $trim = true) : array
     {
         return $this->get($name, $default_value, $filter, true, $trim);
     }
@@ -125,7 +127,7 @@ abstract class Input
      * @param bool $trim Whether to trim the value
      * @return mixed The value
      */
-    public function getFromArray(string $name, string $key, mixed $default_value = '', string $filter = '', bool $trim = true) : mixed
+    public function getFromArray(string $name, string $key, mixed $default_value = null, string $filter = '', bool $trim = true) : mixed
     {
         $value = $this->data[$name][$key] ?? null;
         if ($value === null) {

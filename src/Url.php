@@ -314,7 +314,7 @@ class Url implements \Stringable
      * @param bool $remove_empty_params If true, it will remove empty parameters
      * @return static Returns a new url instance
      */
-    public function get(string|array $parts, array $params = [], bool $encode = true, bool $remove_empty_params = true) : static
+    public function build(string|array $parts, array $params = [], bool $encode = true, bool $remove_empty_params = true) : static
     {
         $parts = array_filter((array)$parts);
         if (!$parts && !$params) {

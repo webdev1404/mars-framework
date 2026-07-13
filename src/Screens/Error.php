@@ -29,6 +29,6 @@ class Error
             return;
         }
 
-        $this->app->theme->render('screen/error', ['title' => $title ?? App::__('message:error'), 'text' => $text]);
+        $this->app->theme->render('screens/error', ['title' => $title ?? App::__('message:error'), 'text' => $text]);
     }
 }

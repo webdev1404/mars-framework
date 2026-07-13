@@ -39,9 +39,8 @@ class Json implements BodyInterface
             $data_array['errors'] = $this->app->errors->get();
         }
 
-        $data = $this->app->array->get($content);
-        if ($data) {
-            $data_array['data'] = $data;
+        if ($content) {
+            $data_array['data'] = $content;
         }
 
         $content = $this->app->json->encode($data_array);

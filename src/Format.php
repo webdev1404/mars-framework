@@ -170,4 +170,16 @@ class Format
             return $this->format->get('time_interval')->format($seconds, $unit_separator, $part_separator);
         });
     }
+
+    /**
+     * Formats an id value
+     * @param string|array $value The value
+     * @return string|array The formatted value
+     */
+    public function id(string|array $value) : string|array
+    {
+        return $this->app->data->map($value, function ($value) {
+            return str_replace([' ', '.', '_'], '-', $value);
+        });
+    }
 }

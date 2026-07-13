@@ -26,4 +26,10 @@ class Modules extends Extensions
      * {@inheritDoc}
      */
     public protected(set) string $dir = 'extensions/modules';
+
+    /**
+     * @see Extensions::$type
+     * {@inheritDoc}
+     */
+    protected string $type = 'module';
 }

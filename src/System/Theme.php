@@ -261,7 +261,7 @@ class Theme extends BaseTheme
 
         $this->addVar('errors', $errors);
 
-        $this->render('alert/errors');
+        $this->render('alerts/errors');
     }
 
     /**
@@ -303,7 +303,7 @@ class Theme extends BaseTheme
 
         $this->addVar('messages', $messages);
 
-        $this->render('alert/messages');
+        $this->render('alerts/messages');
     }
 
     /**
@@ -318,7 +318,7 @@ class Theme extends BaseTheme
 
         $this->addVar('info', $info);
 
-        $this->render('alert/info');
+        $this->render('alerts/info');
     }
 
     /**
@@ -333,7 +333,7 @@ class Theme extends BaseTheme
 
         $this->addVar('warnings', $warnings);
 
-        $this->render('alert/warnings');
+        $this->render('alerts/warnings');
     }
 
     /**
@@ -358,11 +358,27 @@ class Theme extends BaseTheme
      */
     public function renderMenu(string $menu)
     {
-        if (!isset($this->app->menus->$menu)) {
+        if (!isset($this->app->ui->menus->$menu)) {
             throw new \Exception("Menu '{$menu}' not found");
         }
 
-        echo $this->app->menus->$menu->render();
+        echo $this->app->ui->menus->$menu->render();
+    }
+
+    /**
+     * Renders the heading
+     */
+    public function renderHeading()
+    {
+        $this->document->heading->render();
+    }
+
+    /**
+     * Renders the breadcrumbs
+     */
+    public function renderBreadcrumbs()
+    {
+        $this->app->ui->breadcrumbs->render();
     }
 
     /**
@@ -395,18 +411,17 @@ class Theme extends BaseTheme
     protected function findTemplates() : array
     {
         $templates = $this->readTemplates('', [static::MOBILE_DIRS['mobile']]);
-
         if ($this->app->device->is_desktop) {
             return $templates;
         }
 
         //try to locate a mobile template for each of the read templates
         $mobile_templates = $this->readTemplates(static::MOBILE_DIRS['mobile'], [static::MOBILE_DIRS['tablet'], static::MOBILE_DIRS['smartphone']]);
-        $templates = array_merge($templates, $mobile_templates);
+        $templates = $mobile_templates + $templates;
 
         $device_dir = static::MOBILE_DIRS[$this->app->device->type->value] ?? null;
         $device_templates = $this->readTemplates(static::MOBILE_DIRS['mobile'] . '/' . $device_dir);
-        $templates = array_merge($templates, $device_templates);
+        $templates = $device_templates + $templates;
 
         return $templates;
     }
@@ -425,7 +440,7 @@ class Theme extends BaseTheme
         if ($this->parent) {
             $this->readTemplatesFromDir($templates, $this->parent->templates_path . $path_suffix, $exclude_dirs);
         }
-        
+
         $this->readTemplatesFromDir($templates, $this->templates_path . $path_suffix, $exclude_dirs);
 
         return $templates;
@@ -505,7 +520,7 @@ class Theme extends BaseTheme
      */
     public function getData(string $name)
     {
-        return $this->template->data[$name] ?? null;
+        return $this->template->data->$name ?? null;
     }
 
     /**

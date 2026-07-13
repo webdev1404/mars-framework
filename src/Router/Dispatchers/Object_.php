@@ -21,7 +21,7 @@ class Object_ extends Dispatcher
     public function get(mixed $object, array $params): Data
     {
         if ($object instanceof ContentInterface) {
-            return $object->run($params);
+            return $object->run('', $params);
         } else {
             return $this->app->response->body->create($object);
         }

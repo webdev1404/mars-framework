@@ -23,7 +23,7 @@ class Storage extends Cacheable
      * {@inheritDoc}
      */
     public string $driver_name {
-        get => $this->app->config->cache->storage->driver ?? $this->app->config->cache->driver;
+        get => $this->app->config->cache->storage->driver;
     }
 
     /**
@@ -58,7 +58,7 @@ class Storage extends Cacheable
         $filename = $this->getFilename($name);
         $dirname = dirname($filename);
 
-        if ($this->driver_name == 'file') {
+        if ($this->driver_name != 'memcache') {
             if (!is_dir($dirname)) {
                 mkdir($dirname, recursive: true);
             }

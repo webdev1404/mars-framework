@@ -101,7 +101,7 @@ class Uri implements \Stringable
                 return $this->current;
             }
 
-            $this->current = $this->get($this->root, $this->request_uri, [], false);
+            $this->current = $this->build($this->root, $this->request_uri, [], false);
 
             return $this->current;
         }
@@ -292,29 +292,33 @@ class Uri implements \Stringable
     }
 
     /**
-     * Builds an url by appending the $parts to $base_url
-     * @param string $base_url The base url
-     * @param string|array $parts Array with the parts to append to base_url
-     * @param array $params Array with the query parameters
-     * @param bool $encode If true, it will encode the parts using rawurlencode
-     * @param bool $remove_empty_params If true, it will remove empty parameters
-     * @return Url Returns the url
+     * Returns the url of a route, or a new Url instance if $name is a valid url. If name is empty, it will return the current url. If name == '/' it will return the root url
+     * @param string $name The name of the route or a valid url
+     * @param array $replace Array with the values to replace in the route
+     * @return Url|null Returns the url of the route, or null if the route does not exist
      */
-    public function get(string $base_url, string|array $parts, array $params = [], bool $encode = true, bool $remove_empty_params = true) : Url
+    public function get(string $name = '', array $replace = []) : Url
     {
-        return new Url($base_url)->get($parts, $params, $encode, $remove_empty_params);
-    }
+        if (!$name) {
+            return $this->current;
+        }
 
-    /**
-     * Builds an url, by adding the params to the query string
-     * @param string $base_url The base url
-     * @param array $params Array containing the values to be appended. Specified as name => value
-     * @param bool $remove_empty_params If true, will not add empty_params
-     * @return Url Returns a new url instance
-     */
-    public function add(string $base_url, array $params, bool $remove_empty_params = true) : Url
-    {
-        return new Url($base_url)->add($params, $remove_empty_params);
+        if ($name == '/') {
+            return $this->root;
+        }
+
+        //if the name starts with http:// or https://, return a new Url instance
+        $name_lower = strtolower($name);
+        if (str_starts_with($name_lower, 'http://') || str_starts_with($name_lower, 'https://')) {
+            return new Url($name);
+        }
+
+        $url = $this->route($name, $replace);
+        if ($url) {
+            return $url;
+        }
+
+        return new Url($this->root . '/' . $name);
     }
 
     /**
@@ -342,6 +346,32 @@ class Uri implements \Stringable
         }
 
         return new Url($url);
+    }
+
+    /**
+     * Builds an url by appending the $parts to $base_url
+     * @param string $base_url The base url
+     * @param string|array $parts Array with the parts to append to base_url
+     * @param array $params Array with the query parameters
+     * @param bool $encode If true, it will encode the parts using rawurlencode
+     * @param bool $remove_empty_params If true, it will remove empty parameters
+     * @return Url Returns the url
+     */
+    public function build(string $base_url, string|array $parts, array $params = [], bool $encode = true, bool $remove_empty_params = true) : Url
+    {
+        return new Url($base_url)->build($parts, $params, $encode, $remove_empty_params);
+    }
+
+    /**
+     * Builds an url, by adding the params to the query string
+     * @param string $base_url The base url
+     * @param array $params Array containing the values to be appended. Specified as name => value
+     * @param bool $remove_empty_params If true, will not add empty_params
+     * @return Url Returns a new url instance
+     */
+    public function add(string $base_url, array $params, bool $remove_empty_params = true) : Url
+    {
+        return new Url($base_url)->add($params, $remove_empty_params);
     }
 
     /**

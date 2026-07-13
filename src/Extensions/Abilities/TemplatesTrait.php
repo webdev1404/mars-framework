@@ -73,6 +73,7 @@ trait TemplatesTrait
      * @param string $template The name of the template to load
      * @param array $vars Vars to pass to the template, if any
      * @return string The contents of the template
+     * @throws \Exception If the template doesn't exist
      */
     public function getTemplateByLanguage(string $path, string $template, array $vars = []) : string
     {
@@ -94,7 +95,7 @@ trait TemplatesTrait
             return $this->app->theme->getTemplateByFilename($filename, $filename_rel, $vars, static::$type, [], $this->development);
         }
 
-        return '';
+        throw new \Exception("Template not found for language template: {$path}/{$template}");
     }
 
     /**

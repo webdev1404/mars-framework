@@ -26,4 +26,10 @@ class Languages extends Extensions
      * {@inheritDoc}
      */
     public protected(set) string $dir = 'extensions/languages';
+
+    /**
+     * @see Extensions::$type
+     * {@inheritDoc}
+     */
+    protected string $type = 'language';
 }

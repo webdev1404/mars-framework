@@ -18,7 +18,7 @@ class Themes extends Extensions
     /**
      * @internal
      */
-    protected static array $supports = ['config', 'lang'];
+    protected static array $supports = ['config', 'lang', 'routes'];
 
     /**
      * @internal

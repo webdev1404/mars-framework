@@ -158,4 +158,13 @@ abstract class File extends Base implements CacheableInterface
             $this->app->dir->cleanExpired($path, time() - ($expire_hours * 3600));
         }
     }
+
+    /**
+     * @see CacheableInterface::clearstat()
+     * {@inheritDoc}
+     */
+    public function clearstat()
+    {
+        $this->files_cache_list = null;
+    }
 }

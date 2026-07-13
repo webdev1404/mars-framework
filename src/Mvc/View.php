@@ -26,7 +26,7 @@ use Mars\Extensions\Extension;
  * The View Class
  * Implements the View functionality of the MVC pattern
  */
-abstract class View
+class View
 {
     use Kernel;
 
@@ -189,10 +189,10 @@ abstract class View
 
     /**
      * Builds the View
-     * @param App $app the app object
-     * @param Controller $controller The controller the view belongs to
+     * @param Controller|null $controller The controller the view belongs to
+     * @param App|null $app the app object
      */
-    public function __construct(App $app, Controller $controller)
+    public function __construct(?Controller $controller = null, ?App $app = null)
     {
         $this->app = $app;
         $this->controller = $controller;
@@ -219,15 +219,28 @@ abstract class View
      * Renders a template.
      * @param string $method The method to render. If not set, the current method will be used
      * @param array $vars Vars to pass to the template, if any
+     * @throws \Exception If the template doesn't exist
      */
     public function render(?string $method = null, array $vars = [])
     {
-        $template = $this->get(vars: $vars, method: $method);
-        if ($template === null) {
-            return;
+        $content = $this->get(vars: $vars, method: $method);
+        if ($content === null) {
+            throw new \Exception("Template not found for method: {$method}");
         }
 
-        echo $template;
+        echo $content;
+    }
+
+    /**
+     * Renders a language template
+     * @param string $dir The directory where the template is located
+     * @param string $template The name of the template to load
+     * @param array $vars Vars to pass to the template, if any
+     * @throws \Exception If the template doesn't exist
+     */
+    public function renderByLanguage(string $dir, string $template, array $vars = [])
+    {
+        echo $this->getTemplateByLanguage($dir, $template, $vars);
     }
 
     /**
@@ -235,7 +248,7 @@ abstract class View
      * @param string $template The name of the template to load. If not set, the method's name will be used
      * @param array $vars Vars to pass to the template, if any
      * @param string $method The method to execute before loading the template. If not set, the current method will be used
-     * @return string The contents of the template
+     * @return string|null The contents of the template
      */
     public function get(string $template = '', array $vars = [], ?string $method = null) : ?string
     {
@@ -285,7 +298,10 @@ abstract class View
      */
     protected function getVars(array $vars) : array
     {
-        return array_merge(['view' => $this, 'model' => $this->model], $vars);
+        return $vars + [
+            'view' => $this,
+            'model' => $this->model,
+        ];
     }
 
     /**
@@ -305,9 +321,10 @@ abstract class View
      * Returns the contents of a template
      * @param string $template The name of the template to load
      * @param array $vars Vars to pass to the template, if any
-     * @return string|null The contents of the template or null if the template doesn't exist
+     * @return string The contents of the template
+     * @throws \Exception If the template doesn't exist
      */
-    public function getTemplate(string $template, array $vars = []) : ?string
+    public function getTemplate(string $template, array $vars = []) : string
     {
         return $this->parent->getTemplate($this->root . $template, $this->getVars($vars));
     }
@@ -317,9 +334,10 @@ abstract class View
      * @param string $dir The directory where the template is located
      * @param string $template The name of the template to load. If not set, the method's name will be used
      * @param array $vars Vars to pass to the template, if any
-     * @return string|null The contents of the template or null if the template doesn't exist
+     * @return string The contents of the template
+     * @throws \Exception If the template doesn't exist
      */
-    public function getTemplateByLanguage(string $dir, string $template, array $vars = []) : ?string
+    public function getTemplateByLanguage(string $dir, string $template, array $vars = []) : string
     {
         return $this->parent->getTemplateByLanguage($this->root . $dir, $template, $this->getVars($vars));
     }

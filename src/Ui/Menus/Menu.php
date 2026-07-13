@@ -4,7 +4,7 @@
 * @package Mars
 */
 
-namespace Mars\Menus;
+namespace Mars\Ui\Menus;
 
 use Mars\App;
 use Mars\App\Kernel;
@@ -45,60 +45,54 @@ class Menu
     }
 
     /**
-     * Get the Menu Item's ID
-     * @param string $title The Menu Item's Title
-     * @param string $url The Menu Item's URL
-     * @return string The Menu Item's ID
-     */
-    public function getId(string $title, string $url) : string
-    {
-        return md5($title . $url);
-    }
-
-    /**
      * Add a Menu Item
-     * @param string $title The Menu Item's Title
-     * @param string $url The Menu Item's URL
-     * @param string $id The Menu Item's ID
+     * @param string $title The Menu's Title
+     * @param string $url The Menu's URL
+     * @param string $id The Menu's ID
      * @param string $parent The Parent Menu Item's ID
-     * @param int $priority The Menu Item's Priority
-     * @param array $attributes The Menu Item's Attributes
+     * @param string $content The Menu's Content
+     * @param int $priority The Menu's Priority
+     * @param array $attributes The Menu's Attributes
      * @return static
      */
-    public function add(string|array $title, string $url = '', string $id = '', string $parent = '', int $priority = 100, array $attributes = []) : static
+    public function add(string|array $title, string $url = '', string $id = '', string $parent = '', string $content = '', int $priority = 100, array $attributes = []) : static
     {
         if (is_array($title)) {
             return $this->addItems($title, $parent, $priority, $attributes);
         }
 
-        return $this->addItem($title, $url, $id, $parent, $priority, $attributes);
+        return $this->addItem($title, $url, $id, $parent, $content, $priority, $attributes);
     }
 
     /**
      * Add a Menu Item
-     * @param string $title The Menu Item's Title
-     * @param string $url The Menu Item's URL
-     * @param string $id The Menu Item's ID
+     * @param string $title The Menu's Title
+     * @param string $url The Menu's URL
+     * @param string $id The Menu's ID
      * @param string $parent The Parent Menu Item's ID
-     * @param int $priority The Menu Item's Priority
-     * @param array $attributes The Menu Item's Attributes
+     * @param string $content The Menu's Content
+     * @param int $priority The Menu's Priority
+     * @param array $attributes The Menu's Attributes
      * @return static
      */
-    public function addItem(string $title, string $url, string $id = '', string $parent = '', int $priority = 100, array $attributes = []) : static
+    public function addItem(string $title, string $url, string $id = '', string $parent = '', string $content = '', int $priority = 100, array $attributes = []) : static
     {
-        if (!$id) {
-            $id = $this->getId($title, $url);
-        }
         if ($parent) {
             if (!isset($this->items[$parent])) {
                 throw new \Exception("Adding menu failed. Parent Menu Item with ID '{$parent}' does not exist.");
             }
         }
 
+        $url = $this->getUrl($url);
+        $id = $this->app->id->get($id, $title . $url);
+        $attributes = $this->getAttributes($url, $id, $attributes);
+
         $this->items[$id] = [
             'title' => $title,
-            'url' => $url,
+            'url' => $this->app->url->get($url),
+            'id' => $id,
             'parent' => $parent,
+            'content' => $content,
             'priority' => $priority,
             'attributes' => $attributes
         ];
@@ -108,10 +102,10 @@ class Menu
 
     /**
      * Add Multiple Menu Items
-     * @param array $items The Menu Items to Add
+     * @param array $items The Menus to Add
      * @param string $parent The Parent Menu Item's ID
-     * @param int $priority The Menu Items' Priority
-     * @param array $attributes The Menu Items' Attributes
+     * @param int $priority The Menus' Priority
+     * @param array $attributes The Menus' Attributes
      * @return static
      */
     public function addItems(array $items, string $parent = '', int $priority = 100, array $attributes = []) : static
@@ -120,8 +114,9 @@ class Menu
             $title = $item[0] ?? '';
             $url = $item[1] ?? '';
             $item_children = $item[2] ?? [];
+            $content = $item[3] ?? '';
 
-            $this->addItem($title, $url, $id, $parent, $priority, $attributes);
+            $this->addItem($title, $url, $id, $parent, $content, $priority, $attributes);
 
             if ($item_children) {
                 $this->addItems($item_children, $id, $priority, $attributes);
@@ -133,15 +128,16 @@ class Menu
 
     /**
      * Update a Menu Item
-     * @param string $id The Menu Item's ID
-     * @param string $title The Menu Item's Title
-     * @param string $url The Menu Item's URL
+     * @param string $id The Menu's ID
+     * @param string $title The Menu's Title
+     * @param string $url The Menu's URL
      * @param string $parent The Parent Menu Item's ID
-     * @param int $priority The Menu Item's Priority
-     * @param array $attributes The Menu Item's Attributes
+     * @param string $content The Menu's Content
+     * @param int $priority The Menu's Priority
+     * @param array $attributes The Menu's Attributes
      * @return static
      */
-    public function update(string $id, string $title = '', string $url = '', string $parent = '', int $priority = 0, array $attributes = []) : static
+    public function update(string $id, string $title = '', string $url = '', string $parent = '', string $content = '', int $priority = 0, array $attributes = []) : static
     {
         if (!isset($this->items[$id])) {
             throw new \Exception("Updating menu failed. Menu Item with ID '{$id}' does not exist.");
@@ -151,17 +147,18 @@ class Menu
         $title = $title ?: $item['title'];
         $url = $url ?: $item['url'];
         $parent = $parent ?: $item['parent'];
+        $content = $content ?: $item['content'];
         $priority = $priority ?: $item['priority'];
         $attributes = $attributes ?: $item['attributes'];
 
-        $this->addItem($title, $url, $id, $parent, $priority, $attributes);
+        $this->addItem($title, $url, $id, $parent, $content, $priority, $attributes);
 
         return $this;
     }
 
     /**
      * Remove a Menu Item
-     * @param string $id The Menu Item's ID
+     * @param string $id The Menu's ID
      * @return static
      */
     public function remove(string $id) : static
@@ -215,6 +212,8 @@ class Menu
 
             $items = $this->getItems();
 
+            $items = $this->app->plugins->filter('ui.menu.items', $items, $this);
+
             $html = $this->getHtml($items);
 
             if ($this->type) {
@@ -227,26 +226,14 @@ class Menu
 
     /**
      * Returns the Menu's HTML
-     * @param array $items The Menu Items to render
+     * @param array $items The Menus to render
      * @return string The Menu's HTML
      */
     protected function getHtml(array $items) : string
     {
         ob_start();
 
-        echo '<ul>';
-        foreach ($items as $id => $item) {
-            $item['url'] = $this->getUrl($item['url']);
-            $item['attributes']['class'] = $this->getClass($id, $item);
-
-            echo '<li>';
-            echo $this->app->html->a($item['url'], $item['title'], $item['attributes']);
-            if (!empty($item['items'])) {
-                echo $this->getHtml($item['items']);
-            }
-            echo '</li>';
-        }
-        echo '</ul>';
+        $this->app->theme->render('ui/menu', ['items' => $items, 'type' => $this->type]);
 
         return ob_get_clean();
     }
@@ -278,7 +265,7 @@ class Menu
     }
 
     /**
-     * Collects the Menu Items
+     * Collects The Menus
      * This method can be overridden in child classes to collect menu items from different sources
      */
     protected function collectItems()
@@ -297,33 +284,32 @@ class Menu
             return $url;
         }
 
-        if ($this->app->url->isValid($url)) {
-            return $url;
-        }
-
-        return $this->app->url->route($url) ?? '#';
+        return $this->app->url->get($url);
     }
 
     /**
-     * Returns the Menu Item's Class
-     * @param string $id The Menu Item's ID
-     * @param array $item The Menu Item
-     * @return string The Menu Item's Class
+     * Returns The Menu's Attributes
+     * @param string $url The Menu's URL
+     * @param string $id The Menu's ID
+     * @param array $attributes The Menu's Attributes
+     * @return array The Menu's Attributes
      */
-    protected function getClass(string $id, array $item) : string
+    protected function getAttributes(string $url, string $id, array $attributes) : array
     {
         $is_active = false;
         if ($this->app->router->name && $this->app->router->name == $id) {
             $is_active = true;
-        } elseif ($item['url'] == $this->app->url) {
+        } elseif ($url == $this->app->url) {
             $is_active = true;
         }
 
-        $class = $item['attributes']['class'] ?? '';
+        $class = $attributes['class'] ?? '';
         if ($is_active) {
             $class .= ' ' . $this->classes['active'];
         }
 
-        return trim($class);
+        $attributes['class'] = trim($class);
+
+        return $attributes;
     }
 }

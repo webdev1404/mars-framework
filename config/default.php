@@ -162,26 +162,23 @@ return [
     'memcache.port' => '11211',
 
 
-    // string The driver used for caching. Supported options: serialized, php, memcache. If memcache is used, memcache.enable must be true
-    'cache.driver' => 'serialized',
-
     // string The hash algorithm used for caching
     'cache.hash' => 'sha256',
 
-    // string|null The driver used for data caching. If null, will use cache.driver
+    // string|null The driver used for data caching
     'cache.data.driver' => 'php',
 
-    // string|null The driver used for extensions caching. If null, will use cache.driver
+    // string|null The driver used for extensions caching
     'cache.extensions.driver' => 'php',
 
-    // string|null The driver used for routes caching. If null, will use cache.driver
+    // string|null The driver used for routes caching
     'cache.routes.driver' => 'php',
 
-    // string|null The driver used for assets caching. If null, will use cache.driver
-    'cache.assets.driver' => null,
+    // string|null The driver used for assets caching
+    'cache.assets.driver' => 'serialized',
 
-    // string|null The driver used for storage caching. If null, will use cache.driver
-    'cache.storage.driver' => null,
+    // string|null The driver used for storage caching
+    'cache.storage.driver' => 'serialized',
 
     // The value - in hours - after which the cached storage data will expire
     'cache.storage.expire_hours' => 48,
@@ -293,11 +290,12 @@ return [
     // array The trusted proxies from which we'll accept the HTTP_X_FORWARDED_FOR header
     'security.trusted_proxies' => [],
 
+    
     // string The default hashing algorithm used for common hashing functionalities
-    'security.hash_algo' => 'sha256',
+    'hasher.algo' => 'sha256',
 
     // string The hashing algorithm used for the strong hashing functionalities
-    'security.strong_hash_algo' => 'sha512',
+    'hasher.strong_algo' => 'sha512',
 
 
     // array Additional headers to send with each HTTP response
@@ -439,8 +437,8 @@ return [
     // int The length of the prefix used for routing
     'routes.prefix_length' => 1,
 
-    // bool If true, will automatically load all the pages from the app/pages folders as routes
-    'routes.pages_autoload' => true,
+    // bool If true, will automatically load all the articles from the app/articles folders as routes
+    'routes.articles.autoload' => true,
 
 
     // string The name of the CSRF hidden field
@@ -471,6 +469,15 @@ return [
     // array The curl options to use when making http requests, if any
     'curl.options' => [],
 
+    
+    // bool If true, will show the breadcrumb
+    'breadcrumbs.show' => true,
+    
+    // string The home breadcrumb name
+    'breadcrumbs.home' => 'Home',
+
+    // string The breadcrumbs generator. Supported options: path
+    'breadcrumbs.generator' => 'path',
 
     // int The max number of pagination links to show
     'pagination.max_links' => 10,

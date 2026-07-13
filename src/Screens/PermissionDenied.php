@@ -26,6 +26,6 @@ class PermissionDenied
             return;
         }
 
-        $this->app->theme->render('screen/permission-denied');
+        $this->app->theme->render('screens/permission-denied');
     }
 }

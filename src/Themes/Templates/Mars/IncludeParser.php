@@ -21,10 +21,15 @@ class IncludeParser
      */
     public function parse(string $content, array $params = []) : string
     {
-        return preg_replace_callback('/@include\s*\((.*)\)/U', function (array $match) use ($params) {
+        return preg_replace_callback('/@include\s*\((.*)(?:,(.*))?\)/U', function (array $match) use ($params) {
             $template_filename = $this->getTemplate($match[1], $params['filename']);
 
-            return '<?= $this->getFromFilename(\'' . $template_filename . '\') ?>';
+            $vars = '[]';
+            if (!empty($match[2])) {
+                $vars = trim($match[2]);
+            }
+
+            return '<?= $this->get(\'' . $template_filename . '\', ' . $vars . ') ?>';
         }, $content);
     }
 

@@ -13,7 +13,7 @@ use Mars\App\LazyLoadProperty;
 use Mars\Http\Request\Input;
 use Mars\Http\Request\Get;
 use Mars\Http\Request\Post;
-use Mars\Http\Request\Request as RequestObj;
+use Mars\Http\Request\Request as RequestAll;
 use Mars\Http\Request\Cookies;
 use Mars\Http\Request\Server;
 use Mars\Http\Request\Env;
@@ -29,17 +29,17 @@ class Request
     use LazyLoad;
 
     /**
-     * @var RequestObj $request Alias for $request
+     * @var RequestAll $all Alias for $request
      */
-    public RequestObj $all {
+    public RequestAll $all {
         get => $this->request;
     }
 
     /**
-     * @var RequestObj $request Object containing the request data
+     * @var RequestAll $request Object containing the request data
      */
     #[LazyLoadProperty]
-    public RequestObj $request;
+    public RequestAll $request;
 
     /**
      * @var Get $get Object containing the get data
@@ -286,7 +286,7 @@ class Request
         }
 
         if ($captcha && $this->app->config->captcha->enable) {
-            if (!$this->app->captcha->check()) {
+            if (!$this->app->captcha->verify()) {
                 $this->app->errors->add(App::__('error:request.invalid_captcha'));
                 
                 return false;
@@ -314,9 +314,9 @@ class Request
     /**
      * Returns the action to be performed
      * @param string $action_param The action param
-     * @return string The action
+     * @return ?string The action
      */
-    public function getAction(string $action_param = '') : string
+    public function getAction(string $action_param = '') : ?string
     {
         $action_param = $action_param ? $action_param : $this->app->config->request->action->param;
 

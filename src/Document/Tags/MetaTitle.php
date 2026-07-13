@@ -1,16 +1,16 @@
 <?php
 /**
-* The Title Class
+* The Meta Title Class
 * @package Mars
 */
 
 namespace Mars\Document\Tags;
 
 /**
- * The Title Class
- * Stores the title of the document
+ * The Meta Title Class
+ * Stores the meta title of the document
  */
-class Title extends Tag
+class MetaTitle extends Tag
 {
     /**
      * Renders the title
@@ -27,7 +27,7 @@ class Title extends Tag
 
         $title = implode($this->app->config->site->title->separator, $parts);
 
-        $title = $this->app->plugins->filter('document.title.output', $title);
+        $title = $this->app->plugins->filter('document.meta_title.output', $title);
 
         echo '<title>' . $this->app->escape->html($title) . '</title>' . "\n";
     }

@@ -10,12 +10,9 @@ class MyController extends Controller
     protected bool $load_model = false;
     protected bool $load_view = false;
 
-    public protected(set) string $default_success_method = 'mySuccess';
-    public protected(set) string $default_error_method = 'myError';
-
-    public function index()
+    public function default()
     {
-        echo 'my index';
+        echo 'my default';
     }
 
     public function myAction()
@@ -41,6 +38,7 @@ class MyController extends Controller
     public function withSuccess()
     {
         echo 'with success';
+
         return true;
     }
 
@@ -68,21 +66,21 @@ final class ControllerTest extends Base
         $controller = new MyController;
 
         $data = $controller->dispatch();
-        $this->assertSame('my index', $data->content);
+        $this->assertSame('my default', $data->content);
 
-        $data = $controller->dispatch('index');
-        $this->assertSame('my index', $data->content);
+        $data = $controller->dispatch('default');
+        $this->assertSame('my default', $data->content);
 
         $data = $controller->dispatch('myAction');
         $this->assertSame('my action', $data->content);
 
         $data = $controller->dispatch('myProtectedAction');
-        $this->assertSame('my index', $data->content);
+        $this->assertSame('my default', $data->content);
 
         $data = $controller->dispatch('withSuccess');
-        $this->assertSame('my success', $data->content);
+        $this->assertSame('my default', $data->content);
 
         $data = $controller->dispatch('withError');
-        $this->assertSame('my error', $data->content);
+        $this->assertSame('my default', $data->content);
     }
 }

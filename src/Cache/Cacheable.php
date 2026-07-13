@@ -69,9 +69,7 @@ abstract class Cacheable extends Cache
     /**
      * @var string $driver_name The used driver
      */
-    public string $driver_name {
-        get => $this->app->config->cache->driver;
-    }
+    public string $driver_name  = '';
 
     /**
      * @var array $driver_params The parameters to pass to the driver constructor

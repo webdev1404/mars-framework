@@ -101,11 +101,11 @@ class Files extends Loader
      * Handles all request methods: GET, POST, PUT, DELETE
      * @param string $route The route
      * @param string|callable|array $actions The action(s). Can be a closure or a string (class name). If array will register multiple actions, one for each language
+     * @param string|null $name The name of the route
      * @param string|array|null $languages The language to use for the route, if any. If null, will use the default language. If '*', will use all languages
-     * @param string $name The name of the route
      * @return static
      */
-    public function all(string $route, string|callable|array $actions, string|array|null $languages = null, string $name = '') : static
+    public function all(string $route, string|callable|array $actions, ?string $name = null, string|array|null $languages = null) : static
     {
         $data = ['filename' => $this->current_filename];
 
@@ -118,11 +118,11 @@ class Files extends Loader
      * Handles a GET request
      * @param string|array $routes The route(s)
      * @param string|callable|array $actions The action(s). Can be a closure or a string (class name). If array will register multiple actions, one for each language
+     * @param string|null $name The name of the route
      * @param string|array|null $languages The language to use for the route, if any. If null, will use the default language. If '*', will use all languages
-     * @param string $name The name of the route
      * @return static
      */
-    public function get(string|array $routes, string|callable|array $actions, string|array|null $languages = null, string $name = '') : static
+    public function get(string|array $routes, string|callable|array $actions, ?string $name = null, string|array|null $languages = null) : static
     {
         $data = ['filename' => $this->current_filename];
         
@@ -133,11 +133,11 @@ class Files extends Loader
      * Handles a POST request
      * @param string|array $routes The route(s)
      * @param string|callable|array $actions The action(s). Can be a closure or a string (class name). If array will register multiple actions, one for each language
+     * @param string|null $name The name of the route
      * @param string|array|null $languages The language to use for the route, if any. If null, will use the default language. If '*', will use all languages
-     * @param string $name The name of the route
      * @return static
      */
-    public function post(string|array $routes, string|callable|array $actions, string|array|null $languages = null, string $name = '') : static
+    public function post(string|array $routes, string|callable|array $actions, ?string $name = null, string|array|null $languages = null) : static
     {
         $data = ['filename' => $this->current_filename];
         
@@ -148,11 +148,11 @@ class Files extends Loader
      * Handles a PUT request
      * @param string|array $routes The route(s)
      * @param string|callable|array $actions The action(s). Can be a closure or a string (class name). If array will register multiple actions, one for each language
+     * @param string|null $name The name of the route
      * @param string|array|null $languages The language to use for the route, if any. If null, will use the default language. If '*', will use all languages
-     * @param string $name The name of the route
      * @return static
      */
-    public function put(string|array $routes, string|callable|array $actions, string|array|null $languages = null, string $name = '') : static
+    public function put(string|array $routes, string|callable|array $actions, ?string $name = null, string|array|null $languages = null) : static
     {
         $data = ['filename' => $this->current_filename];
         
@@ -163,11 +163,11 @@ class Files extends Loader
      * Handles a DELETE request
      * @param string|array $routes The route(s)
      * @param string|callable|array $actions The action(s). Can be a closure or a string (class name). If array will register multiple actions, one for each language
+     * @param string|null $name The name of the route
      * @param string|array|null $languages The language to use for the route, if any. If null, will use the default language. If '*', will use all languages
-     * @param string $name The name of the route
      * @return static
      */
-    public function delete(string|array $routes, string|callable|array $actions, string|array|null $languages = null, string $name = '') : static
+    public function delete(string|array $routes, string|callable|array $actions, ?string $name = null, string|array|null $languages = null) : static
     {
         $data = ['filename' => $this->current_filename];
 
@@ -197,13 +197,13 @@ class Files extends Loader
      * @param string|array $routes The route(s)
      * @param string $module The name of the module
      * @param string|array $action The action to execute. If array, the request method assigned to each action can be specified. Eg: ['get' => 'form', 'post' => 'register']
+     * @param string|null $name The name of the route
      * @param array $params The params to pass to the module, if any
      * @param string|array|null $languages The language to use for the route, if any. If null, will use the default language. If '*', will use all languages
      * @param array $methods The request methods to handle. Default: GET, POST
-     * @param string $name The name of the route
      * @return static
      */
-    public function module(string|array $routes, string $module, string|array $action, array $params = [], string|array|null $languages = '*', array $methods = ['get', 'post'], string $name = '') : static
+    public function module(string|array $routes, string $module, string|array $action, ?string $name = null, array $params = [], string|array|null $languages = '*', array $methods = ['get', 'post']) : static
     {
         $data = ['name' => $module, 'action' => $action, 'params' => $params];
 
@@ -214,12 +214,12 @@ class Files extends Loader
      * Handles a template request
      * @param string|array $routes The route(s)
      * @param string $template The template's name
+     * @param string|null $name The name of the route
      * @param string|array|null $languages The language to use for the route, if any. If null, will use the default language. If '*', will use all languages
      * @param array $methods The request methods to handle. Default: get
-     * @param string $name The name of the route
      * @return static
      */
-    public function template(string|array $routes, string $template, string|array|null $languages = '*', array $methods = ['get'], string $name = '') : static
+    public function template(string|array $routes, string $template, ?string $name = null, string|array|null $languages = '*', array $methods = ['get']) : static
     {
         $data = ['template' => $template];
 
@@ -227,19 +227,19 @@ class Files extends Loader
     }
 
     /**
-     * Handles a page request
+     * Handles an article request
      * @param string|array $routes The route(s)
-     * @param string $page The page's name
+     * @param string $article The article's name
+     * @param string|null $name The name of the route
      * @param string|array|null $languages The language to use for the route, if any. If null, will use the default language. If '*', will use all languages
      * @param array $methods The request methods to handle. Default: GET
-     * @param string $name The name of the route
      * @return static
      */
-    public function page(string|array $routes, string $page, string|array|null $languages = null, array $methods = ['get'], string $name = '') : static
+    public function article(string|array $routes, string $article, ?string $name = null, string|array|null $languages = null, array $methods = ['get']) : static
     {
-        $data = ['page' => $page];
+        $data = ['article' => $article];
 
-        return $this->add($routes, null, $methods, $languages, 'page', $data, $name);
+        return $this->add($routes, null, $methods, $languages, 'article', $data, $name);
     }
 
     /**
@@ -282,10 +282,10 @@ class Files extends Loader
      * @param string|array|null $languages The language to use for the route, if any. If null, will use the default language. If '*', will use all languages
      * @param string $type The route type
      * @param array $data Route's data
-     * @param string $name The name of the route
+     * @param string|null $name The name of the route
      * @return static
      */
-    protected function add(string|array $routes, string|callable|array|null $actions, string|array $method, string|array|null $languages, string $type, array $data, string $name = '') : static
+    protected function add(string|array $routes, string|callable|array|null $actions, string|array $method, string|array|null $languages, string $type, array $data, ?string $name = null) : static
     {
         $this->addHashes($routes, $actions, $languages, $method, $type, $data, $name);
 
@@ -300,9 +300,9 @@ class Files extends Loader
      * @param string|array $methods The methods: GET/POST/PUT/DELETE
      * @param string $type The route type
      * @param array $data Route's data
-     * @param string $name The name of the route
+     * @param string|null $name The name of the route
      */
-    protected function addHashes(string|array $routes, string|callable|array|null $actions, string|array|null $languages, string|array $methods, string $type, array $data = [], string $name = '') : void
+    protected function addHashes(string|array $routes, string|callable|array|null $actions, string|array|null $languages, string|array $methods, string $type, array $data = [], ?string $name = null) : void
     {
         $routes_list = (array)$routes;
         $methods = $this->getMethods($methods);

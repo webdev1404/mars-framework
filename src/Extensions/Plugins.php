@@ -55,6 +55,17 @@ class Plugins extends Extensions
     }
 
     /**
+     * @see Extensions::cache()
+     * {@inheritDoc}
+     */
+    public function cache()
+    {
+        parent::cache();
+
+        $this->getFiles();
+    }
+
+    /**
      * Gets all the class files for the enabled plugins
      */
     public function getFiles() : array

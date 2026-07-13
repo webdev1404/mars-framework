@@ -16,14 +16,14 @@ class Data extends Cacheable
      * @see Cacheable::$drivers_enabled
      * {@inheritDoc}
      */
-    public protected(set) array $drivers_enabled = ['data', 'php', 'memcache'];
+    public protected(set) array $drivers_enabled = ['serialized', 'php', 'memcache'];
     
     /**
      * @see Cacheable::$driver_name
      * {@inheritDoc}
      */
     public string $driver_name {
-        get => $this->app->config->cache->data->driver ?? $this->app->config->cache->driver;
+        get => $this->app->config->cache->data->driver;
     }
 
     /**

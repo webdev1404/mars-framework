@@ -1,15 +1,15 @@
 <?php
 /**
- * The Page Route Finder Class
+ * The Article Route Finder Class
  * @package Mars
  */
 namespace Mars\Router\Finders;
 
 /**
- * The Page Route Finder Class
- * Handles page routes
+ * The Article Route Finder Class
+ * Handles article routes
  */
-class Page extends Finder
+class Article extends Finder
 {
     /**
      * @see Finder::getRoute()
@@ -17,6 +17,6 @@ class Page extends Finder
      */
     public function getRoute(string $hash, array $data)
     {
-        return new \Mars\Content\Page($data['page'], $this->app);
+        return new \Mars\Content\Article($data, $this->app);
     }
 }

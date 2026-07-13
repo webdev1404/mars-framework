@@ -4,9 +4,7 @@
 * @package Mars
 */
 
-namespace Mars\Menus;
-
-use Mars\App;
+namespace Mars\Ui\Menus;
 
 /**
  * The Footer Menu Class

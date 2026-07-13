@@ -4,7 +4,7 @@
 * @package Mars
 */
 
-namespace Mars\Menus;
+namespace Mars\Ui\Menus;
 
 use Mars\App;
 

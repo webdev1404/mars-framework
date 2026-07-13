@@ -19,6 +19,23 @@ class Extensions extends Data
      * {@inheritDoc}
      */
     public string $driver_name {
-        get => $this->app->config->cache->extensions->driver ?? $this->app->config->cache->driver;
+        get => $this->app->config->cache->extensions->driver;
+    }
+
+    /**
+     * @var string $type The type of extension
+     */
+    protected string $type = '';
+
+    /**
+     * Caches the extensions data
+     */
+    public function cache()
+    {
+        $this->driver->clearstat();
+
+        $manager = $this->app->extensions->getManager($this->type);
+        $manager->getAll(false);
+        $manager->getEnabled(false);
     }
 }

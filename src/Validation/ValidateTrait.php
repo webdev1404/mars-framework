@@ -153,7 +153,7 @@ trait ValidateTrait
             return true;
         }
 
-        if (!$this->app->validator->validate($data, $rules, $this->getValidationErrorStrings(), $this->getValidationRulesToSkip())) {
+        if (!$this->app->validator->validate($rules, $data, $this->getValidationErrorStrings(), $this->getValidationRulesToSkip())) {
             $this->errors = $this->app->validator->errors;
 
             return false;

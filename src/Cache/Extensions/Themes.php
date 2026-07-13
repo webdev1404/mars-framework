@@ -26,4 +26,10 @@ class Themes extends Extensions
      * {@inheritDoc}
      */
     public protected(set) string $dir = 'extensions/themes';
+
+    /**
+     * @see Extensions::$type
+     * {@inheritDoc}
+     */
+    protected string $type = 'theme';
 }

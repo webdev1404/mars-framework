@@ -1,6 +1,6 @@
 <?php
 /**
-* The Security Class
+* The Hasher Class
 * @package Mars
 */
 
@@ -9,10 +9,10 @@ namespace Mars;
 use Mars\App\Kernel;
 
 /**
- * The Security Class
- * Handles security-related tasks
+ * The Hasher Class
+ * Handles hashing-related tasks
  */
-class Security
+class Hasher
 {
     use Kernel;
 
@@ -20,22 +20,22 @@ class Security
      * @var string $hash_algo The default hashing algorithm
      */
     protected string $hash_algo {
-        get => $this->app->config->security->hash_algo;
+        get => $this->app->config->hasher->algo;
     }
 
     /**
      * @var string $strong_hash_algo The strong hashing algorithm
      */
     protected string $strong_hash_algo {
-        get => $this->app->config->security->strong_hash_algo;
+        get => $this->app->config->hasher->strong_algo;
     }
 
     /**
-     * Hashes data using the security.hash.algo algorithm
+     * Hashes data using the hasher.algo algorithm
      * @param string $data The data to hash
      * @return string The hashed data
      */
-    public function getHash(string $data) : string
+    public function get(string $data) : string
     {
         return hash($this->hash_algo, $data);
     }
@@ -46,17 +46,17 @@ class Security
      * @param string $hash The hash to verify against
      * @return bool True if the data matches the hash, false otherwise
      */
-    public function verifyHash(string $data, string $hash) : bool
+    public function verify(string $data, string $hash) : bool
     {
-        return hash($this->hash_algo, $data) === $hash;
+        return hash_equals($hash, hash($this->hash_algo, $data));
     }
 
     /**
-     * Hashes data using the security.strong_hash.algo algorithm
+     * Hashes data using the hasher.strong_algo algorithm
      * @param string $data The data to hash
      * @return string The hashed data
      */
-    public function getStrongHash(string $data) : string
+    public function getStrong(string $data) : string
     {
         return hash($this->strong_hash_algo, $data);
     }
@@ -67,9 +67,9 @@ class Security
      * @param string $hash The hash to verify against
      * @return bool True if the data matches the hash, false otherwise
      */
-    public function verifyStrongHash(string $data, string $hash) : bool
+    public function verifyStrong(string $data, string $hash) : bool
     {
-        return hash($this->strong_hash_algo, $data) === $hash;
+        return hash_equals($hash, hash($this->strong_hash_algo, $data));
     }
 
     /**
@@ -79,7 +79,7 @@ class Security
      */
     public function getToken(string $string) : string
     {
-        return $this->hashPassword($string);
+        return $this->getPassword($string);
     }
 
     /**
@@ -98,7 +98,7 @@ class Security
      * @param string $password The password to hash
      * @return string The hashed password
      */
-    public function hashPassword(string $password) : string
+    public function getPassword(string $password) : string
     {
         return \password_hash($password, PASSWORD_DEFAULT);
     }

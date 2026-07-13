@@ -21,7 +21,6 @@ class Mars implements TemplateInterface
      * @var array $supported_parsers The list of supported parsers
      */
     protected array $supported_parsers = [
-        'data' => \Mars\Themes\Templates\Mars\DataParser::class,
         'templates' => \Mars\Themes\Templates\Mars\TemplatesParser::class,
         'include' => \Mars\Themes\Templates\Mars\IncludeParser::class,
         'variables_raw' => \Mars\Themes\Templates\Mars\VariablesRawParser::class,

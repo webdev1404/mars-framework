@@ -35,15 +35,7 @@ class Pages extends Cacheable
      * {@inheritDoc}
      */
     public string $driver_name {
-        get {
-            if (isset($this->driver_name)) {
-                return $this->driver_name;
-            }
-
-            $this->driver_name = $this->app->config->cache->page->driver ?? ($this->app->config->cache->driver == 'memcache' ? 'memcache' : 'text');
-
-            return $this->driver_name;
-        }
+        get => $this->app->config->cache->page->driver;
     }
 
     /**

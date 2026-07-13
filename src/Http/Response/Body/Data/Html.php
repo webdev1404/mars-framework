@@ -15,4 +15,12 @@ class Html extends Data
      * @internal
      */
     public protected(set) string $type = 'html';
+
+    /**
+     * @internal
+     */
+    public function __toString() : string
+    {
+        return (string)$this->content;
+    }
 }

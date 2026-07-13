@@ -34,7 +34,6 @@ use Mars\Time\Timezone;
 use Mars\System\Extensions;
 use Mars\System\Language;
 use Mars\System\Plugins;
-use Mars\System\Menus;
 use Mars\System\Modules;
 use Mars\System\Theme;
 use Mars\System\Uri;
@@ -191,6 +190,12 @@ class App
     public Html $html;
 
     /**
+     * @var Identifier $id The identifier object
+     */
+    #[LazyLoadProperty]
+    public Identifier $id;
+
+    /**
      * @var Info $info The info object
      */
     #[LazyLoadProperty]
@@ -243,12 +248,6 @@ class App
      */
     #[LazyLoadProperty]
     public Messages $messages;
-
-    /**
-     * @var Menus $menus The menus object
-     */
-    #[LazyLoadProperty]
-    public Menus $menus;
 
     /**
      * @var Modules $modules The modules object
@@ -311,10 +310,10 @@ class App
     public Serializer $serializer;
 
     /**
-     * @var Security $security The security object
+     * @var Hasher $hasher The hasher object
      */
     #[LazyLoadProperty]
-    public Security $security;
+    public Hasher $hasher;
 
     /**
      * @var Session $session The session object
@@ -1076,7 +1075,7 @@ class App
      * @see \Mars\System\Language::get()
      * {@inheritDoc}
      */
-    public static function __(string|array $str, array $replace = []) : string
+    public static function __(string $str, array $replace = []) : string
     {
         return static::$instance->lang->get($str, $replace);
     }

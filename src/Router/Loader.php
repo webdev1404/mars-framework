@@ -19,7 +19,7 @@ class Loader extends Base
      * @var array $supported_loaders The list of supported route loaders
      */
     public protected(set) array $supported_loaders = [
-        'pages' => \Mars\Router\Loaders\Pages::class,
+        'articles' => \Mars\Router\Loaders\Articles::class,
         'files' => \Mars\Router\Loaders\Files::class,
     ];
 

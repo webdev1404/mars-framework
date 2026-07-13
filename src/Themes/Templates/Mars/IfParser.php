@@ -21,7 +21,6 @@ class IfParser
      */
     public function parse(string $content, array $params = []) : string
     {
-        //$content = preg_replace_callback('/\{%\s*if(.*)\s*%\}/iU', function (array $match) {
         $content = preg_replace_callback('/@if\s*\((.*)\)/i', function (array $match) {
             return '<?php if(' . $this->getCondition($match[1]) . '){ ?>';
         }, $content);

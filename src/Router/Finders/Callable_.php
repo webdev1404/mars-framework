@@ -37,7 +37,7 @@ class Callable_ extends Files
      * @see \Mars\Router\Loader\Loader::loadHash()
      * {@inheritDoc}
      */
-    protected function loadHash(string $method, string $language, string $route, string $prefix, string $hash, string $type, string $name, array $data, null|string|callable|array $action)
+    protected function loadHash(string $method, string $language, string $route, string $prefix, string $hash, string $type, ?string $name, array $data, null|string|callable|array $action)
     {
         if ($method != $this->app->request->method) {
             return;

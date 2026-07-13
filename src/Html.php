@@ -73,6 +73,15 @@ class Html
     }
 
     /**
+     * Alias for $this->app->escape->html()
+     * @see Mars\Escape::html()
+     */
+    public function escape(?string $value) : string
+    {
+        return $this->app->escape->html($value);
+    }
+
+    /**
      * Returns a tag
      * @param string $type The tag's type
      * @param string $text The tag's text

@@ -17,7 +17,7 @@ class Routes extends Data
      * {@inheritDoc}
      */
     public string $driver_name {
-        get => $this->app->config->cache->routes->driver ?? $this->app->config->cache->driver;
+        get => $this->app->config->cache->routes->driver;
     }
 
     /**
@@ -54,7 +54,7 @@ class Routes extends Data
     /**
      * Caches the routes
      */
-    protected function cache()
+    public function cache()
     {
         //get and store each file contains routes
         $routes = $this->app->router->loader->load();

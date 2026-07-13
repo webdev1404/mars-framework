@@ -17,8 +17,9 @@ class Module extends Finder
      */
     public function getRoute(string $hash, array $data)
     {
-        $data['params']['action'] = $data['action'];
+        $params = $data['params'] ?? [];
+        $params['action'] = $data['action'];
 
-        return $this->app->modules->get($data['name'], $data['params']);
+        return $this->app->modules->get($data['name'], $params);
     }
 }

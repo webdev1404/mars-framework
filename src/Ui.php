@@ -7,7 +7,11 @@
 namespace Mars;
 
 use Mars\App\Kernel;
-use Mars\App\Handlers;
+use Mars\App\LazyLoad;
+use Mars\App\LazyLoadProperty;
+use Mars\Ui\Menus;
+use Mars\Ui\Breadcrumbs;
+use Mars\Ui\Pagination;
 
 /**
  * The User Interface (UI) Class
@@ -15,44 +19,34 @@ use Mars\App\Handlers;
 class Ui
 {
     use Kernel;
+    use LazyLoad;
 
     /**
-     * @var array $supported_uis The list of supported UIs
+     * @var Menus $menus The menus object
      */
-    protected array $supported_uis = [
-        'pagination' => \Mars\Ui\Pagination::class
-    ];
+    #[LazyLoadProperty]
+    public Menus $menus;
 
     /**
-     * @var Handlers $uis The UI handlers object
+     * @var Breadcrumbs $breadcrumbs The breadcrumbs object
      */
-    public protected(set) Handlers $uis {
-        get {
-            if (isset($this->uis)) {
-                return $this->uis;
-            }
-    
-            $this->uis = new Handlers($this->supported_uis, null, $this->app);
-    
-            return $this->uis;
-        }
-    }
+    #[LazyLoadProperty]
+    public Breadcrumbs $breadcrumbs;
 
     /**
-     * Builds pagination. The number of pages is computed as $total_items / $items_per_page.
-     * @param string $base_url The generic base_url where the number of the page will be appended
-     * @param int $total_items The total numbers of items
-     * @param int $items_per_page The number of items per page
-     * @param int $max_links The max number of links to show
-     * @return string The html code of the pagination
+     * @var Pagination $pagination The pagination object
      */
-    public function buildPagination(string $base_url, int $total_items, ?int $items_per_page = null, ?int $max_links = null) : string
+    #[LazyLoadProperty]
+    public Pagination $pagination;
+
+    /**
+     * Builds the UI object
+     * @param App $app The app object
+     */
+    public function __construct(App $app)
     {
-        $items_per_page = $items_per_page ?? $this->app->config->pagination->items_per_page;
-        $max_links = $max_links ?? $this->app->config->pagination->max_links;
+        $this->app = $app;
 
-        $pagination = $this->uis->get('pagination', $base_url, $items_per_page, $total_items, $max_links);
-
-        return $pagination->get();
+        $this->lazyLoad($this->app);
     }
 }

@@ -16,17 +16,18 @@ use Mars\Hidden;
 use Mars\Escape;
 use Mars\Filter;
 use Mars\Http\Request;
+use Mars\Http\Request\Get;
+use Mars\Http\Request\Post;
 use Mars\Mail;
 use Mars\Validator;
 use Mars\System\Plugins;
 use Mars\System\Uri;
 use Mars\Alerts\Errors;
-use Mars\Alerts\Messages;
-use Mars\Alerts\Info;
-use Mars\Alerts\Warnings;
 use Mars\Extensions\Extension;
 use Mars\Mvc\Controller\Email;
+use Mars\Mvc\Controller\Route;
 use Mars\Http\Response\Body\Data\Data;
+use Mars\Http\Response\Body\Data\Json;
 
 /**
  * The Controller Class
@@ -55,52 +56,17 @@ abstract class Controller extends \stdClass
     /**
      * @var string $default_method Default method to be executed on dispatch/route or if the requested method doesn't exist or is not public
      */
-    public protected(set) string $default_method {
-        get {
-            if (isset($this->default_method)) {
-                return $this->default_method;
-            }
-
-            $this->default_method = $this->app->getMethod($this->parent->name ?? 'index');
-
-            return $this->default_method;
-        }
-    }
-
-    /**
-     * @var string $default_success_method Method to be executed on dispatch/route, if the requested method returns true
-     */
-    public protected(set) string $default_success_method {
-        get {
-            if (isset($this->default_success_method)) {
-                return $this->default_success_method;
-            }
-
-            $this->default_success_method = $this->default_method;
-
-            return $this->default_success_method;
-        }
-    }
-
-    /**
-     * @var string $default_error_method Method to be executed on dispatch/route, if the requested method returns false
-     */
-    public protected(set) string $default_error_method {
-        get {
-            if (isset($this->default_error_method)) {
-                return $this->default_error_method;
-            }
-
-            $this->default_error_method = $this->default_method;
-
-            return $this->default_error_method;
-        }
-    }
+    public protected(set) string $default_method = 'default';
 
     /**
      * @var string $current_method The name of the currently executed method
      */
     public protected(set) string $current_method = '';
+
+    /**
+     * @var array $targets The target methods to be called based on the return value of the method
+     */
+    public protected(set) array $targets = [];
 
     /**
      * @var string $path The controller's parent's dir. Alias for $this->parent->path
@@ -153,9 +119,9 @@ abstract class Controller extends \stdClass
     public protected(set) ?Extension $parent;
 
     /**
-     * @var bool $has_model Whether the controller has a model. If true, the model is automatically loaded and assigned to $this->model
+     * @var string $model_class The class name of the model. If set, the model is automatically loaded and assigned to $this->model
      */
-    public protected(set) bool $has_model = true;
+    public protected(set) string $model_class = '';
 
     /**
      * @var ?object $model The model object
@@ -165,15 +131,19 @@ abstract class Controller extends \stdClass
             if (isset($this->model)) {
                 return $this->model;
             }
+
+            $class_name = $this->model_class ?: Model::class;
             
-            $this->model = null;
-            if ($this->parent) {
-                $this->model = $this->getModel();
-            }
+            $this->model = new $class_name($this, $this->app);
 
             return $this->model;
         }
     }
+
+    /**
+     * @var string $view_class The class name of the view. If set, the view is automatically loaded and assigned to $this->view
+     */
+    public protected(set) string $view_class = '';
 
     /**
      * @var View $view The view object
@@ -184,10 +154,9 @@ abstract class Controller extends \stdClass
                 return $this->view;
             }
 
-            $this->view = null;
-            if ($this->parent) {
-                $this->view = $this->getView();
-            }
+            $class_name = $this->view_class ?: View::class;
+
+            $this->view = new $class_name($this, $this->app);
 
             return $this->view;
         }
@@ -231,6 +200,22 @@ abstract class Controller extends \stdClass
     }
 
     /**
+     * @var Get $get Alias for $this->app->request->get
+     */
+    #[HiddenProperty]
+    protected Get $get {
+        get => $this->app->request->get;
+    }
+
+    /**
+     * @var Post $post Alias for $this->app->request->post
+     */
+    #[HiddenProperty]
+    protected Post $post {
+        get => $this->app->request->post;
+    }
+
+    /**
      * @var Uri $url Alias for $this->app->url
      */
     #[HiddenProperty]
@@ -269,31 +254,18 @@ abstract class Controller extends \stdClass
     protected Email $email;
 
     /**
-     * @var Errors $errors The errors object. Alias for $this->app->errors
+     * @var Errors $errors The generated errors
      */
-    protected Errors $errors {
-        get => $this->app->errors;
-    }
+    public protected(set) Errors $errors {
+        get {
+            if (isset($this->errors)) {
+                return $this->errors;
+            }
 
-    /**
-     * @var Messages $messages The messages object. Alias for $this->app->messages
-     */
-    protected Messages $messages {
-        get => $this->app->messages;
-    }
+            $this->errors = new Errors($this->app);
 
-    /**
-     * @var Info $info The info object. Alias for $this->app->info
-     */
-    protected Info $info {
-        get => $this->app->info;
-    }
-
-    /**
-     * @var Warnings $warnings The warnings object. Alias for $this->app->warnings
-     */
-    protected Warnings $warnings {
-        get => $this->app->warnings;
+            return $this->errors;
+        }
     }
 
     /**
@@ -334,48 +306,19 @@ abstract class Controller extends \stdClass
     }
 
     /**
-     * Sets the default_success_method and default_error_method to the same method
+     * Creates a route object for the given method
      * @param string $method The name of the method
-     * @return static
+     * @return Route The route object
      */
-    public function setDefaultMethods(string $method) : static
+    protected function go(string $method) : Route
     {
-        $this->default_success_method = $method;
-        $this->default_error_method = $method;
-
-        return $this;
-    }
-
-    /**
-     * Loads the model and returns the instance
-     * @param string|null $model The name of the model
-     * @return ?object The model
-     */
-    public function getModel(?string $model = null) : ?object
-    {
-        if (!$this->has_model) {
-            return null;
-        }
-
-        return $this->parent->getModel($model ?? $this->name, $this);
-    }
-
-    /**
-     * Loads the view and returns the instance
-     * @param string $view The name of the view
-     * @return View The view
-     */
-    public function getView(?string $view = null) : View
-    {
-        return $this->parent->getView($view ?? $this->name, $this);
+        return new Route($method);
     }
 
     /**
      * Calls method $method.
      * Calls it only if it exists and it's public. If not will call the $default_method method.
-     * If the method returns true, $default_success_method will be called afterwards.
-     * If it returns false, $default_error_method is called.
-     * No method is called, if the method doesn't return a value
+     * If the method returns bool or Route, then the target method is determined based on the return value.
      * @param string $method The name of the method
      * @param array $params Params to be passed to the method, if any
      * @return Data The response data generated by the method, if any
@@ -435,25 +378,23 @@ abstract class Controller extends \stdClass
      */
     protected function route(string $method, array $params = []) : Data
     {
-        [$ret, $content] = $this->call($method, $params);
+        $data = $this->call($method, $params);
 
-        if (is_bool($ret)) {
-            //call the success/error methods if the first call returns true or false
-            $method = $ret ? $this->default_success_method : $this->default_error_method;
-
-            [$ret, $content] = $this->call($method);
+        //call the target method if the first call returns true or false or Route
+        if (!$data instanceof Data) {
+            $data = $this->call($this->getTarget($method, $data));
         }
 
-        return $this->app->response->body->create($ret, $content);
+        return $data;
     }
 
     /**
      * Calls a method of the controller
      * @param string $method The name of the method
      * @param array $params Params to be passed to the method, if any
-     * @return array The return value and content generated by the method
+     * @return bool|Route|Data The return value and content generated by the method
      */
-    protected function call(string $method, array $params = []) : array
+    protected function call(string $method, array $params = []) : bool|Route|Data
     {
         $this->current_method = $method;
 
@@ -466,7 +407,37 @@ abstract class Controller extends \stdClass
             return $this->getJson($ret, $content);
         }
 
-        return [$ret, $content];
+        if (is_bool($ret) || $ret instanceof Route) {
+            return $ret;
+        }
+
+        return $this->app->response->body->create($ret, $content);
+    }
+
+    /**
+     * Returns the target method to be called, based on the return value of the $method
+     * @param string $method The name of the method
+     * @param bool|Route $data The return value of the method
+     * @return string The name of the method to be called next
+     */
+    protected function getTarget(string $method, bool|Route $data) : string
+    {
+        if ($data instanceof Route) {
+            return $data->method;
+        }
+
+        if (!isset($this->targets[$method])) {
+            return $this->default_method;
+        }
+
+        $target = $this->targets[$method];
+        if (is_array($target)) {
+            [$success, $error] = $target;
+
+            return $data ? $success : $error;
+        } else {
+            return $target;
+        }
     }
 
     /**
@@ -475,17 +446,17 @@ abstract class Controller extends \stdClass
      * @param string $content The content
      * @return array The json data
      */
-    protected function getJson(mixed $ret, string $content) : array
+    protected function getJson(mixed $ret, string $content) : Data
     {
         $data = [];
 
         if (is_bool($ret) || is_null($ret)) {
-            $data['content'] = $content;
+            $data = $content;
         } else {
             $data = $ret;
         }
 
-        return [$data, ''];
+        return new Json($data);
     }
 
     /**
@@ -505,5 +476,30 @@ abstract class Controller extends \stdClass
         }
 
         return $this->request->canPost($captcha, $key, $max_attempts, $duration, $all);
+    }
+
+    /**
+     * Validates the post data based on the given rules
+     * @param array $rules The rules to validate, in the format ['field' => validation_type]. Eg: 'my_id' => 'required|min:3|unique:my_table:my_id'
+     * @param array $error_strings Custom error strings, if any
+     * @param array $skip_array Array with the fields for which we'll skip validation, if any
+     * @return bool True if the validation passed all tests, false otherwise
+     */
+    public function validate(array $rules, array $error_strings = [], array $skip_array = []) : bool
+    {
+        if (!$this->validator->validate($rules, $this->post->data, $error_strings, $skip_array)) {
+            $this->errors->set($this->validator->errors);
+
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * The default method
+     */
+    public function default()
+    {
     }
 }

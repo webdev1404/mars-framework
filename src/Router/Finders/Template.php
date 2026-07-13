@@ -17,6 +17,6 @@ class Template extends Finder
      */
     public function getRoute(string $hash, array $data)
     {
-        return new \Mars\Content\Template($data['template'], $this->app);
+        return new \Mars\Content\Template($data, $this->app);
     }
 }

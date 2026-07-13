@@ -1,24 +1,26 @@
 <?php
 /**
-* The System's Menus Container Class
-* @package Mars
-*/
+ * The UI's Menus Container Class
+ * @package Mars
+ */
 
-namespace Mars\System;
+namespace Mars\Ui;
 
 use Mars\App;
+use Mars\App\Kernel;
 use Mars\App\LazyLoad;
 use Mars\App\LazyLoadProperty;
-use Mars\Menus\Menu;
-use Mars\Menus\Main as MainMenu;
-use Mars\Menus\Footer as FooterMenu;
-use Mars\Menus\Sidebar as SidebarMenu;
+use Mars\Ui\Menus\Menu;
+use Mars\Ui\Menus\Main as MainMenu;
+use Mars\Ui\Menus\Footer as FooterMenu;
+use Mars\Ui\Menus\Sidebar as SidebarMenu;
 
 /**
- * The System's Menus Container Class
+ * The UI's Menus Container Class
  */
 class Menus extends \stdClass
 {
+    use Kernel;
     use LazyLoad;
 
     /**

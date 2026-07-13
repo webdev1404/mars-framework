@@ -34,4 +34,9 @@ class Config extends Data
      * {@inheritDoc}
      */
     public protected(set) string $dir = 'config';
+
+    public function cache()
+    {
+        
+    }
 }

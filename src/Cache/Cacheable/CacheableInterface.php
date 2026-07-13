@@ -74,4 +74,9 @@ interface CacheableInterface
      * @param int|null $expire_hours The number of hours after which cached items expire. If null, will not consider expiration
      */
     public function clean(string $path, ?int $expire_hours = null);
+
+    /**
+     * Clears the file status cache
+     */
+    public function clearstat();
 }

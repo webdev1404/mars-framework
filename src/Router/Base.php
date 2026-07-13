@@ -58,7 +58,7 @@ abstract class Base
      */
     protected function getHash(string $route) : string
     {
-        return $this->app->security->getHash($route);
+        return $this->app->hasher->get($route);
     }
 
     /**

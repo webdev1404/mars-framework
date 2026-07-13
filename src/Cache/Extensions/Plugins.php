@@ -26,4 +26,10 @@ class Plugins extends Extensions
      * {@inheritDoc}
      */
     public protected(set) string $dir = 'extensions/plugins';
+
+    /**
+     * @see Extensions::$type
+     * {@inheritDoc}
+     */
+    protected string $type = 'plugin';
 }

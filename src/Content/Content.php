@@ -18,18 +18,18 @@ abstract class Content
     use Kernel;
     
     /**
-     * @var string $name The content's name
+     * @var array $data The content's data
      */
-    protected string $name = '';
+    protected array $data = [];
     
     /**
      * Builds the Content object
-     * @param string $name The name of the page/template etc..
+     * @param array $data The content's data
      * @param App|null $app The app object
      */
-    public function __construct(string $name, ?App $app = null)
+    public function __construct(array $data = [], ?App $app = null)
     {
-        $this->name = $name;
+        $this->data = $data;
         $this->app = $app;
     }
 }

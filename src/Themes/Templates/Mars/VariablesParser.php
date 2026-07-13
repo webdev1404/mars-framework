@@ -15,12 +15,7 @@ class VariablesParser
     /**
      * @internal
      */
-    protected string $variable_preg = '/(\$[a-z0-9_\.\->#\[\]\'"\(\)]*)/is';
-
-    /**
-     * @internal
-     */
-    protected string $lang_preg = '/\*([a-z0-9_\.\-]*)/is';
+    protected string $variable_preg = '/\{?(\$[a-z0-9_\.\->#\[\]\'"\(\)]*)\}?/is';
 
     /**
      * @var array $supported_modifiers Array listing the supported modifiers in the format modifier => [function, priority, escape]
@@ -51,6 +46,7 @@ class VariablesParser
         'round' => ['$this->app->format->round', 10],
         'number' => ['$this->app->format->number', 10],
         'size' => ['$this->app->format->size', 10],
+        'id' => ['$this->app->format->id', 10],
 
         //text modifiers
         'cut' => ['$this->app->text->cut', 10],
@@ -88,24 +84,23 @@ class VariablesParser
      * @see \Mars\Theme\Template\TemplateInterface::parse()
      * {@inheritDoc}
      */
-    public function parse(string $content, array $params = []) : string
+    public function parse(string $content) : string
     {
-        return preg_replace_callback('/\{\{(.*)\}\}/U', function (array $match) use ($params) {
-            return $this->parseVariable($match[1], $params);
+        return preg_replace_callback('/\{\{(.*)\}\}/U', function (array $match) {
+            return $this->parseVariable($match[1]);
         }, $content);
     }
 
     /**
      * Parses a variable
      * @param string $var The variable to parse
-     * @param array $params The params to pass to the parser
      * @return string The parsed variable
      */
-    protected function parseVariable(string $var, array $params = []) : string
+    protected function parseVariable(string $var) : string
     {
         [$value, $modifiers] = $this->breakVariable($var);
 
-        return $this->applyModifiers($this->buildVariable($value, $params), $modifiers);
+        return $this->applyModifiers($this->buildVariable($value), $modifiers);
     }
 
     /**
@@ -131,13 +126,17 @@ class VariablesParser
     /**
      * Builds a variable from $value. Returns $item if $value=item
      * @param string $value The value
-     * @param array $params The params to pass to the parser
      * @return string The variable
      */
-    protected function buildVariable(string $value, array $params = [], bool $parse_lang = true) : string
+    protected function buildVariable(string $value, bool $parse_lang = true) : string
     {
         if (str_starts_with($value, '$')) {
             return $this->formatVariable($value);
+        }
+
+        //do we have an array?
+        if (str_starts_with($value, '[') && str_ends_with($value, ']')) {
+            return $this->buildArray($value);
         }
 
         //do we have a function?
@@ -147,10 +146,37 @@ class VariablesParser
 
         //we have a language string
         if ($parse_lang) {
-            return $this->getLanguageVariable($value, $params);
+            return $this->getLanguageVariable($value);
         }
 
         throw new \Exception('Invalid template variable: ' . $value);
+    }
+
+    /**
+     * Builds an array from $value
+     * @param string $value The value
+     * @return string The array
+     */
+    protected function buildArray(string $value) : string
+    {
+        $value = trim($value, '[]');
+
+        $parts = [];
+        $elements = preg_split('/,(?=(?:[^"\']|"[^"]*"|\'[^\']*\')*$)/', $value);
+        foreach ($elements as $element) {
+            $element_parts = explode('=>', trim($element), 2);
+            
+            if (count($element_parts) == 1) {
+                $parts[] = $this->get(trim(array_first($element_parts)));
+            } else {
+                $key = $this->get(trim(array_first($element_parts)));
+                $val = $this->get(trim(array_last($element_parts)));
+
+                $parts[] = "{$key} => {$val}";
+            }
+        }
+
+        return '[' . implode(', ', $parts) . ']';
     }
 
     /**
@@ -160,6 +186,11 @@ class VariablesParser
      */
     protected function formatVariable(string $value) : string
     {
+        //convert $lang.string to $lang->get('string')
+        if (str_starts_with($value, '$lang.')) {
+            $value = preg_replace('/\$lang\.([a-z0-9_\.]+)/i', "\$lang->get('$1')", $value);
+        }
+
         //replace . with ->, if not inside quotes
         if (str_contains($value, '.')) {
             $value = preg_replace('/["\'][^"\']*["\'](*SKIP)(*FAIL)|\./i', '->', $value);
@@ -170,30 +201,36 @@ class VariablesParser
             $value = preg_replace('/#([^\-\[#]*)/s', "['$1']", $value);
         }
 
-        //$value.= "\n";
-
         return $value;
     }
 
     /**
      * Builds a language variable from $value
      * @param string $value The value
-     * @param array $params The params to pass to the parser
      * @return string The lang string variable
      */
-    protected function getLanguageVariable(string $value, array $params) : string
+    protected function getLanguageVariable(string $value) : string
     {
         $value = str_replace("'", "\\'", $value);
 
         return "\$lang->get('{$value}')";
     }
 
-    public function replaceAll(string $str, bool $add_brackets = false) : string
+    /**
+     * Returns the string with the replaced vars
+     * @param string $str The string
+     * @return string The string with the replaced vars
+     */
+    public function get(string $str) : string
     {
-        $str = $this->replaceVariables($str, $add_brackets);
-        $str = $this->replaceLanguageStrings($str, $add_brackets);
+        //remove the trailing semicolon, if any, in case it was added by mistake
+        $str = rtrim(rtrim($str, ';'));
 
-        return $str;
+        if (preg_match('/^([\'"])(.*)\1$/', $str, $match)) {
+            return $match[1] . $this->replaceVariables($match[2], true) . $match[1];
+        }
+
+        return $this->buildVariable($str);
     }
 
     /**
@@ -207,30 +244,7 @@ class VariablesParser
         $str = trim($str);
         
         $str = preg_replace_callback($this->variable_preg, function (array $match) use ($add_brackets) {
-            $var = $this->buildVariable($match[1], [], false);
-            if ($add_brackets) {
-                return '{' . $var . '}';
-            }
-
-            return $var;
-        }, $str);
-
-        return $str;
-    }
-
-    /**
-     * Replaces all language strings in a string
-     * @param string $str The string
-     * @param bool $add_brackets Whether to wrap variables in curly brackets
-     * @return string The string with the replaced lang strings
-     */
-    public function replaceLanguageStrings(string $str, bool $add_brackets = false) : string
-    {
-        $str = trim($str);
-        
-        $str = preg_replace_callback($this->lang_preg, function (array $match) use ($add_brackets) {
-            $lang_key = $match[1];
-            $var = "\$lang->get('{$lang_key}')";
+            $var = $this->buildVariable($match[1], false);
             if ($add_brackets) {
                 return '{' . $var . '}';
             }

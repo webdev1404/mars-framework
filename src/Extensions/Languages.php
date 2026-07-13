@@ -40,7 +40,6 @@ class Languages extends Extensions
      */
     protected static string $setup_class = LanguageSetup::class;
     
-
     /**
      * @internal
      */

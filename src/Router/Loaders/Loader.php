@@ -45,11 +45,11 @@ abstract class Loader extends Base
      * @param string $prefix The route's prefix
      * @param string $hash The hash to append
      * @param string $type The route type
-     * @param string $name The route name
+     * @param string|null $name The route name
      * @param array $data Route's data
      * @param string|callable|array $action The route action
      */
-    protected function loadHash(string $method, string $language, string $route, string $prefix, string $hash, string $type, string $name, array $data, null|string|callable|array $action)
+    protected function loadHash(string $method, string $language, string $route, string $prefix, string $hash, string $type, ?string $name, array $data, null|string|callable|array $action)
     {
         $this->routes->hashes[$method][$language][$prefix][$hash] = $this->routes->getKey($this->getData($route, $type, $name, $data));
     }
@@ -70,11 +70,11 @@ abstract class Loader extends Base
      * Returns the data for a route
      * @param string $route The route
      * @param string $type The route type
-     * @param string $name The route name
+     * @param string|null $name The route name
      * @param array $data Route's data
      * @return array The route data
      */
-    protected function getData(string $route, string $type, string $name, array $data) : array
+    protected function getData(string $route, string $type, ?string $name, array $data) : array
     {
         return ['route' => $route, 'type' => $type, 'name' => $name, 'preg' => $this->getContainsPreg($route), 'data' => $data];
     }

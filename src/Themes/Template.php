@@ -55,9 +55,19 @@ class Template
     }
 
     /**
-     * @var array $data Data set in the array
+     * @var \StdClass $data Template set data
      */
-    public protected(set) array $data = [];
+    public protected(set) \StdClass $data {
+        get {
+            if (isset($this->data)) {
+                return $this->data;
+            }
+
+            $this->data = new \StdClass();
+
+            return $this->data;
+        }
+    }
 
     /**
      * @var bool $development If true, the templates will be parsed in development mode
@@ -139,7 +149,7 @@ class Template
         $content = file_get_contents($filename);
 
         if ($content === false) {
-            throw new \Exception("Error reading template file: {$filename}");
+            throw new \Exception("Error reading template file: {$filename}. File may not exist or is not readable.");
         }
 
         $content = $this->parse($content, $params);
@@ -155,16 +165,16 @@ class Template
      */
     protected function incorporate(string $cache_name, array $vars = []) : string
     {
-        $this->data = [];
-
         $app = $this->app;
         $lang = $this->app->lang;
         $theme = $this->app->theme;
         $modules = $this->app->modules;
-        $menus = $this->app->menus;
         $config = $this->app->config;
+        $captcha = $this->app->captcha;
         $html = $this->app->html;
         $ui = $this->app->ui;
+        $menus = $this->app->ui->menus;
+        $pagination = $this->app->ui->pagination;
         $url = $this->app->url;
         $format = $this->app->format;
         $plugins = $this->app->plugins;
@@ -172,7 +182,7 @@ class Template
         $get = $this->app->request->get;
         $post = $this->app->request->post;
         $document = $this->app->document;
-        $strings = $this->app->lang->strings;
+        $data = $this->data;
         
         extract($this->app->theme->vars);
         extract($vars);

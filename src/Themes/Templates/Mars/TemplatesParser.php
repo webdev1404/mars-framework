@@ -22,10 +22,15 @@ class TemplatesParser
      */
     public function parse(string $content, array $params = []) : string
     {
-        return preg_replace_callback('/@template\s*\((.*)\)/U', function (array $match) {
+        return preg_replace_callback('/@template\s*\((.*)(?:,(.*))?\)/U', function (array $match) {
             $template = $this->getTemplate($match[1]);
 
-            return '<?= $this->get(\'' . $template . '\') ?>';
+            $vars = '[]';
+            if (!empty($match[2])) {
+                $vars = trim($match[2]);
+            }
+
+            return '<?= $this->get(\'' . $template . '\', ' . $vars . ') ?>';
         }, $content);
     }
 

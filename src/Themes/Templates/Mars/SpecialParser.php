@@ -6,14 +6,13 @@
 
 namespace Mars\Themes\Templates\Mars;
 
-use Mars\App;
 use Mars\App\Kernel;
 
 /**
  * The Special Parser
  * Parses special template variables
  */
-class SpecialParser extends Params
+class SpecialParser
 {
     use Kernel;
 
@@ -23,9 +22,10 @@ class SpecialParser extends Params
      */
     public function parse(string $content, array $params = []) : string
     {
-        $content = preg_replace_callback('/(@[a-z0-9\.]+)\s*(\(([\'"])(.*)\3\))?/i', function (array $match) {
+        $content = preg_replace_callback('/(@[a-z0-9_\.]+)\s*(?:=\s(.*))?\v/i', function (array $match) {
             $name = $match[1];
-            $value = empty($match[4]) ? '' : $this->getValue($match[4], $match[3]);
+            $value = empty($match[2]) ? '' : new VariablesParser($this->app)->get($match[2]);
+
             return $this->get($name, $value);
         }, $content);
 
@@ -38,19 +38,33 @@ class SpecialParser extends Params
      */
     protected function get(string $name, string $value) : string
     {
+        $subname = '';
+
+        $pos = strpos($name, '.');
+        if ($pos !== false) {
+            $subname = substr($name, $pos + 1);
+            $name = substr($name, 0, $pos);
+        }
+
         switch ($name) {
+            case '@set':
+                return "<?php \${$subname} = {$value} ?>";
+            case '@data':
+                return "<?php \$this->data->{$subname} = {$value} ?>";
             case '@csrf':
                 return '<?= $app->html->csrf() ?>';
             case '@title':
                 return "<?php \$this->app->document->title->set({$value}) ?>";
-            case '@meta.description':
-                return "<?php \$this->app->document->meta->set('description', {$value}) ?>";
-            case '@meta.keywords':
-                return "<?php \$this->app->document->meta->set('keywords', {$value}) ?>";
-            case '@meta.robots':
-                return "<?php \$this->app->document->meta->set('robots', {$value}) ?>";
+            case '@heading':
+                return "<?php \$this->app->document->heading->set({$value}) ?>";
+            case '@meta_title':
+                return "<?php \$this->app->document->meta_title->set({$value}) ?>";
+            case '@meta':
+                return "<?php \$this->app->document->meta->set('{$subname}', {$value}) ?>";
+            case '@breadcrumbs':
+                return "<?php \$this->app->ui->breadcrumbs->set({$value}) ?>";
             default:
-                return $this->app->plugins->filter('theme.special.get', $name, $this);
+                return $this->app->plugins->filter('template.special.get', $name, $subname, $this);
         }
     }
 }

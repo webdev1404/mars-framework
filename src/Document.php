@@ -9,6 +9,8 @@ namespace Mars;
 use Mars\App\Kernel;
 use Mars\App\LazyLoad;
 use Mars\App\LazyLoadProperty;
+use Mars\Document\Title;
+use Mars\Document\Heading;
 use Mars\Document\Links\Css;
 use Mars\Document\Links\Javascript;
 use Mars\Document\Links\Fonts;
@@ -20,7 +22,7 @@ use Mars\Document\Tags\Meta;
 use Mars\Document\Tags\Rss;
 use Mars\Document\Tags\Encoding;
 use Mars\Document\Tags\Favicon;
-use Mars\Document\Tags\Title;
+use Mars\Document\Tags\MetaTitle;
 
 /**
  * The Document Class
@@ -92,6 +94,18 @@ class Document
     public Title $title;
 
     /**
+     * @var MetaTitle $meta_title The meta title object
+     */
+    #[LazyLoadProperty]
+    public MetaTitle $meta_title;
+
+    /**
+     * @var Heading $heading The heading object
+     */
+    #[LazyLoadProperty]
+    public Heading $heading;
+
+    /**
      * @var Encoding $encoding The encoding object
      */
     #[LazyLoadProperty]
@@ -119,7 +133,7 @@ class Document
      */
     public function renderHead()
     {
-        $this->title->render();
+        $this->meta_title->render();
         $this->encoding->render();
         $this->favicon->render();
         $this->meta->render();

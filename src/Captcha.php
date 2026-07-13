@@ -67,16 +67,16 @@ class Captcha
     }
 
     /**
-     * Checks the captcha is correct
+     * Verifies the captcha
      * @return bool Returns bool if the captcha is correct
      */
-    public function check() : bool
+    public function verify() : bool
     {
         if (!$this->enabled) {
             return true;
         }
 
-        return $this->driver->check();
+        return $this->driver->verify();
     }
 
     /**
