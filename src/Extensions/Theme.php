@@ -41,6 +41,11 @@ class Theme extends Extension
     ];
 
     /**
+     * @const array CACHE_DIRS The dirs to be cached
+     */
+    public const array CACHE_DIRS = ['languages'];
+
+    /**
      * @var Document $document The document object
      */
     public Document $document {

@@ -889,11 +889,11 @@ class App
     protected function sendIfCached()
     {
         //var_dump($_SERVER);die;
-        if (!$this->config->cache->page->enable) {
+        if (!$this->config->cache->html->enable) {
             return;
         }
 
-        $this->cache->pages->send();
+        $this->cache->html->send();
     }
 
     /**
@@ -902,11 +902,11 @@ class App
      */
     protected function cacheContent(string $content)
     {
-        if (!$this->config->cache->page->enable) {
+        if (!$this->config->cache->html->enable) {
             return;
         }
 
-        $this->cache->pages->store($content);
+        $this->cache->html->store($content);
     }
 
     /**

@@ -15,9 +15,7 @@ use Mars\Data\MapTrait;
  */
 class Breadcrumbs extends Ui
 {
-    use MapTrait {
-        set as setMap;
-    }
+    use MapTrait;
 
     /**
      * @var array $breadcrumbs The breadcrumbs
@@ -52,23 +50,6 @@ class Breadcrumbs extends Ui
     }
 
     /**
-     * Sets a breadcrumb
-     * @param string|array $name The name of the breadcrumb or an array of breadcrumbs
-     * @param string $value The value of the breadcrumb, if $name is a string
-     * @return static
-     */
-    public function set(string|array $name, mixed $value = '') : static
-    {
-        if (is_string($name)) {
-            if (!$value) {
-                $value = $name;
-            }
-        }
-
-        return $this->setMap($name, $value);
-    }
-
-    /**
      * Renders the breadcrumbs
      */
     public function render()
@@ -94,8 +75,17 @@ class Breadcrumbs extends Ui
             $breadcrumbs[$this->app->config->breadcrumbs->home] = (string)$this->app->url->root;
         }
 
-        //save the last breadcrumb
-        $last = array_pop($this->breadcrumbs);
+        $last = array_last($this->breadcrumbs);
+        $last_key = array_key_last($this->breadcrumbs);
+        if (!$last) {
+            array_pop($this->breadcrumbs);
+
+            $last = $last_key;
+        } elseif (is_numeric($last_key)) {
+            $last = array_pop($this->breadcrumbs);
+        } else {
+            $last = $this->app->document->title->value;
+        }
 
         $breadcrumbs_list = array_map(fn($url) => (string)$this->app->url->get($url), $this->breadcrumbs);
 

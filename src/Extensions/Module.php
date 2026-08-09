@@ -35,7 +35,7 @@ class Module extends Extension implements ContentInterface
      */
     public const array DIRS = [
         ...parent::DIRS,
-        'articles' => 'articles',
+        'pages' => 'pages',
         'bin' => 'bin',
         'controllers' => 'Controllers',
     ];
@@ -43,7 +43,7 @@ class Module extends Extension implements ContentInterface
     /**
      * @const array CACHE_DIRS The dirs to be cached
      */
-    public const array CACHE_DIRS = ['templates'];
+    public const array CACHE_DIRS = ['languages', 'templates'];
 
     /**
      * @var array $route_params The params passed to the module, if any
@@ -90,12 +90,12 @@ class Module extends Extension implements ContentInterface
         $this->app->timer->start('extension_output');
 
         ob_start();
-        $ret = include($this->path . '/index.php');
+        $returned = include($this->path . '/index.php');
         $content = ob_get_clean();
 
         $this->exec_time = $this->app->timer->stop('extension_output');
 
-        return $this->app->response->body->create($ret, $content);
+        return $this->app->response->body->create($returned, $content);
     }
 
     /**
@@ -110,12 +110,13 @@ class Module extends Extension implements ContentInterface
             throw new \Exception("No controller defined for module {$this->name}");
         }
 
-        $this->app->lang->setBaseKey(static::$type . '.' . $this->name . '.' . $controller);
+        $context = static::$type . '.' . $this->name;
+        $this->app->lang->addContext($context, $this->languages_files);
 
         $controller = $this->getController($controller);
         $result = $controller->dispatch($method, $this->route_params);
 
-        $this->app->lang->restoreBaseKey();
+        $this->app->lang->removeContext($context);
 
         return $result;
     }

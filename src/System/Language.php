@@ -23,11 +23,6 @@ class Language extends BaseLanguage
     public array $strings = [];
 
     /**
-     * @var array $loaded_files The list of loaded files
-     */
-    protected array $loaded_files = [];
-
-    /**
      * @var array $files The list of available files found for the language
      */
     protected array $files {
@@ -43,19 +38,19 @@ class Language extends BaseLanguage
     }
 
     /**
+     * @var array $contexts The list of contexts for the language
+     */
+    protected array $contexts = [];
+
+    /**
+     * @var array $extension_names The list of found extensions names
+     */
+    protected array $extension_names = [];
+
+    /**
      * @var array $extension_files The list of available language files found for extensions
      */
     protected array $extension_files = [];
-
-    /**
-     * @var string $base_key The key where we're searching for strings without a colon (base keys)
-     */
-    protected string $base_key = '';
-
-    /**
-     * @var string $base_key_old The old base key
-     */
-    protected string $base_key_old = '';
 
     /**
      * @var array $drivers_list The supported drivers list
@@ -284,31 +279,43 @@ class Language extends BaseLanguage
      */
     public function get(string $key, array $replace = []) : string
     {
-        $file = '';
-        $index = '';
-        $pos = strpos($key, ':');
+        $colon_pos = strpos($key, ':');
 
-        if ($pos === false) {
-            //no colon in the key. Search for the key in the specified base key
-            if ($this->base_key) {
-                $file = $this->base_key;
-                $index = $key;
-            }
-        } else {
-            //we have a colon in the key. Try to find the file where the key is located
-            $file = substr($key, 0, $pos);
-            $index = substr($key, $pos + 1);
+        $extension = '';
+        if ($colon_pos !== false) {
+            $extension = substr($key, 0, $colon_pos);
+
+            $this->extension_names[$extension] ??= $this->getExtensionName($extension);
+            $extension = $this->extension_names[$extension];
+
+            $key = substr($key, $colon_pos + 1);
         }
 
-        if ($file && $index) {
-            if (!isset($this->strings[$file])) {
-                if (!isset($this->loaded_files[$file])) {
-                    $this->loadFile($file);
+        $dot_pos = strpos($key, '.');
+        if ($dot_pos !== false) {
+            $file = substr($key, 0, $dot_pos);
+            $index = substr($key, $dot_pos + 1);
+
+            //try to locate the extension file in the contexts, if any
+            if (!$extension && $this->contexts) {
+                $keys = array_reverse(array_keys($this->contexts));
+
+                foreach ($keys as $context) {
+                    if (isset($this->contexts[$context][$file . '.php'])) {
+                        $extension = $context;
+                        break;
+                    }
                 }
             }
 
-            $string = $this->strings[$file][$index] ?? $key;
+            $string_key = $extension ? $extension . ':' . $file : $file;
+            if (!isset($this->strings[$string_key])) {
+                $this->loadFile($extension, $file, $string_key);
+            }
+
+            $string = $this->strings[$string_key][$index] ?? $key;
         } else {
+            //if we have no dot in the key, simply return the key as the string
             $string = $key;
         }
 
@@ -321,25 +328,19 @@ class Language extends BaseLanguage
 
     /**
      * Loads the specified file
+     * @param string $extension The name of the extension, if any
      * @param string $file The name of the file
      */
-    protected function loadFile(string $file)
+    protected function loadFile(string $extension, string $file, string $key)
     {
-        $this->loaded_files[$file] = true;
-
-        $filenames = [];
-        $parts = explode('.', $file);
-
-        if (count($parts) == 1) {
-            //no dots in the file, it's a language file in the languages folder
-            $filenames = $this->getFilenames($file);
+        if ($extension) {
+            $filenames = $this->getExtensionFilenames($extension, $file);
         } else {
-            //we have dots in the file, it's an extension file
-            $filenames = $this->getExtensionFilenames($parts);
+            $filenames = $this->getFilenames($file);
         }
 
         foreach ($filenames as $filename) {
-            $this->loadFilename($file, $filename);
+            $this->loadFilename($key, $filename);
         }
     }
 
@@ -423,64 +424,57 @@ class Language extends BaseLanguage
     }
 
     /**
-     * Returns the list of filenames for a given extension file key
-     * @param array $parts The parts of the file key
-     * @return array The list of filenames
+     * Returns the extension name
+     * @param string $name The name of the extension
+     * @return string The name of the extension
      */
-    protected function getExtensionFilenames(array $parts) : array
+    protected function getExtensionName(string $name) : string
     {
-        $type = $parts[0];
-        $name = $parts[1];
+        $parts = explode('.', $name);
 
-        if (isset($this->app->extensions->list[$type])) {
-            if (!isset($parts[2])) {
-                return [];
-            }
-
-            $this->extension_files[$type][$name] ??= $this->getFilenamesForExtension($type, $name);
-
-            $file = implode('.', array_slice($parts, 2));
-
-            return $this->extension_files[$type][$name][$file] ?? [];
-        } else {
-            // search through the extensions to find the extension name, since the type is not specified in the file key
+        if (count($parts) == 1) {
             $name = $parts[0];
-            $file = implode('.', array_slice($parts, 1));
-            $type = $this->app->extensions->getType($name, 'lang');
-            if (!$type) {
-                return [];
-            }
-
-            $this->extension_files[$type][$name] ??= $this->getFilenamesForExtension($type, $name);
-
-            return $this->extension_files[$type][$name][$file] ?? [];
+            $type = $this->app->extensions->getType($name, 'languages');
+        } else {
+            [$type, $name] = $parts;
         }
+
+        return $type . '.' . $name;
     }
 
     /**
-     * Returns the list of filenames for a given extension name and type
-     * @param string $type The type of the extension
-     * @param string $name The name of the extension
+     * Returns the list of filenames for a given extension 
+     * @param string $extension The name of the extension
+     * @param string $file The name of the file
      * @return array The list of filenames
      */
-    protected function getFilenamesForExtension(string $type, string $name) : array
+    protected function getExtensionFilenames(string $extension, string $file) : array
     {
-        $cache_name = $type . '-' . $name . '-' . $this->name . '-language-files';
+        [$type, $name] = explode('.', $extension);
 
-        $filenames = $this->cache->get($cache_name);
-        if ($this->development) {
-            $filenames = null;
+        if (!isset($this->app->extensions->list[$type])) {
+            //invalid extension type, return empty array
+            return [];
         }
 
-        if ($filenames !== null) {
-            return $filenames;
+        if (!isset($this->extension_files[$type][$name])) {
+            $cache_name = $type . '-' . $name . '-' . $this->name . '-language-files';
+
+            $filenames = $this->cache->get($cache_name);
+            if ($this->development) {
+                $filenames = null;
+            }
+
+            if ($filenames === null) {
+                $filenames = $this->readFilenamesForExtension($type, $name);
+
+                $this->cache->set($cache_name, $filenames);
+            }
+
+            $this->extension_files[$type][$name] = $filenames;
         }
 
-        $filenames = $this->readFilenamesForExtension($type, $name);
-
-        $this->cache->set($cache_name, $filenames);
-
-        return $filenames;
+        return $this->extension_files[$type][$name][$file] ?? [];
     }
 
     /**
@@ -491,7 +485,7 @@ class Language extends BaseLanguage
      */
     protected function readFilenamesForExtension(string $type, string $name) : array
     {
-        $extension = $this->app->extensions->get($name, 'lang');
+        $extension = $this->app->extensions->get($name, $type, 'languages');
         if (!$extension) {
             return [];
         }
@@ -569,29 +563,26 @@ class Language extends BaseLanguage
     }
 
     /**
-     * Adds a base key to the list of keys where we're searching for strings
-     * @param string $key The key(s) to add
+     * Adds context files
+     * @param string $name The name of the context
+     * @param array $files The list of files assigned to the context
      * @return static
      */
-    public function setBaseKey(string $key) : static
+    public function addContext(string $name, array $files) : static
     {
-        $this->base_key_old = $this->base_key;
-        $this->base_key = $key;
+        $this->contexts[$name] = $files;
 
         return $this;
     }
 
     /**
-     * Restores the base key to the previous one
+     * Removes a context
+     * @param string $name The name of the context
      * @return static
      */
-    public function restoreBaseKey() : static
+    public function removeContext(string $name) : static
     {
-        //unset the loaded strings for the current base key, to save memory
-        unset($this->strings[$this->base_key]);
-        unset($this->loaded_files[$this->base_key]);
-
-        $this->base_key = $this->base_key_old;
+        unset($this->contexts[$name]);
 
         return $this;
     }

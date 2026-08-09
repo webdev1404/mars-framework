@@ -22,9 +22,9 @@ class Email
     protected Controller $controller;
 
     /**
-     * @var array $data_array The array of data extracted from the email template
+     * @var \StdClass $data The data object that holds the email data
      */
-    protected array $data_array = [];
+    protected \StdClass $data;
 
     /**
      * Builds the email object
@@ -46,9 +46,9 @@ class Email
      */
     public function get(string $template, array $vars = [], string $dir = 'emails') : string
     {
-        $body = nl2br($this->controller->view->getTemplateByLanguage($dir, $template, $vars));
+        $body = nl2br(trim($this->controller->view->getTemplateByLanguage($dir, $template, $vars)));
 
-        $this->data_array = $this->app->theme->template->data;
+        $this->data = $this->app->theme->template->data;
 
         return $body;
     }
@@ -58,7 +58,7 @@ class Email
      */
     public function __isset($name)
     {
-        return isset($this->data_array[$name]);
+        return isset($this->data->$name);
     }
 
     /**
@@ -66,7 +66,7 @@ class Email
      */
     public function __get($name)
     {
-        return $this->data_array[$name] ?? null;
+        return $this->data->$name ?? null;
     }
 
     /**
@@ -74,6 +74,6 @@ class Email
      */
     public function __set($name, $value)
     {
-        $this->data_array[$name] = $value;
+        $this->data->$name = $value;
     }
 }

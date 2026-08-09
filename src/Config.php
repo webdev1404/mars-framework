@@ -295,12 +295,12 @@ class Config extends Container
      */
     protected function findExtension(string $name) : ?Extension
     {
-        $extension = $this->_app->extensions->get($name, 'config');
+        $extension = $this->_app->extensions->get($name, support: 'config');
         if ($extension) {
             return $extension;
         }
 
-        return $this->_app->extensions->get(App::toKebabCase($name), 'config');
+        return $this->_app->extensions->get(App::toKebabCase($name), support: 'config');
     }
 
     /**

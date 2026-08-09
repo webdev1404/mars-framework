@@ -12,6 +12,7 @@ use Mars\App\HiddenProperty;
 use Mars\Entity;
 use Mars\Db;
 use Mars\Db\Sql\Sql;
+use Mars\System\Plugins;
 
 /**
  * The Items Trait
@@ -30,6 +31,14 @@ trait ItemsTrait
     #[HiddenProperty]
     protected Db $db {
         get => $this->app->db;
+    }
+
+    /**
+     * @var Plugins $plugins The plugins object. Alias for $this->app->plugins
+     */
+    #[HiddenProperty]
+    protected Plugins $plugins {
+        get => $this->app->plugins;
     }
 
     /**

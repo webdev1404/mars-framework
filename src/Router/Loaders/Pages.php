@@ -1,6 +1,6 @@
 <?php
 /**
-* The Articles Loader Class
+* The Pages Loader Class
 * @package Mars
 */
 
@@ -9,10 +9,10 @@ namespace Mars\Router\Loaders;
 use Mars\Extensions\Module;
 
 /**
- * The Articles Loader Class
- * Loads the article routes
+ * The Pages Loader Class
+ * Loads the page routes
  */
-class Articles extends Loader
+class Pages extends Loader
 {
     /**
      * @var string $homepage The name of the homepage file
@@ -20,7 +20,7 @@ class Articles extends Loader
     protected string $homepage = 'homepage';
 
     /**
-     * @var string $method The HTTP method for the article routes
+     * @var string $method The HTTP method for the page routes
      */
     protected string $method = 'get';
 
@@ -30,7 +30,7 @@ class Articles extends Loader
      */
     public function load()
     {
-        if (!$this->app->config->routes->articles->autoload) {
+        if (!$this->app->config->routes->pages->autoload) {
             return;
         }
 
@@ -54,35 +54,35 @@ class Articles extends Loader
 
                     //$this->loadName($language, $name, $route);
 
-                    $this->loadHash($this->method, $language, $route, $prefix, $hash, 'article', $name, ['filename' => $filename, 'file' => $file], null);
+                    $this->loadHash($this->method, $language, $route, $prefix, $hash, 'pages', $name, ['filename' => $filename, 'file' => $file], null);
                 }
             }
         }
     }
 
     /**
-     * Returns the list of paths from where to build article routes
+     * Returns the list of paths from where to build page routes
      * @return array The list of paths
      */
     protected function getPaths() : array
     {
         $paths = [];
         foreach ($this->app->modules->getEnabled() as $module_path) {
-            $module_path = $module_path . '/' . Module::DIRS['articles'];
+            $module_path = $module_path . '/' . Module::DIRS['pages'];
             if (is_dir($module_path)) {
                 $paths[] = $module_path;
             }
         }
 
-        $paths[] = $this->app->app_path . '/articles';
+        $paths[] = $this->app->app_path . '/pages';
 
         return $paths;
     }
 
     /**
-     * Returns the list of articles from a path
-     * @param string $path The path where to look for the articles
-     * @return array The list of articles
+     * Returns the list of pages from a path
+     * @param string $path The path where to look for the pages
+     * @return array The list of pages
      */
     protected function getFromPath(string $path) : array
     {

@@ -8,11 +8,10 @@ namespace Mars;
 
 use Mars\App\LazyLoad;
 use Mars\App\LazyLoadProperty;
-use Mars\Cache\Articles;
 use Mars\Cache\Assets;
 use Mars\Cache\Config;
 use Mars\Cache\Data;
-use Mars\Cache\Pages;
+use Mars\Cache\Html;
 use Mars\Cache\Routes;
 use Mars\Cache\Storage;
 use Mars\Cache\Templates;
@@ -71,10 +70,10 @@ class Cache
     public protected(set) Data $data;
 
     /**
-     * @var Pages $pages The Page Cache object
+     * @var Html $html The HTML Cache object
      */
     #[LazyLoadProperty]
-    public protected(set) Pages $pages;
+    public protected(set) Html $html;
 
     /**
      * @var Routes $routes The Routes Cache object

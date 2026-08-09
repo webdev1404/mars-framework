@@ -24,7 +24,7 @@ class Finder
     public protected(set) array $supported_finders = [
         'callable' => \Mars\Router\Finders\Callable_::class,
         'module' => \Mars\Router\Finders\Module::class,
-        'article' => \Mars\Router\Finders\Article::class,
+        'page' => \Mars\Router\Finders\Page::class,
         'template' => \Mars\Router\Finders\Template::class,
     ];
 

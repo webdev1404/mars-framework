@@ -667,7 +667,7 @@ class Html
      */
     protected function canShowCsrf() : bool
     {
-        if ($this->app->cache->pages->can_cache || $this->app->config->accelerator->enable) {
+        if ($this->app->cache->html->can_cache || $this->app->config->accelerator->enable) {
             return false;
         }
 

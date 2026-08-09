@@ -44,7 +44,7 @@ class CSP extends Base
      */
     public function canUseNonce() : bool
     {
-        if ($this->app->config->cache->page->enable || $this->app->config->accelerator->enable) {
+        if ($this->app->config->cache->html->enable || $this->app->config->accelerator->enable) {
             return false;
         }
 
@@ -62,7 +62,7 @@ class CSP extends Base
 
         //disable the use of nonce if the cache or accelerator is enabled, and set unsafe-inline to true in that case
         if ($this->app->config->headers->csp->use_nonce) {
-            if ($this->app->config->cache->page->enable || $this->app->config->accelerator->enable) {
+            if ($this->app->config->cache->html->enable || $this->app->config->accelerator->enable) {
                 $this->app->config->headers->csp->use_nonce = false;
                 $this->app->config->headers->csp->unsafe_inline = true;
 

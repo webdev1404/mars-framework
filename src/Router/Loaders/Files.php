@@ -227,19 +227,19 @@ class Files extends Loader
     }
 
     /**
-     * Handles an article request
+     * Handles a page request
      * @param string|array $routes The route(s)
-     * @param string $article The article's name
+     * @param string $page The page's name
      * @param string|null $name The name of the route
      * @param string|array|null $languages The language to use for the route, if any. If null, will use the default language. If '*', will use all languages
      * @param array $methods The request methods to handle. Default: GET
      * @return static
      */
-    public function article(string|array $routes, string $article, ?string $name = null, string|array|null $languages = null, array $methods = ['get']) : static
+    public function page(string|array $routes, string $page, ?string $name = null, string|array|null $languages = null, array $methods = ['get']) : static
     {
-        $data = ['article' => $article];
+        $data = ['page' => $page];
 
-        return $this->add($routes, null, $methods, $languages, 'article', $data, $name);
+        return $this->add($routes, null, $methods, $languages, 'page', $data, $name);
     }
 
     /**

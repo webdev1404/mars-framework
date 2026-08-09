@@ -246,7 +246,7 @@ class File implements \Stringable
     public function check(?string $open_basedir = null) : static
     {
         if (mb_strlen(basename($this->filename)) > $this->app->config->files->max_chars) {
-            throw new \Exception(App::__('error:file.invalid_maxchars', ['{FILE}' => $this->filename]));
+            throw new \Exception(App::__('error.file.invalid_maxchars', ['{FILE}' => $this->filename]));
         }
 
         $this->checkForInvalidChars();
@@ -269,7 +269,7 @@ class File implements \Stringable
             }
 
             if (!$contains) {
-                throw new \Exception(App::__('error:file.invalid_basedir', ['{FILE}' => $this->filename]));
+                throw new \Exception(App::__('error.file.invalid_basedir', ['{FILE}' => $this->filename]));
             }
         }
 
@@ -310,7 +310,7 @@ class File implements \Stringable
             || str_contains($decoded_filename, '../') || str_contains($decoded_filename, './')
             || str_contains($decoded_filename, '..\\') || str_contains($decoded_filename, '.\\')
             || str_contains($decoded_filename, "\0")) {
-                throw new \Exception(App::__('error:file.invalid_chars', ['{FILE}' => $this->filename]));
+                throw new \Exception(App::__('error.file.invalid_chars', ['{FILE}' => $this->filename]));
             }
 
             $decoded_filename = rawurldecode($decoded_filename);
@@ -400,7 +400,7 @@ class File implements \Stringable
 
         $content = file_get_contents($this->filename);
         if ($content === false) {
-            throw new \Exception(App::__('error:file.read', ['{FILE}' => $this->filename]));
+            throw new \Exception(App::__('error.file.read', ['{FILE}' => $this->filename]));
         }
 
         return $content;
@@ -426,7 +426,7 @@ class File implements \Stringable
 
         $bytes = file_put_contents($this->filename, $content, $flags);
         if ($bytes === false) {
-            throw new \Exception(App::__('error:file.write', ['{FILE}' => $this->filename]));
+            throw new \Exception(App::__('error.file.write', ['{FILE}' => $this->filename]));
         }
 
         $this->exists = true;
@@ -452,7 +452,7 @@ class File implements \Stringable
         $this->app->plugins->run('file.delete', $this);
 
         if (unlink($this->filename) === false) {
-            throw new \Exception(App::__('error:file.delete', ['{FILE}' => $this->filename]));
+            throw new \Exception(App::__('error.file.delete', ['{FILE}' => $this->filename]));
         }
 
         $this->exists = false;
@@ -482,7 +482,7 @@ class File implements \Stringable
         $this->app->plugins->run('file.copy', $this, $destination);
 
         if (copy($this->filename, $destination->filename) === false) {
-            throw new \Exception(App::__('error:file.copy', ['{SOURCE}' => $this->filename, '{DESTINATION}' => $destination->filename]));
+            throw new \Exception(App::__('error.file.copy', ['{SOURCE}' => $this->filename, '{DESTINATION}' => $destination->filename]));
         }
 
         return $destination;
@@ -508,7 +508,7 @@ class File implements \Stringable
         $this->app->plugins->run('file.move', $this, $destination);
 
         if (rename($this->filename, $destination->filename) === false) {
-            throw new \Exception(App::__('error:file.move', ['{SOURCE}' => $this->filename, '{DESTINATION}' => $destination->filename]));
+            throw new \Exception(App::__('error.file.move', ['{SOURCE}' => $this->filename, '{DESTINATION}' => $destination->filename]));
         }
 
         return $destination;

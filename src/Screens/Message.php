@@ -29,6 +29,6 @@ class Message
             return;
         }
 
-        $this->app->theme->render('screens/message', ['title' => $title ?? App::__('message:message'), 'text' => $text]);
+        $this->app->theme->render('screens/message', ['title' => $title ?? App::__('message.message'), 'text' => $text]);
     }
 }

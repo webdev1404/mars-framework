@@ -26,4 +26,19 @@ trait LanguagesTrait
             return $this->languages_path;
         }
     }
+
+    /**
+     * @var array $languages_files The list of language files in the extension
+     */
+    public protected(set) array $languages_files {
+        get {
+            if (isset($this->languages_files)) {
+                return $this->languages_files;
+            }
+
+            $this->languages_files = $this->files_cache_list[static::DIRS['languages']] ?? [];
+
+            return $this->languages_files;
+        }
+    }
 }

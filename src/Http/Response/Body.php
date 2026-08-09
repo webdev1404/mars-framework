@@ -55,17 +55,19 @@ class Body
 
     /**
      * Creates and returns a new Data object based on the passed data type
+     * @param mixed $returned The returned data
+     * @param string $content The content
      * @return Data The created Data object
      */
-    public function create(mixed $return_value, string $content = '') : Data
+    public function create(mixed $returned, string $content = '') : Data
     {
-        if ($return_value !== null) {
-            if ($return_value instanceof Data) {
-                return $return_value;
-            } elseif (is_array($return_value) || is_object($return_value)) {
-                return new JsonData($return_value);
-            } elseif (is_string($return_value)) {
-                return new HtmlData($return_value);
+        if ($returned !== null) {
+            if ($returned instanceof Data) {
+                return $returned;
+            } elseif (is_array($returned) || is_object($returned)) {
+                return new JsonData($returned);
+            } elseif (is_string($returned)) {
+                return new HtmlData($returned);
             }
         }
 

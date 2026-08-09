@@ -1,6 +1,6 @@
 <?php
 /**
-* The Page Cache Class
+* The HTML Cache Class
 * @package Mars
 */
 
@@ -9,13 +9,13 @@ namespace Mars\Cache;
 use Mars\App;
 use Mars\App\LazyLoad;
 use Mars\App\LazyLoadProperty;
-use Mars\Cache\Pages\Headers;
+use Mars\Cache\Html\Headers;
 
 /**
- * The Page Cache Class
- * Class which handles the caching of pages
+ * The HTML Cache Class
+ * Class which handles the caching of HTML pages
  */
-class Pages extends Cacheable
+class Html extends Cacheable
 {
     use LazyLoad;
 
@@ -35,7 +35,7 @@ class Pages extends Cacheable
      * {@inheritDoc}
      */
     public string $driver_name {
-        get => $this->app->config->cache->page->driver;
+        get => $this->app->config->cache->html->driver;
     }
 
     /**
@@ -44,14 +44,14 @@ class Pages extends Cacheable
      */
     protected array $driver_params = [
         false,               // use files cache
-        'cacheable_pages',   // driver type
+        'cacheable_html',   // driver type
     ];
 
     /**
      * @see Cache::$dir
      * {@inheritDoc}
      */
-    public protected(set) string $dir = 'pages';
+    public protected(set) string $dir = 'html';
 
     /**
      * @see Cacheable::$can_hash
@@ -100,13 +100,13 @@ class Pages extends Cacheable
 
             $this->compression = '';
 
-            if ($this->app->config->cache->page->compression->enable) {
+            if ($this->app->config->cache->html->compression->enable) {
                 $encodings = $_SERVER['HTTP_ACCEPT_ENCODING'] ?? '';
                 if ($encodings) {
                     $encodings = explode(',', strtolower($encodings));
                     $encodings = array_map('trim', $encodings);
 
-                    foreach ($this->app->config->cache->page->compression->drivers as $driver) {
+                    foreach ($this->app->config->cache->html->compression->drivers as $driver) {
                         if (!isset($this->content_encoding[$driver])) {
                             continue;
                         }
@@ -171,14 +171,14 @@ class Pages extends Cacheable
     protected Headers $headers;
 
     /**
-     * Builds the page cache object
+     * Builds the html cache object
      * @param App $app The app object
      */
     public function __construct(App $app)
     {
         $this->app = $app;
 
-        if ($this->app->is_cli || !$this->app->config->cache->page->enable || defined('DISABLE_CACHE_PAGE')) {
+        if ($this->app->is_cli || !$this->app->config->cache->html->enable || defined('DISABLE_CACHE_HTML')) {
             return;
         }
         if ($this->app->config->debug->enable || $this->app->config->development->enable) {
@@ -215,7 +215,7 @@ class Pages extends Cacheable
     }
 
     /**
-     * Stores the headers associated with the page in the cache
+     * Stores the headers associated with the html content in the cache
      */
     protected function storeHeaders()
     {
@@ -227,13 +227,13 @@ class Pages extends Cacheable
     }
 
     /**
-     * Stores the page content in the cache
+     * Stores the html content in the cache
      * @param string $content The content to store
      */
     protected function storeContent(string $content)
     {
         if ($this->compression) {
-            $content = $this->app->compression->compressWith($this->compression, $content, $this->app->config->cache->page->compression->level);
+            $content = $this->app->compression->compressWith($this->compression, $content, $this->app->config->cache->html->compression->level);
         }
 
         $this->driver->set($this->filename, $content);
@@ -266,7 +266,7 @@ class Pages extends Cacheable
     }
 
     /**
-     * Cleans the pages cache
+     * Cleans the html cache
      */
     public function clean() : static
     {
@@ -276,7 +276,7 @@ class Pages extends Cacheable
     }
 
     /**
-     * Sends the cached content
+     * Sends the cached html content
      */
     public function send()
     {

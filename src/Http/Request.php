@@ -274,20 +274,20 @@ class Request
     public function canPost(bool $captcha = true, ?string $key = null, ?int $max_attempts = null, ?int $duration = null, bool $all = true) : bool
     {
         if (!$this->is_post) {
-            $this->app->errors->add(App::__('error:request.not_post'));
+            $this->app->errors->add(App::__('error.request.not_post'));
             return false;
         }
 
         $csrf = $this->post->get($this->app->config->html->csrf_name);
         if (!$csrf || !hash_equals($csrf, $this->app->session->csrf)) {
-            $this->app->errors->add(App::__('error:request.invalid_csrf'));
+            $this->app->errors->add(App::__('error.request.invalid_csrf'));
 
             return false;
         }
 
         if ($captcha && $this->app->config->captcha->enable) {
             if (!$this->app->captcha->verify()) {
-                $this->app->errors->add(App::__('error:request.invalid_captcha'));
+                $this->app->errors->add(App::__('error.request.invalid_captcha'));
                 
                 return false;
             }
@@ -298,7 +298,7 @@ class Request
             $duration = $duration ?? $this->app->config->throttle->block_duration;
 
             if ($this->app->throttle->isBlocked($key, $max_attempts, $duration)) {
-                $this->app->errors->add(App::__('error:request.throttled'));
+                $this->app->errors->add(App::__('error.request.throttled'));
 
                 return false;
             }

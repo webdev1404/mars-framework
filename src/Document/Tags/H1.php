@@ -17,6 +17,10 @@ class H1 extends Tag
      */
     public function render()
     {
+        if (!$this->value) {
+            return;
+        }
+        
         echo '<h1>' . $this->app->escape->html($this->value) . '</h1>' . "\n";
     }
 }

@@ -18,6 +18,11 @@ class Languages extends Extensions
     /**
      * @internal
      */
+    protected static array $supports = ['config', 'routes'];
+
+    /**
+     * @internal
+     */
     protected static ?array $list_enabled = null;
 
     /**

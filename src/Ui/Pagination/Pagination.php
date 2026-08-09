@@ -223,7 +223,7 @@ class Pagination
      */
     protected function getFirstLink() : array
     {
-        return $this->getLink(1, App::__('pagination:first'), 'pagination-first');
+        return $this->getLink(1, App::__('pagination.first'), 'pagination-first');
     }
 
     /**
@@ -232,7 +232,7 @@ class Pagination
      */
     protected function getLastLink() : array
     {
-        return $this->getLink($this->total_pages, App::__('pagination:last'), 'pagination-last');
+        return $this->getLink($this->total_pages, App::__('pagination.last'), 'pagination-last');
     }
 
     /**
@@ -241,7 +241,7 @@ class Pagination
      */
     protected function getPreviousLink() : array
     {
-        return $this->getLink($this->current_page - 1, App::__('pagination:previous'),  'pagination-previous');
+        return $this->getLink($this->current_page - 1, App::__('pagination.previous'),  'pagination-previous');
     }
 
     /**
@@ -250,6 +250,6 @@ class Pagination
      */
     protected function getNextLink() : array
     {
-        return $this->getLink($this->current_page + 1, App::__('pagination:next'), 'pagination-next');
+        return $this->getLink($this->current_page + 1, App::__('pagination.next'), 'pagination-next');
     }
 }

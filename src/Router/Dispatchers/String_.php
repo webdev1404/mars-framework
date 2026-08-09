@@ -33,10 +33,10 @@ class String_ extends Dispatcher
         } else {
             if ($method) {
                 ob_start();
-                $ret = call_user_func_array([$controller, $method], $this->app->reflection->getParams([$controller, $method], $params));
+                $returned = call_user_func_array([$controller, $method], $this->app->reflection->getParams([$controller, $method], $params));
                 $content = ob_get_clean();
 
-                return $this->app->response->body->create($ret, $content);
+                return $this->app->response->body->create($returned, $content);
             } else {
                 throw new \Exception("No controller method to handle the route for class: {$class_name}");
             }

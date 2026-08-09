@@ -1,16 +1,16 @@
 <?php
 /**
-* The Page Headers Cache Class
+* The HTML Headers Cache Class
 * @package Mars
 */
 
-namespace Mars\Cache\Pages;
+namespace Mars\Cache\Html;
 
 use Mars\Cache\Cacheable;
 
 /**
- * The Page Headers Cache Class
- * Class which handles the caching of page headers
+ * The HTML Headers Cache Class
+ * Class which handles the caching of html content headers
  */
 class Headers extends Cacheable
 {
@@ -23,7 +23,7 @@ class Headers extends Cacheable
     /**
      * @see Cacheable::$driver_name
      * {@inheritDoc}
-     * It will use memcache if the page cache driver is memcache, otherwise it will use serialized
+     * It will use memcache if the html cache driver is memcache, otherwise it will use serialized
      */
     public string $driver_name {
         get {
@@ -31,7 +31,7 @@ class Headers extends Cacheable
                 return $this->driver_name;
             }
 
-            $this->driver_name = $this->app->cache->pages->driver_name == 'memcache' ? 'memcache' : 'serialized';
+            $this->driver_name = $this->app->cache->html->driver_name == 'memcache' ? 'memcache' : 'serialized';
 
             return $this->driver_name;
         }
@@ -43,14 +43,14 @@ class Headers extends Cacheable
      */
     protected array $driver_params = [
         false,                       // use files cache
-        'cacheable_pages_headers',   // driver type
+        'cacheable_html_headers',   // driver type
     ];
 
     /**
      * @see Cache::$dir
      * {@inheritDoc}
      */
-    public protected(set) string $dir = 'pages';
+    public protected(set) string $dir = 'html';
 
     /**
      * @see Cacheable::$can_hash

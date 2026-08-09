@@ -255,12 +255,12 @@ class View
         $method = $this->getMethodName($method);
 
         if ($this->canDispatch($method)) {
-            $ret = $this->$method();
+            $returned = $this->$method();
 
-            if ($ret === false) {
+            if ($returned === false) {
                 return null;
-            } elseif (is_string($ret)) {
-                return $ret;
+            } elseif (is_string($returned)) {
+                return $returned;
             }
         }
 

@@ -1,6 +1,6 @@
 <?php
 /**
-* The Article Content Class
+* The Page Content Class
 * @package Mars
 */
 
@@ -9,10 +9,10 @@ namespace Mars\Content;
 use Mars\Http\Response\Body\Data\Data;
 
 /**
- * The Article Content Class
- * Outputs the content of an article from app/articles
+ * The Page Content Class
+ * Outputs the content of a page from app/pages
  */
-class Article extends Content implements ContentInterface
+class Page extends Content implements ContentInterface
 {
     /**
      * @see ContentInterface::run()
@@ -23,7 +23,7 @@ class Article extends Content implements ContentInterface
         $filename = $this->data['filename'];
 
         if (!str_starts_with($filename, '/')) {
-            $filename = $this->app->app_path . '/articles/' . $filename . '.php';
+            $filename = $this->app->app_path . '/pages/' . $filename . '.php';
         }
 
         $response = $this->app->response->body->create(null, $this->app->theme->getTemplateByFilename($filename, vars: $vars));
@@ -35,12 +35,12 @@ class Article extends Content implements ContentInterface
     }
 
     /**
-     * Sets the title for the article
+     * Sets the title for the page
      */
     protected function setTitle()
     {
         if ($this->app->document->title->value) {
-            //do nothing if the title has already been set in the article template
+            //do nothing if the title has already been set in the page template
             return;
         }
 
@@ -58,12 +58,12 @@ class Article extends Content implements ContentInterface
     }
 
     /**
-     * Sets the breadcrumbs for the article
+     * Sets the breadcrumbs for the page
      */
     protected function setBreadcrumbs()
     {
         if ($this->app->ui->breadcrumbs->breadcrumbs) {
-            //do nothing if the breadcrumbs have already been set in the article template
+            //do nothing if the breadcrumbs have already been set in the page template
             return;
         }
 
