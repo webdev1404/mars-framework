@@ -135,16 +135,16 @@ final class FilterTest extends Base
         $this->assertEquals($this->app->filter->remove(['a', 'b', 'c', '12'], ['a', '12', 'b', 'c']), []);
     }
 
-    public function testAllowed()
+    public function testList()
     {
         $filter = $this->app->filter;
 
-        $this->assertEqualsCanonicalizing($this->app->filter->allowed(['a', 'b', 'd', 12, 13], ['a', 'b', 'c', '12']), ['a', 'b', 12]);
-        $this->assertEqualsCanonicalizing($this->app->filter->allowed(['a', 'b', 'd', 12, 13], 'd'), ['d']);
-        $this->assertEqualsCanonicalizing($this->app->filter->allowed(['a', 'b', 'd', 12, 13], 'z'), []);
+        $this->assertEqualsCanonicalizing($this->app->filter->list(['a', 'b', 'd', 12, 13], ['a', 'b', 'c', '12']), ['a', 'b', 12]);
+        $this->assertEqualsCanonicalizing($this->app->filter->list(['a', 'b', 'd', 12, 13], 'd'), ['d']);
+        $this->assertEqualsCanonicalizing($this->app->filter->list(['a', 'b', 'd', 12, 13], 'z'), []);
 
-        $this->assertEquals($this->app->filter->allowed('b', ['a', 'b', 'c']), 'b');
-        $this->assertEquals($this->app->filter->allowed('b', 'b'), 'b');
-        $this->assertEquals($this->app->filter->allowed('b', ['a'], 'c'), 'c');
+        $this->assertEquals($this->app->filter->list('b', ['a', 'b', 'c']), 'b');
+        $this->assertEquals($this->app->filter->list('b', 'b'), 'b');
+        $this->assertEquals($this->app->filter->list('b', ['a'], 'c'), 'c');
     }
 }

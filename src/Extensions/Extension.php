@@ -32,6 +32,7 @@ abstract class Extension
         'templates' => 'templates',
         'setup' => 'setup',
         'src' => 'src',
+        'sitemap' => 'sitemap'
     ];
 
     /**

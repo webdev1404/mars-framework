@@ -82,4 +82,15 @@ class Body
     {
         return $this->{$data->type}->send($data->content);
     }
+
+    /**
+     * Redirects the user to a given URL
+     * @param string $url The URL to redirect to
+     */
+    public function redirect(string $url)
+    {
+        $body = $this->app->request->is_json ? $this->json : $this->html;
+
+        $body->redirect($url);
+    }
 }

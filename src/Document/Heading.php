@@ -6,7 +6,7 @@
 
 namespace Mars\Document;
 
-use \Mars\Document\Tags\H1;
+use Mars\Document\Tags\H1;
 
 /**
  * The Heading Class

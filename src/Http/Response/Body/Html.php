@@ -17,7 +17,7 @@ class Html implements BodyInterface
     use Kernel;
 
     /**
-     * @see ResponseInterface::output()
+     * @see BodyInterface::send()
      * {@inheritDoc}
      */
     public function send(mixed $content) : string
@@ -25,5 +25,15 @@ class Html implements BodyInterface
         echo $content;
 
         return $content;
+    }
+
+    /**
+     * @see BodyInterface::redirect()
+     * {@inheritDoc}
+     */
+    public function redirect(string $url)
+    {
+        header('Location: ' . $url);
+        die;
     }
 }

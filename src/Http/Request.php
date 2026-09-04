@@ -14,7 +14,7 @@ use Mars\Http\Request\Input;
 use Mars\Http\Request\Get;
 use Mars\Http\Request\Post;
 use Mars\Http\Request\Request as RequestAll;
-use Mars\Http\Request\Cookies;
+use Mars\Http\Request\Cookie;
 use Mars\Http\Request\Server;
 use Mars\Http\Request\Env;
 use Mars\Http\Request\Files;
@@ -54,10 +54,10 @@ class Request
     public Post $post;
 
     /**
-     * @var Cookies $cookies Object containing the cookie data
+     * @var Cookie $cookie Object containing the cookie data
      */
     #[LazyLoadProperty]
-    public Cookies $cookies;
+    public Cookie $cookie;
 
     /**
      * @var Server $server Object containing the server data

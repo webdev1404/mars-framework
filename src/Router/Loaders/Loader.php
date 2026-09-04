@@ -46,12 +46,13 @@ abstract class Loader extends Base
      * @param string $hash The hash to append
      * @param string $type The route type
      * @param string|null $name The route name
+     * @param bool $sitemap Whether to include the route in the sitemap
      * @param array $data Route's data
      * @param string|callable|array $action The route action
      */
-    protected function loadHash(string $method, string $language, string $route, string $prefix, string $hash, string $type, ?string $name, array $data, null|string|callable|array $action)
+    protected function loadHash(string $method, string $language, string $route, string $prefix, string $hash, string $type, ?string $name, bool $sitemap, array $data, null|string|callable|array $action)
     {
-        $this->routes->hashes[$method][$language][$prefix][$hash] = $this->routes->getKey($this->getData($route, $type, $name, $data));
+        $this->routes->hashes[$method][$language][$prefix][$hash] = $this->routes->getKey($this->getData($route, $type, $language, $name, $sitemap, $data));
     }
 
     /**
@@ -74,8 +75,8 @@ abstract class Loader extends Base
      * @param array $data Route's data
      * @return array The route data
      */
-    protected function getData(string $route, string $type, ?string $name, array $data) : array
+    protected function getData(string $route, string $type, string $language, ?string $name, bool $sitemap, array $data) : array
     {
-        return ['route' => $route, 'type' => $type, 'name' => $name, 'preg' => $this->getContainsPreg($route), 'data' => $data];
+        return ['route' => $route, 'type' => $type, 'language' => $language, 'name' => $name, 'sitemap' => $sitemap, 'preg' => $this->getContainsPreg($route), 'data' => $data];
     }
 }

@@ -318,6 +318,19 @@ class Sql implements \Stringable
     }
 
     /**
+     * Builds a WHERE clause with OR conditions
+     * @param array $where The where conditions. The format must be: column => value
+     * @param string $delimitator The delimitator to use between parts. By default AND is used.
+     * @return static
+     */
+    public function orWhere(array $where, string $delimitator = 'AND') : static
+    {
+        $this->sql.= $this->driver->orWhere($where, $delimitator);
+
+        return $this;
+    }
+
+    /**
      * Returns a WHERE IN(...) clause
      * @param string $column The column
      * @param array $values Array with the elements to place in the IN list

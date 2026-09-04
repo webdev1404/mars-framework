@@ -15,6 +15,7 @@ use Mars\App;
 trait Kernel
 {
     use Info;
+    use Serialize;
 
     /**
      * @var App $app The app object
@@ -39,30 +40,5 @@ trait Kernel
     public function __construct(?App $app = null)
     {
         $this->app = $app;
-    }
-
-    /**
-     * Unsets the app property when serializing
-     */
-    public function __serialize(): array
-    {
-        $data = get_object_vars($this);
-
-        unset($data['app']);
-
-        return $data;
-    }
-
-    /**
-     * Sets the app property when unserializing
-     * @param array $data The data to unserialize
-     */
-    public function __unserialize(array $data): void
-    {
-        foreach ($data as $key => $value) {
-            $this->$key = $value;
-        }
-
-        $this->app = App::obj();
     }
 }

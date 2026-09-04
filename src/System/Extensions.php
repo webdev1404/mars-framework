@@ -75,6 +75,23 @@ class Extensions implements \IteratorAggregate
     }
 
     /**
+     * Gets all managers that support a specific feature
+     * @param string $support The required support. Eg: 'config'
+     * @return BaseExtensions[] The list of manager instances that support the feature
+     */
+    public function getManagers(string $support) : array
+    {
+        $managers = [];
+        foreach ($this->list as $type => $manager) {
+            if ($manager->supports($support)) {
+                $managers[] = $manager;
+            }
+        }
+
+        return $managers;
+    }
+
+    /**
      * Returns the type of a given extension name
      * @param string $name The name of the extension
      * @param string $support The required support. Eg: 'config'
@@ -131,7 +148,7 @@ class Extensions implements \IteratorAggregate
      * @param string $support The required support. Eg: 'config'
      * @return Extension|null The extension instance or null if not found
      */
-    public function get(string $name, string $type = '',string $support = '') : ?Extension
+    public function get(string $name, string $type = '', string $support = '') : ?Extension
     {
         if (!isset($this->enabled[$name])) {
             return null;

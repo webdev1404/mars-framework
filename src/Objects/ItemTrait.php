@@ -390,7 +390,7 @@ trait ItemTrait
      * @see \Mars\Objects\EntityTrait::bind()
      * {@inheritDoc}
      */
-    public function bind(array|object $data = [], ?array $ignore_columns = null, ?string $ignore_value = null, ?array $properties = null) : static
+    public function bind(array|object $data = [], array $array_filters = [], ?array $ignore_columns = null, ?string $ignore_value = null, ?array $properties = null) : static
     {
         if (!$this->loaded) {
             $this->load();
@@ -403,7 +403,7 @@ trait ItemTrait
             $ignore_columns = [$id_field];
         }
 
-        return parent::bind($data, $ignore_columns, $ignore_value, $properties);
+        return parent::bind($data, $array_filters, $ignore_columns, $ignore_value, $properties);
     }
 
     /**
@@ -411,13 +411,13 @@ trait ItemTrait
      * @see \Mars\Objects\EntityTrait::bindList()
      * {@inheritDoc}
      */
-    public function bindList(array $properties, array|object $data = [], ?string $ignore_value = null) : static
+    public function bindList(array $properties, array|object $data = [], array $array_filters = [], ?string $ignore_value = null) : static
     {
         if (!$this->loaded) {
             $this->load();
         }
 
-        return parent::bind($data, null, $ignore_value, $properties);
+        return parent::bind($data, $array_filters, null, $ignore_value, $properties);
     }
 
     /**

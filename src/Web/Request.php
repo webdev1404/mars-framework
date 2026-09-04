@@ -38,10 +38,18 @@ class Request
     public bool $verify_ssl = true;
 
     /**
-     * @var string $useragent The useragent used when making requests
+     * @var string $user_agent The user_agent used when making requests
      */
-    public string $useragent {
-        get => $this->app->useragent;
+    public string $user_agent {
+        get {
+            if (isset($this->user_agent)) {
+                return $this->user_agent;
+            }
+
+            $this->user_agent = $this->app->user_agent;
+
+            return $this->user_agent;
+        }
     }
 
     /**
@@ -70,7 +78,7 @@ class Request
     }
 
     /**
-     * Sets the basic curl options [header/useragent/followlocation]
+     * Sets the basic curl options [header/user_agent/followlocation]
      * @param string $url The url to fetch
      * @param array $options Curl options, if any
      * @return resource The curl handle
@@ -84,13 +92,13 @@ class Request
         $cookie_file = $options['cookie_file'] ?? '';
         $follow_location = $options['follow_location'] ?? $this->follow_location;
         $show_headers = $options['show_headers'] ?? $this->show_headers;
-        $useragent = $options['useragent'] ?? $this->useragent;
+        $user_agent = $options['user_agent'] ?? $this->user_agent;
         $timeout = $options['timeout'] ?? $this->timeout;
         $verify_ssl = $options['verify_ssl'] ?? $this->verify_ssl;
         $custom_request = $options['custom_request'] ?? '';
 
         unset($options['headers'], $options['referer'], $options['cookie_file'], $options['follow_location'], $options['show_headers'],
-            $options['useragent'], $options['timeout'], $options['custom_request'], $options['verify_ssl']);
+            $options['user_agent'], $options['timeout'], $options['custom_request'], $options['verify_ssl']);
 
         $ch = curl_init();
 
@@ -113,8 +121,8 @@ class Request
             $curl_options[CURLOPT_COOKIEFILE] = $cookie_file;
             $curl_options[CURLOPT_COOKIEJAR] = $cookie_file;
         }
-        if ($useragent) {
-            $curl_options[CURLOPT_USERAGENT] = $useragent;
+        if ($user_agent) {
+            $curl_options[CURLOPT_USERAGENT] = $user_agent;
         }
         if ($custom_request) {
             $curl_options[CURLOPT_CUSTOMREQUEST] = $custom_request;

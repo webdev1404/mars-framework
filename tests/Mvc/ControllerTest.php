@@ -78,9 +78,9 @@ final class ControllerTest extends Base
         $this->assertSame('my default', $data->content);
 
         $data = $controller->dispatch('withSuccess');
-        $this->assertSame('my default', $data->content);
+        $this->assertSame('with successmy default', $data->content);
 
         $data = $controller->dispatch('withError');
-        $this->assertSame('my default', $data->content);
+        $this->assertSame('with errormy default', $data->content);
     }
 }

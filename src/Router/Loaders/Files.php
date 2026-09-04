@@ -103,13 +103,14 @@ class Files extends Loader
      * @param string|callable|array $actions The action(s). Can be a closure or a string (class name). If array will register multiple actions, one for each language
      * @param string|null $name The name of the route
      * @param string|array|null $languages The language to use for the route, if any. If null, will use the default language. If '*', will use all languages
+     * @param bool $sitemap Whether to include the route in the sitemap
      * @return static
      */
-    public function all(string $route, string|callable|array $actions, ?string $name = null, string|array|null $languages = null) : static
+    public function all(string $route, string|callable|array $actions, ?string $name = null, string|array|null $languages = null, bool $sitemap = true) : static
     {
         $data = ['filename' => $this->current_filename];
 
-        $this->add($route, $actions, static::ALLOWED_METHODS, $languages, 'callable', $data, $name);
+        $this->add($route, $actions, static::ALLOWED_METHODS, $languages, 'callable', $data, $name, $sitemap);
 
         return $this;
     }
@@ -120,13 +121,14 @@ class Files extends Loader
      * @param string|callable|array $actions The action(s). Can be a closure or a string (class name). If array will register multiple actions, one for each language
      * @param string|null $name The name of the route
      * @param string|array|null $languages The language to use for the route, if any. If null, will use the default language. If '*', will use all languages
+     * @param bool $sitemap Whether to include the route in the sitemap
      * @return static
      */
-    public function get(string|array $routes, string|callable|array $actions, ?string $name = null, string|array|null $languages = null) : static
+    public function get(string|array $routes, string|callable|array $actions, ?string $name = null, string|array|null $languages = null, bool $sitemap = true) : static
     {
         $data = ['filename' => $this->current_filename];
         
-        return $this->add($routes, $actions, 'get', $languages, 'callable', $data, $name);
+        return $this->add($routes, $actions, 'get', $languages, 'callable', $data, $name, $sitemap);
     }
 
     /**
@@ -141,7 +143,7 @@ class Files extends Loader
     {
         $data = ['filename' => $this->current_filename];
         
-        return $this->add($routes, $actions, 'post', $languages, 'callable', $data, $name);
+        return $this->add($routes, $actions, 'post', $languages, 'callable', $data, $name, false);
     }
 
     /**
@@ -156,7 +158,7 @@ class Files extends Loader
     {
         $data = ['filename' => $this->current_filename];
         
-        return $this->add($routes, $actions, 'put', $languages, 'callable', $data, $name);
+        return $this->add($routes, $actions, 'put', $languages, 'callable', $data, $name, false);
     }
 
     /**
@@ -171,22 +173,23 @@ class Files extends Loader
     {
         $data = ['filename' => $this->current_filename];
 
-        return $this->add($routes, $actions, 'delete', $languages, 'callable', $data, $name);
+        return $this->add($routes, $actions, 'delete', $languages, 'callable', $data, $name, false);
     }
 
     /**
      * Handles multiple routes for a specific language
      * @param string $language The language code
      * @param array $routes The routes to handle
+     * @param bool $sitemap Whether to include the route in the sitemap
      * @param array $methods The request methods to handle. Default: GET
      * @return static
      */
-    public function lang(string $language, array $routes, array $methods = ['get']) : static
+    public function lang(string $language, array $routes, bool $sitemap = true, array $methods = ['get']) : static
     {
         $data = ['filename' => $this->current_filename];
 
         foreach ($routes as $route => $action) {
-            $this->add($route, [$language => $action], $methods, $language, 'callable', $data);
+            $this->add($route, [$language => $action], $methods, $language, 'callable', $data, null, $sitemap);
         }
 
         return $this;
@@ -200,14 +203,15 @@ class Files extends Loader
      * @param string|null $name The name of the route
      * @param array $params The params to pass to the module, if any
      * @param string|array|null $languages The language to use for the route, if any. If null, will use the default language. If '*', will use all languages
+     * @param bool $sitemap Whether to include the route in the sitemap
      * @param array $methods The request methods to handle. Default: GET, POST
      * @return static
      */
-    public function module(string|array $routes, string $module, string|array $action, ?string $name = null, array $params = [], string|array|null $languages = '*', array $methods = ['get', 'post']) : static
+    public function module(string|array $routes, string $module, string|array $action, ?string $name = null, array $params = [], string|array|null $languages = '*', bool $sitemap = true, array $methods = ['get', 'post']) : static
     {
         $data = ['name' => $module, 'action' => $action, 'params' => $params];
 
-        return $this->add($routes, null, $methods, $languages, 'module', $data, $name);
+        return $this->add($routes, null, $methods, $languages, 'module', $data, $name, $sitemap);
     }
     
     /**
@@ -216,14 +220,15 @@ class Files extends Loader
      * @param string $template The template's name
      * @param string|null $name The name of the route
      * @param string|array|null $languages The language to use for the route, if any. If null, will use the default language. If '*', will use all languages
+     * @param bool $sitemap Whether to include the route in the sitemap
      * @param array $methods The request methods to handle. Default: get
      * @return static
      */
-    public function template(string|array $routes, string $template, ?string $name = null, string|array|null $languages = '*', array $methods = ['get']) : static
+    public function template(string|array $routes, string $template, ?string $name = null, string|array|null $languages = '*', bool $sitemap = true, array $methods = ['get']) : static
     {
         $data = ['template' => $template];
 
-        return $this->add($routes, null, $methods, $languages, 'template', $data, $name);
+        return $this->add($routes, null, $methods, $languages, 'template', $data, $name, $sitemap);
     }
 
     /**
@@ -232,14 +237,15 @@ class Files extends Loader
      * @param string $page The page's name
      * @param string|null $name The name of the route
      * @param string|array|null $languages The language to use for the route, if any. If null, will use the default language. If '*', will use all languages
+     * @param bool $sitemap Whether to include the route in the sitemap
      * @param array $methods The request methods to handle. Default: GET
      * @return static
      */
-    public function page(string|array $routes, string $page, ?string $name = null, string|array|null $languages = null, array $methods = ['get']) : static
+    public function page(string|array $routes, string $page, ?string $name = null, string|array|null $languages = null, bool $sitemap = true, array $methods = ['get']) : static
     {
         $data = ['page' => $page];
 
-        return $this->add($routes, null, $methods, $languages, 'page', $data, $name);
+        return $this->add($routes, null, $methods, $languages, 'page', $data, $name, $sitemap);
     }
 
     /**
@@ -283,11 +289,12 @@ class Files extends Loader
      * @param string $type The route type
      * @param array $data Route's data
      * @param string|null $name The name of the route
+     * @param bool $sitemap Whether to include the route in the sitemap
      * @return static
      */
-    protected function add(string|array $routes, string|callable|array|null $actions, string|array $method, string|array|null $languages, string $type, array $data, ?string $name = null) : static
+    protected function add(string|array $routes, string|callable|array|null $actions, string|array $method, string|array|null $languages, string $type, array $data, ?string $name = null, bool $sitemap = true) : static
     {
-        $this->addHashes($routes, $actions, $languages, $method, $type, $data, $name);
+        $this->addHashes($routes, $actions, $languages, $method, $type, $data, $name, $sitemap);
 
         return $this;
     }
@@ -301,8 +308,9 @@ class Files extends Loader
      * @param string $type The route type
      * @param array $data Route's data
      * @param string|null $name The name of the route
+     * @param bool $sitemap Whether to include the route in the sitemap
      */
-    protected function addHashes(string|array $routes, string|callable|array|null $actions, string|array|null $languages, string|array $methods, string $type, array $data = [], ?string $name = null) : void
+    protected function addHashes(string|array $routes, string|callable|array|null $actions, string|array|null $languages, string|array $methods, string $type, array $data = [], ?string $name = null, bool $sitemap = true) : void
     {
         $routes_list = (array)$routes;
         $methods = $this->getMethods($methods);
@@ -337,7 +345,7 @@ class Files extends Loader
                         $this->loadName($language, $name, $route);
                     }
 
-                    $this->loadHash($method, $language, $route, $prefix, $hash, $type, $name, $data, $action);
+                    $this->loadHash($method, $language, $route, $prefix, $hash, $type, $name, $sitemap, $data, $action);
                 }
             }
         }

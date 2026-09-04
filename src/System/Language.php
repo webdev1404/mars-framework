@@ -199,7 +199,7 @@ class Language extends BaseLanguage
                 return $this->url;
             }
 
-            $this->url = $this->driver->getUrl($this->code);
+            $this->url = $this->getUrlByCode($this->code);
 
             return $this->url;
         }
@@ -269,6 +269,23 @@ class Language extends BaseLanguage
                 $this->$property = $this->parent->$property;
             }
         }
+    }
+
+    /**
+     * Returns the URL for the given language code
+     * @param string $code The language code
+     * @return string The URL for the given language code
+     */
+    public function getUrlByCode(string $code) : string
+    {
+        static $urls = [];
+        if (isset($urls[$code])) {
+            return $urls[$code];
+        }
+
+        $urls[$code] = $this->driver->getUrl($code);
+
+        return $urls[$code];
     }
 
     /**
@@ -443,7 +460,7 @@ class Language extends BaseLanguage
     }
 
     /**
-     * Returns the list of filenames for a given extension 
+     * Returns the list of filenames for a given extension
      * @param string $extension The name of the extension
      * @param string $file The name of the file
      * @return array The list of filenames

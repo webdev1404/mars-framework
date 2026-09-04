@@ -440,6 +440,9 @@ return [
     // bool If true, will automatically load all the pages from the app/pages folders as routes
     'routes.pages.autoload' => true,
 
+    // bool If true, will include the pages in the sitemap
+    'routes.pages.sitemap' => true,
+
 
     // string The name of the CSRF hidden field
     'html.csrf_name' => 'csrf-token',
@@ -484,6 +487,21 @@ return [
 
     // int The number of items that should be displayed on each page
     'pagination.items_per_page' => 30,
+
+
+    // Default change frequency for sitemap entries
+    'sitemap.change_frequency' => 'weekly',
+
+    // Default priority for sitemap entries
+    'sitemap.priority' => 0.5,
+
+    // The types of routes we'll include in the sitemap and the data for each
+    'sitemap.routes.types' => [
+        'page' => ['change_frequency' => 'weekly', 'priority' => 0.5],
+        'module' => ['change_frequency' => 'weekly', 'priority' => 0.5],
+        'template' => ['change_frequency' => 'weekly', 'priority' => 0.5],
+        'callable' => ['change_frequency' => 'weekly', 'priority' => 0.5]
+    ],
 
 
     // bool If true, the images will be optimized when processed/uploaded

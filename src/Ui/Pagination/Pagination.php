@@ -241,7 +241,7 @@ class Pagination
      */
     protected function getPreviousLink() : array
     {
-        return $this->getLink($this->current_page - 1, App::__('pagination.previous'),  'pagination-previous');
+        return $this->getLink($this->current_page - 1, App::__('pagination.previous'), 'pagination-previous');
     }
 
     /**

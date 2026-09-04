@@ -1,8 +1,9 @@
 <?php
+
 /**
-* The Session Class
-* @package Mars
-*/
+ * The Session Class
+ * @package Mars
+ */
 
 namespace Mars;
 
@@ -26,7 +27,7 @@ class Session
         'db' => \Mars\Session\Db::class,
         'memcache' => \Mars\Session\Memcache::class
     ];
-    
+
     /**
      * @var Drivers $drivers The drivers object
      */
@@ -81,7 +82,7 @@ class Session
      * Destroys the session and unsets all session variables
      * @return static
      */
-    public function destroy() : static
+    public function destroy(): static
     {
         $this->driver->delete();
 
@@ -92,7 +93,7 @@ class Session
      * Returns the session id
      * @return string The session id
      */
-    public function getId() : string
+    public function getId(): string
     {
         return $this->driver->getId();
     }
@@ -101,7 +102,7 @@ class Session
      * Regenerates the session id
      * @return string The new session id
      */
-    public function regenerateId() : string
+    public function regenerateId(): string
     {
         return $this->driver->regenerateId();
     }
@@ -111,7 +112,7 @@ class Session
      * @param string $name The name of the var
      * @return bool Returns true if $_SESSION[$name] is set, false otherwise
      */
-    public function isSet(string $name) : bool
+    public function isSet(string $name): bool
     {
         return $this->driver->isSet($name);
     }
@@ -123,7 +124,7 @@ class Session
      * @param mixed $default The return value, if $_SESSION[$name] isn't set
      * @return mixed Will return null if the session is not enabled
      */
-    public function get(string $name, bool $unserialize = false, mixed $default = null) : mixed
+    public function get(string $name, bool $unserialize = false, mixed $default = null): mixed
     {
         return $this->driver->get($name, $unserialize, $default);
     }
@@ -135,7 +136,7 @@ class Session
      * @param bool $serialize If true, will serialize the value
      * @return static
      */
-    public function set(string $name, mixed $value, bool $serialize = false) : static
+    public function set(string $name, mixed $value, bool $serialize = false): static
     {
         $this->driver->set($name, $value, $serialize);
 
@@ -147,9 +148,65 @@ class Session
      * @param string $name The name of the var
      * @return static
      */
-    public function unset(string $name) : static
+    public function unset(string $name): static
     {
         $this->driver->unset($name);
+
+        return $this;
+    }
+
+    /**
+     * Flashes an alert to the session
+     * @param string $type The type of the alert (error, message, info, warning)
+     * @param string $alert The alert message
+     * @return static
+     */
+    public function flash(string $type, string $alert): static
+    {
+        $alerts = $this->get('flash-alerts', false, []);
+        if (!isset($alerts[$type])) {
+            $alerts[$type] = [];
+        }
+
+        $alerts[$type][] = $alert;
+
+        $this->set('flash-alerts', $alerts);
+
+        return $this;
+    }
+
+    /**
+     * Flashes the alerts and resets the alerts
+     * @return static
+     */
+    public function flashes(): static
+    {
+        $alerts = $this->get('flash-alerts');
+        if (!$alerts) {
+            return $this;
+        }
+
+        $messages = $alerts['message'] ?? [];
+        if ($messages) {
+            $this->app->messages->add($messages);
+        }
+
+        $errors = $alerts['error'] ?? [];
+        if ($errors) {
+            $this->app->errors->add($errors);
+        }
+
+        $warnings = $alerts['warning'] ?? [];
+        if ($warnings) {
+            $this->app->warnings->add($warnings);
+        }
+
+        $infos = $alerts['info'] ?? [];
+        if ($infos) {
+            $this->app->infos->add($infos);
+        }
+
+        $this->unset('flash-alerts');
 
         return $this;
     }

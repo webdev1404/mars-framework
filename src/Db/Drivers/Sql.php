@@ -405,13 +405,22 @@ abstract class Sql implements SqlInterface
     }
 
     /**
+     * @see SqlInterface::orWhere()
+     * {@inheritDoc}
+     */
+    public function orWhere(array $where, string $delimitator = 'AND') : string
+    {
+        return $this->getWhere('OR ') . '(' . $this->getConditions($where, $delimitator) . ') ';
+    }
+
+    /**
      * Starts the WHERE clause
      * @return string
      */
-    protected function getWhere() : string
+    protected function getWhere(string $delimitator = '') : string
     {
         if ($this->where) {
-            return ' ';
+            return $delimitator;
         }
 
         $this->where = true;

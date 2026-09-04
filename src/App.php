@@ -537,7 +537,7 @@ class App
                 return $this->ip;
             }
 
-            $this->ip = '';
+            $this->ip = '127.0.0.1';
             if ($this->is_web) {
                 $this->ip = $_SERVER['REMOTE_ADDR'];
 
@@ -558,17 +558,17 @@ class App
     }
 
     /**
-     * @var string $useragent The useragent
+     * @var string $user_agent The user agent
      */
-    public protected(set) string $useragent {
+    public protected(set) string $user_agent {
         get {
-            if (isset($this->useragent)) {
-                return $this->useragent;
+            if (isset($this->user_agent)) {
+                return $this->user_agent;
             }
 
-            $this->useragent = $_SERVER['HTTP_USER_AGENT'] ?? '';
+            $this->user_agent = $_SERVER['HTTP_USER_AGENT'] ?? '';
 
-            return $this->useragent;
+            return $this->user_agent;
         }
     }
 
@@ -701,7 +701,7 @@ class App
 
             $this->is_homepage = false;
             if ($this->is_web) {
-                if ($this->url == $this->base_url) {
+                if ($this->url == $this->home) {
                     $this->is_homepage = true;
                 } elseif ($this->url == $this->base_url . '/index.php') {
                     $this->is_homepage = true;
@@ -1055,16 +1055,11 @@ class App
 
     /**
      * Redirects the user to the specified page
-     * @param string $url The url where the user will be redirected
+     * @param string|null $url The url where the user will be redirected
      */
-    public function redirect(string $url = '')
+    public function redirect(?string $url = null)
     {
-        if (!$url) {
-            $url = $this->base_url . '/';
-        }
-
-        header('Location: ' . $url);
-        die;
+        $this->response->redirect($url);
     }
 
     /**********************UTILS METHODS***************************************/
@@ -1171,6 +1166,31 @@ class App
     public static function getMethod(string $str) : string
     {
         return static::toCamelCase($str);
+    }
+
+    /**
+     * Gets all PHP classes in a directory
+     * @param string $path The directory path to search for PHP classes
+     * @param string $base_namespace The base namespace for the classes
+     * @param bool $recursive Whether to search directories recursively
+     * @return array An associative array of class names and their file paths
+     */
+    public function getClasses(string $path, string $base_namespace, bool $recursive = true) : array
+    {
+        $classes = [];
+
+        $filenames = $this->dir->getFilesSorted($path, true, true, [], ['php']);
+
+        foreach ($filenames as $filename) {
+            $name = str_ireplace([$path, '.php'], '', $filename);
+            $name = str_replace('/', '\\', $name);
+
+            $namespace = $base_namespace . $name;
+
+            $classes[$namespace] = $filename;
+        }
+
+        return $classes;
     }
     
     /********************** DEBUG FUNCTIONS ***************************************/

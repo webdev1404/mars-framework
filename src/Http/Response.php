@@ -11,7 +11,7 @@ use Mars\App\Kernel;
 use Mars\App\Lazyload;
 use Mars\App\LazyLoadProperty;
 use Mars\Http\Response\Body;
-use Mars\Http\Response\Cookies;
+use Mars\Http\Response\Cookie;
 use Mars\Http\Response\Headers;
 use Mars\Http\Response\Body\Data\Data;
 
@@ -37,10 +37,10 @@ class Response
     public Body $body;
 
     /**
-     * @var Cookies $cookies The cookies object
+     * @var Cookie $cookie The cookie object
      */
     #[LazyLoadProperty]
-    public Cookies $cookies;
+    public Cookie $cookie;
 
     /**
      * Builds the Response object
@@ -62,5 +62,15 @@ class Response
         $this->headers->send();
 
         return $this->body->send($data);
+    }
+
+    /**
+     * Redirects the user to a given URL
+     */
+    public function redirect(?string $url = null)
+    {
+        $url = $url ? $this->app->url->get($url) : $this->app->url->root;
+
+        $this->body->redirect($url);
     }
 }

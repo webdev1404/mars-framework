@@ -34,6 +34,11 @@ class Menu
     public protected(set) string $type = '';
 
     /**
+     * @var bool $can_cache Whether to use cache or not
+     */
+    public bool $can_cache = true;
+
+    /**
      * Menu Constructor
      * @param string $type The Menu's Type
      * @param App $app The App Instance
@@ -198,7 +203,7 @@ class Menu
     {
         $html = '';
 
-        if ($this->type) {
+        if ($this->type && $this->can_cache) {
             $key = "menu-{$this->type}-{$this->app->lang->name}";
 
             $html = $this->app->cache->data->get($key);
@@ -216,7 +221,7 @@ class Menu
 
             $html = $this->getHtml($items);
 
-            if ($this->type) {
+            if ($this->type && $this->can_cache) {
                 $this->app->cache->data->set($key, $html);
             }
         }

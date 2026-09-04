@@ -37,9 +37,12 @@ class Filter
      */
     protected array $aliases = [
         'i' => 'int',
+        'integer' => 'int',
         'f' => 'float',
+        'double' => 'float',
         'str' => 'string',
         'pos' => 'absint',
+        'boolean' => 'bool',
     ];
 
     /**
@@ -61,24 +64,76 @@ class Filter
      * Filters a value
      * @param mixed $value The value to filter
      * @param string $filter The filter to apply
+     * @param array $filter_options The options to pass to the filter
      * @return mixed The filtered value
+     * @throws \Exception If the filter is not found
      */
-    public function value($value, string $filter)
+    public function value(mixed $value, string $filter, array $filter_options = []) : mixed
     {
         if (isset($this->aliases[$filter])) {
             $filter = $this->aliases[$filter];
         }
 
         if (method_exists($this, $filter)) {
-            return $this->$filter($value);
+            return $this->$filter($value, ...$filter_options);
         }
 
-        return $this->app->data->map($value, function ($value) use ($filter) {
+        return $this->app->data->map($value, function ($value) use ($filter, $filter_options) {
             try {
-                return $this->filters->get($filter)->filter($value);
+                return $this->filters->get($filter)->filter($value, ...$filter_options);
             } catch (\Exception $e) {
                 throw new \Exception("Filter {$filter} not found", 0, $e);
             }
+        });
+    }
+
+    /**
+     * Filters a variable by its type
+     * @param mixed $variable The variable
+     * @param mixed $value The value to filter
+     * @param string|null $array_filter The filter to apply if the variable is an array
+     * @return mixed The filtered value
+     */
+    public function variable(mixed $variable, mixed $value, ?string $array_filter = null) : mixed
+    {
+        $types = [
+            'string' => 'string',
+            'integer' => 'int',
+            'double' => 'float',
+            'boolean' => 'bool',
+            'NULL' => 'string',
+        ];
+
+        $type = gettype($variable);
+        if (!isset($types[$type])) {
+            return $value;
+        }
+
+        $filter = $types[$type];
+
+        if ($type == 'array') {
+            if ($array_filter) {
+                $filter = $array_filter;
+            }
+        } else {
+            // If the value is an array and the variable is not an array, we take the first element of the array
+            if (is_array($value)) {
+                $value = array_first($value);
+            }
+        }
+
+        return $this->value($value, $filter);
+    }
+
+    /**
+     * Filters a boolean value
+     * @param $value The value to filter
+     * @return bool|array The filtered value
+     */
+    public function bool($value) : bool|array
+    {
+        return $this->app->data->map($value, function ($value) {
+            return (bool)$value;
         });
     }
 
@@ -316,24 +371,20 @@ class Filter
     }
 
     /**
-     * Removes from $value the elements which aren't found in $allowed
+     * Checks if the $value is in the $allowed list. If it is, it returns $value. If not returns $not_allowed_value
      * @param string|array $value The value(s)
      * @param string|array $allowed Array with the allowed elements
      * @param mixed $not_allowed_value The value returned if $value isn't included in $allowed
      * @return mixed The filtered value(s) or $not_allowed_value if not allowed
      */
-    public function allowed(string|array $value, string|array $allowed, mixed $not_allowed_value = null) : mixed
+    public function list(string|array $value, string|array $allowed, mixed $not_allowed_value = null) : mixed
     {
         $allowed = (array)$allowed;
 
         if (is_array($value)) {
             return array_intersect($value, $allowed);
         } else {
-            if (in_array($value, $allowed)) {
-                return $value;
-            } else {
-                return $not_allowed_value;
-            }
+            return in_array($value, $allowed) ? $value : $not_allowed_value;
         }
     }
 }

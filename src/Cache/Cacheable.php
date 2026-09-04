@@ -172,12 +172,12 @@ abstract class Cacheable extends Cache
 
     /**
      * Gets the filename for a cache file
-     * @param string $filename The name of the file
+     * @param string $name The name of the file
      * @return string The filename
      */
-    public function getFilename(string $filename) : string
+    public function getFilename(string $name) : string
     {
-        return $this->path . '/' . $this->getName($filename);
+        return $this->path . '/' . $this->getName($name);
     }
 
     /**

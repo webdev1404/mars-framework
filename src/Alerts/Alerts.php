@@ -46,6 +46,17 @@ abstract class Alerts implements \Countable, \IteratorAggregate
     }
 
     /**
+     * Returns all alerts as strings
+     * @return array The alerts as strings
+     */
+    public function getStrings() : array
+    {
+        return array_map(function ($alert) {
+            return $alert['text'];
+        }, $this->alerts);
+    }
+
+    /**
      * Adds an alert or multiple alerts to the alerts list.
      * @param string|array|Alerts $alerts The alert(s) text
      * @param string $field An optional field name the alert is related to. Used for form validation errors
@@ -62,6 +73,14 @@ abstract class Alerts implements \Countable, \IteratorAggregate
                 'field' => $field,
                 'code' => $code
             ]];
+        } elseif (is_array($alerts)) {
+            $alerts = array_map(function ($alert) {
+                return [
+                    'text' => $alert,
+                    'field' => '',
+                    'code' => ''
+                ];
+            }, $alerts);
         }
 
         $this->addMany($alerts);

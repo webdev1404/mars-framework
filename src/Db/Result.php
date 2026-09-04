@@ -214,7 +214,7 @@ class Result implements \Countable, \IteratorAggregate
      * Returns the first column from the generated results
      * @return array The results
      */
-    public function getCol() : array
+    public function getColumn() : array
     {
         return $this->fetchAllFromColumn();
     }

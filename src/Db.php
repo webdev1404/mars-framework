@@ -504,16 +504,17 @@ class Db
 
     /**
      * Selects a single column and returns the result
-     * @param string $col The column to select
+     * @param string $column The column to select
      * @see Db::select()
-     * @return array The IDs
+     * @return array The result
      */
-    public function selectCol(string $table, string $col, array $where = [], string $order_by = '', string $order = '', int $limit = 0, int $limit_offset = 0) : array
+    public function selectColumn(string $table, string $column, array $where = [], string $order_by = '', string $order = '', int $limit = 0, int $limit_offset = 0) : mixed
     {
-        $sql = $this->getSql()->select($col)->from($table)->where($where)->orderBy($order_by, $order)->limit($limit, $limit_offset);
+        $sql = $this->getSql()->select($column)->from($table)->where($where)->orderBy($order_by, $order)->limit($limit, $limit_offset);
 
-        return $this->query($sql)->getCol();
+        return $this->query($sql)->getColumn();
     }
+
 
     /**
      * Returns all the Ids from a table
@@ -523,7 +524,7 @@ class Db
      */
     public function selectIds(string $table, array $where = [], string $order_by = '', string $order = '', int $limit = 0, int $limit_offset = 0, string $col = 'id') : array
     {
-        return $this->selectCol($table, $col, $where, $order_by, $order, $limit, $limit_offset);
+        return $this->selectColumn($table, $col, $where, $order_by, $order, $limit, $limit_offset);
     }
 
     /**

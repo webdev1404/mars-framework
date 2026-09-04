@@ -20,6 +20,11 @@ class Module extends Finder
         $params = $data['params'] ?? [];
         $params['action'] = $data['action'];
 
-        return $this->app->modules->get($data['name'], $params);
+        $module = $this->app->modules->get($data['name'], $params);
+        if (!$module) {
+            throw new \Exception("Module not found: " . $data['name']);
+        }
+        
+        return $module;
     }
 }

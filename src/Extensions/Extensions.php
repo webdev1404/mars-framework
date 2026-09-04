@@ -75,6 +75,15 @@ abstract class Extensions
     }
 
     /**
+     * Returns the type of the extension
+     * @return string The type of the extension
+     */
+    public function getType() : string
+    {
+        return static::$instance_class::getType();
+    }
+
+    /**
      * Returns a new instance of the extension
      * @param string $name The name of the extension
      * @param array $params Optional parameters to pass to the extension constructor

@@ -18,7 +18,7 @@ class Modules extends Extensions
     /**
      * @internal
      */
-    protected static array $supports = ['bin', 'config', 'languages', 'routes'];
+    protected static array $supports = ['bin', 'config', 'languages', 'routes', 'sitemaps'];
 
     /**
      * @internal

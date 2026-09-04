@@ -54,7 +54,7 @@ class Pages extends Loader
 
                     //$this->loadName($language, $name, $route);
 
-                    $this->loadHash($this->method, $language, $route, $prefix, $hash, 'pages', $name, ['filename' => $filename, 'file' => $file], null);
+                    $this->loadHash($this->method, $language, $route, $prefix, $hash, 'page', $name, $this->app->config->routes->pages->sitemap, ['filename' => $filename, 'file' => $file], null);
                 }
             }
         }

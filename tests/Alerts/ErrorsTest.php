@@ -48,7 +48,10 @@ final class ErrorsTest extends Base
         $errors->add(['Error 1', 'Error 2']);
         $this->assertFalse($errors->ok());
         $this->assertSame($errors->count(), 2);
-        $this->assertSame($errors->get(), ['Error 1', 'Error 2']);
+        $this->assertSame($errors->get(), [
+            ['text' => 'Error 1', 'field' => '', 'code' => ''],
+            ['text' => 'Error 2', 'field' => '', 'code' => '']
+        ]);
     }
 
     public function testResetErrors()

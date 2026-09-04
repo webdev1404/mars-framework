@@ -218,9 +218,9 @@ final class DbTest extends Base
         $this->assertCount(2, $rows);
         $this->assertRowAsObject($row, 3);
 
-        //selectCol()
-        $vals = $this->app->db->selectCol('select_test', 'col2');
-        $this->assertEquals($vals, [10,20,30,40]);
+        //selectColumn()
+        $vals = $this->app->db->selectColumn('select_test', 'col2');
+        $this->assertEquals($vals, [10, 20, 30, 40]);
 
         //selectIds()
         $ids = $this->app->db->selectIds('select_test');

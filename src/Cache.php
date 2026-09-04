@@ -13,6 +13,7 @@ use Mars\Cache\Config;
 use Mars\Cache\Data;
 use Mars\Cache\Html;
 use Mars\Cache\Routes;
+use Mars\Cache\Sitemap;
 use Mars\Cache\Storage;
 use Mars\Cache\Templates;
 use Mars\Cache\Extensions\Languages;
@@ -80,6 +81,12 @@ class Cache
      */
     #[LazyLoadProperty]
     public protected(set) Routes $routes;
+
+    /**
+     * @var Sitemap $sitemap The Sitemap Cache object
+     */
+    #[LazyLoadProperty]
+    public protected(set) Sitemap $sitemap;
 
     /**
      * @var Storage $storage The Storage Cache object

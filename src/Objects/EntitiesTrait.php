@@ -132,6 +132,32 @@ trait EntitiesTrait
     }
 
     /**
+     * Returns the data/objects as an array
+     * @param array $columns The columns to return. If empty, all the columns are returned
+     * @param bool $associative If true, the returned array will be associative, otherwise it will be a list
+     * @return array
+     */
+    public function getArray(array $columns = [], bool $associative = true) : array
+    {
+        if (!$columns) {
+            return $associative ? $this->data : array_values($this->data);
+        }
+        
+        $data = array_map(function ($obj) use ($columns, $associative) {
+            $row = [];
+
+            foreach ($columns as $i => $column) {
+                $key = $associative ? $column : $i;
+                $row[$key] = $obj->$column ?? null;
+            }
+
+            return $row;
+        }, $this->data);
+
+        return $data;
+    }
+
+    /**
      * Builds an object of $this->class from $data
      * @param array|object $data The data
      */

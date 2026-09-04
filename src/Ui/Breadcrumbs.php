@@ -87,7 +87,7 @@ class Breadcrumbs extends Ui
             $last = $this->app->document->title->value;
         }
 
-        $breadcrumbs_list = array_map(fn($url) => (string)$this->app->url->get($url), $this->breadcrumbs);
+        $breadcrumbs_list = array_map(fn ($url) => (string)$this->app->url->get($url), $this->breadcrumbs);
 
         $breadcrumbs = [...$breadcrumbs, ...$breadcrumbs_list, ...[$last => '']];
 

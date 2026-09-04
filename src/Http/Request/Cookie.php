@@ -1,6 +1,6 @@
 <?php
 /**
-* The Cookies Request Class
+* The Cookie Request Class
 * @package Mars
 */
 
@@ -9,10 +9,10 @@ namespace Mars\Http\Request;
 use Mars\App;
 
 /**
- * The Cookies Request Class
+ * The Cookie Request Class
  * Handles the $_COOKIE interactions
  */
-class Cookies extends Input
+class Cookie extends Input
 {
     /**
      * Builds the Cookie Request object
@@ -33,7 +33,7 @@ class Cookies extends Input
      * @param bool $decode If true, will decode the value
      * @return mixed The value
      */
-    public function get(string $name, mixed $default_value = '', string $filter = '', bool $is_array = false, bool $trim = true, bool $decode = true) : mixed
+    public function get(string $name, mixed $default_value = '', string $filter = 'string', bool $is_array = false, bool $trim = true, bool $decode = true) : mixed
     {
         if (!isset($this->data[$name])) {
             return $default_value;

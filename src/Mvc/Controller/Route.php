@@ -22,4 +22,3 @@ class Route
         $this->method = $method;
     }
 }
-

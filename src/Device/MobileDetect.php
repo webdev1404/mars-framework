@@ -10,7 +10,7 @@ use Mars\App\Kernel;
 
 /**
  * The Detect Device Class
- * Detects the device a user is using from the useragent
+ * Detects the device a user is using from the user agent
  */
 class MobileDetect implements DeviceInterface
 {
@@ -20,12 +20,12 @@ class MobileDetect implements DeviceInterface
      * @see DeviceInterface::get()
      * {@inheritDoc}
      */
-    public function get(?string $useragent = null) : Type
+    public function get(?string $user_agent = null) : Type
     {
-        $useragent ??= $this->app->useragent;
+        $user_agent ??= $this->app->user_agent;
 
         $detector = new \Detection\MobileDetect;
-        $detector->setUserAgent($useragent);
+        $detector->setUserAgent($user_agent);
 
         if ($detector->isTablet()) {
             return Type::Tablet;

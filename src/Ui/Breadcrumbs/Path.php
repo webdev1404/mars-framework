@@ -49,4 +49,3 @@ class Path
         return $breadcrumbs;
     }
 }
-

@@ -11,15 +11,16 @@ use Mars\App\Kernel;
 use Mars\App\HiddenProperty;
 use Mars\Entity;
 use Mars\Db;
-use Mars\Db\Sql\Sql;
+use Mars\Db\Sql;
 use Mars\System\Plugins;
 
 /**
  * The Items Trait
  * Container of multiple items
  * The classes extending Items must set these properties:
- * protected static $table = '';
- * protected static $id_field = '';
+ * protected static string $table = '';
+ * protected static string $id_field = '';
+ * Optional: protected static string $class = '';
  */
 trait ItemsTrait
 {

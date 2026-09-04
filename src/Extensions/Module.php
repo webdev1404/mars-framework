@@ -35,9 +35,9 @@ class Module extends Extension implements ContentInterface
      */
     public const array DIRS = [
         ...parent::DIRS,
-        'pages' => 'pages',
         'bin' => 'bin',
         'controllers' => 'Controllers',
+        'pages' => 'pages'
     ];
 
     /**
@@ -72,6 +72,16 @@ class Module extends Extension implements ContentInterface
      * @internal
      */
     protected static string $base_namespace = "\\Modules";
+
+    /**
+     * Prepares the module. It will be called before output the module
+     */
+    public function prepare()
+    {
+        $app = $this->app;
+
+        include($this->path . '/prepare.php');
+    }
 
     /**
      * Generates the output and returns it
@@ -178,6 +188,8 @@ class Module extends Extension implements ContentInterface
      */
     public function menu(Menu $menu) : static
     {
+        $app = $this->app;
+        
         $menu_file = $this->path . '/' . self::DIRS['menus'] . "/{$menu->type}.php";
         if (is_file($menu_file)) {
             include $menu_file;

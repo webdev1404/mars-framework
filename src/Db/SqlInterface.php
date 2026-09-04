@@ -130,6 +130,14 @@ interface SqlInterface
     public function where(array $where, string $delimiter = 'AND') : string;
 
     /**
+     * Adds a WHERE clause with OR conditions
+     * @param array $where The where conditions. The format must be: column => value
+     * @param string $delimiter The delimiter to use between the conditions
+     * @return string
+     */
+    public function orWhere(array $where, string $delimiter = 'AND') : string;
+
+    /**
      * Returns a WHERE IN(...) clause
      * @param string $column The column
      * @param array $values Array with the elements to place in the IN list. The values are considered as ints

@@ -320,6 +320,16 @@ class Html
     }
 
     /**
+     * Returns readonly if $readonly is true
+     * @param bool $readonly The readonly flag
+     * @return string
+     */
+    public function isReadonly(bool $readonly = true) : string
+    {
+        return $readonly ? ' readonly' : '';
+    }
+
+    /**
      * Returns a label
      * @param string $text The label's text
      * @param string $for The id of the element the label is for

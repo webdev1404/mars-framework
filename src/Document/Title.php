@@ -6,7 +6,7 @@
 
 namespace Mars\Document;
 
-use \Mars\Document\Tags\MetaTitle;
+use Mars\Document\Tags\MetaTitle;
 
 /**
  * The Title Class
@@ -49,4 +49,3 @@ class Title extends MetaTitle
         return ucwords($title);
     }
 }
-

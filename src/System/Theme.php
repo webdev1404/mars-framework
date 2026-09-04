@@ -145,6 +145,9 @@ class Theme extends BaseTheme
         }
 
         parent::prepare();
+
+        //prepare the modules
+        $this->app->modules->prepare();
     }
 
     /**

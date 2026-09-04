@@ -306,6 +306,29 @@ abstract class Controller extends \stdClass
     }
 
     /**
+     * Shows the flashes messages, if any
+     */
+    protected function flashes()
+    {
+        $this->app->session->flashes();
+    }
+
+    /**
+     * Redirects to the given url with an optional message
+     * @param string|null $url The url to redirect to
+     * @param string $type The type of the alert (error, success, info, warning)
+     * @param string $alert The alert message
+     */
+    protected function redirect(?string $url, string $type = '', string $alert = '')
+    {
+        if ($type && $alert) {
+            $this->app->session->flash($type, $alert);
+        }
+
+        $this->app->redirect($url);
+    }
+
+    /**
      * Creates a route object for the given method
      * @param string $method The name of the method
      * @return Route The route object

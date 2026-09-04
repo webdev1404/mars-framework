@@ -8,6 +8,7 @@ namespace Mars;
 
 use Mars\App\Kernel;
 use Mars\App\Handlers;
+use Mars\Alerts\Alerts;
 
 /**
  * The Cli Class
@@ -72,7 +73,26 @@ class Cli
     }
 
     /**
-     * @var array $params List of parameters
+     * @var array $args List of arguments passed to the script
+     */
+    public protected(set) array $args {
+        get {
+            if (isset($this->args)) {
+                return $this->args;
+            }
+
+            global $argv;
+            $this->args = $argv ?? [];
+
+            //remove the script name
+            array_shift($this->args);
+
+            return $this->args;
+        }
+    }
+
+    /**
+     * @var array $params The list of parameters
      */
     public protected(set) array $params {
         get {
@@ -80,33 +100,14 @@ class Cli
                 return $this->params;
             }
 
-            global $argv;
-            $this->params = $argv ?? [];
-
-            //remove the script name
-            array_shift($this->params);
-
-            return $this->params;
-        }
-    }
-
-    /**
-     * @var array $commands The commands to be executed
-     */
-    public protected(set) array $commands {
-        get {
-            if (isset($this->commands)) {
-                return $this->commands;
-            }
-
-            $this->commands = [];
-            foreach ($this->params as $param) {
+            $this->params = [];
+            foreach ($this->args as $param) {
                 if (!str_starts_with($param, '-')) {
-                    $this->commands[] = $param;
+                    $this->params[] = $param;
                 }
             }
 
-            return $this->commands;
+            return $this->params;
         }
     }
 
@@ -120,7 +121,7 @@ class Cli
             }
 
             $this->options = [];
-            foreach ($this->params as $param) {
+            foreach ($this->args as $param) {
                 if (str_starts_with($param, '--')) {
                     $parts = explode('=', substr($param, 2));
 
@@ -180,16 +181,35 @@ class Cli
 
     /**
      * Returns the value of a command line option
-     * @param string $name The name of the option
+     * @param string|array $name The name of the option or an array of names in the format name => filter. if filter is an array, the option will be filtered as a list
      * @param mixed $default_value The default value to return if the option is not found
      * @param string $filter The filter to apply to the option, if any. See class Filter for a list of filters
+     * @param array $filter_options The options to pass to the filter, if any
      * @return mixed The option
      */
-    public function get(string $name, mixed $default_value = '', string $filter = '') : mixed
+    public function get(string|array $name, mixed $default_value = '', string $filter = '', array $filter_options = []) : mixed
     {
+        if (is_array($name)) {
+            //return an array of options
+            $options = [];
+
+            foreach ($name as $option_name => $option_filter) {
+                $option = $this->options[$option_name] ?? $default_value;
+                
+                if (is_array($option_filter)) {
+                    $options[$option_name] = $this->app->filter->list($option, $option_filter);
+                } else {
+                    $options[$option_name] = $this->app->filter->value($option, $option_filter);
+                }
+            }
+
+            return $options;
+        }
+
+        //return a single option
         $option = $this->options[$name] ?? $default_value;
         if ($filter) {
-            $option = $this->app->filter->value($option, $filter);
+            $option = $this->app->filter->value($option, $filter, $filter_options);
         }
 
         return $option;
@@ -218,6 +238,35 @@ class Cli
     }
 
     /**
+     * Returns the list of parameters starting from a specific index
+     * @param int $start The starting index
+     * @param int|null $length The number of params to return
+     * @return array The list of params
+     */
+    public function getParams($start = 1, $length = null) : array
+    {
+        return array_slice($this->params, $start, $length);
+    }
+
+    /**
+     * Returns a param by index
+     * @param int $index The index of the param
+     * @param mixed $default_value The default value to return if the param is not found
+     * @param string $filter The filter to apply to the param, if any. See class Filter for a list of filters
+     * @param array $filter_options The options to pass to the filter, if any
+     * @return mixed The param
+     */
+    public function getParam(int $index, mixed $default_value = '', string $filter = '', array $filter_options = []) : mixed
+    {
+        $param = $this->params[$index] ?? $default_value;
+        if ($filter) {
+            $param = $this->app->filter->value($param, $filter, $filter_options);
+        }
+
+        return $param;
+    }
+
+    /**
      * Returns a color, based on type
      * @param string $color The color
      * @return string The color
@@ -232,22 +281,36 @@ class Cli
     /**
      * Outputs a question and returns the answer from stdin
      * @param string $question The question
+     * @param string $color The color of the question
+     * @param bool $password If true, the answer will be hidden (for passwords)
      * @return string The answer
      */
-    public function ask(string $question, string $color = '') : string
+    public function ask(string $question, string $color = '', bool $password = false) : string
     {
         $this->print($question . ': ', $color, false);
 
-        return $this->read();
+        return $this->read($password);
     }
 
     /**
      * Reads a line from stdin and returns it
+     * @param bool $password If true, the answer will be hidden (for passwords)
      * @return string
      */
-    public function read() : string
+    public function read(bool $password = false) : string
     {
-        return trim(fgets(STDIN));
+        if ($password) {
+            system('stty -echo');
+        }
+
+        $input = trim(fgets(STDIN));
+
+        if ($password) {
+            system('stty echo');
+            echo "\n";
+        }
+
+        return $input;
     }
 
     /**
@@ -341,8 +404,30 @@ class Cli
      */
     public function error(string $text, bool $die = true)
     {
-        echo "\n";
         $this->print($text, $this->colors['error']);
+        echo "\n";
+
+        $this->flush();
+
+        if ($die) {
+            die;
+        }
+    }
+
+    /**
+     * Outputs multiple errors and dies
+     * @param array|Alerts $errors The errors to output
+     * @param bool $die If true, will exit the script after outputting the errors
+     */
+    public function errors(array|Alerts $errors, bool $die = true)
+    {
+        if ($errors instanceof Alerts) {
+            $errors = $errors->getStrings();
+        }
+
+        foreach ($errors as $error) {
+            $this->print($error, $this->colors['error']);
+        }
         echo "\n";
 
         $this->flush();
@@ -365,6 +450,24 @@ class Cli
     }
 
     /**
+     * Outputs multiple warnings
+     * @param array|Alerts $warnings The warnings to output
+     * @return static
+     */
+    public function warnings(array|Alerts $warnings) : static
+    {
+        if ($warnings instanceof Alerts) {
+            $warnings = $warnings->getStrings();
+        }
+
+        foreach ($warnings as $warning) {
+            $this->print($warning, $this->colors['warning']);
+        }
+
+        return $this;
+    }
+
+    /**
      * Outputs a notice string
      * @param string $text The text to output
      * @return static
@@ -372,6 +475,24 @@ class Cli
     public function notice(string $text) : static
     {
         $this->print($text, $this->colors['notice']);
+
+        return $this;
+    }
+
+    /**
+     * Outputs multiple notices
+     * @param array|Alerts $notices The notices to output
+     * @return static
+     */
+    public function notices(array|Alerts $notices) : static
+    {
+        if ($notices instanceof Alerts) {
+            $notices = $notices->getStrings();
+        }
+
+        foreach ($notices as $notice) {
+            $this->print($notice, $this->colors['notice']);
+        }
 
         return $this;
     }

@@ -78,6 +78,21 @@ class Uri implements \Stringable
     }
 
     /**
+     * @var Url $home The home url
+     */
+    public protected(set) Url $home {
+        get {
+            if (isset($this->home)) {
+                return $this->home;
+            }
+
+            $this->home = new Url($this->app->config->site->url->base . '/');
+
+            return $this->home;
+        }
+    }
+
+    /**
      * @var Url The url. Eg: http://mydomain.com/mars
      */
     public protected(set) Url $base {
@@ -295,9 +310,9 @@ class Uri implements \Stringable
      * Returns the url of a route, or a new Url instance if $name is a valid url. If name is empty, it will return the current url. If name == '/' it will return the root url
      * @param string $name The name of the route or a valid url
      * @param array $replace Array with the values to replace in the route
-     * @return Url|null Returns the url of the route, or null if the route does not exist
+     * @return Url|string|null Returns the url of the route, or null if the route does not exist
      */
-    public function get(string $name = '', array $replace = []) : Url
+    public function get(string $name = '', array $replace = []) : Url|string|null
     {
         if (!$name) {
             return $this->current;
@@ -311,6 +326,11 @@ class Uri implements \Stringable
         $name_lower = strtolower($name);
         if (str_starts_with($name_lower, 'http://') || str_starts_with($name_lower, 'https://')) {
             return new Url($name);
+        }
+
+        //if the name starts with javascript:, return the name as is
+        if (str_starts_with($name_lower, 'javascript:')) {
+            return $name;
         }
 
         $url = $this->route($name, $replace);

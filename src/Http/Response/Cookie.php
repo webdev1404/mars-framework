@@ -11,9 +11,9 @@ use Mars\App\Kernel;
 
 /**
  * The Cookie Response Class
- * Handles the setting/removing cookies
+ * Handles the setting/removing of cookies
  */
-class Cookies
+class Cookie
 {
     use Kernel;
 
@@ -39,14 +39,14 @@ class Cookies
     }
 
     /**
-     * @var bool $secure If true the cookies will only be sent over secure connections.
+     * @var bool $secure If true the cookie will only be sent over a secure connection.
      */
     protected bool $secure {
         get => $this->app->config->cookie->secure;
     }
 
     /**
-     * @var bool $httponly If true then httponly flag will be set for the cookies
+     * @var bool $httponly If true then httponly flag will be set for the cookie
      */
     public bool $httponly {
         get => $this->app->config->cookie->httponly;
@@ -109,7 +109,7 @@ class Cookies
      * @param string|null $samesite The SameSite attribute for the cookie
      * @return static
      */
-    public function unset(string $name, ?string $path = null, ?string $domain = null, ?bool $secure = null, ?bool $httponly = null, ?string $samesite = null) : static
+    public function delete(string $name, ?string $path = null, ?string $domain = null, ?bool $secure = null, ?bool $httponly = null, ?string $samesite = null) : static
     {
         $path = $path ?? $this->path;
         $domain = $domain ?? $this->domain;

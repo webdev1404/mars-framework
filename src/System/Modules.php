@@ -23,11 +23,15 @@ class Modules extends BaseModules
      * Returns a new module instance
      * @param string $name The name of the module
      * @param array $params Optional parameters to pass to the module constructor
-     * @return Module The module
+     * @return Module|null The module or null if not found
      */
-    public function get(string $name, array $params = [], bool $use_cache = true) : Module
+    public function get(string $name, array $params = [], bool $can_cache = true) : ?Module
     {
-        if (!$use_cache) {
+        if (!$this->isEnabled($name)) {
+            return null;
+        }
+
+        if (!$can_cache) {
             return new static::$instance_class($name, $params, $this->app);
         }
 
@@ -49,21 +53,34 @@ class Modules extends BaseModules
      */
     public function boot()
     {
-        $list = $this->getBootList();
+        $list = $this->getFileList('boot.php', 'boot-list');
         
         foreach ($list as $name) {
-            $module = $this->get($name, use_cache: false);
+            $module = $this->get($name, can_cache: false);
             $module->boot();
         }
     }
 
     /**
-     * Returns the list of modules to boot
+     * Prepares the modules with a prepare.php file in their root folder
      */
-    protected function getBootList(): array
+    public function prepare()
     {
-        $cache_file = 'boot-list';
+        $list = $this->getFileList('prepare.php', 'prepare-list');
+        foreach ($list as $name) {
+            $module = $this->get($name, can_cache: false);
+            $module->prepare();
+        }
+    }
 
+    /**
+     * Returns the list of modules which have a certain file in their root folder
+     * @param string $file The file to look for
+     * @param string $cache_file The cache file to use
+     * @return array The list of modules which have the file in their root folder
+     */
+    protected function getFileList(string $file, string $cache_file): array
+    {
         $list = $this->cache->get($cache_file);
         if ($this->app->development) {
             $list = null;
@@ -77,8 +94,8 @@ class Modules extends BaseModules
         $modules = $this->getEnabled();
 
         foreach ($modules as $name => $module) {
-            $boot_filename = $module . '/boot.php';
-            if (is_file($boot_filename)) {
+            $filename = $module . '/' . $file;
+            if (is_file($filename)) {
                 $list[] = $name;
             }
         }
