@@ -25,7 +25,6 @@ class Plugin extends Extension
      */
     public const array DIRS = [
         ...parent::DIRS,
-        'bin' => 'bin',
     ];
 
     /**

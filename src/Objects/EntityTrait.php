@@ -152,7 +152,7 @@ trait EntityTrait
     public function bind(array|object $data = [], array $array_filters = [], ?array $ignore_properties = null, ?string $ignore_value = null, ?array $properties = null) : static
     {
         $data = $data ? $this->app->array->get($data) : $this->app->request->post->getAll();
-        $properties ??= array_keys($this->app->object->getProperties($this, true));
+        $properties ??= array_keys($this->app->object->getVars($this, true));
 
         foreach ($properties as $key) {
             $data[$key] ??= null;
@@ -198,7 +198,7 @@ trait EntityTrait
      */
     public function reset() : static
     {
-        $properties = $this->app->object->getProperties($this);
+        $properties = $this->app->object->getVars($this);
 
         foreach ($properties as $name => $value) {
             if (is_string($value)) {

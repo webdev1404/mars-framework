@@ -18,6 +18,13 @@ final class ArrayTypeTest extends Base
         $this->assertEquals(['name' => 'John'], $result);
     }
 
+    public function testGetList()
+    {
+        $data = ['name' => 'John', 'age' => 30];
+        $result = $this->app->array->getList($data, ['name']);
+        $this->assertEquals(['name' => 'John'], $result);
+    }
+
     public function testFlip()
     {
         $array = ['a', 'b', 'c'];

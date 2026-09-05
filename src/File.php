@@ -346,6 +346,7 @@ class File implements \Stringable
     {
         $filename = $extension ? $this->filename . '.' . $extension : $this->filename;
 
+        // @phpstan-ignore new.static
         return new static($filename);
     }
 
@@ -384,6 +385,7 @@ class File implements \Stringable
      */
     public function append(string $append) : static
     {
+        // @phpstan-ignore new.static
         return new static($this->full_stem . $append . $this->getExtension(true));
     }
 
@@ -474,6 +476,7 @@ class File implements \Stringable
             return null;
         }
 
+        // @phpstan-ignore new.static
         $destination = new static($destination_filename);
 
         $this->check();
@@ -500,6 +503,7 @@ class File implements \Stringable
             return null;
         }
 
+        // @phpstan-ignore new.static
         $destination = new static($destination_filename);
 
         $this->check();

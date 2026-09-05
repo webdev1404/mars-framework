@@ -16,8 +16,9 @@ trait Serialize
 {
     /**
      * Returns the properties of the object, excluding properties with the HiddenProperty attribute or 'get' hooks
+     * @return array The properties of the object
      */
-    protected function getProperties()
+    protected function getProperties() : array
     {
         $properties = get_object_vars($this);
         $reflection = new \ReflectionClass($this);

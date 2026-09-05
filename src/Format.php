@@ -9,6 +9,7 @@ namespace Mars;
 use DateTime;
 use Mars\App\Kernel;
 use Mars\App\Handlers;
+use Mars\Data\MapperTrait;
 
 /**
  * The Format Class
@@ -17,6 +18,7 @@ use Mars\App\Handlers;
 class Format
 {
     use Kernel;
+    use MapperTrait;
     
     /**
      * @var array $supported_formats The list of supported formats
@@ -49,7 +51,7 @@ class Format
      */
     public function lower(string|array $value) : string|array
     {
-        return $this->app->data->map($value, function ($value) {
+        return $this->map($value, function ($value) {
             return strtolower($value);
         });
     }
@@ -61,7 +63,7 @@ class Format
      */
     public function upper(string|array $value) : string|array
     {
-        return $this->app->data->map($value, function ($value) {
+        return $this->map($value, function ($value) {
             return strtoupper($value);
         });
     }
@@ -74,7 +76,7 @@ class Format
      */
     public function round(float|array $value, int $decimals = 2) : float|array
     {
-        return $this->app->data->map($value, function ($value) use ($decimals) {
+        return $this->map($value, function ($value) use ($decimals) {
             return round($value, $decimals);
         });
     }
@@ -89,7 +91,7 @@ class Format
      */
     public function number(float|array $number, int $decimals = 2, string $decimal_separator = '.', string $thousands_separator = ',') : string|array
     {
-        return $this->app->data->map($number, function ($number) use ($decimals, $decimal_separator, $thousands_separator) {
+        return $this->map($number, function ($number) use ($decimals, $decimal_separator, $thousands_separator) {
             return number_format($number, $decimals, $decimal_separator, $thousands_separator);
         });
     }
@@ -103,7 +105,7 @@ class Format
      */
     public function percentage(float|array $number, float $total, int $decimals = 4) : float|array
     {
-        return $this->app->data->map($number, function ($number) use ($total, $decimals) {
+        return $this->map($number, function ($number) use ($total, $decimals) {
             return $this->format->get('percentage')->format($number, $total, $decimals);
         });
     }
@@ -116,7 +118,7 @@ class Format
      */
     public function filesize(int|float|array $bytes, int $digits = 2) : string|array
     {
-        return $this->app->data->map($bytes, function ($bytes) use ($digits) {
+        return $this->map($bytes, function ($bytes) use ($digits) {
             return $this->format->get('filesize')->format($bytes, $digits);
         });
     }
@@ -128,7 +130,7 @@ class Format
      */
     public function datetime(int|string|DateTime|array $datetime = 0) : string|array
     {
-        return $this->app->data->map($datetime, function ($datetime) {
+        return $this->map($datetime, function ($datetime) {
             return $this->app->datetime->get($datetime);
         });
     }
@@ -140,7 +142,7 @@ class Format
      */
     public function date(int|string|DateTime|array $date = 0) : string|array
     {
-        return $this->app->data->map($date, function ($date) {
+        return $this->map($date, function ($date) {
             return $this->app->date->get($date);
         });
     }
@@ -152,7 +154,7 @@ class Format
      */
     public function time(int|string|DateTime|array $time = 0) : string|array
     {
-        return $this->app->data->map($time, function ($time) {
+        return $this->map($time, function ($time) {
             return $this->app->time->get($time);
         });
     }
@@ -166,7 +168,7 @@ class Format
      */
     public function timeInterval(int|array $seconds, string $unit_separator = ' ', string $part_separator = ', ') : string|array
     {
-        return $this->app->data->map($seconds, function ($seconds) use ($unit_separator, $part_separator) {
+        return $this->map($seconds, function ($seconds) use ($unit_separator, $part_separator) {
             return $this->format->get('time_interval')->format($seconds, $unit_separator, $part_separator);
         });
     }
@@ -178,7 +180,7 @@ class Format
      */
     public function id(string|array $value) : string|array
     {
-        return $this->app->data->map($value, function ($value) {
+        return $this->map($value, function ($value) {
             return str_replace([' ', '.', '_'], '-', $value);
         });
     }

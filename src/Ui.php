@@ -45,8 +45,8 @@ class Ui
      */
     public function __construct(App $app)
     {
-        $this->app = $app;
-
         $this->lazyLoad($this->app);
+
+        $this->app = $app;
     }
 }

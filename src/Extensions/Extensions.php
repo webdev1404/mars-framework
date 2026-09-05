@@ -555,14 +555,14 @@ abstract class Extensions
      */
     protected function getSetupManager(string $name) : ?object
     {
-        $setup_file = $this->getPath($name) . '/' . static::$instance_class::DIRS['setup'] . '/Setup.php';
+        $setup_file = $this->getPath($name) . '/' . static::$instance_class::DIRS['src'] . '/Setup.php';
         if (!is_file($setup_file)) {
             return new static::$setup_class($this->app);
         }
 
         include_once($setup_file);
 
-        $setup_class = $this->getBaseNamespace($name, static::$instance_class::DIRS['setup']) . '\\Setup';
+        $setup_class = $this->getBaseNamespace($name) . '\\Setup';
 
         return new $setup_class($this->app);
     }

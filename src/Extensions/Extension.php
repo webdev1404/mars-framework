@@ -30,7 +30,6 @@ abstract class Extension
         'menus' => 'menus',
         'routes' => 'routes',
         'templates' => 'templates',
-        'setup' => 'setup',
         'src' => 'src',
         'sitemap' => 'sitemap'
     ];

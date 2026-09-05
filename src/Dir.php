@@ -438,6 +438,7 @@ class Dir implements \Stringable
             return null;
         }
 
+        // @phpstan-ignore new.static
         $destination = new static($destination_dir);
 
         $this->check();
@@ -479,6 +480,7 @@ class Dir implements \Stringable
             return null;
         }
 
+        // @phpstan-ignore new.static
         $destination = new static($destination_dir);
 
         $this->check();

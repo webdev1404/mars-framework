@@ -49,6 +49,6 @@ class IfParser
             $value = substr($value, 1, -1);
         }
 
-        return new VariablesParser($this->app)->replaceVariables($value);
+        return new VariablesParser()->replaceVariables($value);
     }
 }

@@ -15,7 +15,6 @@ use Mars\Objects\ItemTrait;
  * protected static $id_field = '';
  * protected static $name_field = '';
  */
-#[\AllowDynamicProperties]
 abstract class Item extends Entity
 {
     use ItemTrait;

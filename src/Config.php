@@ -102,7 +102,7 @@ class Config extends Container
             return;
         }
         
-        $properties = $this->_app->object->getProperties($this);
+        $properties = $this->_app->object->getVars($this);
 
         $content = "<?php\n\nreturn " . var_export($properties, true) . ";";
 

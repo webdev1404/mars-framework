@@ -35,7 +35,6 @@ class Module extends Extension implements ContentInterface
      */
     public const array DIRS = [
         ...parent::DIRS,
-        'bin' => 'bin',
         'controllers' => 'Controllers',
         'pages' => 'pages'
     ];

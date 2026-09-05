@@ -22,7 +22,7 @@ class ForeachParser
     public function parse(string $content, array $params = []) : string
     {
         $content = preg_replace_callback('/@foreach\s*\((.*) as (.*)\)/isU', function (array $match) {
-            $variable = new VariablesParser($this->app)->replaceVariables($match[1]);
+            $variable = new VariablesParser()->replaceVariables($match[1]);
             $expression = trim($match[2]);
 
             $code = '<?php if(' . $variable . '){ ';

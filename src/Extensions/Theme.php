@@ -86,11 +86,11 @@ class Theme extends Extension
      * @internal
      */
     protected static array $lazyload_add_this = [
-       Css::class,
-       Javascript::class,
-       Favicon::class,
-       Fonts::class,
-       Images::class,
+        Css::class => true,
+        Javascript::class => true,
+        Favicon::class => true,
+        Fonts::class => true,
+        Images::class => true,
     ];
 
     /**

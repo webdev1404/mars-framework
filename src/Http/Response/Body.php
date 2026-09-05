@@ -8,7 +8,7 @@ namespace Mars\Http\Response;
 
 use Mars\App;
 use Mars\App\Kernel;
-use Mars\App\Lazyload;
+use Mars\App\LazyLoad;
 use Mars\App\LazyLoadProperty;
 use Mars\Http\Response\Body\Json;
 use Mars\Http\Response\Body\Html;
@@ -23,7 +23,7 @@ use Mars\Http\Response\Body\Data\Html as HtmlData;
 class Body
 {
     use Kernel;
-    use Lazyload;
+    use LazyLoad;
 
     /**
      * @var Json $json The Json body handler

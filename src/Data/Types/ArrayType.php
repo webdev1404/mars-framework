@@ -35,6 +35,25 @@ class ArrayType
     }
 
     /**
+     * Returns a list of values from an array based on a list of keys
+     * @param array $array The array
+     * @param array $list The list of keys
+     * @return array The list of values
+     */
+    public function getList(array $array, array $list) : array
+    {
+        $data = [];
+
+        foreach ($list as $key) {
+            if (isset($array[$key])) {
+                $data[$key] = $array[$key];
+            }
+        }
+
+        return $data;
+    }
+
+    /**
      * Flips an array, so the values become the keys, with the new values being set to $value
      * @param array $array The array to flip
      * @param mixed $value The value to set for the new keys

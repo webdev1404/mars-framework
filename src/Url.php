@@ -325,6 +325,7 @@ class Url implements \Stringable
             $parts = array_map(fn ($part) => rawurlencode($part), $parts);
         }
 
+        // @phpstan-ignore new.static
         $url = new static($this->url . '/' . implode('/', $parts));
         if ($params) {
             return $url->add($params, $remove_empty_params);
@@ -356,6 +357,7 @@ class Url implements \Stringable
 
         $query_string = http_build_query($params);
 
+        // @phpstan-ignore new.static
         return new static($this->url . $separator . $query_string);
     }
 
@@ -367,9 +369,11 @@ class Url implements \Stringable
     public function normalize(string $base_url) : static
     {
         if ($this->is_valid) {
+            // @phpstan-ignore new.static
             return new static($this->url);
         }
 
+        // @phpstan-ignore new.static
         return new static(rtrim($base_url, '/') . '/' . ltrim($this->url, '/'));
     }
 }

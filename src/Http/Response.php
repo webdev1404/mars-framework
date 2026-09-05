@@ -8,7 +8,7 @@ namespace Mars\Http;
 
 use Mars\App;
 use Mars\App\Kernel;
-use Mars\App\Lazyload;
+use Mars\App\LazyLoad;
 use Mars\App\LazyLoadProperty;
 use Mars\Http\Response\Body;
 use Mars\Http\Response\Cookie;
@@ -22,7 +22,7 @@ use Mars\Http\Response\Body\Data\Data;
 class Response
 {
     use Kernel;
-    use Lazyload;
+    use LazyLoad;
 
     /**
      * @var Headers $headers The headers object

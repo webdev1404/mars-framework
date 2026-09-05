@@ -83,17 +83,30 @@ trait LazyLoad
         foreach ($classes as $name => $class) {
             $reflector = new \ReflectionClass($class);
             $this->$name = $reflector->newLazyGhost(function ($ghost) use ($class, $app) {
-                $params = [$app];
-
-                //add this as the first param if class is listed in static::$lazyload_add_this
-                if (!empty(static::$lazyload_add_this)) {
-                    if (in_array(ltrim($class, '\\'), static::$lazyload_add_this)) {
-                        array_unshift($params, $this);
-                    }
-                }
+                $params = $this->getLazyLoadConstructorParams($class, $app);
 
                 $ghost->__construct(...$params);
             });
         }
+    }
+
+    /**
+     * Returns the constructor params for the lazy loaded class
+     * @param string $class The class to lazy load
+     * @param App $app The App object
+     * @return array The constructor params
+     */
+    protected function getLazyLoadConstructorParams(string $class, App $app) : array
+    {
+        $class = ltrim($class, '\\');
+
+        // @phpstan-ignore staticProperty.notFound
+        if (!empty(static::$lazyload_add_this)) {
+            if (isset(static::$lazyload_add_this[$class])) {
+                return [$this, $app];
+            }
+        }
+
+        return [$app];
     }
 }

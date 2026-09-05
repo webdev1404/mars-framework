@@ -112,12 +112,6 @@ class App
     public Crypt $crypt;
 
     /**
-     * @var Data $data The data object
-     */
-    #[LazyLoadProperty]
-    public Data $data;
-
-    /**
      * @var Db $db The db object
      */
     #[LazyLoadProperty]
@@ -790,6 +784,7 @@ class App
             return static::$instance;
         }
        
+        // @phpstan-ignore new.static
         static::$instance = new static;
 
         return static::$instance;

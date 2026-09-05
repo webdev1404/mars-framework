@@ -12,8 +12,7 @@ use Mars\Objects\EntityTrait;
  * The Entity Class
  * Contains the functionality of a basic object
  */
-#[\AllowDynamicProperties]
-class Entity
+class Entity extends \StdClass
 {
     use EntityTrait;
 

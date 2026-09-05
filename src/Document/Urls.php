@@ -125,6 +125,7 @@ class Urls implements \Countable, \IteratorAggregate
     {
         $urls = array_filter($this->urls, fn ($url) => !$url->is_local);
         
+        // @phpstan-ignore new.static
         return new static($this->type, $this->app)->set($urls);
     }
 
@@ -136,6 +137,7 @@ class Urls implements \Countable, \IteratorAggregate
     {
         $urls = array_filter($this->urls, fn ($url) => $url->is_local);
         
+        // @phpstan-ignore new.static
         return new static($this->type, $this->app)->set($urls);
     }
 }

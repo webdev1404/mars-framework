@@ -15,7 +15,7 @@ class Memcached implements MemcacheInterface
     /**
      * @var object $handle The driver's handle
      */
-    protected object $handle;
+    protected ?object $handle;
 
     /**
      * @see MemcacheInterface::connect()
@@ -40,9 +40,7 @@ class Memcached implements MemcacheInterface
      */
     public function disconnect()
     {
-        if (isset($this->handle)) {
-            unset($this->handle);
-        }
+        $this->handle = null;
     }
 
     /**

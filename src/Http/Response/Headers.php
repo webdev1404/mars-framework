@@ -8,7 +8,7 @@ namespace Mars\Http\Response;
 
 use Mars\App;
 use Mars\App\Kernel;
-use Mars\App\Lazyload;
+use Mars\App\LazyLoad;
 use Mars\App\LazyLoadProperty;
 use Mars\Data\MapTrait;
 use Mars\Http\Response\Headers\EarlyHints;
@@ -21,7 +21,7 @@ use Mars\Http\Response\Headers\CSP;
 class Headers
 {
     use Kernel;
-    use Lazyload;
+    use LazyLoad;
     use MapTrait;
 
     /**

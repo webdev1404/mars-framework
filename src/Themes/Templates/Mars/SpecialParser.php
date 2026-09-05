@@ -24,7 +24,7 @@ class SpecialParser
     {
         $content = preg_replace_callback('/(@[a-z0-9_\.]+)\s*(?:=\s(.*))?\v/i', function (array $match) {
             $name = $match[1];
-            $value = empty($match[2]) ? '' : new VariablesParser($this->app)->get($match[2]);
+            $value = empty($match[2]) ? '' : new VariablesParser()->get($match[2]);
 
             return $this->get($name, $value);
         }, $content);

@@ -26,6 +26,6 @@ class Brotli implements CompressionInterface
      */
     public function decompress(string $data): string
     {
-        return \brotli_decompress($data);
+        return \brotli_uncompress($data);
     }
 }

@@ -48,5 +48,7 @@ class Menus extends \stdClass
     public function __construct(App $app)
     {
         $this->lazyLoad($app);
+
+        $this->app = $app;
     }
 }

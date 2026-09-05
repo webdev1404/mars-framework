@@ -45,9 +45,7 @@ abstract class Pdo implements DbInterface
      */
     public function disconnect()
     {
-        if (isset($this->handle)) {
-            unset($this->handle);
-        }
+        $this->handle = null;
     }
 
     /**

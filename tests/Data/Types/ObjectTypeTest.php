@@ -7,10 +7,10 @@ include_once(dirname(__DIR__, 2) . '/Base.php');
  */
 final class ObjectTypeTest extends Base
 {
-    public function testGetProperties()
+    public function testGetVars()
     {
         $object = (object)['name' => 'John', 'age' => 30];
-        $result = $this->app->object->getProperties($object);
+        $result = $this->app->object->getVars($object);
         $this->assertEquals(['name' => 'John', 'age' => 30], $result);
     }
 }

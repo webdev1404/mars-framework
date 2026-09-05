@@ -6,6 +6,7 @@
 
 namespace Mars\Extensions\Themes\Links;
 
+use Mars\Url;
 use Mars\Document\Links\Links as DocumentLinks;
 
 /**
@@ -45,6 +46,10 @@ abstract class Links extends Base
      */
     public function getUrl(string $url) : string
     {
+        if ($this->app->url->isValid($url)) {
+            return $url;
+        }
+
         return $this->assets_url . '/' . $url;
     }
 
@@ -84,8 +89,13 @@ abstract class Links extends Base
     }
 
     /**
-     * @see Urls::add()
-     * {@inheritDoc}
+     * Adds the given urls to the theme links
+     * @param string|array $urls The urls to add
+     * @param string $location The location to add the urls to
+     * @param int $priority The priority of the urls
+     * @param array $attributes The attributes of the urls
+     * @param bool $early_hints Whether to use early hints
+     * @param bool $preload Whether to preload the urls
      */
     public function add(string|array $urls, string $location = 'head', int $priority = 100, array $attributes = [], bool $early_hints = false, bool $preload = false) : static
     {
@@ -95,8 +105,8 @@ abstract class Links extends Base
     }
 
     /**
-     * @see Urls::remove()
-     * {@inheritDoc}
+     * Removes the given urls from the theme links
+     * @param string|array $urls The urls to remove
      */
     public function remove(string|array $urls) : static
     {

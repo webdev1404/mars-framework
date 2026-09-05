@@ -369,7 +369,7 @@ class Html extends Cacheable
         if ($last_modified) {
             $etag = $this->getEtag($last_modified);
 
-            $this->sendHeaders($last_modified, $etag);
+            $this->sendCacheHeaders($last_modified, $etag);
         }
     }
 

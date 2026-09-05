@@ -34,6 +34,7 @@ abstract class Rule
      */
     public function validate(string $value, ...$params) : bool
     {
+        // @phpstan-ignore method.notFound
         return $this->isValid($value, ...$params);
     }
 

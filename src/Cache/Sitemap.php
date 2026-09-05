@@ -28,4 +28,3 @@ class Sitemap extends Cache
         return $this->path . '/' . $name;
     }
 }
-

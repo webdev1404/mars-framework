@@ -15,7 +15,7 @@ class Redis implements MemcacheInterface
     /**
      * @var object $handle The driver's handle
      */
-    protected object $handle;
+    protected ?object $handle;
 
     /**
      * @see MemcacheInterface::connect()
@@ -42,9 +42,9 @@ class Redis implements MemcacheInterface
     {
         if (isset($this->handle)) {
             $this->handle->close();
-
-            unset($this->handle);
         }
+
+        $this->handle = null;
     }
 
     /**

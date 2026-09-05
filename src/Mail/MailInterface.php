@@ -20,7 +20,6 @@ interface MailInterface
     /**
      * Sets the mail's recipients as bcc
      * @param string|array $to The Bcc address(es) where the mail will be sent
-     * @return $this
      */
     public function setRecipientBcc(string|array $to);
 

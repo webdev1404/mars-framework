@@ -51,12 +51,16 @@ class Compression
                 return $this->driver;
             }
 
-            $this->driver = $this->driver_objects[$driver] ??= $this->drivers->get($this->app->config->compression->driver);
+            $this->driver = $this->driver_objects[$this->app->config->compression->driver] ??= $this->drivers->get($this->app->config->compression->driver);
 
             return $this->driver;
         }
     }
 
+    /**
+     * @var array $driver_objects The instantated driver objects, to avoid instantiating the same driver multiple times
+     * @internal
+     */
     protected array $driver_objects = [];
 
     /**

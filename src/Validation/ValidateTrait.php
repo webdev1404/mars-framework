@@ -53,6 +53,7 @@ trait ValidateTrait
      */
     protected function getValidationRules() : array
     {
+        // @phpstan-ignore staticProperty.notFound
         return $this->validation_rules_custom ?? (static::$validation_rules ?? []);
     }
 
@@ -95,6 +96,7 @@ trait ValidateTrait
      */
     protected function getValidationErrorStrings() : array
     {
+        // @phpstan-ignore staticProperty.notFound
         return $this->validation_error_strings_custom ?? (static::$validation_error_strings ?? []);
     }
 

@@ -272,7 +272,7 @@ abstract class Controller extends \stdClass
      * @internal
      */
     protected static array $lazyload_add_this = [
-       Email::class
+       Email::class => true,
     ];
 
     /**

@@ -459,7 +459,7 @@ trait ItemTrait
         }
 
         if ($original_list) {
-            return $this->app->data->getProperties($data, $original_list);
+            return $this->app->array->getList($data, $original_list);
         }
 
         return $data;
