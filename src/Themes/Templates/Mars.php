@@ -23,6 +23,7 @@ class Mars implements TemplateInterface
     protected array $supported_parsers = [
         'templates' => \Mars\Themes\Templates\Mars\TemplatesParser::class,
         'include' => \Mars\Themes\Templates\Mars\IncludeParser::class,
+        'tpl' => \Mars\Themes\Templates\Mars\TplParser::class,
         'variables_raw' => \Mars\Themes\Templates\Mars\VariablesRawParser::class,
         'variables' => \Mars\Themes\Templates\Mars\VariablesParser::class,
         'if' => \Mars\Themes\Templates\Mars\IfParser::class,

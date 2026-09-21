@@ -6,8 +6,6 @@
 
 namespace Mars\Themes\Templates\Mars;
 
-use Mars\App;
-
 /**
  * The Raw Variables Parser
  */

@@ -90,7 +90,12 @@ class Pages extends Loader
             return [];
         }
 
-        return $this->app->dir->getFiles($path, true, false, extensions: ['php']);
+        $files = $this->app->dir->getFiles($path, true, false, extensions: ['php']);
+
+        // don't include the template files, as they are not pages
+        $files = array_filter($files, fn($file) => !str_ends_with(strtolower($file), '.tpl.php'));
+
+        return $files;
     }
 
     /**

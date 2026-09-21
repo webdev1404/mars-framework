@@ -12,7 +12,7 @@ use Mars\Objects\EntityTrait;
  * The Entity Class
  * Contains the functionality of a basic object
  */
-class Entity extends \StdClass
+class Entity extends \stdClass
 {
     use EntityTrait;
 
